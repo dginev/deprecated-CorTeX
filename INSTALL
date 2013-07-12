@@ -9,7 +9,7 @@ sudo apt-get install tomcat6 \
   gearman mod-gearman-tools \
   libgearman-client-perl \
   gearman-server libgearman-client-async-perl \
-  mysql-server 
+  mysql-server libdbd-mysql-perl libdbd-sqlite-perl
 
 I. Backends
   I.1. OWLIM -- Triple store (if you're not from Jacobs University, please use Sesame or request your own OWLIM access link)
@@ -35,12 +35,15 @@ I.3 MySQL -- SQL Database
    drop table if exists tasks;
    create table tasks (
     taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    corpus varchar(50),
+    entry varchar(200),
     service varchar(50),
-    corpusid varchar(50),
-    entryid varchar(200),
     status int
   );
   create index statusidx on tasks (status);
+  create index corpusidx on tasks (corpus);
+  create index entryidx on tasks (entry);
+  create index serviceidx on tasks (service);
   Ctrl+D
 
 II. Configure Server settings

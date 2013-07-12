@@ -10,9 +10,9 @@ Admin interface monitors/controls the system:
 
 We have an M x N x C job landscape, for M services and N corpus entries in C corpora.
 Job status Codes:
-0 not required
+0 ready for processing
 -1 done
--2 not required
+-2 missing dependencies
 JOBID > 0  incomplete/processing
 
 == Cron processing

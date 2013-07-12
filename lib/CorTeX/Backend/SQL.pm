@@ -30,7 +30,7 @@ sub new {
   $options{sqlpass} = $input{sqlpass};
   $options{sqldbname} = $input{sqldbname};
   $options{sqlhost} = $input{sqlhost};
-  $options{sqldbms} = $input{sqldbms};
+  $options{sqldbms} = lc($input{sqldbms});
   $options{query_cache} = $input{query_cache} || {};
   $options{handle} = $input{handle};
   my $self = bless \%options, $class;
@@ -131,12 +131,15 @@ sub reset_db {
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
       taskid integer primary key AUTOINCREMENT,
+      corpus varchar(50),
+      entry varchar(200),
       service varchar(50),
-      corpusid varchar(50),
-      entryid varchar(200),
       status integer
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);");
+    $self->do("create index corpusidx on tasks(corpus);");
+    $self->do("create index entryidx on tasks(entry);");
+    $self->do("create index serviceidx on tasks(service);");
   }
   elsif ($type eq 'mysql') {
     # Table structure for table object
@@ -144,11 +147,14 @@ sub reset_db {
     $self->do("CREATE TABLE tasks (
       taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
       service varchar(50),
-      corpusid varchar(50),
-      entryid varchar(200),
+      corpus varchar(50),
+      entry varchar(200),
       status int
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);"); 
+    $self->do("create index corpusidx on tasks(corpus);");
+    $self->do("create index entryidx on tasks(entry);");
+    $self->do("create index serviceidx on tasks(service);");
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
@@ -160,16 +166,23 @@ sub reset_db {
 
 sub delete_corpus {
   my ($self,$corpus) = @_;
-  print STDERR "Deleting corpus $corpus from SQL\n";
+  return unless ($corpus && (length($corpus)>0));
+  my $sth = $self->prepare("DELETE FROM tasks WHERE corpus=?");
+  $sth->execute($corpus); 
   return;
 }
 
-sub add_corpus {
-  my ($self,$corpus) = @_;
-  print STDERR "Adding corpus $corpus from SQL\n";
+sub queue_task {
+  my ($self,%options) = @_;
+  # TODO: Continue...
   return;
 }
 
+sub purge_task {
+  my ($self,%options) = @_;
+  # TODO: Continue...
+  return;
+}
 
 1;
 
@@ -186,7 +199,7 @@ C<CorTeX::Backend::SQL> - DBI interface for CorTeX::Backend
   use CorTeX::Backend;
   # Class-tuning API
   $backend=CorTeX::Backend->new(sqluser=>'cortex',sqlpass=>'cortex',sqldbname=>"cortex",
-    sqlhost=>"localhost", sqldbms=>"MySQL", verbosity=>0|1,);
+    sqlhost=>"localhost", sqldbms=>"mysql", verbosity=>0|1,);
   # Directly access the CorTeX::Backend::SQL object as $db 
   $db = $backend->sql;
   # Methods

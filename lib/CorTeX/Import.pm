@@ -37,8 +37,7 @@ sub new {
 
   my $backend = CorTeX::Backend->new(exist_url=>$opts{exist_url},sesame_url=>$opts{sesame_url},verbosity=>$opts{verbosity},
     sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-    sqlpass=>'cortex');
-
+    sqlpass=>'cortex',sqldbname=>'cortex');
   # Wipe away any existing collection if overwrite is enabled
   if ($opts{overwrite}) {
     set_db_file_field('import_checkpoint',undef);
@@ -58,7 +57,7 @@ sub new {
   my $checkpoint = get_db_file_field('import_checkpoint');
   my $directory;
   #Fast-forward until checkpoint is reached:
-  if (defined $checkpoint) {
+  if ($checkpoint) {
     do {
       $directory = $walker->next_entry;
     } while (defined $directory && ($directory ne $checkpoint));
@@ -85,7 +84,7 @@ sub set_directory {
 sub process_next {
   my ($self) = @_;
   # 0. Check that we are within restrictions
-  if ($self->{processed_entries} >= $self->{upper_bound}) {
+  if ($self->{processed_entries} > $self->{upper_bound}) {
     print STDERR "Upper bound reached!\n" if ($self->{verbosity}>0);
     return;
   }
@@ -107,8 +106,16 @@ sub process_next {
   if (! $added) {
     # 2. Import into eXist
     my $collection = $self->backend->exist->insert_directory($directory,$self->{walker}->get_root);
-    # 3. Mark priority as 1 in Sesame:
-    push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
+    # OLD3. Mark priority as 1 in Sesame:
+    #push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
+    # 3. Add entry to SQL tasks, mark as queued for pre-processors:
+    my $job_name = $self->{walker}->{job_name};
+    # Remove any traces of the task
+    $self->backend->sql->purge_task(corpus=>$job_name,task=>$directory);
+    # Queue in the pre-processors
+    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'TeX_to_XML',status=>0);
+    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'pre-tokenize',status=>-2);
+    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'XML_to_TEI_HTML',status=>-2);
   }
   return 1;
 }
@@ -127,6 +134,11 @@ sub get_processed_count {
 sub backend {
   my ($self) = @_;
   $self->{backend};
+}
+
+sub get_job_name {
+  my ($self) = @_;
+  $self->walker->job_name;
 }
 
 1;

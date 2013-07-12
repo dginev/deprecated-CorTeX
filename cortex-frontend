@@ -155,7 +155,7 @@ get '/retval_detail' => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
         sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-        sqlpass=>'cortex');
+        sqlpass=>'cortex',sqldbname=>'cortex');
   db_file_disconnect($dbfile);
   my $corpus_name = $backend->sesame->get_corpus_name($MAIN_REPOS);
   my $component = [ split(/:/, $self->param('component')) ];
@@ -264,7 +264,7 @@ helper status_report => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
     sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-    sqlpass=>'cortex');
+    sqlpass=>'cortex',sqldbname=>'cortex');
   my $pid = $dbfile->{cron_job_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
@@ -365,7 +365,7 @@ helper queue_rerun => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
         sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-        sqlpass=>'cortex');
+        sqlpass=>'cortex',sqldbname=>'cortex');
   db_file_disconnect($dbfile);
   if ($self->param('entry')) {
     # We only want a single entry here;
