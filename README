@@ -1,0 +1,26 @@
+CorTeX Framework
+
+The SVN tries to be self-contained, but many of the bundled components may, and even should, be deployed separately.
+
+This README should grow into a full-blown system documentation in doc/, as well as an installation summary at INSTALL.
+
+Currently, the system contains of:
+
+I. Frontend:
+
+I.1. webserver/cortex-server.pl - the main frontend web app
+I.2. webserver/
+
+
+II. Backends:
+
+WAR Files download links (just in case the war/ files don't work out):
+
+II.1. OWLIM
+http://download.ontotext.com/owlim/3e4dc2e0-d66c-11e1-b81b-dba586cc0cc6/owlim-lite-5.2.5331.zip
+
+II.2. Exist
+http://sourceforge.net/projects/exist/files/Stable/1.2/eXist-1.2.6-rev9165.war/download 
+
+As the size of the data grows, one should consider deploying on several machines, as well as federated/distributed setups.
+The default deployment is monolithic.

@@ -1,0 +1,47 @@
+=== CorTeX server installation instructions ===
+
+Brace yourselves, a lot of work to come...
+
+For now, assuming you're running a Debian-based OS
+
+0. Debian packages
+sudo apt-get install tomcat6 \
+  gearman mod-gearman-tools \
+  libgearman-client-perl \
+  gearman-server libgearman-client-async-perl \
+  mysql-server 
+
+I. Backends
+  I.1. OWLIM -- Triple store (if you're not from Jacobs University, please use Sesame or request your own OWLIM access link)
+    http://download.ontotext.com/owlim/3e4dc2e0-d66c-11e1-b81b-dba586cc0cc6/owlim-lite-5.2.5331.zip
+
+    Deploy .war file in Tomcat
+
+  I.2. Exist -- XML Database
+    http://sourceforge.net/projects/exist/files/Stable/1.2/eXist-1.2.6-rev9165.war/download 
+
+    Deploy .war file in Tomcat
+
+I.3 MySQL -- SQL Database
+ Login as root and perform initial setup:
+ $ mysql -u root -p
+   create database cortex;
+   grant all on cortex.* to cortex@localhost identified by 'cortex';
+   Ctrl+D
+
+ Login as cortex and initialize database:
+ $ mysql -u cortex -p
+   use cortex;
+   drop table if exists tasks;
+   create table tasks (
+    taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    service varchar(50),
+    corpusid varchar(50),
+    entryid varchar(200),
+    status int
+  );
+  create index statusidx on tasks (status);
+  Ctrl+D
+
+
+  

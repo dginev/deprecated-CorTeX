@@ -1,0 +1,134 @@
+% layout 'cortex-default';
+% title 'File Browser: '.$corpus_name;
+<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
+<%= javascript 'js/external/jquery.min.js' %>
+<%= javascript 'js/external/jquery-ui.min.js' %>
+<%= javascript begin %>
+$(document).ready(function() {
+	$('.back-to-status-button').button({
+            icons: { primary: "ui-icon-circle-arrow-w" },
+            text: false
+        }).css({
+        	'cursor': 'pointer',
+            'float' : 'center',                        
+            'width': '25px'
+        }).click(function() {
+        	window.location.href = '/status';
+        });
+	$('.rerun-button').button({
+            icons: { primary: "ui-icon-refresh" },
+            text: false
+        }).css({
+        	'cursor': 'pointer',
+            'float' : 'center',                        
+            'width': '25px'
+        }).click(function() {
+		var prmstr = window.location.search.substr(1);
+		var prmarr = prmstr.split ("&");
+		var params = {};
+
+		for ( var i = 0; i < prmarr.length; i++) {
+    		var tmparr = prmarr[i].split("=");
+    		params[tmparr[0]] = tmparr[1];
+		}
+
+		var component = decodeURIComponent(params['component']);
+		var parts = component.split(':');
+		parts.shift();
+		var description='';
+		for (var part in parts) {
+		    var pair = parts[part].split(' ');
+		    if (pair.length>1) {
+		        description = description+"\n"+pair[1]+": "+pair[0]+"\n";
+		    }
+		}
+
+	    var confirmed = confirm("Mark for Rerun\n"+description);
+	    if (confirmed) {
+	        $.ajax({
+	            url: "/ajax",
+	            type: "POST",
+	            dataType: "json",
+	            data : {"action":"queue-rerun","component":component},
+	            cache: false,
+	            success: function(response) { 
+	                alert(response.message);
+	                window.location.reload(true);
+                }
+	        });
+	    }
+	});
+	$('.entry-row').find('td:first').next().prepend('<button class="view-button">View Entry</button>');
+	$('.view-button').button({
+            icons: { primary: "ui-icon-circle-zoomin" },
+            text: false
+        }).css({
+        	'cursor': 'pointer',
+            'float' : 'center',                        
+            'width': '25px'
+        }).click(function() {
+        	window.open($(this).parent().parent().find('td > a').attr('href'),'_exist');
+        });
+	$('.entry-row').hover(function() {
+		$(this).find('td').last().append('<button class="entry-rerun-button">Rerun Entry</button>');
+		$('.entry-rerun-button').button({
+            icons: { primary: "ui-icon-refresh" },
+            text: false
+        }).css({
+        	'cursor': 'pointer',
+            'float' : 'center',                        
+            'width': '25px'
+        }).click(function() {
+		   var description='';
+		   var thisentry = $(this).parent().parent().find('td > a').text();
+		   var confirmed = confirm("Mark for Rerun\n"+thisentry);
+		   if (confirmed) {
+		      	$.ajax({
+		        	url: "/ajax",
+		        	type: "POST",
+		        	dataType: "json",
+		        	data : {"action":"queue-rerun","entry":'exist:<%= $corpus_name %>/'+thisentry},
+		        	cache: false,
+		        	success: function(response) { 
+		                alert (response.message);
+		                window.location.reload(true); }
+		    	});
+			}
+		});
+	},
+	function(){
+		$('.entry-rerun-button').remove();
+		//$('.view-button').remove();
+	});
+});
+<% end %>
+<div>
+<h3>Detailed report</h3>
+<table class="summary-table"><thead><th>Selected Entries</th><th><button class="back-to-status-button">Back to Status</button><button class="rerun-button">Rerun Selection</button></th></thead><tbody>
+<tr class="hover-row "><td>Corpus</td><td><b><%= $corpus_name %></b></td></tr>
+% if ($severity) {
+<tr class="hover-row "><td>Severity</td><td><b><%= $severity %></b></td></tr>
+% }
+% if ($category) {
+<tr class="hover-row "><td>Category</td><td><b><%= $category %></b></td></tr>
+% }
+% if ($what) {
+<tr class="hover-row "><td>What</td><td><b><%= $what %></b></td></tr>
+% }
+</tbody></table>
+<table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th>Report Details</th></thead><tbody><tr class="hover-row entry-row">
+% my $i = 0;
+% for my $entry (@$entries) {
+ <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td><td><a href="<%= $entry->[2] %>" target="_exist"><%= $entry->[0] %></a></td><td><%= $entry->[1] %></td></tr>
+% }
+</tbody><table>
+% my $start = 0;
+% while ($start<=$count) {
+%  if ($start == $from) {
+[<%= $start %>]
+%  } else {
+<a href='/retval_detail?from=<%= $start %>&amp;limit=<%= $limit %>&amp;component=<%= $component %>'>[<%= $start %>]</a>
+%  }
+% $start+=$limit;
+%}
+</div>

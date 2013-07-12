@@ -1,0 +1,171 @@
+#!/usr/bin/perl
+# /=====================================================================\ #
+# |  CorTeX Framework                                                   | #
+# | Gears - Scheduler and Gearman Client                                | #
+# |=====================================================================| #
+# | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
+# |  Research software, produced as part of work done by:               | #
+# |  the KWARC group at Jacobs University                               | #
+# | Copyright (c) 2012                                                  | #
+# | Released under the GNU Public License                               | #
+# |---------------------------------------------------------------------| #
+# | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
+# | http://kwarc.info/people/dginev                            (o o)    | #
+# \=========================================================ooo==U==ooo=/ #
+use strict;
+use warnings;
+use Encode;
+
+use File::Basename;
+my ($FILE_BASE,$libdir);
+BEGIN {
+    $FILE_BASE = dirname(__FILE__);
+    $libdir = $FILE_BASE."/lib";
+}
+if (-d $libdir) {
+  use lib $libdir;
+}
+
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+{
+  local $SIG{'INT'} = \&stop_all; # Interrupt handler
+  local $SIG{'HUP'} = \&stop_all; # Apache Hangup handler
+  local $SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
+
+  my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
+  my $Cache={ children=> [] };  # Mock Object ?
+
+  while (1) {
+    my $init_backend_needed = 0;
+    my $db_handle = db_file_connect;
+    my $sesame_url = $db_handle->{sesame_url};
+    my $exist_url = $db_handle->{exist_url};
+    $Cache->{proxy_url} = $db_handle->{proxy_url};
+    $Cache->{converters} = [ split("\n", $db_handle->{converter_urls}||'') ];
+    db_file_disconnect($db_handle);
+    if ((! defined $Cache->{exist_url}) || ($Cache->{exist_url} ne $exist_url)) {
+      $init_backend_needed = 1;
+      $Cache->{exist_url} = $exist_url;
+    }
+    if ((! defined $Cache->{sesame_url}) || ($Cache->{sesame_url} ne $sesame_url)) {
+      $init_backend_needed = 1;
+      $Cache->{sesame_url} = $sesame_url;
+    }
+    if ($init_backend_needed) {
+      $Cache->{backend} = CorTeX::Temporal::Backend->new(exist_url=>$exist_url,sesame_url=>$sesame_url);
+    }
+    my $sesame = $Cache->{backend}->sesame;
+
+    # Is there a repository we can work with?
+    my $repo_size = $sesame->repository_size($MAIN_REPOS);
+    if ($repo_size && ($repo_size != -1)) {
+      # Anything left in limbo? (i.e. priority -1). If so, update it to 1.
+      $sesame->mark_limbo_entries_queued({graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+      # Check if unprocessed entries remain to be converted
+      if ($sesame->count_entries($MAIN_REPOS,'queued')) {
+        # Also, retrieve corpus type, so that we optimize for single-file corpora (ZBL, PlanetMath):
+        my $entry_type = $sesame->get_entry_type($MAIN_REPOS);
+        $Cache->{entry_type} = $entry_type;
+        # Boot conversion jobs, if none are present:
+        spawn_conversion_workers($Cache) unless (@{$Cache->{children}} > 0);
+        # Otherwise, we still need to process some files... so nothing extra to do
+      } else {
+        # Everything seems done!
+        # Stop all converters after their jobs are done and sleep
+        stop_conversion_workers($Cache);
+      }
+    }
+    else {
+      stop_conversion_workers($Cache);
+    }
+
+    sleep 60;
+  }
+
+  sub spawn_conversion_workers {
+    my ($cache) = @_;
+    my @converters = @{$cache->{converters}};
+    my $query_size = scalar(@converters);
+    while (@converters) {
+      # Fork a job for each one!
+      my $c = shift @converters;
+      my $pid = fork();
+      if ($pid == 0) {
+        use CorTeX::Frontal::CronBuilder;
+        my $cron_builder = CorTeX::Frontal::CronBuilder->new(main_repos=>$MAIN_REPOS,
+                                                         meta_graph=>$META_GRAPH,
+                                                         build_system_url=>$BUILD_SYSTEM_URL,
+                                                         backend=>$Cache->{backend},
+                                                         proxy_url=>$Cache->{proxy_url},
+                                                         entry_type=>$Cache->{entry_type},
+                                                         converter=>$c,
+                                                         query_size=>$query_size);
+        $cron_builder->start;
+      } else {
+        print STDERR "Started process $pid\n";
+        push @{$cache->{children}}, $pid;
+      }
+    }
+  }
+
+  sub stop_all {
+    stop_conversion_workers($Cache);
+    exit 0;
+  }
+
+  sub stop_conversion_workers {
+    my ($cache) = @_;
+    stop_cron_job($_) foreach @{$cache->{children}};
+    $cache->{children} = [];
+  }
+
+  sub stop_cron_job {
+    my ($pid) = @_;
+    # Send a SIGINT to the cron job
+    kill 2, $pid;
+    waitpid($pid,0);
+  }
+}
+
+__END__
+
+=pod 
+
+=head1 NAME
+
+C<cortex-gears> - Scheduler of the CorTeX framework
+
+=head1 SYNOPSIS
+
+TODO
+
+=head1 DESCRIPTION
+
+TODO
+
+=head1 Gearman Installation
+
+Under Debian-based systems:
+ sudo apt-get install
+   gearman
+   gearman-job-server
+   gearman-tools
+   gearman-server
+   mod-gearman-tools
+   libgearman-client-async-perl
+   libmodule-install-xsutil-perl
+   libgearman-dev
+
+   cpan Gearman::XS::Client
+   cpan Gearman::XS::Worker
+=head1 AUTHOR
+
+Deyan Ginev <d.ginev@jacobs-university.de>
+
+=head1 COPYRIGHT
+
+ Research software, produced as part of work done by 
+ the KWARC group at Jacobs University Bremen.
+ Released under the GNU Public License
+
+=cut

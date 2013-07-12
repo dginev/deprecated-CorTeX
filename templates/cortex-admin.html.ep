@@ -1,0 +1,93 @@
+% layout 'cortex-default';
+% title 'CorTeX Framework - Main Administrative Interface';
+<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
+<%= javascript 'js/external/jquery.min.js' %>
+<%= javascript 'js/external/jquery-ui.min.js' %>
+<%= javascript begin %>
+    $(document).ready(function() {
+        $("#accordion").accordion();
+        $("#add-converter-input-field").click(function() {
+            var newid = $('#converter-table tr').length;
+            $("#converter-table-submit-tr").before("<tr><td>Converter URL "+newid+"</td><td class=\"input\"><input name=\"converter-urls\" size=\"50\" value=\"\"></td></tr>");
+            $("#accordion").accordion("resize");
+        });
+
+	$("form").each(function(c, obj) {
+	    $(obj).attr("action", '');
+	    $(obj).submit(function(event) {
+		event.preventDefault;
+		$.ajax ({
+		    url: "/ajax",
+		    type: "POST",
+		    dataType: "json",
+		    data: $(this).serialize(),
+		    success: function(response) {
+			$("#message").html("<p><br><b>"+response.message+"</b><br></p>");
+		    }
+		});
+		return false;
+	    });
+	});
+    });
+<% end %>
+<div style="text-align:center;" id="message"></div>
+<h1>Admin Interface</h1>
+<div class="ui-accordion ui-widget ui-helper-reset" id="accordion">
+  <h3><a href="#">Register Databases</a></h3>
+  <div class="itemcontent"><%= form_for '' => begin %>
+    <table class="form-table">
+      <tr><td>eXist Host</td><td class="input"><%= text_field 'exist-url' => (value=>$current_exist_url, size=>50) %></td></tr>
+      <tr><td>Sesame Host</td><td class="input"><%= text_field 'sesame-url' => (value=>$current_sesame_url,size=>50) %></td></tr>
+      <tr><td></td><td><%= submit_button 'Register Databases' %></td></tr>
+    </table>
+    <%= hidden_field action => 'register-databases' %>
+   <% end %>
+   </div>
+
+<h3><a href="#">Register Converters</a></h3>
+<div class="itemcontent"><%= form_for '' => begin %>
+  <table id="converter-table" class="form-table">
+    <% my $i=1; foreach my $converter_url (@$current_converter_urls) { %>
+    <tr><td>Converter URL <% $i; %></td><td class="input"><%= text_field "converter-urls" => (value=>$converter_url, size=>50) %></td></tr>
+    <% $i++; } %>
+    <tr id="converter-table-submit-tr"><td> <a id="add-converter-input-field" href="#">Add more</a></td><td><%= submit_button 'Register Converters' %></td></tr>
+</table>
+<%= hidden_field action => 'register-converters' %>
+<% end %>
+</div>
+<h3><a href="#">Register HTTP Proxy</a></h3>
+  <div class="itemcontent"><%= form_for '' => begin %>
+    <table class="form-table">
+      <tr><td>HTTP Proxy</td><td class="input"><%= text_field "http-proxy" => (value=>$current_proxy_url,size=>50) %></td></tr>
+      <tr><td></td><td><%= submit_button 'Register Proxy' %></td></tr>
+    </table>
+    <%= hidden_field action => 'register-proxy' %>
+   <% end %>
+   </div>
+
+
+<h3><a href="#">Add Corpus</a></h3>
+<div class="itemcontent">
+  <%= form_for '' => begin %>
+  <table class="form-table">
+    <tr><td>Path</td><td class="input"><%= text_field 'path' => (value=>'/path/to/corpus',size=>50) %></td></tr>
+    <tr><td>Size Limit</td><td class="input"><%= text_field
+						 'upper-bound' => (value=>'0',size=>50) %></td></tr>
+    <tr><td>Entry setup</td><td class="input">
+      <%= select_field 'entry-setup' => [['Single TeX file'=>'simple'],['Complex TeX setup'=>'complex']], class=>'styled-select' %>
+    </td></tr>
+    <tr><td>Overwrite</td><td class="input"><%= check_box
+						'overwrite' => (value=>'1') %></td></tr>
+    
+    <tr><td></td><td><%= submit_button 'Add Corpus' %></td></tr>
+  </table>
+  <%= hidden_field action => 'add-corpus' %>
+  <% end %>
+</div>
+
+<h3><a href="#">Server Status</a></h3>
+<div>
+<a href="status">Visit status page</a>
+</div>
+
+</div>

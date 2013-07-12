@@ -1,0 +1,414 @@
+#!/usr/bin/perl
+# /=====================================================================\ #
+# |  CorTeX Framework                                                   | #
+# | Frontend - Mojo web server & interface                            | #
+# |=====================================================================| #
+# | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
+# |  Research software, produced as part of work done by:               | #
+# |  the KWARC group at Jacobs University                               | #
+# | Copyright (c) 2012                                                  | #
+# | Released under the GNU Public License                               | #
+# |---------------------------------------------------------------------| #
+# | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
+# | http://kwarc.info/people/dginev                            (o o)    | #
+# \=========================================================ooo==U==ooo=/ #
+use strict;
+use warnings;
+use Encode;
+
+use HTML::Entities;
+use File::Basename 'dirname';
+use File::Spec::Functions 'catdir';
+my ($libdir, $cortexgears);
+my $FILE_BASE;
+BEGIN {
+    $FILE_BASE = dirname(__FILE__);
+    $cortexgears = $FILE_BASE.'/cortex-gears';
+    $libdir = catdir($FILE_BASE,"lib");
+}
+if (-d $libdir) {
+  use lib $libdir;
+}
+use feature qw(switch);
+
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+# TODO: Make this customizable from the interface (if that makes sense?)
+our $MAIN_REPOS = 'buildsys';
+our $META_GRAPH = 'meta';
+our $BUILD_SYSTEM_URL = 'http://buildsys.mathweb.org';
+our $cron_job_pid;
+
+# TODO: Rethink where the Cron Builder / Gears Client belongs
+# # 1. First Fork a Cron Builder
+# $SIG{CHLD} = 'IGNORE'; # Let them die!
+# $SIG{'INT'} = \&stop_cron; # Interrupt handler
+# $SIG{'HUP'} = \&stop_cron; # Apache Hangup handler
+# $SIG{'KILL'} = \&stop_cron; # Just good-old KILL handler
+# my $dbhandle = db_file_connect;
+# my $saved_pid = $dbhandle->{cron_job_pid};
+# db_file_disconnect($dbhandle);
+# my $alive = ($saved_pid && (kill 0, $saved_pid));
+# if (!$alive) { # Non booted, start a new one:
+#   $cron_job_pid = fork();
+#   if ($cron_job_pid == 0) {
+#     exec($cortexgears,$MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL);
+#   }
+#   $dbhandle = db_file_connect;
+#   $dbhandle->{cron_job_pid} = $cron_job_pid;
+#   db_file_disconnect($dbhandle);
+# }
+# sub stop_cron {
+#   if ($cron_job_pid) {
+#     kill 2, $cron_job_pid;
+#     waitpid($cron_job_pid,0);
+#   }
+#   exit 0;
+# }
+#print STDERR "Kill it? at $cron_job_pid\n";
+#stop_cron_job($cron_job_pid);
+
+# 2. Now start the web server
+use Mojolicious::Lite;
+use CorTeX::Import;
+use CorTeX::Backend;
+use Data::Dumper;
+
+our $version = '0.1';
+
+push @{app->renderer->paths}, catdir($FILE_BASE, 'templates');
+push @{app->static->paths},   catdir($FILE_BASE, 'public');
+$ENV{MOJO_HOME} = $FILE_BASE;
+$ENV{MOJO_MAX_MESSAGE_SIZE} = 10485760; # 10 MB file upload limit
+$ENV{MOJO_REQUEST_TIMEOUT} = 60;# 1 minute;
+$ENV{MOJO_CONNECT_TIMEOUT} = 6; # 0.1 minute
+$ENV{MOJO_INACTIVITY_TIMEOUT} = 60; # 1 minute;  
+
+# Make signed cookies secure
+app->secret('TiX TeX');
+
+get '/' => sub {
+  my $self = shift;
+  return $self->redirect_to('login') unless $self->session('name');
+  $self->redirect_to('status');
+};
+
+get '/admin' => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect;
+  $self->stash(current_exist_url=>$dbfile->{exist_url});
+  $self->stash(current_sesame_url=>$dbfile->{sesame_url});
+  $self->stash(current_proxy_url=>$dbfile->{proxy_url});
+  $self->stash(current_converter_urls=>
+    $dbfile->{converter_urls} ? [split("\n",$dbfile->{converter_urls})] : []);
+  db_file_disconnect($dbfile);
+  $self->render;
+} => 'cortex-admin';
+
+get '/status' => sub {
+  my $self = shift;
+  return $self->redirect_to('login') unless $self->session('name');
+  $self->render;
+} => 'cortex-status';
+
+helper verify_user => sub {
+  my ($self,$name,$pass)=@_;
+  # TODO: Stub, admin:admin is the hardcoded test
+  return 'admin' if (($name eq $pass) && ($name eq 'admin'));
+};
+
+get '/login' => sub {
+  my $self = shift;
+  my $name = $self->param('name') || '';
+  my $pass = $self->param('pass') || '';
+  return $self->render
+    unless ($self->verify_user($name, $pass) eq 'admin');
+  $self->session(name => $name);
+  $self->flash(message => "Thanks for logging in $name!");
+  $self->redirect_to('status');
+} => 'cortex-login';
+
+get '/logout' => sub {
+  my $self = shift;
+  $self->session(expires => 1);
+  $self->flash(message => "Successfully logged out!");
+  $self->redirect_to('login');
+};
+
+post '/ajax' => sub {
+  my $self=shift;
+  return $self->redirect_to('login') unless $self->session('name');
+  my $action = $self->param('action');
+  given ($action) {
+    when ('add-corpus') { $self->add_corpus; }
+    when ('delete-corpus') {} #TODO
+    when ('register-proxy') { $self->register_proxy; }
+    when ('register-databases') { $self->register_databases; }
+    when ('register-converters') { $self->register_converters; }
+    when ('status-report') { $self->status_report; }
+    when ('queue-rerun') { $self->queue_rerun; }
+    default {$self->render(json=>{message=>"Unrecognized action!"});}
+  }
+};
+
+get '/retval_detail' => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
+        sqlpass=>'cortex');
+  db_file_disconnect($dbfile);
+  my $corpus_name = $backend->sesame->get_corpus_name($MAIN_REPOS);
+  my $component = [ split(/:/, $self->param('component')) ];
+  # 3 items max, slurp anything that follows:
+  $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
+  $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
+  my $from = $self->param('from') || 0;
+  my $limit = $self->param('limit') || 100;
+  my $entries = $backend->sesame->get_custom_entries({severity=>$component->[1],category=>$component->[2],
+                                                      what=>$component->[3],from=>$from,limit=>$limit,
+                                                      repository=>$MAIN_REPOS, graph=>$META_GRAPH});
+  $self->stash(severity=>$component->[1]);
+  $self->stash(category=>$component->[2]);
+  $self->stash(what=>$component->[3]);
+  $self->stash(entries=>$entries);
+  $self->stash(corpus_name=>$corpus_name);
+
+  # Prepare exploration links:
+  my $count;
+  if ($component->[1] ne 'ok') {
+    my $whats = $backend->sesame->get_result_summary($MAIN_REPOS,$component->[1],$component->[2]);
+    $count = $whats->{$component->[3] ? $component->[3] : $component->[2]};
+  } else {
+    my $whats = $backend->sesame->get_result_summary($MAIN_REPOS);
+    $count = $whats->{$component->[1]};
+  }
+  $self->stash(count=>$count);
+  $self->stash(limit=>$limit);
+  $self->stash(from=>$from);
+  $self->stash(component=>$self->param('component'));
+  $self->render;
+} => 'cortex-retval-detail';
+
+# CONVENTION: !!!
+# Parameters use dashes, any Perl-based variables use underscores !!!
+# otherwise, all kinds of confusion + headaches come in
+helper register_proxy => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect;
+  $dbfile->{proxy_url} = $self->param('http-proxy') if defined $self->param('http-proxy');
+  db_file_disconnect($dbfile);
+  $self->render(json=>{message=>"New Proxy URL registered!"});
+};
+helper register_databases => sub {
+  my $self = shift;
+  my $backend = CorTeX::Backend->new(exist_url=>$self->param('exist-url'),sesame_url=>$self->param('sesame-url'));
+  if (! $backend->exist) {
+    $self->render(json=>{message=>"eXist URL fails to connect, registration cancelled."});}
+  elsif (! $backend->sesame) {
+    $self->render(json=>{message=>"Sesame URL fails to connect, registration cancelled."});}
+  else {
+    my $dbfile = db_file_connect;
+    $dbfile->{exist_url} = $self->param('exist-url') if defined $self->param('exist-url');
+    $dbfile->{sesame_url} = $self->param('sesame-url') if defined $self->param('sesame-url');
+    db_file_disconnect($dbfile);
+    $self->render(json=>{message=>"New Database URLs registered!"});
+  }
+};
+helper register_converters => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect;
+  my @urls = grep (length($_)>0, $self->param('converter-urls'));
+  $dbfile->{converter_urls} = join("\n",@urls);
+  db_file_disconnect($dbfile);
+  $self->render(json=>{message=>"Converter URLs registered!"});
+};
+
+
+helper add_corpus => sub {
+  my ($self) = @_;
+  # Import a new corpus from the $path
+  my $path = $self->param('path');
+  my $overwrite = $self->param('overwrite');
+  if (! -d $path) {
+    $self->render(json=>{message=>"Please enter a valid file path to the corpus!"});
+    return;
+  }
+  my $dbfile = db_file_connect();
+  my $exist_url = $dbfile->{exist_url};
+  my $sesame_url = $dbfile->{sesame_url};
+  db_file_disconnect($dbfile);
+  if (! $exist_url) {
+    $self->render(json=>{message=>"Please enter the eXist URL!"}); 
+    return;
+  }
+  my $upper_bound = $self->param('upper-bound');
+  my $entry_setup = $self->param('entry-setup');
+  my $importer = CorTeX::Import->new(root=>$path,verbosity=>1, 
+					  upper_bound=>$upper_bound,
+					  exist_url=>$exist_url,
+            overwrite=>$overwrite,
+					  main_repos=>$MAIN_REPOS,
+					  meta_graph=>$META_GRAPH,
+					  build_system_url=>$BUILD_SYSTEM_URL,
+            entry_setup=>$entry_setup,
+					  sesame_url=>$sesame_url);
+  while ($importer->process_next) {}
+
+  my $message="Successfully Imported $path";
+  $message .= ", capped at $upper_bound entries" if ($upper_bound && ($upper_bound>0));
+  $self->render(json => {message => $message});
+};
+
+helper status_report => sub {
+  my ($self) = @_;
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+    sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
+    sqlpass=>'cortex');
+  my $pid = $dbfile->{cron_job_pid};
+  db_file_disconnect($dbfile);
+  # 1. Acquire statistical data:
+  my $corpus_name = $backend->sesame->get_corpus_name($MAIN_REPOS);
+
+  my $queued_entries = $backend->sesame->count_entries($MAIN_REPOS,'queued');
+  my $reserved_entries = $backend->sesame->count_entries($MAIN_REPOS,'reserved');
+  my $all_entries = $backend->sesame->count_entries($MAIN_REPOS,'all');
+  my $ok_entries = $backend->sesame->count_entries($MAIN_REPOS,'ok');
+  my $warning_entries = $backend->sesame->count_entries($MAIN_REPOS,'warning');
+  my $error_entries = $backend->sesame->count_entries($MAIN_REPOS,'error');
+  my $fatal_entries = $backend->sesame->count_entries($MAIN_REPOS,'fatal');
+  
+  my $done_entries = $ok_entries + $warning_entries + $error_entries + $fatal_entries;
+  my $alive = ($queued_entries && $pid && (kill 0, $pid));
+
+  # 2. Prepare report:
+  # 2.1 General report:
+  my $component = [ split(/:/, $self->param('component')) ];
+  # 3 items max, slurp anything that follows:
+  $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
+  $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
+  my $severity = $component->[1];
+  my $category = $component->[2];
+  my $what = $component->[3];
+  my $report_message=q{};
+  if ($component->[0] eq 'general') {
+    my $General_Report = [];
+    push @$General_Report, ["Corpus", "<b>".$corpus_name."</b>"];
+    push @$General_Report, [ "State", $alive ? ('<span class="ok">running</span>') :
+                                       ('<span class="fatal">stopped</span>') ];
+    push @$General_Report, [ "Total entries", $all_entries ];
+    push @$General_Report, [ "Queued", $queued_entries ];
+    push @$General_Report, [ "Currently processing...", $reserved_entries ];
+    #  push @$General_Report, [ "Concurrent jobs", $job_count ];
+    $report_message = '<table class="summary-table"><thead><th>General</th><th>Status</th></thead><tbody><tr class="hover-row ">';
+    $report_message .= join ("</tr><tr class='hover-row'>", map {"<td>".join("</td><td>", @$_)."</td>"} @$General_Report );
+    $report_message .="</tr></tbody></table>";
+    # 2.2 Results report:
+    my $Results_Report = {};
+    if ($done_entries) {
+      $Results_Report->{ok}->{count} = $ok_entries;
+      $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$ok_entries.'</span>',
+        '<span class="ok severity">'.sprintf("%.2f",(100*$ok_entries / $done_entries)).'</span>'];
+      $Results_Report->{warning}->{count} = $warning_entries;
+      $Results_Report->{warning}->{main} = ['<span class="warning severity">Warning</span>','<span class="warning severity">'.$warning_entries.'</span>',
+        '<span class="warning severity">'.sprintf("%.2f",(100*$warning_entries / $done_entries)).'</span>'];
+      $Results_Report->{error}->{count} = $error_entries;
+      $Results_Report->{error}->{main} = ['<span class="error severity">Error</span>','<span class="error severity">'.$error_entries.'</span>',
+        '<span class="error severity">'.sprintf("%.2f",(100*$error_entries / $done_entries)).'</span>'];
+      $Results_Report->{fatal}->{count} = $fatal_entries;
+      $Results_Report->{fatal}->{main} = ['<span class="fatal severity">Fatal</span>','<span class="fatal severity">'. $fatal_entries.'</span>',
+        '<span class="fatal severity">'.sprintf("%.2f",(100*$fatal_entries / $done_entries)).'</span>'];
+
+      if ($severity) {
+        my $categories = $backend->sesame->get_result_summary($MAIN_REPOS,$severity);
+        $categories = { map {encode_entities($_)=>$categories->{$_}} (keys %$categories) };
+        foreach (keys %$categories) {
+          $Results_Report->{$severity}->{inner}->{$_}->{count} = $categories->{$_};
+          $Results_Report->{$severity}->{inner}->{$_}->{main} =  ['<span class="'.$_.' category">'.$_.'</span>','<span class="'.$_.' category">'.$categories->{$_}.'</span>',
+          '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $done_entries)).'</span>'];
+        }
+        if ($category) {
+          my $whats = $backend->sesame->get_result_summary($MAIN_REPOS,$severity,$category);
+          $whats = { map {encode_entities($_)=>$whats->{$_}} (keys %$whats) };
+          foreach (keys %$whats) {
+            $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{count} = $whats->{$_};
+            $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{main} =  ['<span class="'.$_.' what">'.$_.'</span>','<span class="'.$_.' what">'.$whats->{$_}.'</span>',
+            '<span class="'.$_.' what">'.sprintf("%.2f",(100*$whats->{$_} / $done_entries)).'</span>'];
+          }
+        }
+      }
+    }
+    $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>Count</th><th>%</th></thead><tbody>';
+    $report_message .= $self->inner_report_message($Results_Report);
+    $report_message .="</tbody></table>";
+    $report_message .="<br></br>";
+  }
+
+  $self->render(json => {alive=>$alive,report=>$report_message});
+};
+
+helper inner_report_message => sub {
+  my ($self,$hashref) = @_;
+  my $report = q{};
+  foreach my $key(sort {$hashref->{$b}->{count} <=> $hashref->{$a}->{count}} keys %$hashref) {
+    $report .= "<tr class='stats-row hover-row'><td>".join("</td><td>", @{$hashref->{$key}->{main}})."</td></tr>";
+    if ($hashref->{$key}->{inner}) {
+      # There is inner content, we need a subtable:
+      $report.="<tr><td colspan='3'><table class='inner-table'><tbody>".$self->inner_report_message($hashref->{$key}->{inner})."</tbody></table></td></tr>";
+    }
+  }
+  $report;
+};
+
+helper queue_rerun => sub {
+  my ($self) = @_;
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
+        sqlpass=>'cortex');
+  db_file_disconnect($dbfile);
+  if ($self->param('entry')) {
+    # We only want a single entry here;
+    my $queued_success = $backend->sesame->mark_entry_queued({priority=>'1',entry=>$self->param('entry'),graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
+  } else {
+    my $component = [ split(/:/, $self->param('component')) ];
+    # 3 items max, slurp anything that follows:
+    $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
+    $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
+    my $queued_success = $backend->sesame->mark_custom_entries_queued(
+      {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
+        graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
+  }
+};
+
+app->start;
+
+__END__
+
+=pod 
+
+=head1 NAME
+
+C<cortex-frontend> - Mojolicious web server for the CorTeX framework
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 SEE ALSO
+
+L<cortex-gears>
+
+=head1 AUTHOR
+
+Deyan Ginev <d.ginev@jacobs-university.de>
+
+=head1 COPYRIGHT
+
+ Research software, produced as part of work done by 
+ the KWARC group at Jacobs University Bremen.
+ Released under the GNU Public License
+
+=cut

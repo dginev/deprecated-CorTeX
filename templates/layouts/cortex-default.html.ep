@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title><%= title %></title>
+    <style type="text/css">
+      html, body {height: 100%;}
+
+      #wrap {min-height: 100%;}
+
+      #main {overflow:auto;
+      margin-left: 40px;
+      padding-bottom: 150px;}  /* must be same height as the footer */
+
+      #footer {position: relative;
+      border-top: 1px solid #B2BEB5;
+      margin-top: 0px; /* negative value of footer height */
+      height: 150px;
+      clear:both;} 
+
+      /*Opera Fix*/
+      body:before {
+      content:"";
+      height:100%;
+      float:left;
+      width:0;
+      margin-top:-32767px;/
+      }
+
+      span.ok { color:green; }
+      span.fatal { color:red; }
+      span.error { color:orange; }
+      span.warning { color:SeaGreen; }
+      table.summary-table
+      {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 14px;
+	margin-bottom: 45px;
+	width: 600px;
+	text-align: left;
+	border-collapse: collapse;
+      }
+      table.inner-table
+      {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+  font-size: 14px;
+  margin: 2px;
+  width: 600px;
+  text-align: left;
+  border-collapse: collapse;
+      }
+      table.summary-table th
+      {
+	font-size: 15px;
+	font-weight: normal;
+	padding: 8px;
+  width: 200px;
+	background: #b9c9fe;
+	border-top: 4px solid #aabcfe;
+	border-bottom: 1px solid #fff;
+	color: #039;
+      }
+      table.summary-table td
+      {
+	padding: 8px;
+	background: #e8edff; 
+	border-bottom: 1px solid #fff;
+	color: #669;
+  width: 200px;
+  vertical-align: middle;
+	border-top: 1px solid transparent;
+      }
+  tr.hover-row:hover td
+  {
+   background: #d0dafd;
+   color: #339;
+  }
+
+.ui-button .ui-button-text
+{
+ line-height: 0.3 !important;
+}
+
+
+.cogs-background 
+{
+  background-color:white;
+  background-image:url('img/gear000_02db.gif');
+  background-position:right;
+  background-repeat:no-repeat;
+} 
+.no-background {
+  background-color:white;
+  background-image: none !important;
+  background-repeat:no-repeat;
+}
+
+.styled-select {
+   background: transparent;
+   width: 268px;
+   padding: 5px;
+   font-size: 16px;
+   border: 1px solid #ccc;
+   height: 34px;
+}
+
+    </style>
+  </head>
+  
+  <body id="index" class="home">
+    <h1 style="text-align: center">CorTeX Framework</h1>
+    <div id="wrap">
+      <div id="main">
+	<%= content %>
+      </div>
+    </div>
+    <div id="footer">
+      <p style="float:left; text-align:left;">
+        <a href="https://github.com/dginev/CorTeX/wiki"><img alt="CorTeX Framework Documentation" title="CorTeX Framework Documentation" height="70" src="img/cogsinfo.jpg"/></a>
+        <a href="http://trac.kwarc.info/lamapun/wiki"><img alt="The LaMaPUn Project" title="The LaMaPUn Project" height="70" src="img/lamapunicon2.jpg"/></a>
+        <a href="https://github.com/dginev/CorTeX/issues/new"><img title="Report a Bug" alt="Report a Bug" width="70" height="70" src="img/cogbug.png"/></a>
+      </p>
+      <% if (my $name = session 'name' ) { %>
+      <p style="float:right; text-align:right;">logged in as <b><%= $name %></b><br/> <a href="/logout">Logout</a></p>
+      <% } %>
+    </div>
+  </body>
+</html>
