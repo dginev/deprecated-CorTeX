@@ -43,5 +43,13 @@ I.3 MySQL -- SQL Database
   create index statusidx on tasks (status);
   Ctrl+D
 
+II. Configure Server settings
+
+II.1. Tomcat memory
+  at /usr/share/tomcat6/bin/catalina.sh
+    after the last "JAVA_OPTS=" setter, add
+
+    JAVA_OPTS="$JAVA_OPTS -Xms3072m -Xmx3072m -XX:NewSize=512m -XX:MaxNewSize=512m
+     -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+DisableExplicitGC"
 
   

@@ -119,9 +119,6 @@ sub _recover_cache {
   }
 }
 
-1;
-__END__
-
 ### API for Initializing a SQLite Database:
 sub reset_db {
   my ($self) = @_;
@@ -156,6 +153,7 @@ sub reset_db {
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
   }
+  return;
 }
 
 # API Layer
@@ -163,11 +161,13 @@ sub reset_db {
 sub delete_corpus {
   my ($self,$corpus) = @_;
   print STDERR "Deleting corpus $corpus from SQL\n";
+  return;
 }
 
 sub add_corpus {
   my ($self,$corpus) = @_;
   print STDERR "Adding corpus $corpus from SQL\n";
+  return;
 }
 
 
