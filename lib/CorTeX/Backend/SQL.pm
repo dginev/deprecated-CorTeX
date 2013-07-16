@@ -167,21 +167,34 @@ sub reset_db {
 sub delete_corpus {
   my ($self,$corpus) = @_;
   return unless ($corpus && (length($corpus)>0));
-  my $sth = $self->prepare("DELETE FROM tasks WHERE corpus=?");
-  $sth->execute($corpus); 
-  return;
+  return $self->purge(corpus=>$corpus);
 }
 
-sub queue_task {
+sub queue {
   my ($self,%options) = @_;
-  # TODO: Continue...
-  return;
+  # Note: The two "status" lookups are not a typo, we need both to have the "on duplicate" clause set:
+  my @fields = grep {defined && (length($_)>0)} map {$options{$_}} qw/corpus entry service status status/;
+  return unless scalar(@fields) == 5; # Exactly 5 data points to queue
+  my $sth = $self->prepare("INSERT INTO tasks (corpus,entry,service,status) VALUES (?,?,?,?) 
+    ON DUPLICATE KEY UPDATE status=?;");
+  $sth->execute(@fields);
+  $sth->finish();
+  return 1;
 }
 
-sub purge_task {
+sub purge {
   my ($self,%options) = @_;
-  # TODO: Continue...
-  return;
+  my $entry = $options{entry} ? "entry=?" : "";
+  my $corpus = $options{corpus} ? "corpus=?" : "";
+  my $service = $options{service} ? "service=?" : "";
+  my $status = $options{status} ? "status=?" : "";
+  my @fields = grep {length($_)>0} ($entry,$corpus,$service,$status);
+  return unless @fields;
+  my $where_clause = join(" AND ",@fields);
+  my $sth = $self->prepare("DELETE FROM tasks WHERE ".$where_clause.";");
+  $sth->execute(grep {defined} map {$options{$_}} qw/entry corpus service status/);
+  $sth->finish();
+  return 1;
 }
 
 1;
@@ -197,16 +210,19 @@ C<CorTeX::Backend::SQL> - DBI interface for CorTeX::Backend
 =head1 SYNOPSIS
 
   use CorTeX::Backend;
-  # Class-tuning API
   $backend=CorTeX::Backend->new(sqluser=>'cortex',sqlpass=>'cortex',sqldbname=>"cortex",
     sqlhost=>"localhost", sqldbms=>"mysql", verbosity=>0|1,);
+
   # Directly access the CorTeX::Backend::SQL object as $db 
   $db = $backend->sql;
-  # Methods
+
+  # Low-level Methods
   $connection_alive = $db->ping;
   $statement_handle = $db->prepare('DBI sql statement');
   $db->execute('DBI sql statement');
   $disconnect_successful = $db->done;
+
+  # CorTeX API
 
 =head1 DESCRIPTION
 
@@ -258,6 +274,35 @@ Disconnects from the backend and destroys the L<DBI> handle.
 
 Cached preparation of SQL statements. Internally uses the F<safe> adverb, to ensure robustness.
   Each SQL query and its L<DBI> statement handle is cached, to avoid multiple prepare calls on the same query string.
+
+=back
+
+=head2 CorTeX API
+
+=over 4
+
+=item C<< my $success = $db->queue(corpus=>$corpus,entry=>$entry,service=>$service,status=>$status); >>
+
+All four input parameters are mandatory.
+
+Updates the status of the given corpus:entry and service.
+Legend:
+
+=over 8
+
+=item 0: Ready for processing
+
+=item -1: Completed
+
+=item -2: Unmet prerequisites
+
+=item >0: Dispatched for processing, the number is typically the Gearman Job ID
+
+=back
+
+=item C<< my $success = $db->purge(corpus=>$corpus,entry=>$entry,service=>$service,status=>$status); >>
+
+Provide at least one of the four input parameters to purge the respective subset of the tasks table.
 
 =back
 

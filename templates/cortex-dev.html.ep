@@ -1,0 +1,76 @@
+% layout 'cortex-default';
+% title 'CorTeX Framework - Main Developer Interface';
+<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
+<%= javascript 'js/external/jquery.min.js' %>
+<%= javascript 'js/external/jquery-ui.min.js' %>
+<%= javascript begin %>
+  $(document).ready(function() {
+    $("#accordion").accordion();
+    $("#service-name,#service-version").keyup(function () {
+      // Grab both fields and set service-id
+      var name = $("#service-name").val();
+      var version = $("#service-version").val();
+      var id = name+" v"+version;
+      id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
+      id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
+      $("#service-id").text(id);
+    });
+
+  	$("form").each(function(c, obj) {
+  	  $(obj).attr("action", '');
+  	  $(obj).submit(function(event) {
+  		  event.preventDefault;
+  		  $.ajax ({
+  		    url: "/ajax",
+  		    type: "POST",
+  		    dataType: "json",
+  		    data: $(this).serialize(),
+  		    success: function(response) {
+  		      $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
+  		    }
+  		  });
+  		  return false;
+  	  });
+    });
+  });
+<% end %>
+<div style="text-align:center;" id="message"></div>
+<h1>Developer Interface</h1>
+<div class="ui-accordion ui-widget ui-helper-reset" id="accordion">
+  <h3><a href="#">Register Service</a></h3>
+  <div class="itemcontent"><%= form_for '' => begin %>
+    <table class="form-table">
+      <tr><td>Name</td><td class="input"><%= text_field 'service-name' => (value=>'',size=>50,id=>'service-name') %></td></tr>
+      <tr><td>Version</td><td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>50,id=>'service-version') %></td></tr>
+      <tr><td>Internal ID<td class="input"><span id="service-id">foo</span></td></tr>
+      <tr><td>Requires</td><td class="input">
+        TODO
+      </td></tr>
+      <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>50) %></td></tr>
+      <tr><td>XPath selector</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
+      <tr><td>Type</td><td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>'annalysis'],['Conversion'=>'conversion'],['Aggregate'=>'aggregate']] %></td></tr>
+      <tr><td></td><td><%= submit_button 'Register Service' %></td></tr>
+    </table>
+    <%= hidden_field action => 'register-service' %>
+   <% end %>
+   </div>
+
+  <h3><a href="#">Update Service</a></h3>
+  <div class="itemcontent"><%= form_for '' => begin %>
+    <table class="form-table">
+      <tr><td>Name</td><td class="input"><%= text_field 'uservice-name' => (value=>'',size=>50,id=>'uservice-name') %></td></tr>
+      <tr><td>Version</td><td class="input"><%= text_field 'uservice-version' => (value=>'0.1',size=>50,id=>'uservice-version') %></td></tr>
+      <tr><td>Internal ID<td class="input"><%= text_field 'uservice-id' => (value=>'',size=>50) %></td></tr>
+      <tr><td>Requires</td><td class="input">
+        TODO
+      </td></tr>
+      <tr><td>URL</td><td class="input"><%= text_field 'uservice-url' => (value=>'',size=>50) %></td></tr>
+      <tr><td>XPath selector</td><td class="input"><%= text_field 'uservice-xpath' => (value=>'/',size=>50) %></td></tr>
+      <tr><td>Type</td><td class="input"><%= select_field 'uservice-type' => ['Analyzer','Converter','Aggregator'] %></td></tr>
+      <tr><td></td><td><%= submit_button 'Register Service' %></td></tr>
+    </table>
+    <%= hidden_field action => 'update-service' %>
+   <% end %>
+   </div>
+
+</div>

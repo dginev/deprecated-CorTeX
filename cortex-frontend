@@ -104,6 +104,13 @@ get '/admin' => sub {
   $self->render;
 } => 'cortex-admin';
 
+
+get '/dev' => sub {
+  my $self = shift;
+  $self->stash(some_key=>'some_value');
+  $self->render;
+} => 'cortex-dev';
+
 get '/status' => sub {
   my $self = shift;
   return $self->redirect_to('login') unless $self->session('name');

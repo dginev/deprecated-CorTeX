@@ -109,13 +109,14 @@ sub process_next {
     # OLD3. Mark priority as 1 in Sesame:
     #push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
     # 3. Add entry to SQL tasks, mark as queued for pre-processors:
-    my $job_name = $self->{walker}->{job_name};
+    my $job_name = $self->{walker}->job_name;
     # Remove any traces of the task
-    $self->backend->sql->purge_task(corpus=>$job_name,task=>$directory);
+    my $success_purge = $self->backend->sql->purge(corpus=>$job_name,entry=>$directory);
+    print STDERR "Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
-    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'TeX_to_XML',status=>0);
-    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'pre-tokenize',status=>-2);
-    $self->backend->sql->queue_task(corpus=>$job_name,task=>$directory,service=>'XML_to_TEI_HTML',status=>-2);
+    my $success_queue = 
+      $self->backend->sql->queue(corpus=>$job_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
+    print STDERR "Queue failed, bailing!\n" unless $success_queue;
   }
   return 1;
 }
