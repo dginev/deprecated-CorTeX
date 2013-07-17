@@ -1,0 +1,10 @@
+{
+  "name": "CorTeX_preprocessing.json",
+  "version":"0.1",
+  "dependencies": [],
+  "url":"",
+  "type":"converter",
+  "inputformat":"tex",
+  "outputformat":"xhtml",
+  "parameters":{}
+}

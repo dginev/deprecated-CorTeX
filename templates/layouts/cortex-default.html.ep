@@ -104,11 +104,36 @@
    height: 34px;
 }
 
+ .border-radius {
+    display:inline-block;
+    padding:1em;
+    border:3px solid #999;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    -opera-border-radius:8px;
+    -khtml-border-radius:8px;
+    border-radius:8px;
+  }
+
+  .border-radius2 h1 {
+    background:transparent;
+  }
+
+  .css-demo {
+    margin-bottom:1em;
+  }
+
+  .css-demo pre {
+    background:transparent;
+    margin:2px;
+    padding:2px;
+    border:none;
+  }
     </style>
   </head>
   
   <body id="index" class="home">
-    <h1 style="text-align: center">CorTeX Framework</h1>
+    <h1 style="text-align: center"><a href="/overview" style="text-decoration: none">CorTeX Framework</a></h1></div>
     <div id="wrap">
       <div id="main">
 	<%= content %>

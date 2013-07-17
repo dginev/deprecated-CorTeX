@@ -127,34 +127,63 @@ sub reset_db {
   if ($type eq 'sqlite') {
     # Request a 20 MB cache size, reasonable on all modern systems:
     $self->do("PRAGMA cache_size = 20000; ");
-    # Table structure for table object
+    # Tasks
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
       taskid integer primary key AUTOINCREMENT,
-      corpus varchar(50),
+      corpusid integer(1),
+      serviceid integer(2),
       entry varchar(200),
-      service varchar(50),
-      status integer
+      status integer(2)
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);");
     $self->do("create index corpusidx on tasks(corpus);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(service);");
+    # Corpora
+    $self->do("DROP TABLE IF EXISTS corpora;");
+    $self->do("CREATE TABLE corpora (
+      corpusid integer(1) primary key AUTOINCREMENT,
+      name varchar(200)
+    );");
+    $self->do("create index corpusnameidx on corpora(name);");
+    # Services 
+    $self->do("DROP TABLE IF EXISTS services;");
+    $self->do("CREATE TABLE services (
+      serviceid integer(2) primary key AUTOINCREMENT,
+      name varchar(200)
+    );");
+    $self->do("create index servicenameidx on services(name);"); 
   }
   elsif ($type eq 'mysql') {
-    # Table structure for table object
+    # Tasks
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
       taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      service varchar(50),
-      corpus varchar(50),
+      serviceid mediumint,
+      corpusid tinyint,
       entry varchar(200),
-      status int
+      status mediumint
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);"); 
     $self->do("create index corpusidx on tasks(corpus);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(service);");
+    # Corpora
+    $self->do("DROP TABLE IF EXISTS corpora;");
+    $self->do("CREATE TABLE corpora (
+      corpusid tinyint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      name varchar(200)
+    );");
+    $self->do("create index corpusnameidx on corpora(name);");
+    # Services
+    $self->do("DROP TABLE IF EXISTS services;");
+    $self->do("CREATE TABLE services (
+      serviceid mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      name varchar(200)
+    );");
+    $self->do("create index servicenameidx on services(name);");
+
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";

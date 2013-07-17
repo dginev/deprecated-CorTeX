@@ -1,0 +1,27 @@
+% layout 'cortex-default';
+% title 'CorTeX Framework - Site Overview';
+<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
+<%= javascript 'js/external/jquery.min.js' %>
+<%= javascript 'js/external/jquery-ui.min.js' %>
+
+<a href="/admin">
+  <div class="border-radius css-demo">
+    <h1 style="text-align:center;">Admin<br>Interface</h1>
+  </div>
+</a><a href='/dev'>
+<div class="border-radius css-demo">
+  <h1 style="text-align:center;">Developer<br>Interface</h1>
+</div>
+</a>
+<br></br>
+
+<a href='/status'>
+<div class="border-radius css-demo">
+  <h1 style="text-align:center;">Corpus<br>Reports</h1>
+</div>
+</a>
+<a href='/status'>
+<div class="border-radius css-demo">
+  <h1 style="text-align:center;">Service<br>Reports</h1>
+</div>
+</a>

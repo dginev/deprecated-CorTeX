@@ -89,8 +89,14 @@ app->secret('TiX TeX');
 get '/' => sub {
   my $self = shift;
   return $self->redirect_to('login') unless $self->session('name');
-  $self->redirect_to('status');
+  $self->redirect_to('overview');
 };
+
+get '/overview' => sub {
+  my ($self) = @_;
+  return $self->redirect_to('login') unless $self->session('name');
+  $self->render;
+} => 'cortex-overview';
 
 get '/admin' => sub {
   my $self = shift;
@@ -107,6 +113,7 @@ get '/admin' => sub {
 
 get '/dev' => sub {
   my $self = shift;
+  return $self->redirect_to('login') unless $self->session('name');
   $self->stash(some_key=>'some_value');
   $self->render;
 } => 'cortex-dev';
@@ -131,7 +138,7 @@ get '/login' => sub {
     unless ($self->verify_user($name, $pass) eq 'admin');
   $self->session(name => $name);
   $self->flash(message => "Thanks for logging in $name!");
-  $self->redirect_to('status');
+  $self->redirect_to('overview');
 } => 'cortex-login';
 
 get '/logout' => sub {

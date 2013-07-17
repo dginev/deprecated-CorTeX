@@ -33,33 +33,35 @@
 <div style="text-align:center;" id="message"></div>
 <h1>Admin Interface</h1>
 <div class="ui-accordion ui-widget ui-helper-reset" id="accordion">
-  <h3><a href="#">Register Databases</a></h3>
+  <h3><a href="#">Condigure Databases</a></h3>
   <div class="itemcontent"><%= form_for '' => begin %>
     <table class="form-table">
       <tr><td>eXist Host</td><td class="input"><%= text_field 'exist-url' => (value=>$current_exist_url, size=>50) %></td></tr>
       <tr><td>Sesame Host</td><td class="input"><%= text_field 'sesame-url' => (value=>$current_sesame_url,size=>50) %></td></tr>
-      <tr><td></td><td><%= submit_button 'Register Databases' %></td></tr>
+      <tr><td>SQL Host</td><td class="input"><%= select_field 'sql-host' => ["SQLite","MySQL"] %></td></tr>
+      <tr><td></td><td><%= submit_button 'Condigure Databases' %></td></tr>
     </table>
     <%= hidden_field action => 'register-databases' %>
    <% end %>
    </div>
 
-<h3><a href="#">Register Converters</a></h3>
+<h3><a href="#">Condigure Converters</a></h3>
 <div class="itemcontent"><%= form_for '' => begin %>
   <table id="converter-table" class="form-table">
     <% my $i=1; foreach my $converter_url (@$current_converter_urls) { %>
     <tr><td>Converter URL <% $i; %></td><td class="input"><%= text_field "converter-urls" => (value=>$converter_url, size=>50) %></td></tr>
     <% $i++; } %>
-    <tr id="converter-table-submit-tr"><td> <a id="add-converter-input-field" href="#">Add more</a></td><td><%= submit_button 'Register Converters' %></td></tr>
+    <tr><td>TODO: Needs to be refactored as number of local workers to be started per service. We have a decentralized registration for remote workers now, using the Gearman model.</td></tr>
+    <tr id="converter-table-submit-tr"><td> <a id="add-converter-input-field" href="#">Add more</a></td><td><%= submit_button 'Condigure Converters' %></td></tr>
 </table>
 <%= hidden_field action => 'register-converters' %>
 <% end %>
 </div>
-<h3><a href="#">Register HTTP Proxy</a></h3>
+<h3><a href="#">Condigure HTTP Proxy</a></h3>
   <div class="itemcontent"><%= form_for '' => begin %>
     <table class="form-table">
       <tr><td>HTTP Proxy</td><td class="input"><%= text_field "http-proxy" => (value=>$current_proxy_url,size=>50) %></td></tr>
-      <tr><td></td><td><%= submit_button 'Register Proxy' %></td></tr>
+      <tr><td></td><td><%= submit_button 'Condigure Proxy' %></td></tr>
     </table>
     <%= hidden_field action => 'register-proxy' %>
    <% end %>
