@@ -104,6 +104,7 @@ get '/admin' => sub {
   $self->stash(current_exist_url=>$dbfile->{exist_url});
   $self->stash(current_sesame_url=>$dbfile->{sesame_url});
   $self->stash(current_proxy_url=>$dbfile->{proxy_url});
+  # TODO: MySQL URL?
   $self->stash(current_converter_urls=>
     $dbfile->{converter_urls} ? [split("\n",$dbfile->{converter_urls})] : []);
   db_file_disconnect($dbfile);
@@ -215,17 +216,31 @@ helper register_proxy => sub {
 };
 helper register_databases => sub {
   my $self = shift;
-  my $backend = CorTeX::Backend->new(exist_url=>$self->param('exist-url')||'',sesame_url=>$self->param('sesame-url')||'');
-  if (! $backend->exist) {
+  my %o = ();
+  $o{exist_url} = $self->param('exist-url')||'';
+  $o{sesame_url} = $self->param('sesame-url')||'';
+  $o{sql_url} = $self->param('sql-url')||'';
+  $o{docdb_type} = $self->param('docdb-type');
+  $o{metadb_type} = $self->param('metadb-type');
+  $o{taskdb_type} = $self->param('taskdb-type');
+
+  my $backend = CorTeX::Backend->new(%o);
+  if (($o{docdb_type} eq 'eXist') && (!$o{exist_url})) {
+    $self->render(json=>{message=>"Please specify the eXist URL!"});}
+  elsif ($o{exist_url} && (! $backend->exist)) {
     $self->render(json=>{message=>"eXist URL fails to connect, registration cancelled."});}
-  elsif (! $backend->sesame) {
+  elsif (($o{metadb_type} eq 'Sesame') && (!$o{sesame_url})) {
+    $self->render(json=>{message=>"Please specify the Sesame URL!"});}
+  elsif ($o{sesame_url} && (! $backend->sesame)) {
     $self->render(json=>{message=>"Sesame URL fails to connect, registration cancelled."});}
+  # TODO: Also check whether MySQL and SQLite are accessible AND writeable
   else {
     my $dbfile = db_file_connect;
-    $dbfile->{exist_url} = $self->param('exist-url') if defined $self->param('exist-url');
-    $dbfile->{sesame_url} = $self->param('sesame-url') if defined $self->param('sesame-url');
+    foreach (keys %o) {
+      $dbfile->{$_} = $o{$_};  
+    }
     db_file_disconnect($dbfile);
-    $self->render(json=>{message=>"New Database URLs registered!"});
+    $self->render(json=>{message=>"Successfully configured databases!"});
   }
 };
 helper register_converters => sub {
@@ -248,24 +263,19 @@ helper add_corpus => sub {
     return;
   }
   my $dbfile = db_file_connect();
-  my $exist_url = $dbfile->{exist_url};
-  my $sesame_url = $dbfile->{sesame_url};
-  db_file_disconnect($dbfile);
-  if (! $exist_url) {
-    $self->render(json=>{message=>"Please enter the eXist URL!"}); 
-    return;
-  }
   my $upper_bound = $self->param('upper-bound');
   my $entry_setup = $self->param('entry-setup');
-  my $importer = CorTeX::Import->new(root=>$path,verbosity=>1, 
-					  upper_bound=>$upper_bound,
-            overwrite=>$overwrite,
-					  main_repos=>$MAIN_REPOS,
-					  meta_graph=>$META_GRAPH,
-					  build_system_url=>$BUILD_SYSTEM_URL,
-            entry_setup=>$entry_setup,
-            exist_url=>$exist_url||'',
-					  sesame_url=>$sesame_url||'');
+  my $importer = CorTeX::Import->new(
+    root=>$path,
+    upper_bound=>$upper_bound,
+    overwrite=>$overwrite,
+		main_repos=>$MAIN_REPOS,
+		meta_graph=>$META_GRAPH,
+		build_system_url=>$BUILD_SYSTEM_URL,
+    entry_setup=>$entry_setup,
+    verbosity=>1, 
+    %$dbfile);
+  db_file_disconnect($dbfile);
   while ($importer->process_next) {}
 
   my $message="Successfully Imported $path";
@@ -276,9 +286,7 @@ helper add_corpus => sub {
 helper status_report => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
-    sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-    sqlpass=>'cortex',sqldbname=>'cortex');
+  my $backend = CorTeX::Backend->new(%$dbfile);
   my $pid = $dbfile->{cron_job_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:

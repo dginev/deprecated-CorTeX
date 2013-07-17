@@ -18,6 +18,8 @@ use strict;
 
 use DBI;
 use Mojo::ByteStream qw(b);
+use CorTeX::Backend::SQLMetaAPI;
+use CorTeX::Backend::SQLTaskAPI;
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
@@ -28,9 +30,9 @@ sub new {
   my %options;
   $options{sqluser} = $input{sqluser};
   $options{sqlpass} = $input{sqlpass};
-  $options{sqldbname} = $input{sqldbname};
+  $options{sqldbname} = $input{sqldbname}||'';
   $options{sqlhost} = $input{sqlhost};
-  $options{sqldbms} = lc($input{sqldbms});
+  $options{sqldbms} = $input{taskdb_type};
   $options{query_cache} = $input{query_cache} || {};
   $options{handle} = $input{handle};
   my $self = bless \%options, $class;
@@ -137,20 +139,20 @@ sub reset_db {
       status integer(2)
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);");
-    $self->do("create index corpusidx on tasks(corpus);");
+    $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
-    $self->do("create index serviceidx on tasks(service);");
+    $self->do("create index serviceidx on tasks(serviceid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
-      corpusid integer(1) primary key AUTOINCREMENT,
+      corpusid integer primary key AUTOINCREMENT,
       name varchar(200)
     );");
     $self->do("create index corpusnameidx on corpora(name);");
     # Services 
     $self->do("DROP TABLE IF EXISTS services;");
     $self->do("CREATE TABLE services (
-      serviceid integer(2) primary key AUTOINCREMENT,
+      serviceid integer primary key AUTOINCREMENT,
       name varchar(200)
     );");
     $self->do("create index servicenameidx on services(name);"); 
@@ -166,9 +168,9 @@ sub reset_db {
       status mediumint
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);"); 
-    $self->do("create index corpusidx on tasks(corpus);");
+    $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
-    $self->do("create index serviceidx on tasks(service);");
+    $self->do("create index serviceidx on tasks(serviceid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
@@ -191,40 +193,6 @@ sub reset_db {
   return;
 }
 
-# API Layer
-
-sub delete_corpus {
-  my ($self,$corpus) = @_;
-  return unless ($corpus && (length($corpus)>0));
-  return $self->purge(corpus=>$corpus);
-}
-
-sub queue {
-  my ($self,%options) = @_;
-  # Note: The two "status" lookups are not a typo, we need both to have the "on duplicate" clause set:
-  my @fields = grep {defined && (length($_)>0)} map {$options{$_}} qw/corpus entry service status status/;
-  return unless scalar(@fields) == 5; # Exactly 5 data points to queue
-  my $sth = $self->prepare("INSERT INTO tasks (corpus,entry,service,status) VALUES (?,?,?,?) 
-    ON DUPLICATE KEY UPDATE status=?;");
-  $sth->execute(@fields);
-  $sth->finish();
-  return 1;
-}
-
-sub purge {
-  my ($self,%options) = @_;
-  my $entry = $options{entry} ? "entry=?" : "";
-  my $corpus = $options{corpus} ? "corpus=?" : "";
-  my $service = $options{service} ? "service=?" : "";
-  my $status = $options{status} ? "status=?" : "";
-  my @fields = grep {length($_)>0} ($entry,$corpus,$service,$status);
-  return unless @fields;
-  my $where_clause = join(" AND ",@fields);
-  my $sth = $self->prepare("DELETE FROM tasks WHERE ".$where_clause.";");
-  $sth->execute(grep {defined} map {$options{$_}} qw/entry corpus service status/);
-  $sth->finish();
-  return 1;
-}
 
 1;
 

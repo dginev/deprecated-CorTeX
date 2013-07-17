@@ -56,10 +56,10 @@ $(document).ready(function() {
       <tr><td>Corpora DB</td><td class="input selectdb">
       <% if ($current_exist_url) { %>
         <span id="current-exist-url" style="display:none"><%= $current_exist_url; %></span>
-        <%= select_field 'archive-type' => ["eXist","File System"] %>
+        <%= select_field 'docdb-type' => ["eXist","File System"] %>
         <tr class="url-row"><td>eXist URL</td><td class="input"><%= text_field 'exist-url' => (value=>$current_exist_url, size=>50) %></td></tr>
       <% } else { %>
-        <%= select_field 'archive-type' => ["File System","eXist"] %>
+        <%= select_field 'docdb-type' => ["File System","eXist"] %>
       <% } %>
       </td></tr>
       <tr><td>Meta DB</td><td class="input selectdb">
@@ -72,10 +72,8 @@ $(document).ready(function() {
         <% } %>
       </td></tr>
       <tr><td>Job DB</td><td class="input selectdb">
-        <%= select_field 'sql-host' => ["SQLite","MySQL"] %>
+        <%= select_field 'taskdb-type' => ["SQLite","MySQL"] %>
       </td></tr>
-<!--       
-      <tr><td></td><td><%= text_field 'sesame-url' => (value=>$current_sesame_url,size=>50) %></td></tr> -->
       <tr><td></td><td><%= submit_button 'Configure Databases' %></td></tr>
     </table>
     <%= hidden_field action => 'register-databases' %>

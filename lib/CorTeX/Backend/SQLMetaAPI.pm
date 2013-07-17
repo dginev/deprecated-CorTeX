@@ -1,6 +1,6 @@
 # /=====================================================================\ #
 # |  CorTeX Framework                                                   | #
-# | Backend Bridge Moduile                                              | #
+# | eXist XML Database Backend Connector                                | #
 # |=====================================================================| #
 # | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
 # |  Research software, produced as part of work done by:               | #
@@ -11,34 +11,21 @@
 # | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
 # | http://kwarc.info/people/dginev                            (o o)    | #
 # \=========================================================ooo==U==ooo=/ #
-
-package CorTeX::Backend::FileSystem;
-
-use warnings;
+package CorTeX::Backend::SQLMetaAPI;
 use strict;
-use File::Basename;
-use feature qw(switch);
-use Data::Dumper;
+use warnings;
+use feature 'switch';
 
-sub new {
-  my ($class,%opts)=@_;
-  $opts{inplace} = 1 unless defined $opts{inplace};
-  return bless {%opts}, $class;
-}
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT = qw(new_repository add_triple);
 
-# Import API - empty if we use the corpus inplace
-sub delete_directory {
-  my ($self) = @_;
-  return 1 if $self->{inplace};
-}
-sub already_added {
-  my ($self) = @_;
-  return 1 if $self->{inplace};
-}
-sub insert_directory {
-  my ($self) = @_;
-  return 1 if $self->{inplace};
+sub new_repository {
+
 }
 
+sub add_triple {
+
+}
 
 1;

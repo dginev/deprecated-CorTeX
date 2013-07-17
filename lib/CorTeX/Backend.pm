@@ -21,12 +21,11 @@ use Data::Dumper;
 
 sub new {
   my ($class,%opts)=@_;
-  print STDERR Dumper(\%opts);
   $opts{verbosity}=0 unless defined $opts{verbosity};
   if ($opts{exist_url}) {
     require CorTeX::Backend::eXist;
     $opts{exist}=CorTeX::Backend::eXist->new(%opts);
-    $opts{archive} = $opts{exist};
+    $opts{docdb} = $opts{exist};
   }
   if ($opts{sesame_url}) {
     require CorTeX::Backend::Sesame;
@@ -34,17 +33,17 @@ sub new {
     $opts{metadb}=$opts{sesame};
   }
   
-  $opts{sqlhost} //= 'SQLite';
+  $opts{taskdb_type} //= 'SQLite';
   require CorTeX::Backend::SQL;
   $opts{sql} = CorTeX::Backend::SQL->new(%opts);
 
   # Fallback defaults:
-  if (! defined $opts{archive}) {
+  if (! defined $opts{docdb}) {
     require CorTeX::Backend::FileSystem;
-    $opts{archive} = CorTeX::Backend::FileSystem->new(%opts);
+    $opts{docdb} = CorTeX::Backend::FileSystem->new(%opts);
   };
   $opts{metadb} //= $opts{sql};
-  $opts{tasks} = $opts{sql};
+  $opts{taskdb} = $opts{sql};
 
   bless {%opts}, $class;
 }
@@ -64,17 +63,17 @@ sub sql {
   $self->{sql};
 }
 
-sub archive {
+sub docdb {
   my ($self)=@_;
-  $self->{archive};
+  $self->{docdb};
 }
 sub metadb {
   my ($self)=@_;
   $self->{metadb};
 }
-sub tasks {
+sub taskdb {
   my ($self)=@_;
-  $self->{tasks};
+  $self->{taskdb};
 }
 
 
@@ -94,15 +93,15 @@ C<CorTeX::Backend> - Driver for eXist and Sesame backends
     use CorTeX::Backend;
     # Class-tuning API
     $backend=CorTeX::Backend->new(exist_url=>$exist_url,verbosity=>0|1);
-    $backend->archive->set_host($url);
-    # archive API
-    my $response_bundle = $backend->archive->query($query,keep=>0|1);
-    $backend->archive->release_result($result_id);
-    my $collection = $backend->archive->make_collection($collection);
-    $backend->archive->insert_directory($directory,$root_path);
-    $backend->archive->insert_files($directory,$collection,$root_path);
+    $backend->docdb->set_host($url);
+    # docdb API
+    my $response_bundle = $backend->docdb->query($query,keep=>0|1);
+    $backend->docdb->release_result($result_id);
+    my $collection = $backend->docdb->make_collection($collection);
+    $backend->docdb->insert_directory($directory,$root_path);
+    $backend->docdb->insert_files($directory,$collection,$root_path);
     # metadb API
-    # tasks API
+    # taskdb API
 
 =head1 DESCRIPTION
 
@@ -110,9 +109,9 @@ Abstract driver class supporting the various backends used by the CorTeX framewo
 (currently eXist and Sesame, MySQL and SQLite)
 
 Provides an abstraction layer and API for three logical backend applications:
-- Archive API - related to storing and querying corpora of documents
+- DocDB API - related to storing and querying corpora of documents
 - MetaDB API - related to storing and querying collections of stand-off annotations
-- Tasks API - related to managing tasks queues and dependency logic 
+- TaskDB API - related to managing task queues and dependency logic 
 
 Note on Debian prerequisites: librpc-xml-perl (eXist), ...
 
@@ -125,9 +124,9 @@ Note on Debian prerequisites: librpc-xml-perl (eXist), ...
 
 Make a new Backend object, pointing to the expected DB URLs.
 
-=item C<< $backend->archive->set_host($url); >>
+=item C<< $backend->docdb->set_host($url); >>
 
-Set a URL for querying the archive DB
+Set a URL for querying the Document DB
  (e.g. the XML-RPC interface of the eXist XML database.)
 
 =item C<< my $response_bundle = $backend->exist->query($query,keep=>0|1); >>
