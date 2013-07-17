@@ -43,7 +43,7 @@ sub new {
   }
 }
 
-sub set_url {
+sub set_host {
   my ($self,$url)=@_;
   $url =~ s/\/+$//;
   print STDERR "connecting to ".$url."...\n" if ($self && $self->{verbosity}>0);

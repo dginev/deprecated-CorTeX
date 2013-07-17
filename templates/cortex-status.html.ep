@@ -1,9 +1,6 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Status and Reports';
 <h3>Current LaTeXML Conversion Statistics</h3>
-<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
-<%= javascript 'js/external/jquery.min.js' %>
-<%= javascript 'js/external/jquery-ui.min.js' %>
 <%= javascript begin %>
 //var alarm_t;
 var countdown;

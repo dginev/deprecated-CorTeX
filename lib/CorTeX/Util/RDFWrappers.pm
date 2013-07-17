@@ -60,9 +60,9 @@ sub wrap_SPARQL_Updates {
   foreach my $update(@$updates) {
     my ($old,$new,$where) = map {$update->{$_}} qw(old new where);
     $where = $old unless defined $where;
-    push $all_old, @$old;
-    push $all_new, @$new;
-    push $all_where, @$where;
+    push @$all_old, @$old;
+    push @$all_new, @$new;
+    push @$all_where, @$where;
   }
   $update_batch .= wrap_SPARQL_Update_noprefix($all_old,$all_new,$all_where,$graph)."\n\n";
   my $wrapped = "update=".$SPARQL_PREFIX."\n".$exist_prefix."\n".$update_batch;

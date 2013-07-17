@@ -17,22 +17,33 @@ use warnings;
 use strict;
 use File::Basename;
 use feature qw(switch);
-use CorTeX::Backend::eXist;
-use CorTeX::Backend::Sesame;
-use CorTeX::Backend::SQL;
 
 sub new {
   my ($class,%opts)=@_;
   $opts{verbosity}=0 unless defined $opts{verbosity};
   if ($opts{exist_url}) {
+    require CorTeX::Backend::eXist;
     $opts{exist}=CorTeX::Backend::eXist->new(%opts);
+    $opts{archive} = $opts{exist};
   }
   if ($opts{sesame_url}) {
+    require CorTeX::Backend::Sesame;
     $opts{sesame}=CorTeX::Backend::Sesame->new(%opts);
+    $opts{metadb}=$opts{sesame};
   }
-  if ($opts{sqlhost}) {
-    $opts{sql} = CorTeX::Backend::SQL->new(%opts);
-  }
+  
+  $opts{sqlhost} //= 'SQLite';
+  require CorTeX::Backend::SQL;
+  $opts{sql} = CorTeX::Backend::SQL->new(%opts);
+
+  # Fallback defaults:
+  if (! defined $opts{archive}) {
+    require CorTeX::Backend::FileSystem;
+    $opts{archive} = CorTeX::Backend::FileSystem->new(%opts);
+  };
+  $opts{metadb} //= $opts{sql};
+  $opts{tasks} = $opts{sql};
+
   bless {%opts}, $class;
 }
 
@@ -51,6 +62,21 @@ sub sql {
   $self->{sql};
 }
 
+sub archive {
+  my ($self)=@_;
+  $self->{archive};
+}
+sub metadb {
+  my ($self)=@_;
+  $self->{metadb};
+}
+sub tasks {
+  my ($self)=@_;
+  $self->{tasks};
+}
+
+
+
 1;
 
 __END__
@@ -66,22 +92,27 @@ C<CorTeX::Backend> - Driver for eXist and Sesame backends
     use CorTeX::Backend;
     # Class-tuning API
     $backend=CorTeX::Backend->new(exist_url=>$exist_url,verbosity=>0|1);
-    $backend->exist->set_url($url);
-    # eXist API
-    my $response_bundle = $backend->exist->query($query,keep=>0|1);
-    $backend->exist->release_result($result_id);
-    my $collection = $backend->exist->make_collection($collection);
-    $backend->exist->insert_directory($directory,$root_path);
-    $backend->exist->insert_files($directory,$collection,$root_path);
+    $backend->archive->set_host($url);
+    # archive API
+    my $response_bundle = $backend->archive->query($query,keep=>0|1);
+    $backend->archive->release_result($result_id);
+    my $collection = $backend->archive->make_collection($collection);
+    $backend->archive->insert_directory($directory,$root_path);
+    $backend->archive->insert_files($directory,$collection,$root_path);
+    # metadb API
+    # tasks API
 
 =head1 DESCRIPTION
 
-Abstract driver class supporting the various backends used by the MathSearch project.
-(currently eXist and Sesame)
+Abstract driver class supporting the various backends used by the CorTeX framework.
+(currently eXist and Sesame, MySQL and SQLite)
 
-Provides an abstraction layer over the tedious low-level details.
+Provides an abstraction layer and API for three logical backend applications:
+- Archive API - related to storing and querying corpora of documents
+- MetaDB API - related to storing and querying collections of stand-off annotations
+- Tasks API - related to managing tasks queues and dependency logic 
 
-Note on Debian prerequisites: librpc-xml-perl
+Note on Debian prerequisites: librpc-xml-perl (eXist), ...
 
 =head2 METHODS
 
@@ -92,9 +123,10 @@ Note on Debian prerequisites: librpc-xml-perl
 
 Make a new Backend object, pointing to the expected DB URLs.
 
-=item C<< $backend->exist->set_url($url); >>
+=item C<< $backend->archive->set_host($url); >>
 
-Set a URL for the XML-RPC interface of the eXist XML database.
+Set a URL for querying the archive DB
+ (e.g. the XML-RPC interface of the eXist XML database.)
 
 =item C<< my $response_bundle = $backend->exist->query($query,keep=>0|1); >>
 

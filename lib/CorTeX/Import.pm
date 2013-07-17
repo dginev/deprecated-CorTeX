@@ -41,17 +41,17 @@ sub new {
   # Wipe away any existing collection if overwrite is enabled
   if ($opts{overwrite}) {
     set_db_file_field('import_checkpoint',undef);
-    $backend->exist->delete_directory($opts{root},$opts{root});
+    $backend->archive->delete_directory($opts{root},$opts{root});
     # Initialize a Build System repository in the triple store
-    $backend->sesame->new_repository($main_repos,$opts{overwrite});
+    $backend->metadb->new_repository($main_repos,$opts{overwrite});
     # Register corpus name in triple store?
-    $backend->sesame->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
+    $backend->metadb->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
              object=>xsd("Corpus"),repository=>$main_repos,graph=>$meta_graph});
-    $backend->sesame->add_triple({subject=>$job_url, predicate=>'build:entryType', 
+    $backend->metadb->add_triple({subject=>$job_url, predicate=>'build:entryType', 
              object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
     if defined $opts{entry_setup};
     # Delete corpus entries in the SQL database
-    $backend->sql->delete_corpus($opts{root});
+    $backend->tasks->delete_corpus($opts{root});
   }
 
   my $checkpoint = get_db_file_field('import_checkpoint');
@@ -99,23 +99,23 @@ sub process_next {
   $self->{processed_entries}++;
   if (! ($self->{processed_entries} % 100)) {
     set_db_file_field('import_checkpoint',$directory);
-    $self->backend->sesame->add_triples({triples=>$self->{triple_queue}, repository=>$self->{main_repos},graph=>$self->{meta_graph}});
+    $self->backend->metadb->add_triples({triples=>$self->{triple_queue}, repository=>$self->{main_repos},graph=>$self->{meta_graph}});
     $self->{triple_queue} = []; # TODO: Check for add failure!!!
   }
-  my $added = $self->backend->exist->already_added($directory,$self->{walker}->get_root);
+  my $added = $self->backend->archive->already_added($directory,$self->{walker}->get_root);
   if (! $added) {
     # 2. Import into eXist
-    my $collection = $self->backend->exist->insert_directory($directory,$self->{walker}->get_root);
+    my $collection = $self->backend->archive->insert_directory($directory,$self->{walker}->get_root);
     # OLD3. Mark priority as 1 in Sesame:
     #push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
     # 3. Add entry to SQL tasks, mark as queued for pre-processors:
     my $job_name = $self->{walker}->job_name;
     # Remove any traces of the task
-    my $success_purge = $self->backend->sql->purge(corpus=>$job_name,entry=>$directory);
+    my $success_purge = $self->backend->tasks->purge(corpus=>$job_name,entry=>$directory);
     print STDERR "Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
     my $success_queue = 
-      $self->backend->sql->queue(corpus=>$job_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
+      $self->backend->tasks->queue(corpus=>$job_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
     print STDERR "Queue failed, bailing!\n" unless $success_queue;
   }
   return 1;
