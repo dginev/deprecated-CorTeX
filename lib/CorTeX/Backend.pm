@@ -17,9 +17,11 @@ use warnings;
 use strict;
 use File::Basename;
 use feature qw(switch);
+use Data::Dumper;
 
 sub new {
   my ($class,%opts)=@_;
+  print STDERR Dumper(\%opts);
   $opts{verbosity}=0 unless defined $opts{verbosity};
   if ($opts{exist_url}) {
     require CorTeX::Backend::eXist;

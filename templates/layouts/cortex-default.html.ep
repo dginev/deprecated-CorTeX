@@ -117,8 +117,13 @@
         -khtml-border-radius:8px;
         border-radius:8px; 
       }
-      .bubble-link {
+      .bubble-link:link {
         text-decoration:none;
+        color:#000000;
+      }
+      .bubble-link:visited {
+        text-decoration:none;
+        color:#000000;
       }
 
       .bubble-button p {
@@ -127,23 +132,23 @@
         text-align: center; 
         font-size:150%;
       }
-      
+
+      .quietlink:link {color:#000000; text-decoration:none}      
+      .quietlink:visited {color:#000000; text-decoration:none} 
+
+      .url-row td:first-child {
+        text-indent:15px;
+      }
     </style>
     <link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
     <%= javascript 'js/external/jquery.min.js' %>
     <%= javascript 'js/external/jquery-ui.min.js' %>
-    <%= javascript begin %>
-      $(document).ready(function() {
-        $('#pagetitle').click(function() {
-         window.location = "/overview";
-        });
-      });
-    <% end %>
+   
   </head>
   
   <body id="index" class="home">
     <div style="align:center;">
-      <h1 style="text-align:center;"><span id="pagetitle"><img src="img/logo.jpg" style="vertical-align:middle"> Framework</span></h1>
+      <h1 style="text-align:center;"><a id="pagetitle" class="quietlink" href="/overview"><img src="img/logo.jpg" style="vertical-align:middle"> Framework</a></h1>
     </div>
     <div id="wrap">
       <div id="main">

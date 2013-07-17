@@ -14,6 +14,15 @@
 
 package CorTeX::Backend::FileSystem;
 
+use warnings;
+use strict;
+use File::Basename;
+use feature qw(switch);
+use Data::Dumper;
 
+sub new {
+  my ($class,%opts)=@_;
+  return bless {%opts}, $class;
+}
 
 1;

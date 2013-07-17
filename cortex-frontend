@@ -167,7 +167,7 @@ post '/ajax' => sub {
 get '/retval_detail' => sub {
   my $self = shift;
   my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
         sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
         sqlpass=>'cortex',sqldbname=>'cortex');
   db_file_disconnect($dbfile);
@@ -215,7 +215,7 @@ helper register_proxy => sub {
 };
 helper register_databases => sub {
   my $self = shift;
-  my $backend = CorTeX::Backend->new(exist_url=>$self->param('exist-url'),sesame_url=>$self->param('sesame-url'));
+  my $backend = CorTeX::Backend->new(exist_url=>$self->param('exist-url')||'',sesame_url=>$self->param('sesame-url')||'');
   if (! $backend->exist) {
     $self->render(json=>{message=>"eXist URL fails to connect, registration cancelled."});}
   elsif (! $backend->sesame) {
@@ -259,13 +259,13 @@ helper add_corpus => sub {
   my $entry_setup = $self->param('entry-setup');
   my $importer = CorTeX::Import->new(root=>$path,verbosity=>1, 
 					  upper_bound=>$upper_bound,
-					  exist_url=>$exist_url,
             overwrite=>$overwrite,
 					  main_repos=>$MAIN_REPOS,
 					  meta_graph=>$META_GRAPH,
 					  build_system_url=>$BUILD_SYSTEM_URL,
             entry_setup=>$entry_setup,
-					  sesame_url=>$sesame_url);
+            exist_url=>$exist_url||'',
+					  sesame_url=>$sesame_url||'');
   while ($importer->process_next) {}
 
   my $message="Successfully Imported $path";
@@ -276,7 +276,7 @@ helper add_corpus => sub {
 helper status_report => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
     sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
     sqlpass=>'cortex',sqldbname=>'cortex');
   my $pid = $dbfile->{cron_job_pid};
@@ -377,7 +377,7 @@ helper inner_report_message => sub {
 helper queue_rerun => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url},exist_url=>$dbfile->{exist_url},
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
         sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
         sqlpass=>'cortex',sqldbname=>'cortex');
   db_file_disconnect($dbfile);
