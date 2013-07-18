@@ -1,14 +1,14 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Site Overview';
 <div align="center">
-  <div style="display: inline-block;">
+  <div class="inline-button-div">
     <a class="bubble-link" href="/admin">
       <div class="bubble-button" style="background-color:#FFBABA">
         <p>Admin<br>Interface</p>
       </div>
     </a>  
   </div>
-  <div style="display: inline-block;">
+  <div class="inline-button-div">
     <a class="bubble-link" href='/dev'>
       <div class="bubble-button" style="background-color:#FFFFC9">
         <p>Developer<br>Interface</p>
@@ -18,14 +18,14 @@
 </div>
 
 <div align="center">
-  <div style="display: inline-block;">
+  <div class="inline-button-div">
     <a class="bubble-link" href='/status'>
     <div class="bubble-button" style="background-color:#CCF2CC">
       <p>Corpus<br>Reports</p>
     </div>
     </a>
   </div>
-  <div style="display: inline-block;">
+  <div class="inline-button-div">
     <a class="bubble-link"  href='/status'>
     <div class="bubble-button" style="background-color:#C2D6FF">
       <p>Service<br>Reports</p>
