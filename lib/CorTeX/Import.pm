@@ -33,7 +33,8 @@ sub new {
 
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
     if $opts{root};
-  my $job_url = $build_system_url.'/corpora/'.$walker->job_name;
+  my $corpus_name = $walker->job_name;
+  my $job_url = $build_system_url.'/corpora/'.$corpus_name;
 
   my $backend = CorTeX::Backend->new(%opts);
   # Wipe away any existing collection if overwrite is enabled
@@ -49,7 +50,8 @@ sub new {
              object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
     if defined $opts{entry_setup};
     # Delete corpus entries in the SQL database
-    $backend->taskdb->delete_corpus($opts{root});
+    $backend->taskdb->delete_corpus($corpus_name);
+    $backend->taskdb->register_corpus($corpus_name);
   }
 
   my $checkpoint = get_db_file_field('import_checkpoint');
@@ -67,6 +69,7 @@ sub new {
 	      main_repos=>$main_repos,meta_graph=>$meta_graph,
         entry_setup=>$opts{entry_setup},
         triple_queue=>[],
+        corpus_name=>$corpus_name,
         build_system_url=>$build_system_url}, $class;
 }
 
@@ -107,13 +110,13 @@ sub process_next {
     # OLD3. Mark priority as 1 in Sesame:
     #push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
     # 3. Add entry to SQL tasks, mark as queued for pre-processors:
-    my $job_name = $self->{walker}->job_name;
+    my $corpus_name = $self->{corpus_name};
     # Remove any traces of the task
-    my $success_purge = $self->backend->taskdb->purge(corpus=>$job_name,entry=>$directory);
+    my $success_purge = $self->backend->taskdb->purge(corpus=>$corpus_name,entry=>$directory);
     print STDERR "Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
     my $success_queue = 
-      $self->backend->taskdb->queue(corpus=>$job_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
+      $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
     print STDERR "Queue failed, bailing!\n" unless $success_queue;
   }
   return 1;

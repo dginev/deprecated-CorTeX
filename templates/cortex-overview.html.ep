@@ -19,14 +19,14 @@
 
 <div align="center">
   <div class="inline-button-div">
-    <a class="bubble-link" href='/status'>
+    <a class="bubble-link" href='/corpus-report'>
     <div class="bubble-button" style="background-color:#CCF2CC">
       <p>Corpus<br>Reports</p>
     </div>
     </a>
   </div>
   <div class="inline-button-div">
-    <a class="bubble-link"  href='/status'>
+    <a class="bubble-link"  href='/service-report'>
     <div class="bubble-button" style="background-color:#C2D6FF">
       <p>Service<br>Reports</p>
     </div>

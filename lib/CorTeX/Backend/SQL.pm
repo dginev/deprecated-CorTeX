@@ -15,11 +15,13 @@ package CorTeX::Backend::SQL;
 
 use warnings;
 use strict;
+use feature 'switch';
 
 use DBI;
 use Mojo::ByteStream qw(b);
 use CorTeX::Backend::SQLMetaAPI;
 use CorTeX::Backend::SQLTaskAPI;
+our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
@@ -28,25 +30,30 @@ sub new {
   my ($class,%input)=@_;
   # White-list the options we care about:
   my %options;
-  $options{sqluser} = $input{sqluser};
-  $options{sqlpass} = $input{sqlpass};
-  $options{sqldbname} = $input{sqldbname}||'';
-  $options{sqlhost} = $input{sqlhost};
-  $options{sqldbms} = $input{taskdb_type};
-  $options{query_cache} = $input{query_cache} || {};
+  $options{sqluser} = $input{sqluser} // 'cortex';
+  $options{sqlpass} = $input{sqlpass} // 'cortex';
+  $options{sqldbname} = $input{sqldbname};
+  $options{sqlhost} = $input{sqlhost} // 'localhost';
+  $options{sqldbms} = $input{taskdb_type} // 'SQLite';
+  $options{query_cache} = $input{query_cache} // {};
   $options{handle} = $input{handle};
+  if (!$options{sqldbname}) {
+    if ($options{sqldbms} eq 'SQLite') {
+      # Default SQLite db:
+      $options{sqldbname} = "$INSTALLDIR/TaskDB.db"; } 
+    else {
+      # Default MySQL db:
+      $options{sqldbname} = 'cortex';
+    }}
   my $self = bless \%options, $class;
   if (($options{sqldbms} eq 'SQLite') && ((! -f $options{sqldbname})||(-z $options{sqldbname}))) {
     # Auto-vivify a new SQLite database, if not already created
     if (! -f $options{sqldbname}) {
       # Touch a file if it doesn't exist
       my $now = time;
-      utime $now, $now, $options{sqldbname}; 
-    }
-    $self->reset_db;
-  }
-  return $self;
-}
+      utime $now, $now, $options{sqldbname};  }
+    $self->reset_db; }
+  return $self; }
 
 # Methods:
 
@@ -54,8 +61,8 @@ sub new {
 sub safe {
   my ($self)=@_;
   if (defined $self->{handle} && $self->{handle}->ping) {
-    return $self->{handle};
-  } else {
+    return $self->{handle}; }
+  else {
     my $dbh = DBI->connect("DBI:". $self->{sqldbms} .
          ":" . $self->{sqldbname},
          $self->{sqluser},
@@ -146,14 +153,14 @@ sub reset_db {
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
       corpusid integer primary key AUTOINCREMENT,
-      name varchar(200)
+      name varchar(200) UNIQUE
     );");
     $self->do("create index corpusnameidx on corpora(name);");
     # Services 
     $self->do("DROP TABLE IF EXISTS services;");
     $self->do("CREATE TABLE services (
       serviceid integer primary key AUTOINCREMENT,
-      name varchar(200)
+      name varchar(200) UNIQUE
     );");
     $self->do("create index servicenameidx on services(name);"); 
   }
@@ -193,6 +200,19 @@ sub reset_db {
   return;
 }
 
+sub last_inserted_id {
+  my ($db) = @_;
+  my $objid;
+  given ($db->{sqldbms}) {
+    when ('mysql') {
+      $objid = $db->{handle}->{'mysql_insertid'};
+    }
+    when ('SQLite') {
+      $objid = $db->{handle}->sqlite_last_insert_rowid();
+    }
+    default { die 'No DBMS information provided! Failing...'; }
+  };
+  return $objid; }
 
 1;
 

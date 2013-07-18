@@ -33,7 +33,9 @@ sub delete_directory {
 }
 sub already_added {
   my ($self) = @_;
-  return 1 if $self->{inplace};
+  # For now readd every time
+  # TODO: Conceptualize this better
+  return 0 if $self->{inplace};
 }
 sub insert_directory {
   my ($self) = @_;

@@ -119,11 +119,20 @@ get '/dev' => sub {
   $self->render;
 } => 'cortex-dev';
 
-get '/status' => sub {
+get '/corpus-report' => sub {
+  my $self = shift;
+  return $self->redirect_to('login') unless $self->session('name');
+  my $current_corpora = $self->backend->taskdb->current_corpora;
+  $self->stash(current_corpora=>$current_corpora);
+  $self->render;
+} => 'cortex-corpus-report';
+
+get '/service-report' => sub {
   my $self = shift;
   return $self->redirect_to('login') unless $self->session('name');
   $self->render;
-} => 'cortex-status';
+} => 'cortex-service-report';
+
 
 helper verify_user => sub {
   my ($self,$name,$pass)=@_;
@@ -159,7 +168,8 @@ post '/ajax' => sub {
     when ('register-proxy') { $self->register_proxy; }
     when ('register-databases') { $self->register_databases; }
     when ('register-converters') { $self->register_converters; }
-    when ('status-report') { $self->status_report; }
+    when ('corpus-report') { $self->corpus_report; }
+    when ('service-report') { $self->service_report; }
     when ('queue-rerun') { $self->queue_rerun; }
     default {$self->render(json=>{message=>"Unrecognized action!"});}
   }
@@ -168,9 +178,7 @@ post '/ajax' => sub {
 get '/retval_detail' => sub {
   my $self = shift;
   my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
-        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-        sqlpass=>'cortex',sqldbname=>'cortex');
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
   my $corpus_name = $backend->sesame->get_corpus_name($MAIN_REPOS);
   my $component = [ split(/:/, $self->param('component')) ];
@@ -207,6 +215,15 @@ get '/retval_detail' => sub {
 # CONVENTION: !!!
 # Parameters use dashes, any Perl-based variables use underscores !!!
 # otherwise, all kinds of confusion + headaches come in
+
+helper backend => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect;
+  my $backend = CorTeX::Backend->new(%$dbfile);
+  $dbfile = db_file_disconnect;
+  return $backend;
+};
+
 helper register_proxy => sub {
   my $self = shift;
   my $dbfile = db_file_connect;
@@ -283,7 +300,8 @@ helper add_corpus => sub {
   $self->render(json => {message => $message});
 };
 
-helper status_report => sub {
+helper service_report => sub {};
+helper corpus_report => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(%$dbfile);

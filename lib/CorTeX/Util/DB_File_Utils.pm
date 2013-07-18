@@ -21,16 +21,13 @@ use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(db_file_connect db_file_disconnect get_db_file_field set_db_file_field); # symbols to export on request
 
-# TODO: Think for the right way of doing easy DB_File connections...
-# without passing the path around like crazy. This should work for now.
-use File::Basename;
-my $FILE_BASE;
-BEGIN {
-    $FILE_BASE = dirname(__FILE__);
-}
+our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+
 
 sub db_file_connect {
-  my $DB_FILE_PATH = shift || $FILE_BASE.'/../../../.CorTeX.cache';
+  # TODO: This will fail miserably under apache, we want it relative 
+  # to the actual file being interpreted by Perl
+  my $DB_FILE_PATH = "$INSTALLDIR/.CorTeX.cache";
   my $DB_FILE_REF = {};
   # When server is starting up, check if the DB file exists, otherwise write it with the expected
   # eXist and Sesame defaults
