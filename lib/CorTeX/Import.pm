@@ -126,6 +126,8 @@ sub process_next {
 
 sub process_all {
   my ($self) = @_;
+  # TODO: Consider opening a transaction and keeping count,
+  # so that we only commit e.g. on every 100 entries
   while ($self->process_next) {}
   set_db_file_field('import_checkpoint',undef);
 }

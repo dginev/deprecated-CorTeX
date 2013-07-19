@@ -1,6 +1,6 @@
 % layout 'cortex-default';
-% title 'CorTeX Framework - Status and Reports';
-<h3>Current Corpus Statistics: 
+% title 'CorTeX Framework - Corpus Reports';
+<h3>Corpus Statistics: 
 <% if (@$current_corpora > 0) { %>
     <%= select_field 'corpus-name' => ["",@$current_corpora], id=>"corpus-name-select" %>
     </td></tr>

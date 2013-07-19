@@ -300,17 +300,119 @@ helper add_corpus => sub {
   $self->render(json => {message => $message});
 };
 
-helper service_report => sub {};
-helper corpus_report => sub {
+helper service_report => sub {
   my ($self) = @_;
+  my $service_name = $self->param("name");
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(%$dbfile);
   my $pid = $dbfile->{cron_job_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
-  my $corpus_name = $self->param("corpus-name");
+  my ($corpus_db_report,$alive) = $backend->taskdb->service_report($service_name);
+  my $total_count = $backend->taskdb->count_entries($service_name,'all');
+  my @rows;
+  foreach my $service(keys %$corpus_db_report) {
+    my $countstable = $corpus_db_report->{$service};
+    my @counts = map {sprintf("%.2f",(100*($countstable->{$_} / $total_count)))} qw/ok warning error fatal queued blocked/;
+    my $row_content = '<td>'.join("</td><td>",($service,@counts)).'</td>';
+    push @rows, $row_content; 
+  }
+  my $report_message;
+  $report_message = '<table class="summary-table"><thead>
+  <th>Service</th>
+  <th colspan="6" style="text-align:center">%</th>
+  </thead><tbody><tr><td></td>
+  <td>OK</td>
+  <td>Warnings</td>
+  <td>Errors</td>
+  <td>Fatal</td>
+  <td>Queued</td>
+  <td>Blocked</td></tr>';
+  $report_message .= '<tr class="hover-row ">'
+    . join('</tr><tr class="hover-row ">',@rows)
+    . '</tr>';
+  $report_message .="</tbody></table>";
+  $report_message .="<br></br>";
+
+  $self->render(json => {alive=>$alive,report=>$report_message});
+};
+helper corpus_report => sub {
+  my ($self) = @_;
+  my $corpus_name = $self->param("name");
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(%$dbfile);
+  my $pid = $dbfile->{cron_job_pid};
+  db_file_disconnect($dbfile);
+  # 1. Acquire statistical data:
   my ($corpus_db_report,$alive) = $backend->taskdb->corpus_report($corpus_name);
-  my $report_message = "TODO: add message ".time();
+  my $total_count = $backend->taskdb->count_entries($corpus_name,'all');
+  my @rows;
+  foreach my $service(keys %$corpus_db_report) {
+    my $countstable = $corpus_db_report->{$service};
+    my @counts = map {sprintf("%.2f",(100*($countstable->{$_} / $total_count)))} qw/ok warning error fatal queued blocked/;
+    my $row_content = '<td>'.join("</td><td>",($service,@counts)).'</td>';
+    push @rows, $row_content; 
+  }
+  my $report_message;
+  $report_message = '<table class="summary-table"><thead>
+  <th>Service</th>
+  <th colspan="6" style="text-align:center">%</th>
+  </thead><tbody><tr><td></td>
+  <td>OK</td>
+  <td>Warnings</td>
+  <td>Errors</td>
+  <td>Fatal</td>
+  <td>Queued</td>
+  <td>Blocked</td></tr>';
+  $report_message .= '<tr class="hover-row ">'
+    . join('</tr><tr class="hover-row ">',@rows)
+    . '</tr>';
+  $report_message .="</tbody></table>";
+  $report_message .="<br></br>";
+
+  $self->render(json => {alive=>$alive,report=>$report_message});
+};
+
+helper inner_report_message => sub {
+  my ($self,$hashref) = @_;
+  my $report = q{};
+  foreach my $key(sort {$hashref->{$b}->{count} <=> $hashref->{$a}->{count}} keys %$hashref) {
+    $report .= "<tr class='stats-row hover-row'><td>".join("</td><td>", @{$hashref->{$key}->{main}})."</td></tr>";
+    if ($hashref->{$key}->{inner}) {
+      # There is inner content, we need a subtable:
+      $report.="<tr><td colspan='3'><table class='inner-table'><tbody>".$self->inner_report_message($hashref->{$key}->{inner})."</tbody></table></td></tr>";
+    }
+  }
+  $report;
+};
+
+helper queue_rerun => sub {
+  my ($self) = @_;
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
+        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
+        sqlpass=>'cortex',sqldbname=>'cortex');
+  db_file_disconnect($dbfile);
+  if ($self->param('entry')) {
+    # We only want a single entry here;
+    my $queued_success = $backend->metadb->mark_entry_queued({priority=>'1',entry=>$self->param('entry'),graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
+  } else {
+    my $component = [ split(/:/, $self->param('component')) ];
+    # 3 items max, slurp anything that follows:
+    $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
+    $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
+    my $queued_success = $backend->metadb->mark_custom_entries_queued(
+      {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
+        graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
+  }
+};
+
+app->start;
+
+
+
   # my $queued_entries = $backend->metadb->count_entries($corpus_name,'queued');
   # my $reserved_entries = $backend->metadb->count_entries($corpus_name,'reserved');
   # my $all_entries = $backend->metadb->count_entries($corpus_name,'all');
@@ -383,48 +485,6 @@ helper corpus_report => sub {
   #   $report_message .= $self->inner_report_message($Results_Report);
   #   $report_message .="</tbody></table>";
   #   $report_message .="<br></br>";
-  # }
-
-  $self->render(json => {alive=>$alive,report=>$report_message});
-};
-
-helper inner_report_message => sub {
-  my ($self,$hashref) = @_;
-  my $report = q{};
-  foreach my $key(sort {$hashref->{$b}->{count} <=> $hashref->{$a}->{count}} keys %$hashref) {
-    $report .= "<tr class='stats-row hover-row'><td>".join("</td><td>", @{$hashref->{$key}->{main}})."</td></tr>";
-    if ($hashref->{$key}->{inner}) {
-      # There is inner content, we need a subtable:
-      $report.="<tr><td colspan='3'><table class='inner-table'><tbody>".$self->inner_report_message($hashref->{$key}->{inner})."</tbody></table></td></tr>";
-    }
-  }
-  $report;
-};
-
-helper queue_rerun => sub {
-  my ($self) = @_;
-  my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
-        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-        sqlpass=>'cortex',sqldbname=>'cortex');
-  db_file_disconnect($dbfile);
-  if ($self->param('entry')) {
-    # We only want a single entry here;
-    my $queued_success = $backend->metadb->mark_entry_queued({priority=>'1',entry=>$self->param('entry'),graph=>$META_GRAPH,repository=>$MAIN_REPOS});
-    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
-  } else {
-    my $component = [ split(/:/, $self->param('component')) ];
-    # 3 items max, slurp anything that follows:
-    $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
-    $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
-    my $queued_success = $backend->metadb->mark_custom_entries_queued(
-      {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
-        graph=>$META_GRAPH,repository=>$MAIN_REPOS});
-    $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
-  }
-};
-
-app->start;
 
 __END__
 

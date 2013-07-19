@@ -1,18 +1,19 @@
-function fetch_corpus_report(corpus_name) {
+function fetch_report(type,name) {
   // delete any traces of previous reports
-  $("#corpus-report").html('');
-  if (!corpus_name) { // No name, no functionality
+  var report_type = type+"-report";
+  $("#"+report_type).html('');
+  if (!name) { // No name, no functionality
     clearInterval(countdown); $("#countdown").html(''); return;}
   $('body').css('cursor', 'progress');
   $.ajax({
     url: "/ajax",
     type: "POST",
     dataType: "json",
-    data : {"action":"corpus-report","component":component,"corpus-name":corpus_name},
+    data : {"action":report_type,"component":component,"name":name},
     cache: false,
     success: function(response) {
       $('body').css('cursor', 'auto');
-      $("#corpus-report").html(response.report);
+      $("#"+report_type).html(response.report);
       if (response.alive) {
        $("body").removeClass("no-background");
        $("body").addClass("cogs-background");
@@ -22,7 +23,7 @@ function fetch_corpus_report(corpus_name) {
       }
       clearInterval(countdown);
       //clearTimeout(alarm_t);
-      //alarm_t = setTimeout(function() { fetch_corpus_report(corpus_name); }, interval);
+      //alarm_t = setTimeout(function() { fetch_corpus_report(name); }, interval);
       var seconds_left = interval / 1000;
       countdown = setInterval(function() {
           $('#countdown').html('<p>Auto-refresh in '+(--seconds_left)+' seconds.</p>');
@@ -30,9 +31,16 @@ function fetch_corpus_report(corpus_name) {
           {
               $('#countdown').html('<p>Refreshing...</p>');
               clearInterval(countdown);
-              fetch_corpus_report(corpus_name);
+              fetch_report("corpus",name);
           }
       }, 1000);
     }
   });
+}
+
+function fetch_corpus_report(corpus_name) {
+  return fetch_report("corpus",corpus_name);
+}
+function fetch_service_report(service_name) {
+  return fetch_report("service",service_name);
 }
