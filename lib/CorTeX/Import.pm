@@ -116,7 +116,7 @@ sub process_next {
     print STDERR "Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
     my $success_queue = 
-      $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'CorTeX_preprocessing',status=>0);
+      $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'import',status=>-1);
     print STDERR "Queue failed, bailing!\n" unless $success_queue;
   }
   return 1;
