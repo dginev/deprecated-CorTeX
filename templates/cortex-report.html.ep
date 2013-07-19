@@ -1,0 +1,19 @@
+% layout 'cortex-default';
+% title 'CorTeX Framework - Detailed Build Reports';
+<h3>Detailed Build report</h3> 
+<%= javascript 'js/reports.js' %>
+<%= javascript begin %>
+//var alarm_t;
+var countdown;
+var interval = 60000;   //number of mili seconds between each call
+var component = "general";
+var corpus_name = getURLParameter("corpus");
+var service_name = getURLParameter("service");
+ $(document).ready(function() {
+  fetch_classic_report(corpus_name,service_name);
+});
+<% end %>
+
+
+<div id="report"></div>
+<div id="countdown"></div>

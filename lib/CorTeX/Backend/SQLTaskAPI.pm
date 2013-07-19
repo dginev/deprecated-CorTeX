@@ -20,7 +20,8 @@ use Data::Dumper;
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries);
+  service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries
+  current_corpora current_services service_report classic_report);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
 sub corpus_to_id {
@@ -94,6 +95,30 @@ sub register_service {
   $ServiceIDs{$service} = $id;
   return $id; }
 
+sub current_corpora {
+  my ($db) = @_;
+  my $corpora = [];
+  my $sth = $db->prepare("select name from corpora");
+  $sth->execute;
+  while (my @row = $sth->fetchrow_array())
+  {
+    push @$corpora, @row;
+  }
+  $sth->finish();
+  return $corpora; }
+
+sub current_services {
+  my ($db) = @_;
+  my $services = [];
+  my $sth = $db->prepare("select name from services");
+  $sth->execute;
+  while (my @row = $sth->fetchrow_array())
+  {
+    push @$services, @row;
+  }
+  $sth->finish();
+  return $services; }
+
 sub queue {
   my ($db,%options) = @_;
   my $corpus = $options{corpus};
@@ -149,37 +174,80 @@ sub corpus_report {
   my $alive = 0; 
   while ($sth->fetch) {
     # Representing an HTML table row:
-    $report{$serviceid}{$status} = $count;
+    $report{$serviceid}{status_decode($status)} += $count;
     $alive = 1 if (!($alive || $status)); }
   # Decode the keys
   my $readable_report = {};
   foreach my $id(keys %report) {
     my $service = $db->id_to_service($id);
     my $service_report = $report{$id};
-    my $readable_service_report = 
-      { map {(status_decode($_), $service_report->{$_})} keys %$service_report };
-    $readable_report->{$service} = $readable_service_report;
+    $readable_report->{$service} = $service_report;
   }
 
   return ($readable_report,$alive); }
 
-sub count_entries {
-  my ($db,$corpus_name,$selector)=@_;
-  return unless $corpus_name;
+sub service_report {
+  my ($db,$service_name)=@_;
+  return unless $service_name;
+  my $serviceid = $db->service_to_id($service_name);
+  return unless $serviceid;
+  my $sth = $db->prepare("SELECT corpusid, count(entry), status FROM tasks
+   where serviceid=?
+   group by corpusid, status");
+  $sth->execute($serviceid);
+  my %report=();
+  my ($corpusid,$count,$status);
+  $sth->bind_columns(\($corpusid,$count,$status));
+  my $alive = 0; 
+  while ($sth->fetch) {
+    # Representing an HTML table row:
+    $report{$corpusid}{status_decode($status)} += $count;
+    $alive = 1 if (!($alive || $status)); }
+  # Decode the keys
+  my $readable_report = {};
+  foreach my $id(keys %report) {
+    my $corpus = $db->id_to_corpus($id);
+    my $corpus_report = $report{$id};
+    $readable_report->{$corpus} = $corpus_report;
+  }
+
+  return ($readable_report,$alive); }
+
+sub classic_report { # Report in detail on a <corpus,service> pair 
+  my ($db,$corpus_name,$service_name) = @_;
+  return unless $corpus_name && $service_name;
+  my $serviceid = $db->service_to_id($service_name);
   my $corpusid = $db->corpus_to_id($corpus_name);
-  return unless $corpusid;
-  if (!$selector) {
-    my $sth = $db->prepare("SELECT status, count(entry) FROM tasks where corpusid=?
+  return unless $serviceid && $corpusid;
+  my $sth = $db->prepare("SELECT status,count(entry) from tasks
+   where corpusid=? and serviceid=?
+   group by status");
+
+  $sth->execute($corpusid,$serviceid);
+  return 1;
+}
+
+sub count_entries {
+  my ($db,%options)=@_;
+  my $corpus_name = $options{corpus};
+  my $service_name = $options{service};
+  my $select = $options{select};
+  return unless $corpus_name || $service_name;
+  my $corpusid = $db->corpus_to_id($corpus_name) if $corpus_name;
+  my $serviceid = $db->service_to_id($service_name) if $service_name;
+  return unless $corpusid || $serviceid;
+  if (!$select && ($corpusid && $serviceid)) {
+    my $sth = $db->prepare("SELECT status, count(entry) FROM tasks 
+      where corpusid=? and serviceid=?
       group by status");
-    $sth->execute($corpusid);
+    $sth->execute($corpusid,$serviceid);
     my ($count,$status,%report);
     $sth->bind_columns(\($status,$count));
     while ($sth->fetch) {
-      $report{$status} = $count;
+      $report{status_decode($status)} += $count;
     }
-    my $readable_report = {map {(status_decode($_),$report{$_})} keys %report};
-    return $readable_report;
-  } elsif ($selector eq 'all') {
+    return \%report;
+  } elsif ($select eq 'all') {
     my $sth = $db->prepare("SELECT count(entry) FROM tasks where corpusid=? and serviceid=1");
     $sth->execute($corpusid);
     my $total;
@@ -198,10 +266,10 @@ sub status_decode {
     when (-2) {return 'warning'}
     when (-3) {return 'error'}
     when (-4) {return 'fatal'}
-    when (0) {return 'reserved'}
+    when (0) {return 'queued'}
     default {
       if ($status_code > 0) {
-        return 'queued'
+        return 'processing'
       } else {
         return 'blocked'
       }
