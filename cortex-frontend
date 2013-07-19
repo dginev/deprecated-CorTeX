@@ -309,8 +309,8 @@ helper corpus_report => sub {
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my $corpus_name = $self->param("corpus-name");
-  my $corpus_db_report = $backend->taskdb->corpus_report($corpus_name);
-  
+  my ($corpus_db_report,$alive) = $backend->taskdb->corpus_report($corpus_name);
+  my $report_message = "TODO: add message ".time();
   # my $queued_entries = $backend->metadb->count_entries($corpus_name,'queued');
   # my $reserved_entries = $backend->metadb->count_entries($corpus_name,'reserved');
   # my $all_entries = $backend->metadb->count_entries($corpus_name,'all');

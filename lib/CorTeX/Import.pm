@@ -39,6 +39,9 @@ sub new {
   my $backend = CorTeX::Backend->new(%opts);
   # Wipe away any existing collection if overwrite is enabled
   if ($opts{overwrite}) {
+    $backend->taskdb->delete_corpus($corpus_name);
+    $backend->taskdb->register_corpus($corpus_name);
+
     set_db_file_field('import_checkpoint',undef);
     $backend->docdb->delete_directory($opts{root},$opts{root});
     # Initialize a Build System repository in the triple store
@@ -50,8 +53,6 @@ sub new {
              object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
     if defined $opts{entry_setup};
     # Delete corpus entries in the SQL database
-    $backend->taskdb->delete_corpus($corpus_name);
-    $backend->taskdb->register_corpus($corpus_name);
   }
 
   my $checkpoint = get_db_file_field('import_checkpoint');
@@ -115,6 +116,7 @@ sub process_next {
     my $success_purge = $self->backend->taskdb->purge(corpus=>$corpus_name,entry=>$directory);
     print STDERR "Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
+    print STDERR "Queueing $directory\n";
     my $success_queue = 
       $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'import',status=>-1);
     print STDERR "Queue failed, bailing!\n" unless $success_queue;

@@ -1,69 +1,31 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Status and Reports';
-<h3>Current Corpus Statistics</h3>
+<h3>Current Corpus Statistics: 
+<% if (@$current_corpora > 0) { %>
+    <%= select_field 'corpus-name' => ["",@$current_corpora], id=>"corpus-name-select" %>
+    </td></tr>
+  <% } else { %>
+    None registered
+  <% } %>
+</h3>
+<%= javascript 'js/reports.js' %>
 <%= javascript begin %>
 //var alarm_t;
 var countdown;
 var interval = 60000;   //number of mili seconds between each call
 var component = "general";
  $(document).ready(function() {
-    var fetch_report = function(corpus_name) {
-        $('body').css('cursor', 'progress');
-        $("#corpus-report").remove();
-        if (!corpus_name) {return;} // Only if the select has a value
-        $.ajax({
-            url: "/ajax",
-            type: "POST",
-            dataType: "json",
-            data : {"action":"corpus-report","component":component,"corpus-name":corpus_name},
-            cache: false,
-            success: function(response) {
-                $('body').css('cursor', 'auto');
-                $("#corpus-report").html(response.report);
-                if (response.alive) {
-                 $("body").removeClass("no-background");
-                 $("body").addClass("cogs-background");
-                } else {
-                 $("body").removeClass("cogs-background");
-                 $("body").addClass("no-background");
-                }
-                clearInterval(countdown);
-                //clearTimeout(alarm_t);
-                //alarm_t = setTimeout(function() { fetch_report(corpus_name); }, interval);
-                var seconds_left = interval / 1000;
-                countdown = setInterval(function() {
-                    $('#countdown').html('<p>Auto-refresh in '+(--seconds_left)+' seconds.</p>');
-                    if (seconds_left <= 0)
-                    {
-                        $('#countdown').html('<p>Refreshing...</p>');
-                        clearInterval(countdown);
-                        fetch_report(corpus_name);
-                    }
-                }, 1000);
-            }
-        });
-    };
 
 
   // New code:
   $("#corpus-name-select").change(function() {
     var option = $(this).find("option:selected");
     var corpus_name = option.val();
-    // delete any traces of a report
-    fetch_report(corpus_name);
+    fetch_corpus_report(corpus_name);
   });
 });
 <% end %>
 
 
-<table class="form-table">
-  <% if (@$current_corpora > 0) { %>
-    <tr class="url-row"><td>Select Corpus</td><td class="input selectdb">
-    <%= select_field 'corpus-name' => ["",@$current_corpora], id=>"corpus-name-select" %>
-    </td></tr>
-  <% } else { %>
-    <tr class="url-row"><td><span style="">There are no corpora registered at this time.</span></td></tr>
-  <% } %>
-</table>
 <div id="corpus-report"></div>
 <div id="countdown"></div>

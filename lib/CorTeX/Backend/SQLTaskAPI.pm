@@ -20,7 +20,7 @@ use Data::Dumper;
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id corpus_to_id);
+  service_to_id corpus_to_id corpus_report);
 
 our %CorpusIDs = ();
 our %ServiceIDs = ();
@@ -30,9 +30,7 @@ sub corpus_to_id {
   if (! defined $corpusid) {
     my $sth=$db->prepare("SELECT corpusid from corpora where name=?");
     $sth->execute($corpus);
-    ($corpusid) = $sth->fetchrow_array();
-    $sth->finish; }
-    print STDERR "Corpus ID : $corpusid\n";
+    ($corpusid) = $sth->fetchrow_array(); }
   return $corpusid; }
 sub service_to_id {
   my ($db,$service) = @_;
@@ -40,18 +38,16 @@ sub service_to_id {
   if (! defined $serviceid) {
     my $sth=$db->prepare("SELECT serviceid from services where name=?");
     $sth->execute($service);
-    ($serviceid) = $sth->fetchrow_array();
-    $sth->finish;
-  }
+    ($serviceid) = $sth->fetchrow_array(); }
   return $serviceid; }
 
 sub delete_corpus {
   my ($db,$corpus) = @_;
   return unless ($corpus && (length($corpus)>0));
   my $corpusid = $db->corpus_to_id($corpus);
+  return unless $corpusid; # Not present in the first place
   my $sth = $db->prepare("delete from corpora where corpusid=?");
   $sth->execute($corpusid);
-  $sth->finish();
   return $db->purge(corpusid=>$corpusid); }
 
 sub delete_service {
@@ -60,7 +56,6 @@ sub delete_service {
   my $serviceid = $db->service_to_id($service);
   my $sth = $db->prepare("delete from services where serviceid=?");
   $sth->execute($serviceid);
-  $sth->finish();
   return $db->purge(serviceid=>$service); }
 
 sub register_corpus {
@@ -68,7 +63,6 @@ sub register_corpus {
   return unless $corpus;
   my $sth = $db->prepare("INSERT INTO corpora (name) values(?)");
   $sth->execute($corpus);
-  $sth->finish();
   my $id = $db->last_inserted_id();
   $CorpusIDs{$corpus} = $id;
   return $id; }
@@ -78,7 +72,6 @@ sub register_service {
   return unless $service;
   my $sth = $db->prepare("INSERT INTO services (name) values(?)");
   $sth->execute($service);
-  $sth->finish();
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service} = $id;
   return $id; }
@@ -90,13 +83,19 @@ sub queue {
   $options{corpusid} = $db->corpus_to_id($corpus);
   $options{serviceid} = $db->service_to_id($service);
   # Note: The two "status" lookups are not a typo, we need both to have the "on duplicate" clause set:
-  my @fields = grep {defined && (length($_)>0)} map {$options{$_}} qw/corpusid entry serviceid status status/;
-  print STDERR Dumper(\%options);
-  return unless scalar(@fields) == 5; # Exactly 5 data points to queue
-  my $sth = $db->prepare("INSERT INTO tasks (corpusid,entry,serviceid,status) VALUES (?,?,?,?) 
-    ON DUPLICATE KEY UPDATE status=?;");
-  $sth->execute(@fields);
-  $sth->finish();
+  if (lc($db->{sqldbms}) eq 'mysql') {
+    my @fields = grep {defined && (length($_)>0)} map {$options{$_}}
+       qw/corpusid entry serviceid status status/;
+    return unless scalar(@fields) == 5; # Exactly 5 data points to queue
+    my $sth = $db->prepare("INSERT INTO tasks (corpusid,entry,serviceid,status) VALUES (?,?,?,?) 
+      ON DUPLICATE KEY UPDATE status=?;");
+    $sth->execute(@fields);
+  } else {
+    my @fields = grep {defined && (length($_)>0)} map {$options{$_}} qw/corpusid entry serviceid status/;
+    return unless scalar(@fields) == 4; # Exactly 4 data points to queue
+    my $sth = $db->prepare("INSERT OR REPLACE INTO tasks (corpusid,entry,serviceid,status) VALUES (?,?,?,?)");
+    $sth->execute(@fields);
+  }
   return 1;
 }
 
@@ -113,8 +112,18 @@ sub purge {
   my $where_clause = join(" AND ",@fields);
   my $sth = $db->prepare("DELETE FROM tasks WHERE ".$where_clause.";");
   $sth->execute(grep {defined} map {$options{$_}} qw/entry corpusid serviceid status/);
-  $sth->finish();
   return 1;
+}
+
+
+# HIGH Level API
+
+sub corpus_report {
+  my ($db,$corpus_name);
+  return unless $corpus_name;
+  my $corpusid = $db->corpus_to_id($corpus_name);
+  return unless $corpusid;
+
 }
 
 1;

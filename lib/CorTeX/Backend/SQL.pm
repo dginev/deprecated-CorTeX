@@ -163,6 +163,7 @@ sub reset_db {
       name varchar(200) UNIQUE
     );");
     $self->do("create index servicenameidx on services(name);"); 
+    $self->do('INSERT INTO services (name) values("import")');
   }
   elsif ($type eq 'mysql') {
     # Tasks
@@ -192,7 +193,7 @@ sub reset_db {
       name varchar(200)
     );");
     $self->do("create index servicenameidx on services(name);");
-
+    $self->do('INSERT INTO services (name) values("import")');
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
