@@ -1,7 +1,10 @@
 % layout 'cortex-default';
 % title 'File Browser: '.$corpus_name;
+<%= javascript 'js/reports.js' %>
 <%= javascript begin %>
 $(document).ready(function() {
+	var corpus_name = getURLParameter('corpus');
+	var service_name = getURLParameter('service');
 	$('.back-to-status-button').button({
             icons: { primary: "ui-icon-circle-arrow-w" },
             text: false
@@ -10,7 +13,7 @@ $(document).ready(function() {
             'float' : 'center',                        
             'width': '25px'
         }).click(function() {
-        	window.location.href = '/status';
+        	window.location.href = '/report?corpus='+corpus_name+'&service='+service_name;
         });
 	$('.rerun-button').button({
             icons: { primary: "ui-icon-refresh" },
@@ -103,6 +106,7 @@ $(document).ready(function() {
 <h3>Detailed report</h3>
 <table class="summary-table"><thead><th>Selected Entries</th><th><button class="back-to-status-button">Back to Status</button><button class="rerun-button">Rerun Selection</button></th></thead><tbody>
 <tr class="hover-row "><td>Corpus</td><td><b><%= $corpus_name %></b></td></tr>
+<tr class="hover-row "><td>Service</td><td><b><%= $service_name %></b></td></tr>
 % if ($severity) {
 <tr class="hover-row "><td>Severity</td><td><b><%= $severity %></b></td></tr>
 % }

@@ -68,28 +68,25 @@
         width: 200px;
         vertical-align: middle;
         border-top: 1px solid transparent;
+        color: #669;
       }
-      table.summary-table td:nth-child(1)
-      {
-            color: #669;
-      }
-      table.summary-table td:nth-child(2)
+      table.overview-table td:nth-child(2)
       {
            background-color:#CCF2CC
       }
-      table.summary-table td:nth-child(3)
+      table.overview-table td:nth-child(3)
       {
            background-color:#FFFFC9
       }
-      table.summary-table td:nth-child(4)
+      table.overview-table td:nth-child(4)
       {
            background-color:#FFCD9B
       }
-      table.summary-table td:nth-child(5)
+      table.overview-table td:nth-child(5)
       {
            background-color:#FFBABA
       }
-      table.summary-table td:nth-child(7)
+      table.overview-table td:nth-child(7)
       {
            background-color:#D1D1E0
       }

@@ -157,7 +157,8 @@ function fetch_classic_report(corpus_name,service_name) {
               }
               var level = component.split(":").length - 1;
               if ((level >= 3) || thisclass == 'ok severity') {
-                  window.location.href = 'retval_detail?component='+encodeURIComponent(component);
+                  window.location.href = 'retval_detail?corpus='+corpus_name+'&service='+service_name+
+                  '&component='+encodeURIComponent(component);
               }
               fetch_classic_report(corpus_name,service_name);
           });

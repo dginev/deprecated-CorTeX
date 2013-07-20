@@ -21,7 +21,8 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries
-  current_corpora current_services service_report classic_report);
+  current_corpora current_services service_report classic_report get_custom_entries
+  get_result_summary);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
 sub corpus_to_id {
@@ -181,8 +182,7 @@ sub corpus_report {
   foreach my $id(keys %report) {
     my $service = $db->id_to_service($id);
     my $service_report = $report{$id};
-    $readable_report->{$service} = $service_report;
-  }
+    $readable_report->{$service} = $service_report; }
 
   return ($readable_report,$alive); }
 
@@ -208,8 +208,7 @@ sub service_report {
   foreach my $id(keys %report) {
     my $corpus = $db->id_to_corpus($id);
     my $corpus_report = $report{$id};
-    $readable_report->{$corpus} = $corpus_report;
-  }
+    $readable_report->{$corpus} = $corpus_report; }
 
   return ($readable_report,$alive); }
 
@@ -224,8 +223,7 @@ sub classic_report { # Report in detail on a <corpus,service> pair
    group by status");
 
   $sth->execute($corpusid,$serviceid);
-  return 1;
-}
+  return 1; }
 
 sub count_entries {
   my ($db,%options)=@_;
@@ -246,18 +244,95 @@ sub count_entries {
     while ($sth->fetch) {
       $report{status_decode($status)} += $count;
     }
-    return \%report;
-  } elsif ($select eq 'all') {
-    my $sth = $db->prepare("SELECT count(entry) FROM tasks where corpusid=? and serviceid=1");
-    $sth->execute($corpusid);
+    return \%report; }
+  elsif ($select eq 'all') {
+    $serviceid //= 1;
+    my $sth = $db->prepare("SELECT count(entry) FROM tasks where corpusid=? and serviceid=?");
+    $sth->execute($corpusid,$serviceid);
     my $total;
     $sth->bind_columns(\$total);
     $sth->fetch;
-    return $total;
-  }
+    return $total; }
   else {
-    return;
-  }}
+    $select = status_decode($select);
+    return unless $select =~ /^(\d\-\<\>\=)+$/; # make sure the selector is safe
+    my $sth = $db->prepare("SELECT count(entry) FROM tasks where corpusid=? and serviceid=? and status".$select);
+    $sth->execute($corpusid,$serviceid);
+    my $value;
+    $sth->bind_columns(\$value);
+    $sth->fetch;
+    return $value;
+    }}
+
+sub get_custom_entries {
+  my ($db,$options) = @_;
+  print STDERR Dumper($options);
+  my $corpusid = $db->corpus_to_id($options->{corpus});
+  my $serviceid = $db->service_to_id($options->{service});
+  $options->{select} //= $options->{severity};
+  my $status = status_encode($options->{select});
+  my $sth = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=? and status".$status
+            . " ORDER BY entry \n"
+            . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
+            . ($options->{from} ? "OFFSET ".$options->{from}." \n" : ''));
+  $sth->execute($corpusid,$serviceid);
+  my @entries;
+  print STDERR "STATUS: $status\n";
+  if ($options->{select} && $options->{category} && $options->{what}) {
+    # Return pairs of results and related details message
+    # TODO: Make sure this is always in the right order, not sure how reliably XML::Simple parses it 
+    # @entries = map {[$name, $content, $url] }
+  } else {
+    # Only return results
+    #@entries = [$name, undef, $url ]
+    my $name;
+    $sth->bind_columns(\$name);
+    while ($sth->fetch) {
+      print STDERR "NAME: $name ;\n\n";
+      push @entries, [$name,undef,undef]; 
+    }
+  }
+  #print STDERR Dumper(@entries);
+  \@entries; }
+
+sub get_result_summary {
+ my ($db,%options) = @_; 
+ my $result_summary = {};
+ $options{select} //= $options{severity};
+  if (! $options{severity}) {
+    # Top-level summary, get all severities and their counts:
+    $result_summary = $db->count_entries(%options);
+  } else {
+    # my $types_query = 'SELECT distinct ?z WHERE { ?x build:'.$severity.' ?y. ?y build:category ';
+    # if (! $category) {
+    #   $types_query .= ' ?z. }';
+    # } else {
+    #   $types_query .= ' '.xsd($category).'. ?y build:what ?z. }';
+    # }
+    # my $xml_ref = $self->sparql_query({query=>$types_query,repository=>$repository});
+    # my $bindings = ($xml_ref && $xml_ref->{results}->[0]->{result}) || [];
+    # my $types = [ map {$_->{binding}->{literal}->{content}} @$bindings ];
+
+    # # Get the counts for each of those
+    # foreach my $type(@$types) {
+    #   my $count_conditions = undef;
+    #   if (! $category) {
+    #     $count_conditions = '?x build:'.$severity.' ?blank. ?blank build:category '.xsd($type);
+    #   } else {
+    #     $count_conditions = '?x build:'.$severity.' ?blank. ?blank build:category '.xsd($category).'. ?blank build:what '.xsd($type).'. ';
+    #   }
+    #   $result_summary->{sesame_unescape($type)} = 
+    #   $self->count_entries(
+    #     %options
+    #     select=>$count_conditions);
+    # }
+  }
+  # Only positive counts are relevant!
+  foreach (keys %$result_summary) {
+    delete $result_summary->{$_} unless ($result_summary->{$_}>0);
+  }
+  return $result_summary;
+}
 
 sub status_decode {
   my ($status_code) = @_;
@@ -276,6 +351,17 @@ sub status_decode {
     }
   };}
 
+sub status_encode {
+  my ($status) = @_;
+  given ($status) {
+    when ('ok') {return '=-1'}
+    when ('warning') { return '=-2'}
+    when ('error') {return '=-3'}
+    when ('fatal') {return '=-4'}
+    when ('queued') {return '=0'}
+    when ('processing') {return '>0'}
+    when ('blocked') {return '<-4'}
+    default {return;}}}
 
   1;
 

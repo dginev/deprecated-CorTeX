@@ -188,7 +188,8 @@ get '/retval_detail' => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
-  my $corpus_name = $backend->metadb->get_corpus_name($MAIN_REPOS);
+  my $corpus_name = $self->param("corpus");
+  my $service_name = $self->param("service");
   my $component = [ split(/:/, $self->param('component')) ];
   # 3 items max, slurp anything that follows:
   $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
@@ -197,20 +198,31 @@ get '/retval_detail' => sub {
   my $limit = $self->param('limit') || 100;
   my $entries = $backend->metadb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
                                                       what=>$component->[3],from=>$from,limit=>$limit,
+                                                      corpus=>$corpus_name,service=>$service_name,
                                                       repository=>$MAIN_REPOS, graph=>$META_GRAPH});
   $self->stash(severity=>$component->[1]);
   $self->stash(category=>$component->[2]);
   $self->stash(what=>$component->[3]);
   $self->stash(entries=>$entries);
   $self->stash(corpus_name=>$corpus_name);
+  $self->stash(service_name=>$service_name);
 
   # Prepare exploration links:
-  my $count;
+  my $count=0;
   if ($component->[1] ne 'ok') {
-    my $whats = $backend->metadb->get_result_summary($MAIN_REPOS,$component->[1],$component->[2]);
+    my $whats = $backend->metadb->get_result_summary(
+      repository=>$MAIN_REPOS,
+      corpus=>$corpus_name,
+      service=>$service_name,
+      severity=>$component->[1],
+      category=>$component->[2]
+    );
     $count = $whats->{$component->[3] ? $component->[3] : $component->[2]};
   } else {
-    my $whats = $backend->metadb->get_result_summary($MAIN_REPOS);
+    my $whats = $backend->metadb->get_result_summary(
+      repository=>$MAIN_REPOS,
+      corpus=>$corpus_name,
+      service=>$service_name);
     $count = $whats->{$component->[1]};
   }
   $self->stash(count=>$count);
@@ -327,7 +339,7 @@ helper service_report => sub {
     push @rows, $row_content; 
   }
   my $report_message;
-  $report_message = '<table class="summary-table"><thead>
+  $report_message = '<table class="summary-table overview-table"><thead>
   <th>Corpus</th>
   <th colspan="6" style="text-align:center">%</th>
   </thead><tbody><tr><td></td>
@@ -364,7 +376,7 @@ helper corpus_report => sub {
     push @rows, $row_content; 
   }
   my $report_message;
-  $report_message = '<table class="summary-table"><thead>
+  $report_message = '<table class="summary-table overview-table"><thead>
   <th>Service</th>
   <th colspan="6" style="text-align:center">%</th>
   </thead><tbody><tr><td></td>
@@ -390,10 +402,14 @@ helper classic_report => sub {
   my $entries_report = $backend->taskdb->count_entries(
     corpus=>$corpus_name,
     service=>$service_name);
-  my $all=0;
+  my ($all_count,$completed_count)=(0,0);
   foreach (keys %$entries_report) {
-    $all += $entries_report->{$_}; }
-  $entries_report->{all} = $all;
+    $completed_count += $entries_report->{$_} if $_ =~/^ok|warning|error|fatal$/;
+    $all_count += $entries_report->{$_}; }
+  $entries_report->{all} = $all_count;
+  $entries_report->{completed} = $completed_count;
+  foreach (qw/ok warning error fatal queued blocked processing/) {
+    $entries_report->{$_} //= '0'; }
   my ($db_report,$alive) = $backend->taskdb->classic_report($corpus_name,$service_name);
   # 2. Prepare report:
   # 2.1 General report:
@@ -419,45 +435,52 @@ helper classic_report => sub {
   $report_message = '<table class="summary-table"><thead><th>General</th><th>Status</th></thead><tbody><tr class="hover-row ">';
   $report_message .= join ("</tr><tr class='hover-row'>", map {"<td>".join("</td><td>", @$_)."</td>"} @$General_Report );
   $report_message .="</tr></tbody></table>";
-#   # 2.2 Results report:
-  #   my $Results_Report = {};
-  #   if ($done_entries) {
-  #     $Results_Report->{ok}->{count} = $ok_entries;
-  #     $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$ok_entries.'</span>',
-  #       '<span class="ok severity">'.sprintf("%.2f",(100*$ok_entries / $done_entries)).'</span>'];
-  #     $Results_Report->{warning}->{count} = $warning_entries;
-  #     $Results_Report->{warning}->{main} = ['<span class="warning severity">Warning</span>','<span class="warning severity">'.$warning_entries.'</span>',
-  #       '<span class="warning severity">'.sprintf("%.2f",(100*$warning_entries / $done_entries)).'</span>'];
-  #     $Results_Report->{error}->{count} = $error_entries;
-  #     $Results_Report->{error}->{main} = ['<span class="error severity">Error</span>','<span class="error severity">'.$error_entries.'</span>',
-  #       '<span class="error severity">'.sprintf("%.2f",(100*$error_entries / $done_entries)).'</span>'];
-  #     $Results_Report->{fatal}->{count} = $fatal_entries;
-  #     $Results_Report->{fatal}->{main} = ['<span class="fatal severity">Fatal</span>','<span class="fatal severity">'. $fatal_entries.'</span>',
-  #       '<span class="fatal severity">'.sprintf("%.2f",(100*$fatal_entries / $done_entries)).'</span>'];
+  # 2.2 Results report:
+  my $Results_Report = {};
+  if ($completed_count) {
+    $Results_Report->{ok}->{count} = $entries_report->{ok};
+    $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$entries_report->{ok}.'</span>',
+      '<span class="ok severity">'.sprintf("%.2f",(100*$entries_report->{ok} / $all_count)).'</span>'];
+    $Results_Report->{warning}->{count} = $entries_report->{warning};
+    $Results_Report->{warning}->{main} = ['<span class="warning severity">Warning</span>','<span class="warning severity">'.$entries_report->{warning}.'</span>',
+      '<span class="warning severity">'.sprintf("%.2f",(100*$entries_report->{warning} / $all_count)).'</span>'];
+    $Results_Report->{error}->{count} = $entries_report->{error};
+    $Results_Report->{error}->{main} = ['<span class="error severity">Error</span>','<span class="error severity">'.$entries_report->{error}.'</span>',
+      '<span class="error severity">'.sprintf("%.2f",(100*$entries_report->{error} / $all_count)).'</span>'];
+    $Results_Report->{fatal}->{count} = $entries_report->{fatal};
+    $Results_Report->{fatal}->{main} = ['<span class="fatal severity">Fatal</span>','<span class="fatal severity">'. $entries_report->{fatal}.'</span>',
+      '<span class="fatal severity">'.sprintf("%.2f",(100*$entries_report->{fatal} / $all_count)).'</span>'];
 
-  #     if ($severity) {
-  #       my $categories = $backend->metadb->get_result_summary($MAIN_REPOS,$severity);
-  #       $categories = { map {encode_entities($_)=>$categories->{$_}} (keys %$categories) };
-  #       foreach (keys %$categories) {
-  #         $Results_Report->{$severity}->{inner}->{$_}->{count} = $categories->{$_};
-  #         $Results_Report->{$severity}->{inner}->{$_}->{main} =  ['<span class="'.$_.' category">'.$_.'</span>','<span class="'.$_.' category">'.$categories->{$_}.'</span>',
-  #         '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $done_entries)).'</span>'];
-  #       }
-  #       if ($category) {
-  #         my $whats = $backend->metadb->get_result_summary($MAIN_REPOS,$severity,$category);
-  #         $whats = { map {encode_entities($_)=>$whats->{$_}} (keys %$whats) };
-  #         foreach (keys %$whats) {
-  #           $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{count} = $whats->{$_};
-  #           $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{main} =  ['<span class="'.$_.' what">'.$_.'</span>','<span class="'.$_.' what">'.$whats->{$_}.'</span>',
-  #           '<span class="'.$_.' what">'.sprintf("%.2f",(100*$whats->{$_} / $done_entries)).'</span>'];
-  #         }
-  #       }
-  #     }
-  #   }
-  #   $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>Count</th><th>%</th></thead><tbody>';
-  #   $report_message .= $self->inner_report_message($Results_Report);
-  #   $report_message .="</tbody></table>";
-  #   $report_message .="<br></br>";
+    if ($severity) {
+      my $categories = $backend->metadb->get_result_summary(
+        corpus=>$corpus_name,
+        service=>$service_name,
+        severity=>$severity);
+      $categories = { map {encode_entities($_)=>$categories->{$_}} (keys %$categories) };
+      foreach (keys %$categories) {
+        $Results_Report->{$severity}->{inner}->{$_}->{count} = $categories->{$_};
+        $Results_Report->{$severity}->{inner}->{$_}->{main} =  ['<span class="'.$_.' category">'.$_.'</span>','<span class="'.$_.' category">'.$categories->{$_}.'</span>',
+        '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $all_count)).'</span>'];
+      }
+      if ($category) {
+        my $whats = $backend->metadb->get_result_summary(
+          corpus=>$corpus_name,
+          service=>$service_name,
+          severity=>$severity,
+          category=>$category);
+        $whats = { map {encode_entities($_)=>$whats->{$_}} (keys %$whats) };
+        foreach (keys %$whats) {
+          $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{count} = $whats->{$_};
+          $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{main} =  ['<span class="'.$_.' what">'.$_.'</span>','<span class="'.$_.' what">'.$whats->{$_}.'</span>',
+          '<span class="'.$_.' what">'.sprintf("%.2f",(100*$whats->{$_} / $all_count)).'</span>'];
+        }
+      }
+    }
+  }
+  $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>Count</th><th>%</th></thead><tbody>';
+  $report_message .= $self->inner_report_message($Results_Report);
+  $report_message .="</tbody></table>";
+  $report_message .="<br></br>";
   }
   $self->render(json => {alive=>$alive,report=>$report_message});
 };
@@ -477,14 +500,15 @@ helper inner_report_message => sub {
 
 helper queue_rerun => sub {
   my ($self) = @_;
-  my $dbfile = db_file_connect();
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'',
-        sqlhost=>'localhost',sqldbms=>'MySQL',sqluser=>'cortex',
-        sqlpass=>'cortex',sqldbname=>'cortex');
-  db_file_disconnect($dbfile);
+  my $corpus_name=$self->param('corpus');
+  my $service_name=$self->param('service');
+  my $backend = $self->backend;
   if ($self->param('entry')) {
     # We only want a single entry here;
-    my $queued_success = $backend->metadb->mark_entry_queued({priority=>'1',entry=>$self->param('entry'),graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+    my $queued_success = $backend->metadb->mark_entry_queued(
+      {priority=>'1',entry=>$self->param('entry'),
+      corpus=>$corpus_name,service=>$service_name,
+      graph=>$META_GRAPH,repository=>$MAIN_REPOS});
     $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
   } else {
     my $component = [ split(/:/, $self->param('component')) ];
@@ -493,6 +517,7 @@ helper queue_rerun => sub {
     $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
     my $queued_success = $backend->metadb->mark_custom_entries_queued(
       {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
+        corpus=>$corpus_name,service=>$service_name,
         graph=>$META_GRAPH,repository=>$MAIN_REPOS});
     $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
   }
