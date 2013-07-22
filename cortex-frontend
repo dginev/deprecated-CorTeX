@@ -115,7 +115,11 @@ get '/admin' => sub {
 get '/dev' => sub {
   my $self = shift;
   return $self->redirect_to('login') unless $self->session('name');
-  $self->stash(some_key=>'some_value');
+  my $taskdb = $self->backend->taskdb;
+  my $current_corpora = $taskdb->current_corpora;
+  my $current_services = $taskdb->current_services;
+  $self->stash(current_corpora=>$current_corpora);
+  $self->stash(current_services=>$current_services);
   $self->render;
 } => 'cortex-dev';
 

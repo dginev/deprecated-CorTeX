@@ -11,7 +11,7 @@
       id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
       id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
       $("#service-id-label").text(id);
-      $("#service-id").text(id);
+      $("#service-id").val(id);
     });
     
     $('<span style="color: #FF0000;">*</span>').appendTo('td.required');
@@ -41,15 +41,30 @@
   <div class="itemcontent"><%= form_for '' => begin %>
     <table class="form-table">
       <tr><td class="required">Name</td>
-        <td class="input"><%= text_field 'service-name' => (value=>'',size=>50,id=>'service-name') %></td></tr>
+        <td class="input"><%= text_field 'service-name' => (value=>'Example Service',size=>50,id=>'service-name') %></td></tr>
       <tr><td class="required">Version</td>
         <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>50,id=>'service-version') %></td></tr>
-      <tr><td>Internal ID<td class="input"><span id="service-id-label">foo</span><%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
-      <tr><td>Requires</td><td class="input">
-        TODO
+      <tr><td><td class="input">(internal ID: <span id="service-id-label">foo</span>)<%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
+      <% if (@$current_services) { %>
+        <tr><td>Depends on</td><td class="input">
+        <% foreach my $service(@$current_services) { %>
+          <% if ($service eq 'import') { %>
+            <%= check_box 'requires[]' => 'import', checked=>1, disabled=>1 %>import&nbsp;&nbsp;
+          <% } else { %>  
+            <%= check_box 'requires[]' => $service %><%= $service %>&nbsp;&nbsp;
+        <% }} %>
+        </td></tr>
+      <% } %>
+      <% if (@$current_corpora) { %>
+        <tr><td>Corpora</td><td class="input">
+        <% for my $corpus(@$current_corpora) { %>
+            <%= check_box 'corpora[]' => $corpus %><%= $corpus %>&nbsp;&nbsp;
+        <% } %>
+      </td></tr>
+      <% } %>
       </td></tr>
       <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>50) %></td></tr>
-      <tr><td>XPath selector</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
+      <tr><td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
       <tr><td class="required">Type</td>
         <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregate'=>3]] %></td></tr>
       <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
