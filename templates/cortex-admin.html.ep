@@ -3,9 +3,9 @@
 <%= javascript begin %>
 $(document).ready(function() {
   $("#accordion").accordion();
-  $("#add-converter-input-field").click(function() {
-    var newid = $('#converter-table tr').length;
-    $("#converter-table-submit-tr").before("<tr><td>Converter URL "+newid+"</td><td class=\"input\"><input name=\"converter-urls\" size=\"50\" value=\"\"></td></tr>");
+  $("#add-workers-input-field").click(function() {
+    var newid = $('#workers-table tr').length;
+    $("#workers-table-submit-tr").before("<tr><td>Gearman URL "+newid+"</td><td class=\"input\"><input name=\"gearman-urls\" size=\"50\" value=\"\"></td></tr>");
     $("#accordion").accordion("resize");
   });
 
@@ -80,16 +80,15 @@ $(document).ready(function() {
    <% end %>
    </div>
 
-<h3><a href="#">Configure Converters</a></h3>
+<h3><a href="#">Configure Workers</a></h3>
 <div class="itemcontent"><%= form_for '' => begin %>
-  <table id="converter-table" class="form-table">
-    <% my $i=1; foreach my $converter_url (@$current_converter_urls) { %>
-    <tr><td>Converter URL <% $i; %></td><td class="input"><%= text_field "converter-urls" => (value=>$converter_url, size=>50) %></td></tr>
+  <table id="workers-table" class="form-table">
+    <% my $i=1; foreach my $gearman_url (@$current_gearman_urls) { %>
+    <tr><td>Gearman URL <% $i; %></td><td class="input"><%= text_field "gearman-urls" => (value=>$gearman_url, size=>50) %></td></tr>
     <% $i++; } %>
-    <tr><td>TODO: Needs to be refactored as number of local workers to be started per service. We have a decentralized registration for remote workers now, using the Gearman model.</td></tr>
-    <tr id="converter-table-submit-tr"><td> <a id="add-converter-input-field" href="#">Add more</a></td><td><%= submit_button 'Configure Converters' %></td></tr>
+    <tr id="workers-table-submit-tr"><td> <a id="add-workers-input-field" href="#">Add more</a></td><td><%= submit_button 'Configure workers' %></td></tr>
 </table>
-<%= hidden_field action => 'register-converters' %>
+<%= hidden_field action => 'register-workers' %>
 <% end %>
 </div>
 <h3><a href="#">Configure HTTP Proxy</a></h3>

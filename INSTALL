@@ -11,6 +11,8 @@ sudo apt-get install tomcat6 \
   gearman-server libgearman-client-async-perl \
   mysql-server libdbd-mysql-perl libdbd-sqlite-perl
 
+    Unix::Processors
+
 I. Backends
   I.1. OWLIM -- Triple store (if you're not from Jacobs University, please use Sesame or request your own OWLIM access link)
     http://download.ontotext.com/owlim/3e4dc2e0-d66c-11e1-b81b-dba586cc0cc6/owlim-lite-5.2.5331.zip

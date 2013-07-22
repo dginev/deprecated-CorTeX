@@ -105,8 +105,8 @@ get '/admin' => sub {
   $self->stash(current_sesame_url=>$dbfile->{sesame_url});
   $self->stash(current_proxy_url=>$dbfile->{proxy_url});
   # TODO: MySQL URL?
-  $self->stash(current_converter_urls=>
-    $dbfile->{converter_urls} ? [split("\n",$dbfile->{converter_urls})] : []);
+  $self->stash(current_gearman_urls=>
+    $dbfile->{gearman_urls} ? [split("\n",$dbfile->{gearman_urls})] : []);
   db_file_disconnect($dbfile);
   $self->render;
 } => 'cortex-admin';
@@ -182,7 +182,7 @@ post '/ajax' => sub {
     
     when ('register-proxy') { $self->register_proxy; }
     when ('register-databases') { $self->register_databases; }
-    when ('register-converters') { $self->register_converters; }
+    when ('register-workers') { $self->register_workers; }
     when ('corpus-report') { $self->corpus_report; }
     when ('service-report') { $self->service_report; }
     when ('classic-report') {$self->classic_report; }
@@ -288,13 +288,13 @@ helper register_databases => sub {
     $self->render(json=>{message=>"Successfully configured databases!"});
   }
 };
-helper register_converters => sub {
+helper register_workers => sub {
   my $self = shift;
   my $dbfile = db_file_connect;
-  my @urls = grep (length($_)>0, $self->param('converter-urls'));
-  $dbfile->{converter_urls} = join("\n",@urls);
+  my @urls = grep (length($_)>0, $self->param('gearman-urls'));
+  $dbfile->{gearman_urls} = join("\n",@urls);
   db_file_disconnect($dbfile);
-  $self->render(json=>{message=>"Converter URLs registered!"});
+  $self->render(json=>{message=>"Gearman URLs registered!"});
 };
 
 

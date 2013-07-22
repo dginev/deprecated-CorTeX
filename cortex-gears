@@ -16,6 +16,13 @@ use strict;
 use warnings;
 use Encode;
 
+## Plan of action:
+# 1. Spawn/fork local workers (lib/CorTeX/Service/*.json)
+#    # workers = 5 x ( # cpus ) x (# local services)
+# 2. Start event loop on the task queue
+# 2.1. If no queued tasks - sleep 60
+# 2.2. Otherwise, add jobs with AnyEvent::Gearman
+
 use File::Basename;
 my ($FILE_BASE,$libdir);
 BEGIN {
