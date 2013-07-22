@@ -124,7 +124,11 @@ $(document).ready(function() {
 
 <h3><a href="#">Server Status</a></h3>
 <div>
-<a href="status">Visit status page</a>
+<ul>
+<li><a href="corpus-report">Corpus Overview</a></li>
+<li><a href="service-report">Service Overview</a></li>
+<li>TODO: Think of Worker processes and DB overviews</li>
+
 </div>
 
 </div>

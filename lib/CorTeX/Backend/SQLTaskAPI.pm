@@ -88,12 +88,16 @@ sub register_corpus {
   return $id; }
 
 sub register_service {
-  my ($db,$service) = @_;
-  return unless $service;
-  my $sth = $db->prepare("INSERT INTO services (name) values(?)");
-  $sth->execute($service);
+  my ($db,%service) = @_;
+  my $message;
+  foreach my $key(qw/name version id type/) { # Mandatory keys
+    return (0,"Failed: Missing $key!") unless $service{$key}; }
+  foreach my $key(qw/xpath url/) { # Optional keys
+    $service{$key} //= '';}
+  my $sth = $db->prepare("INSERT INTO services (name,version,iid,type,xpath,url) values(?,?,?,?,?,?)");
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url/);
   my $id = $db->last_inserted_id();
-  $ServiceIDs{$service} = $id;
+  $ServiceIDs{$service{name}} = $id;
   return $id; }
 
 sub current_corpora {

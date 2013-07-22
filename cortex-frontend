@@ -172,6 +172,10 @@ post '/ajax' => sub {
   given ($action) {
     when ('add-corpus') { $self->add_corpus; }
     when ('delete-corpus') {} #TODO
+    when ('add-service') { $self->add_service; }
+    when ('update-service') { $self->update_service; }
+    when ('delete-service') { $self->delete_service; }
+    
     when ('register-proxy') { $self->register_proxy; }
     when ('register-databases') { $self->register_databases; }
     when ('register-converters') { $self->register_converters; }
@@ -320,6 +324,25 @@ helper add_corpus => sub {
   $self->render(json => {message => $message});
 };
 
+helper add_service => sub {
+  my ($self) = @_;
+  # Import a new corpus from the $path
+  my %service = ();
+  foreach (qw/name version id requires url xpath type/) {
+    $service{$_} = $self->param('service-'.$_); }
+
+  foreach my $key(qw/name version id type/) {
+    if (! $service{$key}) {
+      $self->render(json=>{
+        message=>"Please enter a valid $key of the service!"});
+      return; }}
+  my $backend = $self->backend;
+  my ($success,$message) = $backend->taskdb->register_service(%service);
+  if ($success) {
+    $message="Successfully Registered $service{name}, version $service{version}!"; }
+  $self->render(json => {message => $message});
+};
+
 helper service_report => sub {
   my ($self) = @_;
   my $service_name = $self->param("name");
@@ -370,7 +393,7 @@ helper corpus_report => sub {
   my @rows;
   foreach my $service(keys %$corpus_db_report) {
     my $countstable = $corpus_db_report->{$service};
-    my @counts = map {sprintf("%.2f",(100*($countstable->{$_} / $total_count)))} qw/ok warning error fatal queued blocked/;
+    my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal queued blocked/;
     my $service_link = "<a class='quietlink' href='/report?service=$service&corpus=$corpus_name'>$service</a>";
     my $row_content = '<td>'.join("</td><td>",($service_link,@counts)).'</td>';
     push @rows, $row_content; 

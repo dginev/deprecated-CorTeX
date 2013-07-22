@@ -24,3 +24,8 @@ JOBID > 0  incomplete/processing
 
 Gearman could in fact take charge of most of the cron problems -- just hit it with jobs.
 
+== Third-party service registrations
+ - validate all mandatory fields, good UI
+ - have a mandatory testbed sandbox - one article from each corpus? total 5?
+  the developer can only deploy on an entire corpus once the test bed has finished with non-error results (5 out of 5)
+  and the developer manually confirms they are happy with the annotations.

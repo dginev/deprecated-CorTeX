@@ -10,10 +10,13 @@
       var id = name+" v"+version;
       id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
       id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
+      $("#service-id-label").text(id);
       $("#service-id").text(id);
     });
-
-  	$("form").each(function(c, obj) {
+    
+    $('<span style="color: #FF0000;">*</span>').appendTo('td.required');
+  	
+    $("form").each(function(c, obj) {
   	  $(obj).attr("action", '');
   	  $(obj).submit(function(event) {
   		  event.preventDefault;
@@ -34,21 +37,24 @@
 <div style="text-align:center;" id="message"></div>
 <h1>Developer Interface</h1>
 <div class="ui-accordion ui-widget ui-helper-reset" id="accordion">
-  <h3><a href="#">Register Service</a></h3>
+  <h3><a href="#">Add Service</a></h3>
   <div class="itemcontent"><%= form_for '' => begin %>
     <table class="form-table">
-      <tr><td>Name</td><td class="input"><%= text_field 'service-name' => (value=>'',size=>50,id=>'service-name') %></td></tr>
-      <tr><td>Version</td><td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>50,id=>'service-version') %></td></tr>
-      <tr><td>Internal ID<td class="input"><span id="service-id">foo</span></td></tr>
+      <tr><td class="required">Name</td>
+        <td class="input"><%= text_field 'service-name' => (value=>'',size=>50,id=>'service-name') %></td></tr>
+      <tr><td class="required">Version</td>
+        <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>50,id=>'service-version') %></td></tr>
+      <tr><td>Internal ID<td class="input"><span id="service-id-label">foo</span><%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
       <tr><td>Requires</td><td class="input">
         TODO
       </td></tr>
       <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>50) %></td></tr>
       <tr><td>XPath selector</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
-      <tr><td>Type</td><td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>'annalysis'],['Conversion'=>'conversion'],['Aggregate'=>'aggregate']] %></td></tr>
-      <tr><td></td><td><%= submit_button 'Register Service' %></td></tr>
+      <tr><td class="required">Type</td>
+        <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregate'=>3]] %></td></tr>
+      <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
     </table>
-    <%= hidden_field action => 'register-service' %>
+    <%= hidden_field action => 'add-service' %>
    <% end %>
    </div>
 
@@ -64,7 +70,7 @@
       <tr><td>URL</td><td class="input"><%= text_field 'uservice-url' => (value=>'',size=>50) %></td></tr>
       <tr><td>XPath selector</td><td class="input"><%= text_field 'uservice-xpath' => (value=>'/',size=>50) %></td></tr>
       <tr><td>Type</td><td class="input"><%= select_field 'uservice-type' => ['Analyzer','Converter','Aggregator'] %></td></tr>
-      <tr><td></td><td><%= submit_button 'Register Service' %></td></tr>
+      <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
     </table>
     <%= hidden_field action => 'update-service' %>
    <% end %>
