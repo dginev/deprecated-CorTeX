@@ -89,15 +89,46 @@ sub register_corpus {
 
 sub register_service {
   my ($db,%service) = @_;
+  print Dumper(\%service);
   my $message;
+  # Prepare parameters
   foreach my $key(qw/name version id type/) { # Mandatory keys
     return (0,"Failed: Missing $key!") unless $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
+  # Register the Service
+  # TODO: Check the name, version and iid are unique!
   my $sth = $db->prepare("INSERT INTO services (name,version,iid,type,xpath,url) values(?,?,?,?,?,?)");
   $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
+  # Register Dependencies
+  $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
+  my $dependency_weight = 0;
+  foreach my $foundation(@{$service{dependencies}}) {
+    next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
+    $dependency_weight++;
+    my $foundation_id = $db->service_to_id($foundation);
+    $sth->execute($id,$foundation_id); }
+  # Register Tasks on each corpus
+  my $status = -5 - $dependency_weight;
+  # For every import task, queue a task with the service $id
+  # TODO: The list of tasks is proportional to the size of the corpus, so a big corpus will have millions of tasks
+  #       how do we register them quickly? Maybe a single transaction will do the trick for the insert...
+  #       but what about the enormous select? Do 3 million entries fit in memory?
+  my $entry_query = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=1 and status=-1");
+  my $insert_query = $db->prepare("INSERT into tasks (corpusid,serviceid,entry,status) values(?,?,?,?)");
+  foreach my $corpus(@{$service{corpora}}) {
+    my $corpusid = $db->corpus_to_id($corpus);
+    $entry_query->execute($corpusid);
+    my ($entry,@entries);
+    $entry_query->bind_columns(\$entry);
+    while ($entry_query->fetch) { push @entries, $entry; } 
+    $db->do('BEGIN TRANSACTION');
+    foreach my $e(@entries) {
+      $insert_query->execute($corpusid,$id,$e,$status); }
+    $db->do('COMMIT');
+  }
   return $id; }
 
 sub current_corpora {
@@ -345,7 +376,7 @@ sub status_decode {
     when (-2) {return 'warning'}
     when (-3) {return 'error'}
     when (-4) {return 'fatal'}
-    when (0) {return 'queued'}
+    when (-5) {return 'queued'}
     default {
       if ($status_code > 0) {
         return 'processing'
@@ -362,9 +393,9 @@ sub status_encode {
     when ('warning') { return '=-2'}
     when ('error') {return '=-3'}
     when ('fatal') {return '=-4'}
-    when ('queued') {return '=0'}
+    when ('queued') {return '=-5'}
     when ('processing') {return '>0'}
-    when ('blocked') {return '<-4'}
+    when ('blocked') {return '<-5'}
     default {return;}}}
 
   1;

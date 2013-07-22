@@ -49,6 +49,7 @@
         <tr><td>Depends on</td><td class="input">
         <% foreach my $service(@$current_services) { %>
           <% if ($service eq 'import') { %>
+            <%= hidden_field "requires[]" => "import" %>
             <%= check_box 'requires[]' => 'import', checked=>1, disabled=>1 %>import&nbsp;&nbsp;
           <% } else { %>  
             <%= check_box 'requires[]' => $service %><%= $service %>&nbsp;&nbsp;

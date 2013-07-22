@@ -352,11 +352,17 @@ Legend:
 
 =over 8
 
-=item 0: Ready for processing
+=item -5: Ready for processing
 
-=item -1: Completed
+=item -1: Completed OK
 
-=item -2: Unmet prerequisites
+=item -2: Completed with Warnings
+
+=item -3: Completed with Errors
+
+=item -4: Incomplete with Fatal error
+
+=item <-5: Blocked by dependencies
 
 =item >0: Dispatched for processing, the number is typically the Gearman Job ID
 

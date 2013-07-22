@@ -30,7 +30,7 @@ if (-d $libdir) {
   use lib $libdir;
 }
 use feature qw(switch);
-
+use Data::Dumper;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 # TODO: Make this customizable from the interface (if that makes sense?)
 our $MAIN_REPOS = 'buildsys';
@@ -340,6 +340,10 @@ helper add_service => sub {
       $self->render(json=>{
         message=>"Please enter a valid $key of the service!"});
       return; }}
+  my @dependencies = $self->param('requires[]') ;
+  $service{dependencies} = \@dependencies;
+  my @corpora = $self->param('corpora[]');
+  $service{corpora} = \@corpora;
   my $backend = $self->backend;
   my ($success,$message) = $backend->taskdb->register_service(%service);
   if ($success) {
