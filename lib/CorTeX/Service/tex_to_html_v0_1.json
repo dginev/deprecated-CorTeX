@@ -1,0 +1,11 @@
+{
+  "name": "TeX to HTML",
+  "version":"0.1",
+  "dependencies": ["import"],
+  "corpora" : [],
+  "url":"localhost",
+  "type":"2",
+  "inputformat":"tex",
+  "outputformat":"html",
+  "parameters":{}
+}

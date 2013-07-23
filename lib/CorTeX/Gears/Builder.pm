@@ -18,7 +18,7 @@ use Data::Dumper;
 use Encode;
 use List::Util 'shuffle';
 
-use CorTeX::Temporal::Backend;
+use CorTeX::Backend;
 use CorTeX::Util::Convert qw(convert_snippet convert_zip log_to_triples);
 
 { # begin local group, to catch signals
@@ -96,11 +96,11 @@ sub start {
             $response->{log} = "Status:conversion:3\nFatal:conversion:empty-log Something broke, got no Log content." unless $response->{log};
           }
           my $log_triples = log_to_triples($entry,$response->{log});
-          push $triples, @$log_triples;
+          push @$triples, @$log_triples;
         } else {
           # Something failed, mark Fatal:
           my $log_triples = log_to_triples($entry,"Status:conversion:3\nFatal:buildsys:no-response Something broke, got no response.");
-          push $triples, @$log_triples;
+          push @$triples, @$log_triples;
           $wait_required++;
         }
       }
@@ -126,11 +126,11 @@ sub start {
           my $log_pathname = "$base_collection$base_name/$base_name.log";
           my $log_content = $exist->get_binary_doc($log_pathname) || "Status:conversion:3\nFatal:buildsys:empty-log Something broke, got no log content.";
           my $log_triples = log_to_triples($entry,$log_content);
-          push $triples, @$log_triples;
+          push @$triples, @$log_triples;
         } else {
           # Something failed, mark Fatal:
           my $log_triples = log_to_triples($entry,"Status:conversion:3\nFatal:buildsys:no-response Something broke, got no response.");
-          push $triples, @$log_triples;
+          push @$triples, @$log_triples;
           $wait_required++;
         }
       }

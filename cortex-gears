@@ -16,24 +16,27 @@ use strict;
 use warnings;
 use Encode;
 
+use File::Basename;
+my ($FILE_BASE,$libdir);
+BEGIN {
+    $FILE_BASE = dirname(__FILE__);
+    $libdir = $FILE_BASE."/lib"; }
+if (-d $libdir) {
+  use lib $libdir; }
+
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+
 ## Plan of action:
+# 0. Add all default services (if necessary)
+my $default_service_ids = register_defaults();
 # 1. Spawn/fork local workers (lib/CorTeX/Service/*.json)
+spawn_workers($default_service_ids);
 #    # workers = 5 x ( # cpus ) x (# local services)
 # 2. Start event loop on the task queue
 # 2.1. If no queued tasks - sleep 60
 # 2.2. Otherwise, add jobs with AnyEvent::Gearman
 
-use File::Basename;
-my ($FILE_BASE,$libdir);
-BEGIN {
-    $FILE_BASE = dirname(__FILE__);
-    $libdir = $FILE_BASE."/lib";
-}
-if (-d $libdir) {
-  use lib $libdir;
-}
 
-use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 {
   local $SIG{'INT'} = \&stop_all; # Interrupt handler
   local $SIG{'HUP'} = \&stop_all; # Apache Hangup handler
@@ -59,7 +62,7 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
       $Cache->{sesame_url} = $sesame_url;
     }
     if ($init_backend_needed) {
-      $Cache->{backend} = CorTeX::Temporal::Backend->new(exist_url=>$exist_url,sesame_url=>$sesame_url);
+      $Cache->{backend} = CorTeX::Backend->new(exist_url=>$exist_url,sesame_url=>$sesame_url);
     }
     my $sesame = $Cache->{backend}->sesame;
 
@@ -73,23 +76,33 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
         # Also, retrieve corpus type, so that we optimize for single-file corpora (ZBL, PlanetMath):
         my $entry_type = $sesame->get_entry_type($MAIN_REPOS);
         $Cache->{entry_type} = $entry_type;
-        # Boot conversion jobs, if none are present:
-        spawn_conversion_workers($Cache) unless (@{$Cache->{children}} > 0);
+        # Boot up clients/workers, if none are present:
+        spawn_workers($Cache) unless (@{$Cache->{workers}} > 0);
+        spawn_clients($Cache) unless (@{$Cache->{clients}} > 0);
         # Otherwise, we still need to process some files... so nothing extra to do
       } else {
         # Everything seems done!
         # Stop all converters after their jobs are done and sleep
-        stop_conversion_workers($Cache);
+        stop_clients($Cache);
       }
     }
     else {
-      stop_conversion_workers($Cache);
+      stop_clients($Cache);
     }
 
     sleep 60;
   }
+  
+  use Unix::Processors;
+  my $processor_multiplier = Unix::Processors->new->max_online;
+  sub spawn_workers {
+    my $dbfile = db_file_connect;
+    $dbfile->{gearman_urls};
 
-  sub spawn_conversion_workers {
+
+  }
+
+  sub spawn_clients {
     my ($cache) = @_;
     my @converters = @{$cache->{converters}};
     my $query_size = scalar(@converters);
@@ -98,39 +111,66 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
       my $c = shift @converters;
       my $pid = fork();
       if ($pid == 0) {
-        use CorTeX::Gears::CronBuilder;
-        my $cron_builder = CorTeX::Gears::CronBuilder->new(main_repos=>$MAIN_REPOS,
+        use CorTeX::Gears::Builder;
+        my $gearman_client = CorTeX::Gears::Builder->new(main_repos=>$MAIN_REPOS,
                                                          meta_graph=>$META_GRAPH,
                                                          build_system_url=>$BUILD_SYSTEM_URL,
                                                          backend=>$Cache->{backend},
                                                          proxy_url=>$Cache->{proxy_url},
                                                          entry_type=>$Cache->{entry_type},
-                                                         converter=>$c,
                                                          query_size=>$query_size);
-        $cron_builder->start;
+        $gearman_client->start;
       } else {
         print STDERR "Started process $pid\n";
-        push @{$cache->{children}}, $pid;
+        push @{$cache->{clients}}, $pid;
       }
     }
   }
 
   sub stop_all {
-    stop_conversion_workers($Cache);
-    exit 0;
-  }
+    stop_clients($Cache);
+    exit 0; }
 
-  sub stop_conversion_workers {
+  sub stop_clients {
     my ($cache) = @_;
-    stop_cron_job($_) foreach @{$cache->{children}};
-    $cache->{children} = [];
-  }
+    stop_cron_job($_) foreach @{$cache->{clients}};
+    $cache->{clients} = []; }
 
   sub stop_cron_job {
     my ($pid) = @_;
     # Send a SIGINT to the cron job
     kill 2, $pid;
-    waitpid($pid,0);
+    waitpid($pid,0); }
+
+  sub register_defaults {
+    our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+    my $services_dir = $INSTALLDIR."/Service";
+    opendir(my $dh, $services_dir)
+     || die "can't opendir $services_dir: $!";
+    my @default_service_descriptions = grep { /\.json$/ && -f "$services_dir/$_" }
+    readdir($dh);
+    closedir $dh;
+    my @default_service_ids = ();
+    if (@default_service_descriptions) {
+      use File::Slurp;
+      use JSON::XS qw(decode_json);
+      use Data::Dumper;
+      my $dbhandle = db_file_connect; 
+      my $backend = CorTeX::Backend->new(%$dbhandle);
+      my $current_services = $backend->taskdb->current_services;
+      db_file_disconnect($dbhandle);
+      foreach my $service_file(@default_service_descriptions) {
+        my $service_description = decode_json(read_file( "$services_dir/$service_file" ));
+        my ($id) =  split(/.json/,$service_file);
+        push @default_service_ids, $id;
+        my $name = $service_description->{name};
+        $service_description->{id} = $id;
+        unless (grep {$name eq $_} @$current_services) {
+          $backend->taskdb->register_service(%$service_description);
+        }
+      }
+    }
+    return \@default_service_ids; # We want to boot workers for these
   }
 }
 

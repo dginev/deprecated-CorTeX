@@ -13,6 +13,7 @@ function fetch_report(type,name) {
     cache: false,
     success: function(response) {
       $('body').css('cursor', 'auto');
+      $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
       $("#"+report_type).html(response.report);
       if (response.alive) {
        $("body").removeClass("no-background");
@@ -228,4 +229,48 @@ function getURLParameter(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
     );
+}
+
+function fetch_description(type,name) {
+  // delete any traces of previous reports
+  var description_type = type+"-description";
+  if (!name) { // No name, no functionality
+    $("#update-description").css('visibility', 'hidden');
+   return;}
+  $('body').css('cursor', 'progress');
+  $.ajax({
+    url: "/ajax",
+    type: "POST",
+    dataType: "json",
+    data : {"action":description_type,"name":name},
+    cache: false,
+    success: function(response) {
+      $('body').css('cursor', 'auto');
+      if (response.message) {
+        $("#message").html("<p><br><b>"+response.message+"</b><br></p>"); }
+      var table = $("#update-description");
+      $('#update-name').val(response.name);
+      $('#update-oldname').val(response.name);
+      $('#update-version').val(response.version);
+      $('#update-id').val(response.iid);
+      $('#update-id-label').text(response.iid);
+      $('#update-oldid').val(response.iid);
+      $('#update-url').val(response.url);
+      $('#update-xpath').val(response.xpath);
+      $("#update-type option").filter(function() {
+        //may want to use $.trim in here
+        return $(this).val() == response.type; 
+      }).prop('selected', true);
+      // TODO: Dependencies and Corpora
+      table.css('visibility', 'visible');
+
+    }
+  });
+}
+
+function fetch_corpus_description(corpus_name) {
+  return fetch_description("corpus",corpus_name);
+}
+function fetch_service_description(service_name) {
+  return fetch_description("service",service_name);
 }

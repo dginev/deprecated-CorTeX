@@ -1,38 +1,56 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Main Developer Interface';
+<%= javascript 'js/reports.js' %>
 <%= javascript begin %>
-  $(document).ready(function() {
-    $("#accordion").accordion();
-    $("#service-name,#service-version").keyup(function () {
-      // Grab both fields and set service-id
-      var name = $("#service-name").val();
-      var version = $("#service-version").val();
-      var id = name+" v"+version;
-      id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
-      id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
-      $("#service-id-label").text(id);
-      $("#service-id").val(id);
-    });
-    
-    $('<span style="color: #FF0000;">*</span>').appendTo('td.required');
-  	
-    $("form").each(function(c, obj) {
-  	  $(obj).attr("action", '');
-  	  $(obj).submit(function(event) {
-  		  event.preventDefault;
-  		  $.ajax ({
-  		    url: "/ajax",
-  		    type: "POST",
-  		    dataType: "json",
-  		    data: $(this).serialize(),
-  		    success: function(response) {
-  		      $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
-  		    }
-  		  });
-  		  return false;
-  	  });
-    });
+$(document).ready(function() {
+  $("#accordion").accordion();
+  $("#service-name,#service-version").keyup(function () {
+    // Grab both fields and set service-id
+    var name = $("#service-name").val();
+    var version = $("#service-version").val();
+    var id = name+" v"+version;
+    id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
+    id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
+    $("#service-id-label").text(id);
+    $("#service-id").val(id);
   });
+  $("#update-name,#update-version").keyup(function () {
+    // Grab both fields and set update-id
+    var name = $("#update-name").val();
+    var version = $("#update-version").val();
+    var id = name+" v"+version;
+    id = id.toLowerCase();
+    id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
+    id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
+    $("#update-id-label").text(id);
+    $("#update-id").val(id);
+  });
+  
+  $('<span style="color: #FF0000;">*</span>').appendTo('td.required');
+	
+  $("form").each(function(c, obj) {
+	  $(obj).attr("action", '');
+	  $(obj).submit(function(event) {
+		  event.preventDefault;
+		  $.ajax ({
+		    url: "/ajax",
+		    type: "POST",
+		    dataType: "json",
+		    data: $(this).serialize(),
+		    success: function(response) {
+		      $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
+		    }
+		  });
+		  return false;
+	  });
+  });
+
+  $("#service-name-select").change(function() {
+    var option = $(this).find("option:selected");
+    var service_name = option.val();
+    fetch_service_description(service_name);
+  });
+});
 <% end %>
 <div style="text-align:center;" id="message"></div>
 <h1>Developer Interface</h1>
@@ -67,7 +85,7 @@
       <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>50) %></td></tr>
       <tr><td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
       <tr><td class="required">Type</td>
-        <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregate'=>3]] %></td></tr>
+        <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]] %></td></tr>
       <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
     </table>
     <%= hidden_field action => 'add-service' %>
@@ -76,21 +94,47 @@
 
   <h3><a href="#">Update Service</a></h3>
   <div class="itemcontent"><%= form_for '' => begin %>
-    <table class="form-table">
-      <tr><td>Name</td><td class="input"><%= text_field 'uservice-name' => (value=>'',size=>50,id=>'uservice-name') %></td></tr>
-      <tr><td>Version</td><td class="input"><%= text_field 'uservice-version' => (value=>'0.1',size=>50,id=>'uservice-version') %></td></tr>
-      <tr><td>Internal ID<td class="input"><%= text_field 'uservice-id' => (value=>'',size=>50) %></td></tr>
-      <tr><td>Requires</td><td class="input">
-        TODO
+  <% if (@$current_services > 0) { %>
+      <%= select_field 'service-name' => ["",@$current_services], id=>"service-name-select" %>
+  <% } else { %>
+    None registered
+  <% } %>
+  <table class="form-table" style="visibility:hidden;" id="update-description">
+    <tr><td class="required">Name</td>
+      <td class="input"><%= text_field 'update-name' => (value=>'Example Service',size=>50,id=>'update-name') %></td></tr>
+    <tr><td class="required">Version</td>
+      <td class="input"><%= text_field 'update-version' => (value=>'0.1',size=>50,id=>'update-version') %></td></tr>
+    <tr><td><td class="input">(internal ID: <span id="update-id-label">foo</span>)<%= hidden_field "update-id" => "foo", id=>"update-id" %></td></tr>
+    <% if (@$current_services) { %>
+      <tr><td>Depends on</td><td class="input">
+      <% foreach my $service(@$current_services) { %>
+        <% if ($service eq 'import') { %>
+          <%= hidden_field "update-requires[]" => "import" %>
+          <%= check_box 'update-requires[]' => 'import', checked=>1, disabled=>1 %>import&nbsp;&nbsp;
+        <% } else { %>  
+          <%= check_box 'update-requires[]' => $service %><%= $service %>&nbsp;&nbsp;
+      <% }} %>
       </td></tr>
-      <tr><td>URL</td><td class="input"><%= text_field 'uservice-url' => (value=>'',size=>50) %></td></tr>
-      <tr><td>XPath selector</td><td class="input"><%= text_field 'uservice-xpath' => (value=>'/',size=>50) %></td></tr>
-      <tr><td>Type</td><td class="input"><%= select_field 'uservice-type' => ['Analyzer','Converter','Aggregator'] %></td></tr>
-      <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
-    </table>
-    <%= hidden_field action => 'update-service' %>
-   <% end %>
-   </div>
+    <% } %>
+    <% if (@$current_corpora) { %>
+      <tr><td>Corpora</td><td class="input">
+      <% for my $corpus(@$current_corpora) { %>
+          <%= check_box 'corpora[]' => $corpus %><%= $corpus %>&nbsp;&nbsp;
+      <% } %>
+    </td></tr>
+    <% } %>
+    </td></tr>
+    <tr><td>URL</td><td class="input"><%= text_field 'update-url' => (value=>'',size=>50,id=>'update-url') %></td></tr>
+    <tr><td>XPath</td><td class="input"><%= text_field 'update-xpath' => (value=>'/',size=>50,id=>'update-xpath') %></td></tr>
+    <tr><td class="required">Type</td>
+      <td class="input"><%= select_field 'update-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'update-type' %></td></tr>
+    <tr><td></td><td><%= submit_button 'Update Service' %></td></tr>
+  </table>
+  <%= hidden_field action => 'update-service' %>
+  <%= hidden_field 'update-oldid' => '', id=>'update-oldid' %>
+  <%= hidden_field 'update-oldname' => '', id=>'update-oldname' %>
+  <% end %>
+  </div>
 
   <h3><a href="#">Delete Service</a></h3>
   <div class="itemcontent">
@@ -98,3 +142,4 @@
    </div>
 
 </div>
+

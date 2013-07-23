@@ -1,0 +1,10 @@
+{
+  "name": "TeX to TEI XHTML",
+  "version":"0.1",
+  "dependencies": ["import"],
+  "url":"localhost",
+  "type":"2",
+  "inputformat":"tex",
+  "outputformat":"xhtml",
+  "parameters":{}
+}

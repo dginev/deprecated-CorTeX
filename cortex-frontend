@@ -36,42 +36,40 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 our $MAIN_REPOS = 'buildsys';
 our $META_GRAPH = 'meta';
 our $BUILD_SYSTEM_URL = 'http://buildsys.mathweb.org';
-our $cron_job_pid;
+our $gears_workhorse_pid;
 
 # TODO: Rethink where the Cron Builder / Gears Client belongs
-# # 1. First Fork a Cron Builder
-# $SIG{CHLD} = 'IGNORE'; # Let them die!
-# $SIG{'INT'} = \&stop_cron; # Interrupt handler
-# $SIG{'HUP'} = \&stop_cron; # Apache Hangup handler
-# $SIG{'KILL'} = \&stop_cron; # Just good-old KILL handler
-# my $dbhandle = db_file_connect;
-# my $saved_pid = $dbhandle->{cron_job_pid};
-# db_file_disconnect($dbhandle);
-# my $alive = ($saved_pid && (kill 0, $saved_pid));
-# if (!$alive) { # Non booted, start a new one:
-#   $cron_job_pid = fork();
-#   if ($cron_job_pid == 0) {
-#     exec($cortexgears,$MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL);
-#   }
-#   $dbhandle = db_file_connect;
-#   $dbhandle->{cron_job_pid} = $cron_job_pid;
-#   db_file_disconnect($dbhandle);
-# }
-# sub stop_cron {
-#   if ($cron_job_pid) {
-#     kill 2, $cron_job_pid;
-#     waitpid($cron_job_pid,0);
-#   }
-#   exit 0;
-# }
-#print STDERR "Kill it? at $cron_job_pid\n";
-#stop_cron_job($cron_job_pid);
+# 1. First Fork a CorTeX Gears Builder
+$SIG{CHLD} = 'IGNORE'; # Let them die!
+$SIG{'INT'} = \&stop_cron; # Interrupt handler
+$SIG{'HUP'} = \&stop_cron; # Apache Hangup handler
+$SIG{'KILL'} = \&stop_cron; # Just good-old KILL handler
+my $dbhandle = db_file_connect;
+my $saved_pid = $dbhandle->{gears_workhorse_pid};
+db_file_disconnect($dbhandle);
+my $alive = ($saved_pid && (kill 0, $saved_pid));
+if (!$alive) { # Non booted, start a new one:
+  $gears_workhorse_pid = fork();
+  if ($gears_workhorse_pid == 0) {
+    exec($cortexgears,$MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL);
+  }
+  $dbhandle = db_file_connect;
+  $dbhandle->{gears_workhorse_pid} = $gears_workhorse_pid;
+  db_file_disconnect($dbhandle);
+}
+sub stop_cron {
+   if ($gears_workhorse_pid) {
+     kill 2, $gears_workhorse_pid;
+     waitpid($gears_workhorse_pid,0);
+   }
+   exit 0;
+}
+
 
 # 2. Now start the web server
 use Mojolicious::Lite;
 use CorTeX::Import;
 use CorTeX::Backend;
-use Data::Dumper;
 
 our $version = '0.1';
 
@@ -122,6 +120,21 @@ get '/dev' => sub {
   $self->stash(current_services=>$current_services);
   $self->render;
 } => 'cortex-dev';
+
+
+# use AnyEvent::Gearman;
+# my $client = gearman_client '127.0.0.1';
+# get '/gearman' => sub {
+#   my ($self)=@_;
+#   $client->add_task(
+#     test => "Hello, World!",
+#     on_complete => sub {
+#       my $result = $_[1];
+#       $self->render(text=>$result);
+#     },
+#     on_fail => sub {$self->render(text=>'failure');},
+#   );
+# };
 
 get '/corpus-report' => sub {
   my $self = shift;
@@ -179,6 +192,7 @@ post '/ajax' => sub {
     when ('add-service') { $self->add_service; }
     when ('update-service') { $self->update_service; }
     when ('delete-service') { $self->delete_service; }
+    when ('service-description') {$self->service_description;}
     
     when ('register-proxy') { $self->register_proxy; }
     when ('register-databases') { $self->register_databases; }
@@ -187,7 +201,7 @@ post '/ajax' => sub {
     when ('service-report') { $self->service_report; }
     when ('classic-report') {$self->classic_report; }
     when ('queue-rerun') { $self->queue_rerun; }
-    default {$self->render(json=>{message=>"Unrecognized action!"});}
+    default {$self->render(json=>{message=>"Unrecognized action \"$action\"!"});}
   }
 };
 
@@ -330,7 +344,6 @@ helper add_corpus => sub {
 
 helper add_service => sub {
   my ($self) = @_;
-  # Import a new corpus from the $path
   my %service = ();
   foreach (qw/name version id requires url xpath type/) {
     $service{$_} = $self->param('service-'.$_); }
@@ -351,12 +364,42 @@ helper add_service => sub {
   $self->render(json => {message => $message});
 };
 
+helper update_service => sub {
+  my ($self)=@_;
+  my %service = ();
+  foreach (qw/name version id oldid oldname requires url xpath type/) {
+    $service{$_} = $self->param('update-'.$_); }
+
+  foreach my $key(qw/name version id type/) {
+    if (! $service{$key}) {
+      $self->render(json=>{
+        message=>"Please enter a valid $key of the service!"});
+      return; }}
+  my @dependencies = $self->param('requires[]') ;
+  $service{dependencies} = \@dependencies;
+  my @corpora = $self->param('corpora[]');
+  $service{corpora} = \@corpora;
+  my $backend = $self->backend;
+  my ($success,$message) = $backend->taskdb->update_service(%service);
+  if ($success) {
+    $message="Successfully Updated $service{name}, version $service{version}!"; }
+  $self->render(json => {message => $message});
+};
+
+helper service_description => sub {
+  my ($self) = @_;
+  my $service_name = $self->param("name");
+  my $backend = $self->backend;
+  my $service_description = $backend->taskdb->service_description($service_name);
+  $self->render(json => $service_description);
+};
+
 helper service_report => sub {
   my ($self) = @_;
   my $service_name = $self->param("name");
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(%$dbfile);
-  my $pid = $dbfile->{cron_job_pid};
+  my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my ($service_db_report,$alive) = $backend->taskdb->service_report($service_name);
@@ -388,12 +431,13 @@ helper service_report => sub {
 
   $self->render(json => {alive=>$alive,report=>$report_message});
 };
+
 helper corpus_report => sub {
   my ($self) = @_;
   my $corpus_name = $self->param("name");
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(%$dbfile);
-  my $pid = $dbfile->{cron_job_pid};
+  my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my ($corpus_db_report,$alive) = $backend->taskdb->corpus_report($corpus_name);

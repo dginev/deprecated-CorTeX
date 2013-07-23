@@ -22,7 +22,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries
   current_corpora current_services service_report classic_report get_custom_entries
-  get_result_summary);
+  get_result_summary service_description update_service);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
 sub corpus_to_id {
@@ -89,7 +89,6 @@ sub register_corpus {
 
 sub register_service {
   my ($db,%service) = @_;
-  print Dumper(\%service);
   my $message;
   # Prepare parameters
   foreach my $key(qw/name version id type/) { # Mandatory keys
@@ -131,6 +130,82 @@ sub register_service {
   }
   return $id; }
 
+sub update_service {
+  my ($db,%service) = @_;
+  my $message;
+  # Prepare parameters
+  foreach my $key(qw/name version id oldname type/) { # Mandatory keys
+    return (0,"Failed: Missing $key!") unless $service{$key}; }
+  foreach my $key(qw/xpath url/) { # Optional keys
+    $service{$key} //= '';}
+
+  my $old_service = $db->service_description($service{oldname});
+  # Register the Service
+  # TODO: Check the name, version and iid are unique!
+  my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=? ,url=?
+    WHERE iid=?");
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url oldid/);
+  delete $ServiceIDs{$old_service->{name}};
+  my $serviceid = $old_service->{serviceid};
+  $ServiceIDs{$service{name}} = $serviceid;
+  # TODO: Update Dependencies
+  #$sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
+  my $dependency_weight = 0;
+  foreach my $foundation(@{$service{dependencies}}) {
+    next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
+    $dependency_weight++;
+    my $foundation_id = $db->service_to_id($foundation);
+    $sth->execute($serviceid,$foundation_id); }
+  my $status = -5 - $dependency_weight;
+
+  # Update Corpora
+  my $select_active_corpora = 
+    $db->prepare("select distinct(corpusid) from tasks where serviceid=?");
+  $select_active_corpora->execute($serviceid);
+  $old_service->{corpora}=[];
+  while (my @row = $select_active_corpora->fetchrow_array()) {
+    push @{$old_service->{corpora}}, @row; }
+  $service{corpora} = [ map {$db->corpus_to_id($_)} @{$service{corpora}||[]} ];
+  my ($delete,$add) = diff_arrays($old_service->{corpora},$service{corpora});
+  # Delete old corpora
+  my $delete_tasks_query = $db->prepare("DELETE from tasks where corpusid=? and serviceid=?");
+  foreach my $corpusid(@$delete) {
+    $delete_tasks_query->execute($corpusid,$serviceid); }
+  # Takes care of rerunning all currently queued entries
+  my $update_query = $db->prepare("UPDATE tasks SET status=? where serviceid=?");
+  $update_query->execute($status,$serviceid);
+  # Add new corpora
+  my $entry_query = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=1 and status=-1");
+  my $insert_query = $db->prepare("INSERT into tasks (corpusid,serviceid,entry,status) values(?,?,?,?)");
+  foreach my $corpusid(@$add) {
+    $entry_query->execute($corpusid);
+    my ($entry,@entries);
+    $entry_query->bind_columns(\$entry);
+    while ($entry_query->fetch) { push @entries, $entry; } 
+    $db->do('BEGIN TRANSACTION');
+    foreach my $e(@entries) {
+      $insert_query->execute($corpusid,$serviceid,$e,$status); }
+    $db->do('COMMIT'); }
+  return $serviceid; }
+
+sub diff_arrays {
+  my ($old_array,$new_array) = @_;
+  $old_array //= [];
+  $new_array //= [];
+  my $delete=[];
+  my $add = [@$new_array];
+  while (@$old_array) {
+    my $element = shift @$old_array;
+    my @filtered_new = grep {$_ ne $element} @$add;
+    if (scalar(@filtered_new) == scalar(@$add)) {
+      # Not found, delete $element
+      push @$delete, $element;
+    } else {
+      # Found, next
+      $add = \@filtered_new;
+    }}
+  return ($delete,$add); }
+
 sub current_corpora {
   my ($db) = @_;
   my $corpora = [];
@@ -154,6 +229,14 @@ sub current_services {
   }
   $sth->finish();
   return $services; }
+
+sub service_description {
+  my ($db,$name) = @_;
+  my $sth = $db->prepare("select * from services where name=?");
+  $sth->execute($name);
+  my $description = $sth->fetchrow_hashref;
+  return $description;
+}
 
 sub queue {
   my ($db,%options) = @_;
