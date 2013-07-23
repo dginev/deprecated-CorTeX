@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+# /=====================================================================\ #
+# |  CorTeX Framework                                                   | #
+# | Gears - Scheduler and Gearman Client                                | #
+# |=====================================================================| #
+# | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
+# |  Research software, produced as part of work done by:               | #
+# |  the KWARC group at Jacobs University                               | #
+# | Copyright (c) 2012                                                  | #
+# | Released under the GNU Public License                               | #
+# |---------------------------------------------------------------------| #
+# | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
+# | http://kwarc.info/people/dginev                            (o o)    | #
+# \=========================================================ooo==U==ooo=/ #
+use strict;
+use warnings;
+use Encode;
+use Data::Dumper;
+
+use AnyEvent::Gearman;
+use JSON::XS qw(decode_json encode_json);
+
+use FindBin;
+my $RealBin_safe;
+BEGIN {
+  $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
+  $RealBin_safe = $1;
+  die 'Fatal:IO:tainted RealBin was tainted! Failing...'
+   unless ($RealBin_safe && (-e $RealBin_safe.'/cortex-worker')); }
+
+use File::Basename;
+my ($FILE_BASE,$libdir);
+BEGIN {
+    $FILE_BASE = dirname(__FILE__);
+    $libdir = $FILE_BASE."/lib"; }
+if (-d $libdir) {
+  use lib $libdir; }
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+
+my ($s,@servers) = @ARGV;
+
+my $worker = gearman_worker(@servers);
+my $service;
+my $eval_return = eval {require "CorTeX/Blueprint/$s.pm"; 1; };
+if ($eval_return && (!$@)) {
+  $service = eval { "CorTeX::Blueprint::$s"->new(); }; }
+else {
+  print STDERR "Service $s not available, exiting.\n";
+  exit; }          
+$worker->register_function(
+  $s => sub {
+    my $job = shift;
+    my $response = $service->process(decode_json($job->workload));
+    $response //= {};
+    $response->{result} //= '';
+    $response->{log} //= ''; # TODO: Empty log warning?
+    $response->{status} //= ''; # TODO: Fatal?
+    $job->complete(encode_json($response));
+  },
+);
+
+AnyEvent->condvar->recv;

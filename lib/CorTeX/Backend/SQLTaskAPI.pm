@@ -16,13 +16,16 @@ use strict;
 use warnings;
 use feature 'switch';
 use Data::Dumper;
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries
   current_corpora current_services service_report classic_report get_custom_entries
-  get_result_summary service_description update_service);
+  get_result_summary service_description update_service
+
+  repository_size mark_limbo_entries_queued get_entry_type);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
 sub corpus_to_id {
@@ -95,6 +98,15 @@ sub register_service {
     return (0,"Failed: Missing $key!") unless $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
+  if ($service{url}) {
+    # Register a new gearman URL
+    my $dbhandle = db_file_connect;
+    my @urls = split("\n", $dbhandle->{gearman_urls}||'');
+    unless (grep {$_ eq $service{url}} @urls) {
+      push @urls, $service{url}; }
+    $dbhandle->{gearman_urls} = join("\n",@urls);
+    db_file_disconnect($dbhandle); }
+    
   # Register the Service
   # TODO: Check the name, version and iid are unique!
   my $sth = $db->prepare("INSERT INTO services (name,version,iid,type,xpath,url) values(?,?,?,?,?,?)");
@@ -157,6 +169,18 @@ sub update_service {
     my $foundation_id = $db->service_to_id($foundation);
     $sth->execute($serviceid,$foundation_id); }
   my $status = -5 - $dependency_weight;
+
+  # Update URL
+  if ($service{url} ne $old_service->{url}) {
+    # Register a new gearman URL
+    my $dbhandle = db_file_connect;
+    my $urls = $dbhandle->{gearman_urls}||[];
+    if ($old_service->{url}) {
+      @$urls = grep {$_ ne $old_service->{url}} @$urls; }
+    if ($service{url}) {
+      @$urls = ((grep {$_ ne $service{url}} @$urls), $service{url}); }
+    $dbhandle->{gearman_urls} = $urls;
+    db_file_disconnect($dbhandle); }
 
   # Update Corpora
   my $select_active_corpora = 
@@ -482,5 +506,18 @@ sub status_encode {
     default {return;}}}
 
   1;
+
+
+sub repository_size {
+ return 1; # TODO
+}
+
+sub mark_limbo_entries_queued {
+  return 1; # TODO
+}
+
+sub get_entry_type {
+  return 'simple';
+}
 
   __END__

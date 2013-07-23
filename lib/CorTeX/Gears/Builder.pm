@@ -33,16 +33,15 @@ sub new {
   $opts{main_repos} = 'buildsys' unless defined $opts{main_repos};
   $opts{meta_graph} = 'meta' unless defined $opts{meta_graph};
   $opts{entry_type} = 'complex' unless defined $opts{entry_type};
-  bless {%opts}, $class;
-}
+  bless {%opts}, $class; }
 
 sub start {
   my ($self) = @_;
   while (1) {
     my $proxy_url = $self->{proxy_url};
-    my $exist = $self->{backend}->exist;
-    my $sesame = $self->{backend}->sesame;
-    my $entry_response = $sesame->get_queued_entries($self->{main_repos},$batch_size*($self->{query_size}));
+    my $docdb = $self->{backend}->docdb;
+    my $metadb = $self->{backend}->metadb;
+    my $entry_response = $metadb->get_queued_entries($self->{main_repos},$batch_size*($self->{query_size}));
     my $results = $entry_response && $entry_response->{results}->[0]->{result};
     unless ($results && @$results) { print STDERR "Nothing to process, 1 minute nap\n"; sleep 60; next; }
     my @URLs;
@@ -54,7 +53,7 @@ sub start {
       # Take all $results
       @URLs = map {$_->{binding}->{uri}} @$results;
     }
-    $sesame->mark_entries_queued({priority=>'-1',entries=>\@URLs,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
+    $metadb->mark_entries_queued({priority=>'-1',entries=>\@URLs,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
     my $triples = [];
     my $entries_done = [];
     foreach my $entry(@URLs) {
@@ -73,7 +72,7 @@ sub start {
         my $log_doc = "$collection/".$base_name.".log";
         my $content;
         do {
-          $content = $exist->get_binary_doc($tex_doc);
+          $content = $docdb->get_binary_doc($tex_doc);
           if (! defined $content) {
             print STDERR "Failed to fetch content, napping 1 minute...";
             sleep 60;
@@ -85,10 +84,10 @@ sub start {
         # First, mark entry as done
         push @$entries_done, $entry;
         if ($response) {
-          $exist->insert_doc(payload=>encode('UTF-8',$response->{result}),
+          $docdb->insert_doc(payload=>encode('UTF-8',$response->{result}),
                              extension=>'xhtml',
                              db_pathname=>$xhtml_doc) if $response->{result};
-          $exist->insert_doc(payload=>encode('UTF-8',$response->{log}),
+          $docdb->insert_doc(payload=>encode('UTF-8',$response->{log}),
                              extension=>'log',
                              db_pathname=>$log_doc) if $response->{log};
           if (!$response->{log}) {
@@ -108,7 +107,7 @@ sub start {
         # Complex, ZIP-based workflow:
         my $zip_name = $base_name.'.zip';
         print STDERR " Entry to process : $collection, Name: $zip_name\n";
-        my $response = $exist->query("compression:zip(xs:anyURI('".$collection."'),xs:boolean('true'),'".$strip_prefix."')");
+        my $response = $docdb->query("compression:zip(xs:anyURI('".$collection."'),xs:boolean('true'),'".$strip_prefix."')");
         my $zip = $response->{first};
         my $converted_zip = convert_zip(converter=>$self->{converter},
                                       payload=>$zip,
@@ -118,13 +117,13 @@ sub start {
         $collection =~ /^(.+\/)([^\/]+)(\/)?$/;
         my $base_collection = $1;
         my $unzip_xquery = unzip_xquery($converted_zip,$base_collection);
-        $response = $exist->query($unzip_xquery);
+        $response = $docdb->query($unzip_xquery);
         # First, mark entry as done
         push @$entries_done, $entry;
         if ($response->{first}) {
           # The conversion succeeded, so parse the log, add triples and switch priority to 0
           my $log_pathname = "$base_collection$base_name/$base_name.log";
-          my $log_content = $exist->get_binary_doc($log_pathname) || "Status:conversion:3\nFatal:buildsys:empty-log Something broke, got no log content.";
+          my $log_content = $docdb->get_binary_doc($log_pathname) || "Status:conversion:3\nFatal:buildsys:empty-log Something broke, got no log content.";
           my $log_triples = log_to_triples($entry,$log_content);
           push @$triples, @$log_triples;
         } else {
@@ -135,22 +134,20 @@ sub start {
         }
       }
       if ($wait_required) {
-        $sesame->mark_entries_done({entries=>$entries_done,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
-        $sesame->add_triples({triples=>$triples,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
+        $metadb->mark_entries_done({entries=>$entries_done,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
+        $metadb->add_triples({triples=>$triples,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
         $triples = []; $entries_done=[];
         wait_until_available($self->{converter});
       }
     }
-    $sesame->mark_entries_done({entries=>$entries_done,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
-    $sesame->add_triples({triples=>$triples,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
-  }
-}
+    $metadb->mark_entries_done({entries=>$entries_done,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
+    $metadb->add_triples({triples=>$triples,graph=>$self->{meta_graph},repository=>$self->{main_repos}});
+  }}
 
 sub _stop_all_jobs {
   print STDERR "Received Interrupt! Terminating...\n";
   # TODO, Make this graceful, let all conversions finish first
-  exit 0;
-}
+  exit 0; }
 
 sub wait_until_available {
   my ($url) = @_;
@@ -163,8 +160,7 @@ sub wait_until_available {
     } else {
       sleep 60;
     }
-  }
-}
+  }}
 
 sub unzip_xquery {
   my ($zip,$base_collection)=@_;
@@ -214,8 +210,7 @@ EOL
 my $invoke = 'let $xml := compression:unzip(xs:base64Binary("'.$zip.'"),$filter,(),$process,<param collection="'.$base_collection.'"/>)'."\n"
 .'return <status>{$xml}</status>';
 
-return $declarations.$invoke;
-}
+return $declarations.$invoke; }
 
 
 } # end local group

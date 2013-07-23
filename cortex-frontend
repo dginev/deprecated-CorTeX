@@ -51,7 +51,7 @@ my $alive = ($saved_pid && (kill 0, $saved_pid));
 if (!$alive) { # Non booted, start a new one:
   $gears_workhorse_pid = fork();
   if ($gears_workhorse_pid == 0) {
-    exec($cortexgears,$MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL);
+    exec($cortexgears);
   }
   $dbhandle = db_file_connect;
   $dbhandle->{gears_workhorse_pid} = $gears_workhorse_pid;

@@ -3,7 +3,7 @@
   "version":"0.1",
   "dependencies": ["import"],
   "corpora" : [],
-  "url":"localhost",
+  "url":"127.0.0.1",
   "type":"2",
   "inputformat":"tex",
   "outputformat":"html",

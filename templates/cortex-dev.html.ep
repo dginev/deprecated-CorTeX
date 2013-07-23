@@ -136,10 +136,10 @@ $(document).ready(function() {
   <% end %>
   </div>
 
-  <h3><a href="#">Delete Service</a></h3>
+<!--   <h3><a href="#">Delete Service</a></h3>
   <div class="itemcontent">
     TODO
    </div>
-
+ -->
 </div>
 
