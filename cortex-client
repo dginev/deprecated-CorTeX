@@ -36,7 +36,10 @@ use AnyEvent::Gearman;
 
 # Grab a TaskDB
 my $db_handle = db_file_connect;
-my $taskdb = CorTeX::Backend->new(%$db_handle)->taskdb;
+my $backend = CorTeX::Backend->new(%$db_handle);
+my $taskdb = $backend->taskdb;
+my $docdb = $backend->docdb;
+my $metadb = $backend->metadb;
 db_file_disconnect();
 
 
@@ -47,9 +50,6 @@ my (@servers) = @ARGV;
 my $queue_size = 200;
 my $client = gearman_client(@servers);
 
-my $taskdb_ready = AnyEvent->condvar;
-my $gearman_ready = AnyEvent->condvar;
-
 my $results = [];
 my $manager = AnyEvent->condvar;
 
@@ -59,6 +59,8 @@ $manager->cb(sub {
  push @$results, $response;
  if (@$results == $queue_size) {
   # Done with this queue, report to DB
+  # TODO: Push new annotations, formats, aggregate resources into docdb
+  # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
   $taskdb->complete_tasks(results=>$results);
   $results=[];
   next_queue($taskdb,$queue_size); }
@@ -73,8 +75,13 @@ sub next_queue {
     # Try again in a minute if queue is empty
     sleep 60; next_queue($taskdb,$queue_size); }
   foreach my $task(@$tasks) {
+    # Obtain the actual workload:
+    $task->{workload} = $docdb->fetch_entry(
+      corpus=>$task->{corpus},entry=>$task->{entry});
+    # TODO: Obtain prerequisite annotations/resources
+    # Dispatch to Gearman
     $client->add_task(
-      $task->{function} => $task->{workload},
+      $task->{iid} => encode_json($task),
       on_complete => sub {
           $manager->send({status=>"complete",result=>$_[1]});
        },

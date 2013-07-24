@@ -42,5 +42,10 @@ sub insert_directory {
   return 1 if $self->{inplace};
 }
 
+sub fetch_entry {
+  my ($self,$options) = @_;
+  # Slurp the file
+  return 1;
+}
 
 1;

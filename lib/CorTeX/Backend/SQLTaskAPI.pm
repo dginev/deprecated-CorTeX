@@ -30,6 +30,7 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   fetch_tasks complete_tasks);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
+our (%IIDs);
 sub corpus_to_id {
   my ($db, $corpus) = @_;
   my $corpusid = $CorpusIDs{$corpus};
@@ -65,6 +66,15 @@ sub id_to_service {
     ($service) = $sth->fetchrow_array();
     $IDServices{$serviceid} = $service; }
   return $service; }
+sub serviceid_to_iid {
+  my ($db, $serviceid) = @_;
+  my $iid = $IIDs{$serviceid};
+  if (! defined $iid) {
+    my $sth=$db->prepare("SELECT iid from services where serviceid=?");
+    $sth->execute($serviceid);
+    ($iid) = $sth->fetchrow_array();
+    $IIDs{$serviceid} = $iid; }
+  return $iid; }
 
 sub delete_corpus {
   my ($db,$corpus) = @_;
@@ -506,8 +516,20 @@ sub get_entry_type {
 
 sub fetch_tasks {
   my ($db,%options) = @_;
-  return('mock',[]);
-}
+  my $size = $options{size};
+  my $mark = int(1+rand(10000));
+  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 ");# TODO: LIMIT ".$size);
+  $sth->execute($mark);
+  $sth = $db->prepare("SELECT * from tasks where status=?");
+  $sth->execute($mark);
+  my (%row,@tasks);
+  $sth->bind_columns( \( @row{ @{$sth->{NAME_lc} } } ));
+  while ($sth->fetch) {
+    # Name of the function:
+    $row{iid}=serviceid_to_iid($row{serviceid});
+    push @tasks, {%row};
+  }
+  return($mark,\@tasks); }
 
 sub complete_tasks {
   my ($db,%options) = @_;
