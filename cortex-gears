@@ -33,136 +33,121 @@ BEGIN {
     $libdir = $FILE_BASE."/lib"; }
 if (-d $libdir) {
   use lib $libdir; }
+
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
-
-## Plan of action:
-# 0. Add all default services (if necessary)
-my $default_service_ids = register_defaults();
-# 1. Spawn/fork local workers (lib/CorTeX/Service/*.json)
-spawn_workers($default_service_ids);
-# 2. Start event loop on the task queue
-# 2.1. If no queued tasks - sleep 60
-# 2.2. Otherwise, add jobs with AnyEvent::Gearman
-
+use CorTeX::Util::Compare qw(same_set);
+use CorTeX::Backend;
+use Unix::Processors;
 
 {
+  # Set up global state
   local $SIG{'INT'} = \&stop_all; # Interrupt handler
   local $SIG{'HUP'} = \&stop_all; # Apache Hangup handler
   local $SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
 
   my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
-  my $Cache={ workers=> [], clients=>[] };  # Catalogue the child processes
+  my $Cache={ workers=> [], clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
+  $Cache->{processor_multiplier} = Unix::Processors->new->max_online;
+  my $db_handle = db_file_connect;
+  my $backend = CorTeX::Backend->new(%$db_handle);
+  db_file_disconnect($db_handle);
 
-  while (1) {
-    my $init_backend_needed = 0;
-    my $db_handle = db_file_connect;
-    my $sesame_url = $db_handle->{sesame_url}||'';
-    my $exist_url = $db_handle->{exist_url}||'';
-    $Cache->{proxy_url} = $db_handle->{proxy_url};
-    $Cache->{converters} = [ split("\n", $db_handle->{converter_urls}||'') ];
-    db_file_disconnect($db_handle);
-    if ((! defined $Cache->{exist_url}) || ($Cache->{exist_url} ne $exist_url)) {
-      $init_backend_needed = 1;
-      $Cache->{exist_url} = $exist_url; }
-    if ((! defined $Cache->{sesame_url}) || ($Cache->{sesame_url} ne $sesame_url)) {
-      $init_backend_needed = 1;
-      $Cache->{sesame_url} = $sesame_url; }
-    if ($init_backend_needed) {
-      $Cache->{backend} = CorTeX::Backend->new(exist_url=>$exist_url,sesame_url=>$sesame_url); }
-    my $metadb = $Cache->{backend}->metadb;
+  # Start cron loop managing the client and worker children
 
-    # Is there a repository we can work with?
-    my $repo_size = $metadb->repository_size($MAIN_REPOS);
-    if ($repo_size && ($repo_size != -1)) {
-      # Anything left in limbo? (i.e. priority -1). If so, update it to 1.
-      $metadb->mark_limbo_entries_queued({graph=>$META_GRAPH,repository=>$MAIN_REPOS});
-      # Check if unprocessed entries remain to be converted
-      if ($metadb->count_entries($MAIN_REPOS,'queued')) {
-        # Also, retrieve corpus type, so that we optimize for single-file corpora (ZBL, PlanetMath):
-        my $entry_type = $metadb->get_entry_type($MAIN_REPOS);
-        $Cache->{entry_type} = $entry_type;
-        # Boot up clients/workers, if none are present:
-        spawn_workers($Cache) unless (@{$Cache->{workers}} > 0);
-        spawn_clients($Cache) unless (@{$Cache->{clients}} > 0);
-        # Otherwise, we still need to process some files... so nothing extra to do
-      } else {
-        # Everything seems done!
-        # Stop all converters after their jobs are done and sleep
-        stop_clients();
-      }
-    }
-    else {
-      stop_clients();
-    }
+  while (1) { # Every minute, check:
+    # Reinit, When servers or backends change
+    if (setup_changed()) {
+      # Halt what we're doing
+      stop_children();
+      # Add/update all default services (if necessary)
+      $Cache->{default_service_ids} = register_defaults();
+      # Grab a backend with the updated info
+      $db_handle = db_file_connect;
+      $backend = CorTeX::Backend->new(%$db_handle);
+      # Make sure we clean up after we halted
+      $backend->taskdb->mark_limbo_entries_queued;
+      db_file_disconnect($db_handle);
+      # Start workers
+      spawn_workers();
+      # Start clients
+      spawn_clients(); }
 
-    sleep 60;
-  }  
+    my $taskdb = $backend->taskdb;
+    # In case things just died away, respawn them:
+    spawn_workers() unless (@{$Cache->{workers}} > 0);
+    spawn_clients() unless (@{$Cache->{clients}} > 0);
+    # Check again in a minute...
+    sleep 60; }
   
   sub spawn_workers {
-    my ($services) = @_;
-    print STDERR "Spawning workers:\n";
+    my @services = @{$Cache->{default_service_ids}};
+    my @servers = @{$Cache->{servers}};
     #    # workers = 5 x ( # cpus ) x (# local services)
-    my $dbfile = db_file_connect;
-    my @servers = split("\n",$dbfile->{gearman_urls}||'');
-    print "Servers: ",Dumper(\@servers),"\n";
     return unless (@servers);
     my $pid = 0;
-    while(@$services) {
-      my $s = shift @$services;
-      print STDERR "Spawning for $s...\n";
-      use Unix::Processors;
-      my $processor_multiplier = Unix::Processors->new->max_online;
-      for (1..$processor_multiplier) {
+    while (@services) {
+      my $s = shift @services;
+      for my $num(1..$Cache->{processor_multiplier}) {
         # Fork a job for each one!
         $pid = fork();
         if ($pid == 0) {
           exec("$RealBin_safe/cortex-worker",$s,@servers);
         } else {
-          print STDERR "Started Worker process $pid\n";
+          print STDERR "Started Worker #$num for $s : process $pid\n";
           push @{$Cache->{workers}}, $pid;
         }
       }
-    last unless $pid; }
-  }
+    }}
 
   sub spawn_clients {
-    my @converters = @{$Cache->{converters}};
-    my $query_size = scalar(@converters);
-    while (@converters) {
+    my @servers = @{$Cache->{servers}};
+    # Servers x processors = # clients
+    for my $num(1..($Cache->{processor_multiplier}*scalar(@servers))) {
       # Fork a job for each one!
-      my $c = shift @converters;
       my $pid = fork();
       if ($pid == 0) {
-        # use CorTeX::Gears::Builder;
-        my $gearman_client = 
-          CorTeX::Gears::Builder->new(main_repos=>$MAIN_REPOS,
-                                      meta_graph=>$META_GRAPH,
-                                      build_system_url=>$BUILD_SYSTEM_URL,
-                                      backend=>$Cache->{backend},
-                                      proxy_url=>$Cache->{proxy_url},
-                                      entry_type=>$Cache->{entry_type},
-                                      query_size=>$query_size);
-        $gearman_client->start;
+        exec("$RealBin_safe/cortex-client",@servers);
       } else {
-        print STDERR "Started Client process $pid\n";
+        print STDERR "Started Client #$num : process $pid\n";
         push @{$Cache->{clients}}, $pid;
       }
-    }
-  }
+    }}
 
   sub stop_all {
-    stop_clients($Cache);
+    stop_children();
     exit 0; }
-
+  sub stop_children {
+    stop_clients();
+    stop_workers(); }
   sub stop_clients {
-    stop_cron_job($_) foreach @{$Cache->{clients}};
+    stop_child($_) foreach @{$Cache->{clients}};
     $Cache->{clients} = []; }
-
-  sub stop_cron_job {
+  sub stop_workers {
+    stop_child($_) foreach @{$Cache->{workers}};
+    $Cache->{workers} = []; }
+  sub stop_child {
     my ($pid) = @_;
-    # Send a SIGINT to the cron job
+    # Send a SIGINT to the child job
     kill 2, $pid;
     waitpid($pid,0); }
+
+  sub setup_changed {
+    my $reinitialize_needed = 0;
+    $db_handle = db_file_connect;
+    my $sesame_url = $db_handle->{sesame_url}||'';
+    my $exist_url = $db_handle->{exist_url}||'';
+    my @servers = split("\n",$db_handle->{gearman_urls}||'');
+    db_file_disconnect($db_handle);
+    if ($Cache->{exist_url} ne $exist_url) {
+      $reinitialize_needed = 1;
+      $Cache->{exist_url} = $exist_url; }
+    if ($Cache->{sesame_url} ne $sesame_url) {
+      $reinitialize_needed = 1;
+      $Cache->{sesame_url} = $sesame_url; }
+    if (! same_set($Cache->{servers},\@servers)) {
+      $reinitialize_needed = 1;
+      @{$Cache->{servers}} = @servers; }
+    return $reinitialize_needed; }
 
   sub register_defaults {
     our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));

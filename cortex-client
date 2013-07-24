@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # /=====================================================================\ #
 # |  CorTeX Framework                                                   | #
-# | Gears - Scheduler and Gearman Client                                | #
+# | cortex-client -- TaskDB and Gearman broker                          | #
 # |=====================================================================| #
 # | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
 # |  Research software, produced as part of work done by:               | #
@@ -16,8 +16,6 @@ use strict;
 use warnings;
 use Encode;
 use Data::Dumper;
-
-use AnyEvent::Gearman;
 use JSON::XS qw(decode_json encode_json);
 
 use FindBin;
@@ -32,28 +30,58 @@ BEGIN {
 if (-d $libdir) {
   use lib $libdir;}
 
+use CorTeX::Backend;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use AnyEvent::Gearman;
 
-my ($s,@servers) = @ARGV;
+# Grab a TaskDB
+my $db_handle = db_file_connect;
+my $taskdb = CorTeX::Backend->new(%$db_handle)->taskdb;
+db_file_disconnect();
 
-my $worker = gearman_worker(@servers);
-my $service;
-my $eval_return = eval {require "CorTeX/Blueprint/$s.pm"; 1; };
-if ($eval_return && (!$@)) {
-  $service = eval { "CorTeX::Blueprint::$s"->new(); }; }
-else {
-  print STDERR "Service $s not available, exiting.\n";
-  exit; }          
-$worker->register_function(
-  $s => sub {
-    my $job = shift;
-    my $response = $service->process(decode_json($job->workload));
-    $response //= {};
-    $response->{result} //= '';
-    $response->{log} //= ''; # TODO: Empty log warning?
-    $response->{status} //= ''; # TODO: Fatal?
-    $job->complete(encode_json($response));
-  },
-);
+
+### MAIN ###
+# Event loop between DB Polling and Gearman dispatching
+
+my (@servers) = @ARGV;
+my $queue_size = 200;
+my $client = gearman_client(@servers);
+
+my $taskdb_ready = AnyEvent->condvar;
+my $gearman_ready = AnyEvent->condvar;
+
+my $results = [];
+my $manager = AnyEvent->condvar;
+
+# Prepare manager
+$manager->cb(sub {
+ my $response = $_[0]->recv;
+ push @$results, $response;
+ if (@$results == $queue_size) {
+  # Done with this queue, report to DB
+  $taskdb->complete_tasks(results=>$results);
+  $results=[];
+  next_queue($taskdb,$queue_size); }
+});
+# Start the queue:
+next_queue($taskdb,$queue_size);
+
+sub next_queue {
+  my ($taskdb,$queue_size) = @_;
+  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$queue_size);
+  if (! (@$tasks)) {
+    # Try again in a minute if queue is empty
+    sleep 60; next_queue($taskdb,$queue_size); }
+  foreach my $task(@$tasks) {
+    $client->add_task(
+      $task->{function} => $task->{workload},
+      on_complete => sub {
+          $manager->send({status=>"complete",result=>$_[1]});
+       },
+      on_fail => sub {
+          $manager->send({status=>'TODO: fail'});
+      }
+    );
+  }}
 
 AnyEvent->condvar->recv;

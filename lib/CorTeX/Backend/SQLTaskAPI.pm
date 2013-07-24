@@ -17,6 +17,7 @@ use warnings;
 use feature 'switch';
 use Data::Dumper;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use CorTeX::Util::Compare qw(set_difference);
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -25,7 +26,8 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   current_corpora current_services service_report classic_report get_custom_entries
   get_result_summary service_description update_service
 
-  repository_size mark_limbo_entries_queued get_entry_type);
+  repository_size mark_limbo_entries_queued get_entry_type
+  fetch_tasks complete_tasks);
 
 our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
 sub corpus_to_id {
@@ -190,7 +192,7 @@ sub update_service {
   while (my @row = $select_active_corpora->fetchrow_array()) {
     push @{$old_service->{corpora}}, @row; }
   $service{corpora} = [ map {$db->corpus_to_id($_)} @{$service{corpora}||[]} ];
-  my ($delete,$add) = diff_arrays($old_service->{corpora},$service{corpora});
+  my ($delete,$add) = set_difference($old_service->{corpora},$service{corpora});
   # Delete old corpora
   my $delete_tasks_query = $db->prepare("DELETE from tasks where corpusid=? and serviceid=?");
   foreach my $corpusid(@$delete) {
@@ -211,24 +213,6 @@ sub update_service {
       $insert_query->execute($corpusid,$serviceid,$e,$status); }
     $db->do('COMMIT'); }
   return $serviceid; }
-
-sub diff_arrays {
-  my ($old_array,$new_array) = @_;
-  $old_array //= [];
-  $new_array //= [];
-  my $delete=[];
-  my $add = [@$new_array];
-  while (@$old_array) {
-    my $element = shift @$old_array;
-    my @filtered_new = grep {$_ ne $element} @$add;
-    if (scalar(@filtered_new) == scalar(@$add)) {
-      # Not found, delete $element
-      push @$delete, $element;
-    } else {
-      # Found, next
-      $add = \@filtered_new;
-    }}
-  return ($delete,$add); }
 
 sub current_corpora {
   my ($db) = @_;
@@ -518,6 +502,16 @@ sub mark_limbo_entries_queued {
 
 sub get_entry_type {
   return 'simple';
+}
+
+sub fetch_tasks {
+  my ($db,%options) = @_;
+  return('mock',[]);
+}
+
+sub complete_tasks {
+  my ($db,%options) = @_;
+  return 1;
 }
 
   __END__
