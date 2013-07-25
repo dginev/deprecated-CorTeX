@@ -47,48 +47,73 @@ db_file_disconnect();
 # Event loop between DB Polling and Gearman dispatching
 
 my (@servers) = @ARGV;
-my $queue_size = 200;
+my $max_queue_size = 200;
+my $queue_size;
 my $client = gearman_client(@servers);
 
 my $results = [];
-my $manager = AnyEvent->condvar;
 
-# Prepare manager
-$manager->cb(sub {
- my $response = $_[0]->recv;
- push @$results, $response;
- if (@$results == $queue_size) {
-  # Done with this queue, report to DB
-  # TODO: Push new annotations, formats, aggregate resources into docdb
-  # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-  $taskdb->complete_tasks(results=>$results);
-  $results=[];
-  next_queue($taskdb,$queue_size); }
-});
-# Start the queue:
-next_queue($taskdb,$queue_size);
-
-sub next_queue {
-  my ($taskdb,$queue_size) = @_;
-  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$queue_size);
-  if (! (@$tasks)) {
+while (1) {
+  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
+  $queue_size = @$tasks;
+  if (! ($queue_size)) {
     # Try again in a minute if queue is empty
-    sleep 60; next_queue($taskdb,$queue_size); }
+    sleep 60; next; }
+  my $next_iteration = AnyEvent->condvar;
   foreach my $task(@$tasks) {
     # Obtain the actual workload:
     $task->{workload} = $docdb->fetch_entry(
       corpus=>$task->{corpus},entry=>$task->{entry});
     # TODO: Obtain prerequisite annotations/resources
     # Dispatch to Gearman
+    my $entry = $task->{entry};
+    my $serviceid = $task->{serviceid};
     $client->add_task(
       $task->{iid} => encode_json($task),
       on_complete => sub {
-          $manager->send({status=>"complete",result=>$_[1]});
-       },
+          my $response = decode_json($_[1]);
+          $response->{entry} = $entry;
+          $response->{serviceid} = $serviceid;
+          push @$results, $response;
+          # New queue if we're done here
+          if (@$results == $queue_size) {
+            # Done with this queue, report to DB
+            # TODO: Push new annotations, formats, aggregate resources into docdb
+            # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
+            complete_tasks(@$results);
+            $results=[];
+            $next_iteration->send(); }},
       on_fail => sub {
-          $manager->send({status=>'TODO: fail'});
-      }
+          my $response = {entry=>$entry, serviceid=>$serviceid, status=>'TODO: fail',log=>"TODO: gearman failed"};
+          push @$results, $response;
+          # New queue if we're done here
+          if (@$results == $queue_size) {
+            # Done with this queue, report to DB
+            # TODO: Push new annotations, formats, aggregate resources into docdb
+            # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
+            complete_tasks(@$results);
+            $results=[];
+            $next_iteration->send(); }}
     );
-  }}
+  }
+  $next_iteration->recv; }
 
-AnyEvent->condvar->recv;
+sub complete_tasks {
+  my (@results) = @_;
+  # TODO: A single transaction with each database here, speed everything along nicely
+  # metadb->start_transction /or so/
+  # docdb->start_transaction /or so/
+  foreach my $result(@results) {
+  # TODO: Validate the service is returning the correct type of data
+    if (my $annotations = $result->{annotations}) {
+      $metadb->add_triples($annotations); }
+    elsif (my $document = $result->{document}) {
+      $docdb->insert_files($document); }
+    elsif (my $resource = $result->{resource}) {
+      $docdb->insert_resource($resource); }}
+  # metadb->commit
+  # docdb->commit
+
+  # Update all as done, insert logs
+  $taskdb->complete_tasks(@results);
+}

@@ -47,11 +47,11 @@ else {
 $worker->register_function(
   $s => sub {
     my $job = shift;
-    my $response = $service->process(decode_json($job->workload));
+    my $task = decode_json($job->{workload});
+    my $response = $service->process(%$task);
     $response //= {};
-    $response->{result} //= '';
-    $response->{log} //= ''; # TODO: Empty log warning?
-    $response->{status} //= ''; # TODO: Fatal?
+    $response->{log} //= "TODO: Empty log warning?";
+    $response->{status} //= -4; # TODO: Fatal?
     $job->complete(encode_json($response));
   },
 );

@@ -16,8 +16,8 @@ package CorTeX::Backend::FileSystem;
 
 use warnings;
 use strict;
-use File::Basename;
-use feature qw(switch);
+
+use File::Slurp;
 use Data::Dumper;
 
 sub new {
@@ -42,10 +42,21 @@ sub insert_directory {
   return 1 if $self->{inplace};
 }
 
-sub fetch_entry {
-  my ($self,$options) = @_;
-  # Slurp the file
+sub insert_files {
+  my (@files) = @_;
   return 1;
 }
+
+sub fetch_entry {
+  my ($self,%options) = @_;
+  my $entry = $options{entry};
+  $entry =~ /\/([^\/]+)$/;
+  my $name = "/$1.tex";
+  $entry .= $name;
+  # Slurp the file and return:  
+  if (-f $entry ) {
+    my $text = read_file( $entry ) ;
+    return $text; }
+  else { return ; } }
 
 1;

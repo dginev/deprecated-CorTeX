@@ -22,13 +22,12 @@ sub new {
 
 sub process {
 	my ($self,%options)=@_;	
-	given (lc(type())) {
+	given (lc($self->type())) {
 		when ('analysis') {$self->analyze(%options)}
 		when ('aggregation') {$self->aggregate(%options)}
 		when ('conversion') {$self->convert(%options)}
 		default {return;}
-	}
-}
+	}}
 
 # Blueprint API
 sub type {return;}

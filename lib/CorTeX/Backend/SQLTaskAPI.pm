@@ -22,7 +22,7 @@ use CorTeX::Util::Compare qw(set_difference);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id corpus_to_id corpus_report id_to_corpus id_to_service count_entries
+  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service count_entries
   current_corpora current_services service_report classic_report get_custom_entries
   get_result_summary service_description update_service
 
@@ -507,7 +507,9 @@ sub repository_size {
 }
 
 sub mark_limbo_entries_queued {
-  return 1; # TODO
+  my ($db) = @_;
+  my $sth = $db->prepare("UPDATE tasks SET status=-5 WHERE status>0");
+  $sth->execute();
 }
 
 sub get_entry_type {
@@ -526,14 +528,23 @@ sub fetch_tasks {
   $sth->bind_columns( \( @row{ @{$sth->{NAME_lc} } } ));
   while ($sth->fetch) {
     # Name of the function:
-    $row{iid}=serviceid_to_iid($row{serviceid});
+    $row{iid}=$db->serviceid_to_iid($row{serviceid});
     push @tasks, {%row};
   }
   return($mark,\@tasks); }
 
 sub complete_tasks {
-  my ($db,%options) = @_;
-  return 1;
+  my ($db,@results) = @_;
+  return unless @results;
+  print STDERR Dumper(\@results);
+  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE entry=? and serviceid=?");
+  $db->do('BEGIN TRANSACTION');
+  foreach my $result(@results) {
+    $result->{status} //= -4; # Fatal if not set
+    $sth->execute($result->{status},$result->{entry},$result->{serviceid});
+  }
+  $db->do('COMMIT');
 }
 
-  __END__
+1;
+__END__

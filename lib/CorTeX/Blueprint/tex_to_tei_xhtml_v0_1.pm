@@ -16,14 +16,18 @@ use warnings;
 use strict;
 use base qw(CorTeX::Blueprint);
 
-sub type {'convert'}
+sub type {'conversion'}
 
 sub convert {
-	my ($self,%options) = @_;
+my ($self,%options) = @_;
 	my $result = {};
 
-	print STDERR "Convert tex_to_html executed!\n";
+	print STDERR "Convert tex_to_tex_xhtml executed!\n";
 	
+	$result->{document}="something";
+	$result->{status}=-1; # OK
+	$result->{log} = "mock log";
+
 	return $result;
 }
 

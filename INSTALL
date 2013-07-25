@@ -9,9 +9,11 @@ sudo apt-get install tomcat6 \
   gearman mod-gearman-tools \
   libgearman-client-perl \
   gearman-server libgearman-client-async-perl \
-  mysql-server libdbd-mysql-perl libdbd-sqlite-perl
+  mysql-server libdbd-mysql-perl libdbd-sqlite-perl \
+  libanyevent-perl
 
-    Unix::Processors
+
+  cpan AnyEvent::Gearman Unix::Processors
 
 I. Backends
   I.1. OWLIM -- Triple store (if you're not from Jacobs University, please use Sesame or request your own OWLIM access link)
