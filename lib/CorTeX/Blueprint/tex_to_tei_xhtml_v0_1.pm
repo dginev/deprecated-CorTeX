@@ -25,8 +25,8 @@ my ($self,%options) = @_;
 	print STDERR "Convert tex_to_tex_xhtml executed!\n";
 	
 	$result->{document}="something";
-	$result->{status}=-1; # OK
-	$result->{log} = "mock log";
+	$result->{status}=-4; # OK
+	$result->{log} = "Fatal:mockup:generic We want a generic Fatal here.";
 
 	return $result;
 }

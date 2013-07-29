@@ -527,7 +527,7 @@ helper classic_report => sub {
       '<span class="fatal severity">'.sprintf("%.2f",(100*$entries_report->{fatal} / $all_count)).'</span>'];
 
     if ($severity) {
-      my $categories = $backend->metadb->get_result_summary(
+      my $categories = $backend->taskdb->get_result_summary(
         corpus=>$corpus_name,
         service=>$service_name,
         severity=>$severity);
@@ -538,7 +538,7 @@ helper classic_report => sub {
         '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $all_count)).'</span>'];
       }
       if ($category) {
-        my $whats = $backend->metadb->get_result_summary(
+        my $whats = $backend->taskdb->get_result_summary(
           corpus=>$corpus_name,
           service=>$service_name,
           severity=>$severity,

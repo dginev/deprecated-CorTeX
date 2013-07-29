@@ -500,41 +500,29 @@ sub get_custom_entries {
 sub get_result_summary {
  my ($db,%options) = @_; 
  my $result_summary = {};
- $options{select} //= $options{severity};
   if (! $options{severity}) {
     # Top-level summary, get all severities and their counts:
-    $result_summary = $db->count_entries(%options);
-  } else {
-    # my $types_query = 'SELECT distinct ?z WHERE { ?x build:'.$severity.' ?y. ?y build:category ';
-    # if (! $category) {
-    #   $types_query .= ' ?z. }';
-    # } else {
-    #   $types_query .= ' '.xsd($category).'. ?y build:what ?z. }';
-    # }
-    # my $xml_ref = $self->sparql_query({query=>$types_query,repository=>$repository});
-    # my $bindings = ($xml_ref && $xml_ref->{results}->[0]->{result}) || [];
-    # my $types = [ map {$_->{binding}->{literal}->{content}} @$bindings ];
-
-    # # Get the counts for each of those
-    # foreach my $type(@$types) {
-    #   my $count_conditions = undef;
-    #   if (! $category) {
-    #     $count_conditions = '?x build:'.$severity.' ?blank. ?blank build:category '.xsd($type);
-    #   } else {
-    #     $count_conditions = '?x build:'.$severity.' ?blank. ?blank build:category '.xsd($category).'. ?blank build:what '.xsd($type).'. ';
-    #   }
-    #   $result_summary->{sesame_unescape($type)} = 
-    #   $self->count_entries(
-    #     %options
-    #     select=>$count_conditions);
-    # }
-  }
-  # Only positive counts are relevant!
-  foreach (keys %$result_summary) {
-    delete $result_summary->{$_} unless ($result_summary->{$_}>0);
-  }
-  return $result_summary;
-}
+    $result_summary = $db->count_entries(%options); }
+  elsif (! $options{category}) {
+    $options{severity} = status_code($options{severity});
+    my $types_query = $db->prepare('SELECT distinct(category),count(messageid) FROM logs WHERE severity=?');
+    $types_query->execute($options{severity});
+    my ($category,$count);
+    $types_query->bind_columns( \($category,$count));
+    while ($types_query->fetch) {
+      $result_summary->{$category} = $count if $count>0;
+    }}
+  else {
+    # We have both severity and category, query for "what" component
+    $options{severity} = status_code($options{severity});
+    my $types_query = $db->prepare('SELECT distinct(what),count(messageid) FROM logs WHERE severity=? AND category=?');
+    $types_query->execute($options{severity},$options{category});
+    my ($what,$count);
+    $types_query->bind_columns( \($what,$count));
+    while ($types_query->fetch) {
+      $result_summary->{$what} = $count if $count>0;
+    }}
+  return $result_summary; }
 
 sub status_decode {
   my ($status_code) = @_;
@@ -564,6 +552,19 @@ sub status_encode {
     when ('processing') {return '>0'}
     when ('blocked') {return '<-5'}
     default {return;}}}
+
+sub status_code {
+  my ($status) = @_;
+  given ($status) {
+    when ('ok') {return '-1'}
+    when ('warning') { return '-2'}
+    when ('error') {return '-3'}
+    when ('fatal') {return '-4'}
+    when ('queued') {return '-5'}
+    when ('processing') {return '1'}
+    when ('blocked') {return '-6'}
+    default {return;}}}
+
 
   1;
 
@@ -617,7 +618,8 @@ sub complete_tasks {
     $delete_messages->execute($taskid);
     $mark_complete->execute($result->{status},$taskid);
     foreach my $message (@{$result->{messages}||[]}) {
-      $add_message->execute($taskid,map {$result->{$_}} qw/severity category what details/);
+      $message->{severity} = status_code($message->{severity});
+      $add_message->execute($taskid,map {$message->{$_}} qw/severity category what details/);
     }
   }
   $db->do('COMMIT');
