@@ -49,7 +49,7 @@ $(document).ready(function() {
 	            url: "/ajax",
 	            type: "POST",
 	            dataType: "json",
-	            data : {"action":"queue-rerun","component":component},
+	            data : {"action":"queue-rerun","corpus":corpus_name,"service":service_name,"component":component},
 	            cache: false,
 	            success: function(response) { 
 	                alert(response.message);

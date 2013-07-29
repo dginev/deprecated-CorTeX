@@ -472,28 +472,38 @@ sub get_custom_entries {
   my $corpusid = $db->corpus_to_id($options->{corpus});
   my $serviceid = $db->service_to_id($options->{service});
   $options->{select} //= $options->{severity};
-  my $status = status_encode($options->{select});
-  my $sth = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=? and status".$status
-            . " ORDER BY entry \n"
-            . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
-            . ($options->{from} ? "OFFSET ".$options->{from}." \n" : ''));
-  $sth->execute($corpusid,$serviceid);
   my @entries;
-  print STDERR "STATUS: $status\n";
   if ($options->{select} && $options->{category} && $options->{what}) {
     # Return pairs of results and related details message
-    # TODO: Make sure this is always in the right order, not sure how reliably XML::Simple parses it 
-    # @entries = map {[$name, $content, $url] }
-  } else {
-    # Only return results
+    my $severity = status_code($options->{select});
+    my $sth = $db->prepare("SELECT entry, details from "
+      . " tasks INNER JOIN logs ON (tasks.taskid = logs.taskid) "
+      . " WHERE tasks.corpusid=? and tasks.serviceid=? and logs.severity=$severity "
+      . " and logs.category=? and logs.what=? "
+      . " ORDER BY entry \n"
+      . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
+      . ($options->{from} ? "OFFSET ".$options->{from}." \n" : ''));
+    $sth->execute($corpusid,$serviceid,$options->{category},$options->{what});
+    my ($entry, $details);
+    $sth->bind_columns(\($entry,$details));
+    while ($sth->fetch) {
+      push @entries, [$entry,$details,undef];
+      # @entries = map {[$name, $content, $url] }
+    }}
+  else {
+    # Only return results if OK (TODO: URL?)
+    my $status = status_encode($options->{select});
+    my $sth = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=? and status".$status
+      . " ORDER BY entry \n"
+      . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
+      . ($options->{from} ? "OFFSET ".$options->{from}." \n" : ''));
+    $sth->execute($corpusid,$serviceid);
     #@entries = [$name, undef, $url ]
     my $name;
     $sth->bind_columns(\$name);
     while ($sth->fetch) {
-      print STDERR "NAME: $name ;\n\n";
-      push @entries, [$name,undef,undef]; 
-    }
-  }
+      push @entries, [$name,"OK",undef]; 
+    }}
   #print STDERR Dumper(@entries);
   \@entries; }
 
