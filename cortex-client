@@ -32,6 +32,7 @@ if (-d $libdir) {
 
 use CorTeX::Backend;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use CorTeX::Util::Data qw(parse_log);
 use AnyEvent::Gearman;
 
 # Grab a TaskDB
@@ -62,18 +63,21 @@ while (1) {
   my $next_iteration = AnyEvent->condvar;
   foreach my $task(@$tasks) {
     # Obtain the actual workload:
-    $task->{workload} = $docdb->fetch_entry(
-      corpus=>$task->{corpus},entry=>$task->{entry});
+    $task->{workload} = $docdb->fetch_entry(entry=>$task->{entry});
     # TODO: Obtain prerequisite annotations/resources
     # Dispatch to Gearman
     my $entry = $task->{entry};
-    my $serviceid = $task->{serviceid};
+    my $taskid = $task->{taskid};
     $client->add_task(
       $task->{iid} => encode_json($task),
       on_complete => sub {
           my $response = decode_json($_[1]);
+          # Parse log, to be ready for TaskDB insertion
+          my $messages = parse_log(delete $response->{log});
+          $response->{messages} = $messages;
+          # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
           $response->{entry} = $entry;
-          $response->{serviceid} = $serviceid;
+          $response->{taskid} = $taskid;
           push @$results, $response;
           # New queue if we're done here
           if (@$results == $queue_size) {
@@ -84,7 +88,7 @@ while (1) {
             $results=[];
             $next_iteration->send(); }},
       on_fail => sub {
-          my $response = {entry=>$entry, serviceid=>$serviceid, status=>'TODO: fail',log=>"TODO: gearman failed"};
+          my $response = {entry=>$entry,taskid=>$taskid,status=>-4,messages=>parse_log("Fatal:Gearman:client Job failed (generic)")};
           push @$results, $response;
           # New queue if we're done here
           if (@$results == $queue_size) {
@@ -101,8 +105,9 @@ while (1) {
 sub complete_tasks {
   my (@results) = @_;
   # TODO: A single transaction with each database here, speed everything along nicely
-  # metadb->start_transction /or so/
-  # docdb->start_transaction /or so/
+  # Maybe have a similar API to taskdbi e.g.
+  # metadb->complete_tasks(@results)
+  # docdb->complete_tasks(@results)
   foreach my $result(@results) {
   # TODO: Validate the service is returning the correct type of data
     if (my $annotations = $result->{annotations}) {

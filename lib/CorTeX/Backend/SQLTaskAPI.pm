@@ -18,13 +18,14 @@ use feature 'switch';
 use Data::Dumper;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Compare qw(set_difference);
+use CorTeX::Util::Data qw(parse_log);
 
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service count_entries
   current_corpora current_services service_report classic_report get_custom_entries
-  get_result_summary service_description update_service
+  get_result_summary service_description update_service mark_custom_entries_queued
 
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
@@ -254,6 +255,71 @@ sub service_description {
   $sth->execute($name);
   my $description = $sth->fetchrow_hashref;
   return $description;
+}
+
+sub mark_entry_queued {
+  my ($db,$data) = @_;
+  return 1;
+}
+
+sub mark_custom_entries_queued {
+  my ($db,$data) = @_;
+  # Return unless we know which corpus and service we're dealing with (TODO: Raise some error)
+  return unless (($data->{corpus} || $data->{corpusid}) && ($data->{service} || $data->{serviceid}));
+  $data->{corpusid} //= $db->corpus_to_id($data->{corpus});
+  $data->{serviceid} //= $db->service_to_id($data->{service});
+  my ($corpusid,$serviceid) = map {$data->{$_}} qw/corpusid serviceid/;
+  return unless $corpusid && $serviceid; # TODO: Raise error
+    print STDERR Dumper($data);
+  # Prepare query components for the customizable fragments - severity, category and what.
+  my ($severity,$category,$what)=(q{},q{},q{});
+  if ($data->{severity}) {
+    $severity = status_encode($data->{severity});
+    if ($data->{category}) {
+      $category = $data->{category};
+      if ($data->{what}) {
+        $what = $data->{what};
+      }}}
+
+  my $rerun_query;
+  # Start a transaction
+  $db->do("BEGIN TRANSACTION");
+  if ($what) { # We have severity, category and what
+    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
+    # Mark for rerun = SET the status to all affected tasks to -5
+    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+      WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+      WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
+      AND logs.category=? and logs.what=?");
+    $rerun_query->execute($corpusid,$serviceid,$category,$what); }
+  elsif ($category) { # We have severity and category
+    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
+    # Mark for rerun = SET the status to all affected tasks to -5
+    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+      WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+      WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
+      AND logs.category=?");
+    $rerun_query->execute($corpusid,$serviceid,$category); }
+  elsif ($severity) { # We have severity
+    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
+    # Mark for rerun = SET the status to all affected tasks to -5
+    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+      WHERE corpusid=? AND serviceid=? AND status$severity");
+    $rerun_query->execute($corpusid,$serviceid); }
+  else { #Simplest case, rerun an entire (corpus,service) pair.
+    #Mark for rerun = SET the status to all affected tasks to -5
+    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+      WHERE corpusid=? AND serviceid=?");
+    $rerun_query->execute($corpusid,$serviceid);    
+    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
+  }
+  #Delete all existing messages for tasks that are marked for rerun (status=-5)
+
+  my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
+     (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE tasks.status=-5)");
+  $delete_messages_query->execute();
+  $db->do("COMMIT");
 }
 
 sub queue {
@@ -508,6 +574,8 @@ sub repository_size {
 
 sub mark_limbo_entries_queued {
   my ($db) = @_;
+  # Entries in limbo have already had their follow-up services blocked 
+  # AMD their messages erased, so all we need to do is make them available for processing again
   my $sth = $db->prepare("UPDATE tasks SET status=-5 WHERE status>0");
   $sth->execute();
 }
@@ -522,7 +590,7 @@ sub fetch_tasks {
   my $mark = int(1+rand(10000));
   my $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 ");# TODO: LIMIT ".$size);
   $sth->execute($mark);
-  $sth = $db->prepare("SELECT * from tasks where status=?");
+  $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
   my (%row,@tasks);
   $sth->bind_columns( \( @row{ @{$sth->{NAME_lc} } } ));
@@ -537,11 +605,20 @@ sub complete_tasks {
   my ($db,@results) = @_;
   return unless @results;
   print STDERR Dumper(\@results);
-  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE entry=? and serviceid=?");
+  my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
+  my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
+  my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");
+  # TODO: Decrease the requirements on any blocked jobs by this service, for this entry.
+
+  # Insert in TaskDB
   $db->do('BEGIN TRANSACTION');
   foreach my $result(@results) {
-    $result->{status} //= -4; # Fatal if not set
-    $sth->execute($result->{status},$result->{entry},$result->{serviceid});
+    my $taskid = $result->{taskid};
+    $delete_messages->execute($taskid);
+    $mark_complete->execute($result->{status},$taskid);
+    foreach my $message (@{$result->{messages}||[]}) {
+      $add_message->execute($taskid,map {$result->{$_}} qw/severity category what details/);
+    }
   }
   $db->do('COMMIT');
 }

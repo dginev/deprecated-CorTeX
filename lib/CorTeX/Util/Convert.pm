@@ -19,10 +19,11 @@ use Mojo::ByteStream qw(b);
 use Mojo::JSON;
 use Data::Dumper;
 use CorTeX::Util::RDFWrappers qw(xsd);
+use CorTeX::Util::Data qw(log_to_triples);
 
 use Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(convert_zip convert_snippet log_to_triples);
+our @EXPORT_OK = qw(convert_zip convert_snippet);
 
 sub convert_zip {
   my %opts = @_;
@@ -44,27 +45,6 @@ sub convert_snippet {
   $response = Mojo::JSON->decode($response) if $response;
   return $response;
 }
-
-sub log_to_triples {
-  my ($entry,$log_content) = @_;
-  #print STDERR "\n\n$log_content\n\n";
-  my @messages = grep {defined} map {(/^([^ :]+)\:([^ :]+)\:([^ ]+)(\s(.*))?$/) ? {severity=>lc($1),category=>lc($2),what=>lc($3),details=>$5} : undef } split("\n",$log_content);
-
-  my @triples =  map {my $blank = new_blank();
-                     # Remove local info from details:
-                     if ($_->{details} && $_->{details}=~/^(.+)\sfrom\s/) {
-                       $_->{details}=$1;
-                     }
-                     [$entry,"build:".$_->{severity},$blank] ,
-                       ((defined $_->{category}) && length($_->{category})>0) ? ([$blank,"build:category",xsd($_->{category})]) : (),
-                       ((defined $_->{what}) && length($_->{what})>0) ? ([$blank,"build:what",xsd($_->{what})]) : (),
-                       ((defined $_->{details}) && length($_->{details})>0) ? ([$blank,"build:details",xsd($_->{details})]) : ();
-                    } @messages;
-  #print STDERR "\n\n",Dumper(@triples),"\n\n";
-  @triples = () unless @triples;
-  \@triples;
-}
-
 
 # TODO: Move this to an RDF API module !!!
 our @chars=('a'..'z','A'..'Z','0'..'9');

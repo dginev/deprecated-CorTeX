@@ -186,6 +186,20 @@ sub reset_db {
   );");
   $self->do("create index masteridx on dependencies(master);");
   $self->do("create index foundationidx on dependencies(foundation);");
+
+  # Log Tables
+  $self->do("DROP TABLE if EXISTS logs");
+  $self->do("CREATE TABLE logs (
+    messageid integer primary key AUTOINCREMENT,
+    taskid integer,
+    severity integer,
+    category varchar(200),
+    what varchar(200),
+    details varchar(2000)
+  );");
+  $self->do("create index logcategory on logs(category);"); 
+  $self->do("create index logwhat on logs(what);"); 
+  $self->do("create index logseverity on logs(severity);"); 
 }
 
   ################
@@ -238,6 +252,17 @@ sub reset_db {
     );");
     $self->do("create index masteridx on dependencies(master);");
     $self->do("create index foundationidx on dependencies(foundation);");
+    # # TODO: Log Tables
+    # $self->do("DROP TABLE if EXISTS logs");
+    # $self->do("CREATE TABLE logs (
+    #   messageid integer primary key AUTOINCREMENT
+    #   category varchar(200),
+    #   what varchar(200),
+    #   details varchar(2000)
+    # );");
+    # $self->do("create index logcategory on logs(category);"); 
+    # $self->do("create index logwhat on logs(what);"); 
+
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";

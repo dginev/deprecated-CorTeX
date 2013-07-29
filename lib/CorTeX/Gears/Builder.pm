@@ -19,7 +19,8 @@ use Encode;
 use List::Util 'shuffle';
 
 use CorTeX::Backend;
-use CorTeX::Util::Convert qw(convert_snippet convert_zip log_to_triples);
+use CorTeX::Util::Convert qw(convert_snippet convert_zip);
+use CorTeX::Util::Data qw(log_to_triples);
 
 { # begin local group, to catch signals
 local $SIG{'INT'} = \&_stop_all_jobs; # Interrupt handler

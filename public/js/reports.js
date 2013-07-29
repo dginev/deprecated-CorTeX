@@ -204,7 +204,10 @@ function fetch_classic_report(corpus_name,service_name) {
                           url: "/ajax",
                           type: "POST",
                           dataType: "json",
-                          data : {"action":"queue-rerun","component":coded_description},
+                          data : {"action":"queue-rerun",
+                                  "component":coded_description,
+                                  "corpus":corpus_name,
+                                  "service":service_name},
                           cache: false,
                           success: function(response) { 
                                   alert (response.message);

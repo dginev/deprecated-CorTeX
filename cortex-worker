@@ -33,6 +33,7 @@ if (-d $libdir) {
   use lib $libdir;}
 
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use CorTeX::Util::Data qw(parse_log);
 
 my ($s,@servers) = @ARGV;
 
@@ -50,7 +51,7 @@ $worker->register_function(
     my $task = decode_json($job->{workload});
     my $response = $service->process(%$task);
     $response //= {};
-    $response->{log} //= "TODO: Empty log warning?";
+    $response->{log} //= "Fatal:Gearman:worker Processing failed silently";
     $response->{status} //= -4; # TODO: Fatal?
     $job->complete(encode_json($response));
   },

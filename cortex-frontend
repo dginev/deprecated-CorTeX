@@ -580,7 +580,7 @@ helper queue_rerun => sub {
   my $backend = $self->backend;
   if ($self->param('entry')) {
     # We only want a single entry here;
-    my $queued_success = $backend->metadb->mark_entry_queued(
+    my $queued_success = $backend->taskdb->mark_entry_queued(
       {priority=>'1',entry=>$self->param('entry'),
       corpus=>$corpus_name,service=>$service_name,
       graph=>$META_GRAPH,repository=>$MAIN_REPOS});
@@ -590,7 +590,7 @@ helper queue_rerun => sub {
     # 3 items max, slurp anything that follows:
     $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
     $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
-    my $queued_success = $backend->metadb->mark_custom_entries_queued(
+    my $queued_success = $backend->taskdb->mark_custom_entries_queued(
       {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
         corpus=>$corpus_name,service=>$service_name,
         graph=>$META_GRAPH,repository=>$MAIN_REPOS});
