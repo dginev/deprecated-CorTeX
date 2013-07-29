@@ -290,7 +290,7 @@ sub mark_custom_entries_queued {
     $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
-      AND logs.category=? and logs.what=?");
+      AND logs.category=? and logs.what=?)");
     $rerun_query->execute($corpusid,$serviceid,$category,$what); }
   elsif ($category) { # We have severity and category
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
@@ -298,7 +298,7 @@ sub mark_custom_entries_queued {
     $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
-      AND logs.category=?");
+      AND logs.category=?)");
     $rerun_query->execute($corpusid,$serviceid,$category); }
   elsif ($severity) { # We have severity
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
