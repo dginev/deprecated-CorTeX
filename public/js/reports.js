@@ -9,7 +9,7 @@ function fetch_report(type,name) {
     url: "/ajax",
     type: "POST",
     dataType: "json",
-    data : {"action":report_type,"component":component,"name":name},
+    data : {"action":report_type,"name":name},
     cache: false,
     success: function(response) {
       $('body').css('cursor', 'auto');
@@ -46,7 +46,7 @@ function fetch_service_report(service_name) {
   return fetch_report("service",service_name);
 }
 
-function fetch_classic_report(corpus_name,service_name,countby) {
+function fetch_classic_report(corpus_name,service_name,component,countby) {
   $('body').css('cursor', 'progress');
   $.ajax({
       url: "/ajax",
@@ -71,7 +71,7 @@ function fetch_classic_report(corpus_name,service_name,countby) {
             $("select.selectcountby option:selected").each(function () {
               thiscountby += $(this).val();
             });
-            fetch_classic_report(corpus_name,service_name,thiscountby);
+            fetch_classic_report(corpus_name,service_name,component,thiscountby);
           });
 
           clearInterval(countdown);
@@ -84,7 +84,7 @@ function fetch_classic_report(corpus_name,service_name,countby) {
               {
                   $('#countdown').html('<p>Refreshing...</p>');
                   clearInterval(countdown);
-                  fetch_classic_report(corpus_name,service_name,countby);
+                  fetch_classic_report(corpus_name,service_name,component,countby);
               }
           }, 1000);
           $('tr.stats-row').find('td:first').addClass('zoom-td').prepend(
@@ -168,9 +168,9 @@ function fetch_classic_report(corpus_name,service_name,countby) {
               var level = component.split(":").length - 1;
               if ((level >= 3) || thisclass == 'ok severity') {
                   window.location.href = 'retval_detail?corpus='+corpus_name+'&service='+service_name+
-                  '&component='+encodeURIComponent(component);
+                  '&component='+component+'&countby='+countby;
               }
-              fetch_classic_report(corpus_name,service_name,countby);
+              fetch_classic_report(corpus_name,service_name,component,countby);
           });
           $('tr.stats-row').hover(function() {
               $(this).find('td').last().append("<button class='rerun-button'>Rerun</button>");
@@ -223,8 +223,7 @@ function fetch_classic_report(corpus_name,service_name,countby) {
                                   var parts = coded_description.split(":");
                                   parts.pop();
                                   coded_description = parts.join(":");
-                                  component = coded_description;
-                                  fetch_classic_report(corpus_name,service_name,countby); }
+                                  fetch_classic_report(corpus_name,service_name,coded_description,countby); }
                       });
                   }
               });

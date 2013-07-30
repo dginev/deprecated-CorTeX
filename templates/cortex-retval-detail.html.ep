@@ -5,6 +5,8 @@
 $(document).ready(function() {
 	var corpus_name = getURLParameter('corpus');
 	var service_name = getURLParameter('service');
+	var component = getURLParameter('component');
+	var countby = getURLParameter('countby');
 	$('.back-to-status-button').button({
             icons: { primary: "ui-icon-circle-arrow-w" },
             text: false
@@ -13,7 +15,7 @@ $(document).ready(function() {
             'float' : 'center',                        
             'width': '25px'
         }).click(function() {
-        	window.location.href = '/report?corpus='+corpus_name+'&service='+service_name;
+        	window.location.href = '/report?corpus='+corpus_name+'&service='+service_name+'&component='+component+'&countby='+countby;
         });
 	$('.rerun-button').button({
             icons: { primary: "ui-icon-refresh" },
@@ -87,7 +89,7 @@ $(document).ready(function() {
 		        	url: "/ajax",
 		        	type: "POST",
 		        	dataType: "json",
-		        	data : {"action":"queue-rerun","entry":'exist:<%= $corpus_name %>/'+thisentry},
+		        	data : {"action":"queue-rerun","entry":thisentry,"corpus":corpus_name,"service":service_name},
 		        	cache: false,
 		        	success: function(response) { 
 		                alert (response.message);

@@ -212,6 +212,7 @@ get '/retval_detail' => sub {
   db_file_disconnect($dbfile);
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");
+  my $countby = $self->param("countby");
   my $component = [ split(/:/, $self->param('component')) ];
   # 3 items max, slurp anything that follows:
   $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
@@ -236,6 +237,7 @@ get '/retval_detail' => sub {
       repository=>$MAIN_REPOS,
       corpus=>$corpus_name,
       service=>$service_name,
+      countby=>$countby,
       severity=>$component->[1],
       category=>$component->[2]
     );
@@ -243,11 +245,12 @@ get '/retval_detail' => sub {
   } else {
     my $whats = $backend->metadb->get_result_summary(
       repository=>$MAIN_REPOS,
+      countby=>$countby,
       corpus=>$corpus_name,
       service=>$service_name);
     $count = $whats->{$component->[1]};
   }
-  $self->stash(count=>$count);
+  $self->stash(count=>$count||0);
   $self->stash(limit=>$limit);
   $self->stash(from=>$from);
   $self->stash(component=>$self->param('component'));
@@ -469,12 +472,14 @@ helper corpus_report => sub {
 
   $self->render(json => {alive=>$alive,report=>$report_message});
 };
+
 helper classic_report => sub {
   my ($self) = @_;
   my $backend = $self->backend;
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");
   my $countby = $self->param("countby")||'document';
+  $countby = 'document' if ($countby eq 'null');
   my $entries_report = $backend->taskdb->count_entries(
     corpus=>$corpus_name,
     service=>$service_name);
@@ -513,7 +518,7 @@ helper classic_report => sub {
   $report_message .="</tr></tbody></table>";
   # 2.2 Results report:
   my $detailed_report;
-  my ($all_details,$completed_details)=(0,0);
+  my $all_details=0;
   if ($countby eq 'message') {
     $detailed_report = $backend->taskdb->count_messages(corpus=>$corpus_name,service=>$service_name);
     foreach (keys %$detailed_report) {
@@ -569,8 +574,8 @@ helper classic_report => sub {
   }
   $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>'.
   (($countby eq 'document') ? 
-  '<select name="countby" class="selectcountby"><option value="document">Documents</option><option value="message">Messages</option></select>' :
-  '<select name="countby" class="selectcountby"><option value="message">Messages</option><option value="document">Documents</option></select>')
+  '<select name="countby" class="selectcountby"><option selected="selected" value="document">Documents</option><option value="message">Messages</option></select>' :
+  '<select name="countby" class="selectcountby"><option value="document">Documents</option><option selected="selected" value="message">Messages</option></select>' )
   .'</th><th>%</th></thead><tbody>';
   $report_message .= $self->inner_report_message($Results_Report);
   $report_message .="</tbody></table>";
@@ -600,7 +605,7 @@ helper queue_rerun => sub {
   if ($self->param('entry')) {
     # We only want a single entry here;
     my $queued_success = $backend->taskdb->mark_entry_queued(
-      {priority=>'1',entry=>$self->param('entry'),
+      {entry=>$self->param('entry'),
       corpus=>$corpus_name,service=>$service_name,
       graph=>$META_GRAPH,repository=>$MAIN_REPOS});
     $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});

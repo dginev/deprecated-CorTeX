@@ -27,6 +27,7 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   count_entries count_messages
   current_corpora current_services service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
+  mark_entry_queued
 
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
@@ -260,6 +261,7 @@ sub service_description {
 
 sub mark_entry_queued {
   my ($db,$data) = @_;
+  print STDERR Dumper($data);
   return 1;
 }
 
@@ -430,8 +432,8 @@ sub classic_report { # Report in detail on a <corpus,service> pair
 
 sub count_entries {
   my ($db,%options)=@_;
-  $options{corpusid} //= $db->corpus_to_id($options{corpus});
-  $options{serviceid} //= $db->service_to_id($options{service});
+  $options{corpusid} //= $db->corpus_to_id($options{corpus}) if $options{corpus};
+  $options{serviceid} //= $db->service_to_id($options{service}) if $options{service};
   my $corpusid = $options{corpusid};
   my $serviceid = $options{serviceid};
   my $select = $options{select};

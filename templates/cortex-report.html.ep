@@ -6,11 +6,16 @@
 //var alarm_t;
 var countdown;
 var interval = 60000;   //number of mili seconds between each call
-var component = "general";
 var corpus_name = getURLParameter("corpus");
 var service_name = getURLParameter("service");
- $(document).ready(function() {
-  fetch_classic_report(corpus_name,service_name);
+var component = getURLParameter("component");
+if ((! component) || (component == "null")) {
+  component = "general"; }
+var countby = getURLParameter("countby");
+if ((!countby) || (countby == "null")) {
+  countby = "document"; }
+$(document).ready(function() {
+  fetch_classic_report(corpus_name,service_name,component,countby);
 });
 <% end %>
 
