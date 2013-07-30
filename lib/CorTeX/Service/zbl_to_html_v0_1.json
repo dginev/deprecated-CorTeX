@@ -1,0 +1,10 @@
+{
+  "name": "ZBL to HTML",
+  "version":"0.1",
+  "dependencies": ["import"],
+  "url":"127.0.0.1",
+  "type":"2",
+  "inputformat":"tex",
+  "outputformat":"html",
+  "parameters":{}
+}
