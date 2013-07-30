@@ -68,16 +68,16 @@ $(document).ready(function() {
         <% foreach my $service(@$current_services) { %>
           <% if ($service eq 'import') { %>
             <%= hidden_field "requires[]" => "import" %>
-            <%= check_box 'requires[]' => 'import', checked=>1, disabled=>1 %>import&nbsp;&nbsp;
+            <%= check_box 'requires[]' => 'import', checked=>1, disabled=>1 %><span>import&nbsp;&nbsp;</span>
           <% } else { %>  
-            <%= check_box 'requires[]' => $service %><%= $service %>&nbsp;&nbsp;
+            <%= check_box 'requires[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
         <% }} %>
         </td></tr>
       <% } %>
       <% if (@$current_corpora) { %>
         <tr><td>Corpora</td><td class="input">
         <% for my $corpus(@$current_corpora) { %>
-            <%= check_box 'corpora[]' => $corpus %><%= $corpus %>&nbsp;&nbsp;
+            <%= check_box 'corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
         <% } %>
       </td></tr>
       <% } %>
@@ -110,16 +110,17 @@ $(document).ready(function() {
       <% foreach my $service(@$current_services) { %>
         <% if ($service eq 'import') { %>
           <%= hidden_field "update-requires[]" => "import" %>
-          <%= check_box 'update-requires[]' => 'import', checked=>1, disabled=>1 %>import&nbsp;&nbsp;
+          <%= check_box 'update-requires[]' => 'import', checked=>1, disabled=>1 %>
+          <span>import&nbsp;&nbsp;</span>          
         <% } else { %>  
-          <%= check_box 'update-requires[]' => $service %><%= $service %>&nbsp;&nbsp;
+          <%= check_box 'update-requires[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
       <% }} %>
       </td></tr>
     <% } %>
     <% if (@$current_corpora) { %>
       <tr><td>Corpora</td><td class="input">
       <% for my $corpus(@$current_corpora) { %>
-          <%= check_box 'corpora[]' => $corpus %><%= $corpus %>&nbsp;&nbsp;
+          <%= check_box 'corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
       <% } %>
     </td></tr>
     <% } %>

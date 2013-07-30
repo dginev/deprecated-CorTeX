@@ -151,7 +151,7 @@ function fetch_classic_report(corpus_name,service_name,component,countby) {
               var thisclass = ($(this).parent().parent().find('td > span').attr('class'));
               var thisparts = thisclass.split(' ');
               var thislevel = thisparts[1];
-              if (component.indexOf(thisclass) != -1) {
+              if ((thisclass != 'ok severity') && (component.indexOf(thisclass) != -1)) {
                   while (component.indexOf(thisclass) != -1) {
                       var parts = component.split(":");
                       parts.pop();
@@ -273,8 +273,16 @@ function fetch_description(type,name) {
         return $(this).val() == response.type; 
       }).prop('selected', true);
       // TODO: Dependencies and Corpora
-      table.css('visibility', 'visible');
+      //
+      var checkbox = $('input:checkbox[name="update-requires\\[\\]"]');
+      var label = checkbox.next('span');
+      checkbox.show(); label.show();
 
+      checkbox = $('input:checkbox[name="update-requires\\[\\]"][value="'+name+'"]');
+      label = checkbox.next('span');
+      checkbox.hide(); label.hide();
+
+      table.css('visibility', 'visible');
     }
   });
 }
