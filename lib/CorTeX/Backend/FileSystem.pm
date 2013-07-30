@@ -59,4 +59,8 @@ sub fetch_entry {
     return $text; }
   else { return ; } }
 
+sub entry_to_url {
+  return "file://".$_[1];
+}
+
 1;

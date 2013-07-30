@@ -283,7 +283,6 @@ sub mark_custom_entries_queued {
   $data->{serviceid} //= $db->service_to_id($data->{service});
   my ($corpusid,$serviceid) = map {$data->{$_}} qw/corpusid serviceid/;
   return unless $corpusid && $serviceid; # TODO: Raise error
-    print STDERR Dumper($data);
   # Prepare query components for the customizable fragments - severity, category and what.
   my ($severity,$category,$what)=(q{},q{},q{});
   if ($data->{severity}) {
@@ -523,7 +522,6 @@ sub count_messages {
 
 sub get_custom_entries {
   my ($db,$options) = @_;
-  print STDERR Dumper($options);
   $options->{corpusid} //= $db->corpus_to_id($options->{corpus});
   $options->{serviceid} //= $db->service_to_id($options->{service});
   my $corpusid = $options->{corpusid};
@@ -685,7 +683,6 @@ sub fetch_tasks {
 sub complete_tasks {
   my ($db,@results) = @_;
   return unless @results;
-  print STDERR Dumper(\@results);
   my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
   my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
   my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");

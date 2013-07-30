@@ -223,6 +223,8 @@ get '/retval_detail' => sub {
                                                       what=>$component->[3],from=>$from,limit=>$limit,
                                                       corpus=>$corpus_name,service=>$service_name,
                                                       repository=>$MAIN_REPOS, graph=>$META_GRAPH});
+  foreach my $entry(@$entries) {
+    $entry->[2] = $backend->docdb->entry_to_url($entry->[0]); }
   $self->stash(severity=>$component->[1]);
   $self->stash(category=>$component->[2]);
   $self->stash(what=>$component->[3]);
