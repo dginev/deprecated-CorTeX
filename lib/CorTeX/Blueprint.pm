@@ -23,9 +23,9 @@ sub new {
 sub process {
 	my ($self,%options)=@_;	
 	given (lc($self->type())) {
-		when ('analysis') {$self->analyze(%options)}
-		when ('aggregation') {$self->aggregate(%options)}
-		when ('conversion') {$self->convert(%options)}
+		when ('analysis') {return $self->analyze(%options)}
+		when ('aggregation') {return $self->aggregate(%options)}
+		when ('conversion') {return $self->convert(%options)}
 		default {return;}
 	}}
 

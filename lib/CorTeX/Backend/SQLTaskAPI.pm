@@ -261,7 +261,17 @@ sub service_description {
 
 sub mark_entry_queued {
   my ($db,$data) = @_;
-  print STDERR Dumper($data);
+  return unless ($data->{corpus} && $data->{service} && $data->{entry});
+  my $corpusid = $db->corpus_to_id($data->{corpus});
+  my $serviceid = $db->service_to_id($data->{service});
+  my $queue_entry_query = $db->prepare("UPDATE tasks SET status=-5 
+      WHERE corpusid=? AND serviceid=? and entry=?");
+  my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
+     (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE tasks.status=-5)");
+  $queue_entry_query->execute($corpusid,$serviceid,$data->{entry});
+  $delete_messages_query->execute();
+  # TODO: Also handle dependencies: +1 on any service depending on serviceid, for this entry
   return 1;
 }
 

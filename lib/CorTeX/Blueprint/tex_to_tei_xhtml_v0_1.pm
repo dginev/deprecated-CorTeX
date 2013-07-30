@@ -21,8 +21,6 @@ sub type {'conversion'}
 sub convert {
 my ($self,%options) = @_;
 	my $result = {};
-
-	print STDERR "Convert tex_to_tex_xhtml executed!\n";
 	
 	$result->{document}="something";
 	$result->{status}=-4; # OK
