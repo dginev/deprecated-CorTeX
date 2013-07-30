@@ -15,16 +15,30 @@ package CorTeX::Blueprint::tex_to_html_v0_1;
 use warnings;
 use strict;
 use base qw(CorTeX::Blueprint);
+use LaTeXML::Converter;
+use LaTeXML::Util::Config;
 
-sub type {'convert'}
+our $opts=LaTeXML::Util::Config->new(local=>1,whatsin=>'document',whatsout=>'document',
+  format=>'html5',mathparse=>'RecDescent',timeout=>120,post=>1,math_formats=>['pmml','cmml'],
+  defaultresources=>0);
+$opts->check;
+
+sub type {'conversion'}
 
 sub convert {
-	my ($self,%options) = @_;
-	my %result = ();
+  my ($self,%options) = @_;
+  my $source = "literal:".$options{workload};
+  my $converter = LaTeXML::Converter->get_converter($opts);
+  $converter->prepare_session($opts);
+  my $response = $converter->convert($source);
+  my ($document, $status, $log) = map { $response->{$_} } qw(result status_code log) if defined $response;
 
-	
-	
-	return (%result);
-}
+  my $result={};
+  $result->{document}=$document;
+  $result->{status}= -$status -1; # Adapt to the CorTeX scheme
+  $result->{log} = $log;
+
+  return $result; }
+
 
 1;
