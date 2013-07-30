@@ -26,7 +26,7 @@ my ($self,%options) = @_;
 	
 	$result->{document}="something";
 	$result->{status}=-4; # OK
-	$result->{log} = "Fatal:mockup:generic We want a generic Fatal here.";
+	$result->{log} = "Fatal:mockup:generic We want a generic Fatal here.\nFatal:mockup:generic And a second one.";
 
 	return $result;
 }

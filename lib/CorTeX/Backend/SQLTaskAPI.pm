@@ -23,7 +23,8 @@ use CorTeX::Util::Data qw(parse_log);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service count_entries
+  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
+  count_entries count_messages
   current_corpora current_services service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
 
@@ -429,12 +430,11 @@ sub classic_report { # Report in detail on a <corpus,service> pair
 
 sub count_entries {
   my ($db,%options)=@_;
-  my $corpus_name = $options{corpus};
-  my $service_name = $options{service};
+  $options{corpusid} //= $db->corpus_to_id($options{corpus});
+  $options{serviceid} //= $db->service_to_id($options{service});
+  my $corpusid = $options{corpusid};
+  my $serviceid = $options{serviceid};
   my $select = $options{select};
-  return unless $corpus_name || $service_name;
-  my $corpusid = $db->corpus_to_id($corpus_name) if $corpus_name;
-  my $serviceid = $db->service_to_id($service_name) if $service_name;
   return unless $corpusid || $serviceid;
   if (!$select && ($corpusid && $serviceid)) {
     my $sth = $db->prepare("SELECT status, count(entry) FROM tasks 
@@ -466,11 +466,56 @@ sub count_entries {
     return $value;
     }}
 
+sub count_messages {
+  my ($db,%options)=@_;
+  $options{corpusid} //= $db->corpus_to_id($options{corpus});
+  $options{serviceid} //= $db->service_to_id($options{service});
+  my $corpusid = $options{corpusid};
+  my $serviceid = $options{serviceid};
+  my $select = $options{select};
+  return unless $corpusid || $serviceid;
+  if (!$select && ($corpusid && $serviceid)) {
+    my $sth = $db->prepare("SELECT severity, count(messageid) 
+      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE corpusid=? and serviceid=?
+      group by severity");
+    $sth->execute($corpusid,$serviceid);
+    my ($count,$status,%report);
+    $sth->bind_columns(\($status,$count));
+    while ($sth->fetch) {
+      $report{status_decode($status)} += $count;
+    }
+    return \%report; }
+  elsif ($select eq 'all') {
+    $serviceid //= 1;
+    my $sth = $db->prepare("SELECT count(messageid) 
+      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE corpusid=? and serviceid=?");
+    $sth->execute($corpusid,$serviceid);
+    my $total;
+    $sth->bind_columns(\$total);
+    $sth->fetch;
+    return $total; }
+  else {
+    $select = status_decode($select);
+    return unless $select =~ /^(\d\-\<\>\=)+$/; # make sure the selector is safe
+    my $sth = $db->prepare("SELECT count(messageid) 
+      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE corpusid=? and serviceid=? and status".$select);
+    $sth->execute($corpusid,$serviceid);
+    my $value;
+    $sth->bind_columns(\$value);
+    $sth->fetch;
+    return $value;
+    }}
+
 sub get_custom_entries {
   my ($db,$options) = @_;
   print STDERR Dumper($options);
-  my $corpusid = $db->corpus_to_id($options->{corpus});
-  my $serviceid = $db->service_to_id($options->{service});
+  $options->{corpusid} //= $db->corpus_to_id($options->{corpus});
+  $options->{serviceid} //= $db->service_to_id($options->{service});
+  my $corpusid = $options->{corpusid};
+  my $serviceid = $options->{serviceid};
   $options->{select} //= $options->{severity};
   my @entries;
   if ($options->{select} && $options->{category} && $options->{what}) {
@@ -510,13 +555,22 @@ sub get_custom_entries {
 sub get_result_summary {
  my ($db,%options) = @_; 
  my $result_summary = {};
+ return unless $options{corpus} && $options{service};
+ my $corpusid = $db->corpus_to_id($options{corpus});
+ my $serviceid = $db->service_to_id($options{service});
+ my $count_clause = ($options{countby} eq 'message') ? 'messageid' : 'distinct(tasks.taskid)';
   if (! $options{severity}) {
     # Top-level summary, get all severities and their counts:
-    $result_summary = $db->count_entries(%options); }
+    if ($options{countby} eq 'message') {
+      $result_summary = $db->count_messages(%options); }
+    else {
+      $result_summary = $db->count_entries(%options); }}
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare('SELECT distinct(category),count(distinct(taskid)) FROM logs WHERE severity=?');
-    $types_query->execute($options{severity});
+    my $types_query = $db->prepare("SELECT distinct(category),count($count_clause) 
+      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE corpusid=? AND serviceid=? AND severity=?");
+    $types_query->execute($corpusid,$serviceid,$options{severity});
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
     while ($types_query->fetch) {
@@ -525,8 +579,10 @@ sub get_result_summary {
   else {
     # We have both severity and category, query for "what" component
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare('SELECT distinct(what),count(messageid) FROM logs WHERE severity=? AND category=?');
-    $types_query->execute($options{severity},$options{category});
+    my $types_query = $db->prepare("SELECT distinct(what),count($count_clause) 
+      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      WHERE corpusid=? AND serviceid=? AND severity=? AND category=?");
+    $types_query->execute($corpusid,$serviceid,$options{severity},$options{category});
     my ($what,$count);
     $types_query->bind_columns( \($what,$count));
     while ($types_query->fetch) {

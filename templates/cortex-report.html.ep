@@ -14,6 +14,5 @@ var service_name = getURLParameter("service");
 });
 <% end %>
 
-
 <div id="report"></div>
 <div id="countdown"></div>
