@@ -581,7 +581,8 @@ sub get_result_summary {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare("SELECT distinct(category),count($count_clause) 
       FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-      WHERE corpusid=? AND serviceid=? AND severity=?");
+      WHERE corpusid=? AND serviceid=? AND severity=?
+      group by category");
     $types_query->execute($corpusid,$serviceid,$options{severity});
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
@@ -593,7 +594,8 @@ sub get_result_summary {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare("SELECT distinct(what),count($count_clause) 
       FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-      WHERE corpusid=? AND serviceid=? AND severity=? AND category=?");
+      WHERE corpusid=? AND serviceid=? AND severity=? AND category=?
+      group by what");
     $types_query->execute($corpusid,$serviceid,$options{severity},$options{category});
     my ($what,$count);
     $types_query->bind_columns( \($what,$count));

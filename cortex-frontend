@@ -530,7 +530,7 @@ helper classic_report => sub {
     $all_details = $all_count;
     $detailed_report = $entries_report; }
   my $Results_Report = {};
-  if ($completed_count) {
+  if ($completed_count && $all_details) {
     $Results_Report->{ok}->{count} = $detailed_report->{ok};
     $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$detailed_report->{ok}.'</span>',
       '<span class="ok severity">'.sprintf("%.2f",(100*$detailed_report->{ok} / $all_details)).'</span>'];

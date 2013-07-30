@@ -74,6 +74,7 @@ while (1) {
           my $response = decode_json($_[1]);
           # Parse log, to be ready for TaskDB insertion
           my $messages = parse_log(delete $response->{log});
+          @$messages = grep {$_->{severity} ne 'status'} @$messages; # We don't want status messages for now. TODO: What to do with those?
           $response->{messages} = $messages;
           # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
           $response->{entry} = $entry;

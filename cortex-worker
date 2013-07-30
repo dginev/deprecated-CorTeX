@@ -43,7 +43,7 @@ my $eval_return = eval {require "CorTeX/Blueprint/$s.pm"; 1; };
 if ($eval_return && (!$@)) {
   $service = eval { "CorTeX::Blueprint::$s"->new(); }; }
 else {
-  print STDERR "Service $s not available, exiting.\n";
+  print STDERR "Service $s not available, exiting.\n$@\n";
   exit; }          
 $worker->register_function(
   $s => sub {
