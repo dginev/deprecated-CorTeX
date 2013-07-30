@@ -515,7 +515,7 @@ sub get_result_summary {
     $result_summary = $db->count_entries(%options); }
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare('SELECT distinct(category),count(messageid) FROM logs WHERE severity=?');
+    my $types_query = $db->prepare('SELECT distinct(category),count(distinct(taskid)) FROM logs WHERE severity=?');
     $types_query->execute($options{severity});
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
