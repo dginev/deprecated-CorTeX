@@ -17,9 +17,11 @@ use strict;
 use base qw(CorTeX::Blueprint);
 use LaTeXML::Converter;
 use LaTeXML::Util::Config;
+use LLaMaPUn::Preprocessor::Purify;
+use LLaMaPUn::Tokenizer;
 
 our $opts=LaTeXML::Util::Config->new(local=>1,whatsin=>'document',whatsout=>'document',
-  format=>'xhtml',mathparse=>'RecDescent',timeout=>120,post=>1,math_formats=>['pmml','cmml'],
+  format=>'dom',mathparse=>'no',timeout=>120,post=>0,
   defaultresources=>0);
 $opts->check;
 
@@ -27,14 +29,20 @@ sub type {'conversion'}
 
 sub convert {
   my ($self,%options) = @_;
+  # I. Convert to XML
   my $source = "literal:".$options{workload};
   my $converter = LaTeXML::Converter->get_converter($opts);
   $converter->prepare_session($opts);
   my $response = $converter->convert($source);
-  my ($document, $status, $log) = map { $response->{$_} } qw(result status_code log) if defined $response;
+  my ($latexml_dom, $status, $log) = map { $response->{$_} } qw(result status_code log) if defined $response;
+
+  my $purified_dom = LLaMaPUn::Preprocessor::Purify::purify_noparse($latexml_dom,verbose=>0);
+  my $marktokens = LLaMaPUn::Preprocessor::MarkTokens->new(document=>$purified_dom,verbose=>0);
+  my $tokenized_dom = $marktokens->process_document;
+  my $html_dom = LLaMaPUn::LaTeXML::xml_to_TEI_xhtml($tokenized_dom);
 
   my $result={};
-  $result->{document}=$document;
+  $result->{document}=$html_dom->toString(1);
   $result->{status}= -$status -1; # Adapt to the CorTeX scheme
   $result->{log} = $log;
 
