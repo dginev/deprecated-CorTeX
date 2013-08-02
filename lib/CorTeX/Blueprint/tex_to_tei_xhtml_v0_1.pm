@@ -17,8 +17,9 @@ use strict;
 use base qw(CorTeX::Blueprint);
 use LaTeXML::Converter;
 use LaTeXML::Util::Config;
+use LLaMaPUn::LaTeXML;
 use LLaMaPUn::Preprocessor::Purify;
-use LLaMaPUn::Tokenizer;
+use LLaMaPUn::Preprocessor::MarkTokens;
 
 our $opts=LaTeXML::Util::Config->new(local=>1,whatsin=>'document',whatsout=>'document',
   format=>'dom',mathparse=>'no',timeout=>120,post=>0,
@@ -36,10 +37,14 @@ sub convert {
   my $response = $converter->convert($source);
   my ($latexml_dom, $status, $log) = map { $response->{$_} } qw(result status_code log) if defined $response;
 
+  # Purify
   my $purified_dom = LLaMaPUn::Preprocessor::Purify::purify_noparse($latexml_dom,verbose=>0);
+  # Tokenize
   my $marktokens = LLaMaPUn::Preprocessor::MarkTokens->new(document=>$purified_dom,verbose=>0);
   my $tokenized_dom = $marktokens->process_document;
-  my $html_dom = LLaMaPUn::LaTeXML::xml_to_TEI_xhtml($tokenized_dom);
+  # Move to TEI HTML
+  print STDERR $tokenized_dom->toString(1),"\n\n";
+  my $html_dom = xml_to_TEI_xhtml($tokenized_dom);
 
   my $result={};
   $result->{document}=$html_dom->toString(1);

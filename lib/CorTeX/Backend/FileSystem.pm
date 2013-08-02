@@ -40,10 +40,12 @@ sub already_added {
 sub insert_directory {
   my ($self) = @_;
   return 1 if $self->{inplace};
+
 }
 
 sub insert_files {
-  my (@files) = @_;
+  my ($self,@files) = @_;
+  print STDERR Dumper(\@files);
   return 1;
 }
 
