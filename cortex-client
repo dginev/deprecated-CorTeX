@@ -68,8 +68,9 @@ while (1) {
     # Dispatch to Gearman
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
+    my $service = $task->{iid};
     $client->add_task(
-      $task->{iid} => encode_json($task),
+      $service => encode_json($task),
       on_complete => sub {
           my $response = decode_json($_[1]);
           # Parse log, to be ready for TaskDB insertion
@@ -79,24 +80,26 @@ while (1) {
           # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
           $response->{entry} = $entry;
           $response->{taskid} = $taskid;
+          $response->{service} = $service;
           push @$results, $response;
           # New queue if we're done here
           if (@$results == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
             # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-            complete_tasks(@$results);
+            complete_tasks($results);
             $results=[];
             $next_iteration->send(); }},
       on_fail => sub {
-          my $response = {entry=>$entry,taskid=>$taskid,status=>-4,messages=>parse_log("Fatal:Gearman:client Job failed (generic)")};
+          my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
+              status=>-4,messages=>parse_log("Fatal:Gearman:client Job failed (generic)")};
           push @$results, $response;
           # New queue if we're done here
           if (@$results == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
             # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-            complete_tasks(@$results);
+            complete_tasks($results);
             $results=[];
             $next_iteration->send(); }}
     );
@@ -104,22 +107,13 @@ while (1) {
   $next_iteration->recv; }
 
 sub complete_tasks {
-  my (@results) = @_;
+  my ($results) = @_;
   # TODO: A single transaction with each database here, speed everything along nicely
-  # Maybe have a similar API to taskdbi e.g.
-  # metadb->complete_tasks(@results)
-  # docdb->complete_tasks(@results)
-  foreach my $result(@results) {
   # TODO: Validate the service is returning the correct type of data
-    if (my $annotations = $result->{annotations}) {
-      $metadb->add_triples($annotations); }
-    elsif (my $document = $result->{document}) {
-      $docdb->insert_files($document); }
-    elsif (my $resource = $result->{resource}) {
-      $docdb->insert_resource($resource); }}
-  # metadb->commit
-  # docdb->commit
-
+  # Insert any new annotations from the conversion
+  $metadb->complete_tasks($results);
+  # Insert any new documents or resources from the conversion
+  $docdb->complete_tasks($results);
   # Update all as done, insert logs
-  $taskdb->complete_tasks(@results);
+  $taskdb->complete_tasks($results);
 }

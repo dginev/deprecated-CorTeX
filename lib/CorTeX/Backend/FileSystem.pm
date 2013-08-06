@@ -18,6 +18,8 @@ use warnings;
 use strict;
 
 use File::Slurp;
+use File::Path qw(make_path remove_tree);
+use File::Spec;
 use Data::Dumper;
 
 sub new {
@@ -45,8 +47,32 @@ sub insert_directory {
 
 sub insert_files {
   my ($self,@files) = @_;
-  print STDERR Dumper(\@files);
   return 1;
+}
+
+sub complete_tasks {
+  my ($self,$results) = @_;
+  return unless @$results;
+  my @conversion_results = grep {$_->{document}} @$results;
+  my @aggregation_results = grep {$_->{resource}} @$results;
+  foreach my $result(@conversion_results) {
+    my $document = $result->{document};
+    # Conversion results - add a new document
+    my $entry_dir = $result->{entry};
+    $entry_dir =~ /\/([^\/]+)$/;
+    my $entry_name = $1 . "." . lc($result->{format});
+    my $result_dir = File::Spec->catdir($entry_dir,$result->{service});
+    my $result_file = File::Spec->catfile($result_dir,$entry_name);
+
+    make_path($result_dir);
+    open my $fh, ">", $result_file;
+    print $fh $document;
+    close $fh;
+  }
+
+  foreach my $result(@aggregation_results) {
+    # Aggregation results - add a new resource
+  }
 }
 
 sub fetch_entry {

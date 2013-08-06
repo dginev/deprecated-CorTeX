@@ -681,8 +681,8 @@ sub fetch_tasks {
   return($mark,\@tasks); }
 
 sub complete_tasks {
-  my ($db,@results) = @_;
-  return unless @results;
+  my ($db,$results) = @_;
+  return unless @$results;
   my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
   my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
   my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");
@@ -690,7 +690,7 @@ sub complete_tasks {
 
   # Insert in TaskDB
   $db->do('BEGIN TRANSACTION');
-  foreach my $result(@results) {
+  foreach my $result(@$results) {
     my $taskid = $result->{taskid};
     $delete_messages->execute($taskid);
     $mark_complete->execute($result->{status},$taskid);
