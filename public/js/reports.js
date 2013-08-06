@@ -246,7 +246,7 @@ function fetch_description(type,name) {
   // delete any traces of previous reports
   var description_type = type+"-description";
   if (!name) { // No name, no functionality
-    $("#update-description").css('visibility', 'hidden');
+    $("#update-description").css('display', 'none');
    return;}
   $('body').css('cursor', 'progress');
   $.ajax({
@@ -282,7 +282,7 @@ function fetch_description(type,name) {
       label = checkbox.next('span');
       checkbox.hide(); label.hide();
 
-      table.css('visibility', 'visible');
+      table.css('display', '');
     }
   });
 }

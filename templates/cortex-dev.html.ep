@@ -49,6 +49,81 @@ $(document).ready(function() {
     var option = $(this).find("option:selected");
     var service_name = option.val();
     fetch_service_description(service_name);
+    $("#accordion").accordion("refresh");
+  });
+
+  $("#service-type").change(function() {
+    var option = $(this).find("option:selected");
+    var service_type = option.val();
+    if (service_type == 1) {
+     // Analysis submenus
+     $("#tr-service-informat").show();
+     // Hide others
+     $("#tr-service-xpath").show();
+     $("#tr-service-outformat").hide();
+     $("#tr-service-resourcename").hide();
+    } else {
+      if (service_type == 2) {
+        // Conversion submenus
+       $("#tr-service-informat").show();
+       $("#tr-service-xpath").hide();
+       $("#tr-service-outformat").show();
+       // Hide others
+       $("#tr-service-resourcename").hide();
+      } else {
+        if (service_type == 3) {
+         // Aggregation submenus
+         $("#tr-service-informat").show();
+         $("#tr-service-xpath").show();
+         $("#tr-service-outformat").show();
+         $("#tr-service-resourcename").show();
+        } else {
+         // No menu, hide everything
+         $("#tr-service-informat").hide();
+         $("#tr-service-xpath").hide();
+         $("#tr-service-outformat").hide();
+         $("#tr-service-resourcename").hide();
+        }
+      }
+    }
+    $("#accordion").accordion("refresh");
+  });
+
+  $("#update-type").change(function() {
+    var option = $(this).find("option:selected");
+    var service_type = option.val();
+    if (service_type == 1) {
+     // Analysis submenus
+     $("#tr-update-informat").show();
+     // Hide others
+     $("#tr-update-xpath").show();
+     $("#tr-update-outformat").hide();
+     $("#tr-update-resourcename").hide();
+    } else {
+      if (service_type == 2) {
+        // Conversion submenus
+       $("#tr-update-informat").show();
+       $("#tr-update-xpath").hide();
+       $("#tr-update-outformat").show();
+       // Hide others
+       $("#tr-update-resourcename").hide();
+      } else {
+        if (service_type == 3) {
+         // Aggregation submenus
+         $("#tr-update-informat").show();
+         $("#tr-update-xpath").show();
+         $("#tr-update-outformat").show();
+         $("#tr-update-resourcename").show();
+        } else {
+         // No menu, hide everything
+         $("#tr-update-informat").hide();
+         $("#tr-update-xpath").hide();
+         $("#tr-update-outformat").hide();
+         $("#tr-update-resourcename").hide();
+        }
+      }
+    }
+    $("#accordion").accordion("refresh");
   });
 });
 <% end %>
@@ -59,9 +134,9 @@ $(document).ready(function() {
   <div class="itemcontent"><%= form_for '' => begin %>
     <table class="form-table">
       <tr><td class="required">Name</td>
-        <td class="input"><%= text_field 'service-name' => (value=>'Example Service',size=>50,id=>'service-name') %></td></tr>
+        <td class="input"><%= text_field 'service-name' => (value=>'Example Service',size=>40,id=>'service-name') %></td></tr>
       <tr><td class="required">Version</td>
-        <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>50,id=>'service-version') %></td></tr>
+        <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>40,id=>'service-version') %></td></tr>
       <tr><td><td class="input">(internal ID: <span id="service-id-label">foo</span>)<%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
       <% if (@$current_services) { %>
         <tr><td>Depends on</td><td class="input">
@@ -82,10 +157,36 @@ $(document).ready(function() {
       </td></tr>
       <% } %>
       </td></tr>
-      <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>50) %></td></tr>
-      <tr><td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>50) %></td></tr>
+      <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>40) %></td></tr>
       <tr><td class="required">Type</td>
-        <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]] %></td></tr>
+        <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'service-type' %></td>
+      </tr>
+    
+      <% if (@$current_informats) { %>
+      <tr style="display:none;" id="tr-service-informat">
+        <td>Format (in)</td><td>
+        <%= select_field 'service-informat' => ["",@$current_informats], 
+            id=>"service-informat" %>
+      </td></tr><% } %>
+
+      <tr style="display:none;" id="tr-service-outformat">
+        <td>Format (out)</td><td>
+        <%= text_field 'service-outformat' => (value=>'',size=>40, 
+            id=>"service-outformat") %>
+        </td>
+      </tr>
+
+      <tr style="display:none;" id="tr-service-xpath">
+        <td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>40) %></td>
+      </tr>
+
+      <tr style="display:none;" id="tr-service-resourcename">
+        <td>New Resource</td><td>
+        <%= text_field 'service-resourcename' => (value=>'',size=>40, 
+            id=>"service-resourcename") %>
+        </td>
+      </tr>
+
       <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
     </table>
     <%= hidden_field action => 'add-service' %>
@@ -99,11 +200,11 @@ $(document).ready(function() {
   <% } else { %>
     None registered
   <% } %>
-  <table class="form-table" style="visibility:hidden;" id="update-description">
+  <table class="form-table" style="display:none;" id="update-description">
     <tr><td class="required">Name</td>
-      <td class="input"><%= text_field 'update-name' => (value=>'Example Service',size=>50,id=>'update-name') %></td></tr>
+      <td class="input"><%= text_field 'update-name' => (value=>'Example Service',size=>40,id=>'update-name') %></td></tr>
     <tr><td class="required">Version</td>
-      <td class="input"><%= text_field 'update-version' => (value=>'0.1',size=>50,id=>'update-version') %></td></tr>
+      <td class="input"><%= text_field 'update-version' => (value=>'0.1',size=>40,id=>'update-version') %></td></tr>
     <tr><td><td class="input">(internal ID: <span id="update-id-label">foo</span>)<%= hidden_field "update-id" => "foo", id=>"update-id" %></td></tr>
     <% if (@$current_services) { %>
       <tr><td>Depends on</td><td class="input">
@@ -125,11 +226,39 @@ $(document).ready(function() {
     </td></tr>
     <% } %>
     </td></tr>
-    <tr><td>URL</td><td class="input"><%= text_field 'update-url' => (value=>'',size=>50,id=>'update-url') %></td></tr>
-    <tr><td>XPath</td><td class="input"><%= text_field 'update-xpath' => (value=>'/',size=>50,id=>'update-xpath') %></td></tr>
+    <tr><td>URL</td><td class="input"><%= text_field 'update-url' => (value=>'',size=>40,id=>'update-url') %></td></tr>
     <tr><td class="required">Type</td>
       <td class="input"><%= select_field 'update-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'update-type' %></td></tr>
+        
+    <% if (@$current_informats) { %>
+    <tr style="display:none;" id="tr-update-informat">
+      <td>Format (in)</td><td>
+      <%= select_field 'update-informat' => ["",@$current_informats], 
+          id=>"update-informat-select" %>
+      </td>
+    </tr><% } %>
+
+    <tr style="display:none;" id="tr-update-outformat">
+      <td>Format (out)</td><td>
+      <%= text_field 'update-outformat' => (value=>'',size=>40, 
+          id=>"update-outformat") %>
+      </td>
+    </tr>
+
+    <tr style="display:none;" id="tr-update-xpath">
+      <td>XPath</td><td class="input"><%= text_field 'update-xpath' => (value=>'/',size=>40,id=>'update-xpath') %></td>
+    </tr>
+
+    <tr style="display:none;" id="tr-update-newresource">
+      <td>New Resource</td><td>
+      <%= text_field 'update-newresource' => (value=>'',size=>40, 
+          id=>"update-newresource") %>
+      </td>
+    </tr>
+
     <tr><td></td><td><%= submit_button 'Update Service' %></td></tr>
+
+
   </table>
   <%= hidden_field action => 'update-service' %>
   <%= hidden_field 'update-oldid' => '', id=>'update-oldid' %>

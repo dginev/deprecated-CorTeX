@@ -118,6 +118,7 @@ get '/dev' => sub {
   my $current_services = $taskdb->current_services;
   $self->stash(current_corpora=>$current_corpora);
   $self->stash(current_services=>$current_services);
+  $self->stash(current_informats=>['TeX']);
   $self->render;
 } => 'cortex-dev';
 
