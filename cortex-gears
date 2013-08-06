@@ -39,6 +39,8 @@ use CorTeX::Util::Compare qw(same_set);
 use CorTeX::Backend;
 use Unix::Processors;
 
+my $check_interval = 10;
+
 {
   # Set up global state
   local $SIG{'INT'} = \&stop_all; # Interrupt handler
@@ -77,7 +79,7 @@ use Unix::Processors;
     spawn_workers() unless (@{$Cache->{workers}} > 0);
     spawn_clients() unless (@{$Cache->{clients}} > 0);
     # Check again in a minute...
-    sleep 60; }
+    sleep $check_interval; }
   
   sub spawn_workers {
     my @services = @{$Cache->{default_service_ids}};
