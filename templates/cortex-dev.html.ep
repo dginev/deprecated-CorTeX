@@ -57,31 +57,31 @@ $(document).ready(function() {
     var service_type = option.val();
     if (service_type == 1) {
      // Analysis submenus
-     $("#tr-service-informat").show();
+     $("#tr-service-inputformat").show();
      // Hide others
      $("#tr-service-xpath").show();
-     $("#tr-service-outformat").hide();
+     $("#tr-service-outputformat").hide();
      $("#tr-service-resourcename").hide();
     } else {
       if (service_type == 2) {
         // Conversion submenus
-       $("#tr-service-informat").show();
+       $("#tr-service-inputformat").show();
        $("#tr-service-xpath").hide();
-       $("#tr-service-outformat").show();
+       $("#tr-service-outputformat").show();
        // Hide others
        $("#tr-service-resourcename").hide();
       } else {
         if (service_type == 3) {
          // Aggregation submenus
-         $("#tr-service-informat").show();
+         $("#tr-service-inputformat").show();
          $("#tr-service-xpath").show();
-         $("#tr-service-outformat").show();
+         $("#tr-service-outputformat").show();
          $("#tr-service-resourcename").show();
         } else {
          // No menu, hide everything
-         $("#tr-service-informat").hide();
+         $("#tr-service-inputformat").hide();
          $("#tr-service-xpath").hide();
-         $("#tr-service-outformat").hide();
+         $("#tr-service-outputformat").hide();
          $("#tr-service-resourcename").hide();
         }
       }
@@ -94,31 +94,31 @@ $(document).ready(function() {
     var service_type = option.val();
     if (service_type == 1) {
      // Analysis submenus
-     $("#tr-update-informat").show();
+     $("#tr-update-inputformat").show();
      // Hide others
      $("#tr-update-xpath").show();
-     $("#tr-update-outformat").hide();
+     $("#tr-update-outputformat").hide();
      $("#tr-update-resourcename").hide();
     } else {
       if (service_type == 2) {
         // Conversion submenus
-       $("#tr-update-informat").show();
+       $("#tr-update-inputformat").show();
        $("#tr-update-xpath").hide();
-       $("#tr-update-outformat").show();
+       $("#tr-update-outputformat").show();
        // Hide others
        $("#tr-update-resourcename").hide();
       } else {
         if (service_type == 3) {
          // Aggregation submenus
-         $("#tr-update-informat").show();
+         $("#tr-update-inputformat").show();
          $("#tr-update-xpath").show();
-         $("#tr-update-outformat").show();
+         $("#tr-update-outputformat").show();
          $("#tr-update-resourcename").show();
         } else {
          // No menu, hide everything
-         $("#tr-update-informat").hide();
+         $("#tr-update-inputformat").hide();
          $("#tr-update-xpath").hide();
-         $("#tr-update-outformat").hide();
+         $("#tr-update-outputformat").hide();
          $("#tr-update-resourcename").hide();
         }
       }
@@ -162,17 +162,17 @@ $(document).ready(function() {
         <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'service-type' %></td>
       </tr>
     
-      <% if (@$current_informats) { %>
-      <tr style="display:none;" id="tr-service-informat">
+      <% if (@$current_input_formats) { %>
+      <tr style="display:none;" id="tr-service-inputformat">
         <td>Format (in)</td><td>
-        <%= select_field 'service-informat' => ["",@$current_informats], 
-            id=>"service-informat" %>
+        <%= select_field 'service-inputformat' => ["",@$current_input_formats], 
+            id=>"service-inputformat" %>
       </td></tr><% } %>
 
-      <tr style="display:none;" id="tr-service-outformat">
+      <tr style="display:none;" id="tr-service-outputformat">
         <td>Format (out)</td><td>
-        <%= text_field 'service-outformat' => (value=>'',size=>40, 
-            id=>"service-outformat") %>
+        <%= text_field 'service-outputformat' => (value=>'',size=>40, 
+            id=>"service-outputformat") %>
         </td>
       </tr>
 
@@ -230,18 +230,18 @@ $(document).ready(function() {
     <tr><td class="required">Type</td>
       <td class="input"><%= select_field 'update-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'update-type' %></td></tr>
         
-    <% if (@$current_informats) { %>
-    <tr style="display:none;" id="tr-update-informat">
+    <% if (@$current_input_formats) { %>
+    <tr style="display:none;" id="tr-update-inputformat">
       <td>Format (in)</td><td>
-      <%= select_field 'update-informat' => ["",@$current_informats], 
-          id=>"update-informat-select" %>
+      <%= select_field 'update-inputformat' => ["",@$current_input_formats], 
+          id=>"update-inputformat-select" %>
       </td>
     </tr><% } %>
 
-    <tr style="display:none;" id="tr-update-outformat">
+    <tr style="display:none;" id="tr-update-outputformat">
       <td>Format (out)</td><td>
-      <%= text_field 'update-outformat' => (value=>'',size=>40, 
-          id=>"update-outformat") %>
+      <%= text_field 'update-outputformat' => (value=>'',size=>40, 
+          id=>"update-outputformat") %>
       </td>
     </tr>
 

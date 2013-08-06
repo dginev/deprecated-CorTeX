@@ -116,9 +116,14 @@ get '/dev' => sub {
   my $taskdb = $self->backend->taskdb;
   my $current_corpora = $taskdb->current_corpora;
   my $current_services = $taskdb->current_services;
+  # NOTE: Beware the switch of perspective here:
+  #  -- the Task DB has a number of out formats on record
+  #  -- which are exactly the available INPUT formats for a new service
+  #     that will be positioned further down the pipeline
+  my $current_outputformats = $taskdb->current_outputformats;
   $self->stash(current_corpora=>$current_corpora);
   $self->stash(current_services=>$current_services);
-  $self->stash(current_informats=>['TeX']);
+  $self->stash(current_input_formats=>$current_outputformats);
   $self->render;
 } => 'cortex-dev';
 

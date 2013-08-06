@@ -25,7 +25,8 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
   count_entries count_messages
-  current_corpora current_services service_report classic_report get_custom_entries
+  current_corpora current_services current_inputformats current_outputformats
+  service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
   mark_entry_queued
 
@@ -124,8 +125,12 @@ sub register_service {
     
   # Register the Service
   # TODO: Check the name, version and iid are unique!
-  my $sth = $db->prepare("INSERT INTO services (name,version,iid,type,xpath,url) values(?,?,?,?,?,?)");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url/);
+  $service{inputformat} = lc($service{inputformat});
+  $service{outputformat} = lc($service{outputformat});
+  my $sth = $db->prepare("INSERT INTO services 
+      (name,version,iid,type,xpath,url,inputformat,outputformat,xpath,resource) 
+      values(?,?,?,?,?,?,?,?,?,?)");
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat xpath resource/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
   # Register Dependencies
@@ -232,10 +237,8 @@ sub current_corpora {
   my $corpora = [];
   my $sth = $db->prepare("select name from corpora");
   $sth->execute;
-  while (my @row = $sth->fetchrow_array())
-  {
-    push @$corpora, @row;
-  }
+  while (my @row = $sth->fetchrow_array()) {
+    push @$corpora, @row; }
   $sth->finish();
   return $corpora; }
 
@@ -244,12 +247,32 @@ sub current_services {
   my $services = [];
   my $sth = $db->prepare("select name from services");
   $sth->execute;
-  while (my @row = $sth->fetchrow_array())
-  {
-    push @$services, @row;
-  }
+  while (my @row = $sth->fetchrow_array()) {
+    push @$services, @row; }
   $sth->finish();
   return $services; }
+
+sub current_inputformats {
+  my ($db) = @_;
+  my $inputformats = [];
+  my $sth = $db->prepare("select distinct(inputformat) from services");
+  $sth->execute;
+  while (my @row = $sth->fetchrow_array()) {
+    push @$inputformats, @row; }
+  $sth->finish();
+  return $inputformats; }
+
+sub current_outputformats {
+  my ($db) = @_;
+  my $outputformats = [];
+  my $sth = $db->prepare("select distinct(outputformat) from services");
+  $sth->execute;
+  while (my @row = $sth->fetchrow_array())
+  {
+    push @$outputformats, @row;
+  }
+  $sth->finish();
+  return $outputformats; }
 
 sub service_description {
   my ($db,$name) = @_;

@@ -171,11 +171,14 @@ sub reset_db {
       version varchar(50) NOT NULL,
       iid varchar(250) UNIQUE NOT NULL,
       url varchar(2000),
+      inputformat varchar(20) NOT NULL,
+      outputformat varchar(20) NOT NULL,
       xpath varchar(2000),
+      resource varchar(50),
       type integer NOT NULL
     );");
     $self->do("create index servicenameidx on services(name);"); 
-    $self->do('INSERT INTO services (name,version,iid,type) values("import",0.1,"import_v0_1",2)');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat) values("import",0.1,"import_v0_1",2,"tex","tex")');
 
   # Dependency Tables
   $self->do("DROP TABLE IF EXISTS dependencies;");
@@ -237,12 +240,14 @@ sub reset_db {
       version varchar(50) NOT NULL,
       iid varchar(250) NOT NULL,
       url varchar(2000),
+      inputformat varchar(20) NOT NULL,
+      outputformat varchar(20) NOT NULL,
       xpath varchar(2000),
       type integer NOT NULL,
       UNIQUE(iid,name)
     );");
     $self->do("create index servicenameidx on services(name);");
-    $self->do('INSERT INTO services (name,version,iid,type) values("import",0.1,"import_v0_1",2)');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat) values("import",0.1,"import_v0_1",2,"tex","tex")');
     # Dependency Tables
     $self->do("DROP TABLE IF EXISTS dependencies;");
     $self->do("CREATE TABLE dependencies (
