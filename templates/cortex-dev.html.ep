@@ -49,7 +49,6 @@ $(document).ready(function() {
     var option = $(this).find("option:selected");
     var service_name = option.val();
     fetch_service_description(service_name);
-    $("#accordion").accordion("refresh");
   });
 
   $("#service-type").change(function() {

@@ -272,6 +272,7 @@ function fetch_description(type,name) {
         //may want to use $.trim in here
         return $(this).val() == response.type; 
       }).prop('selected', true);
+      $("#update-type").change();
       // TODO: Dependencies and Corpora
       //
       var checkbox = $('input:checkbox[name="update-requires\\[\\]"]');
@@ -283,6 +284,7 @@ function fetch_description(type,name) {
       checkbox.hide(); label.hide();
 
       table.css('display', '');
+      $("#accordion").accordion("refresh");
     }
   });
 }
