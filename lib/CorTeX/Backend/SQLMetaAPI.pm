@@ -18,7 +18,7 @@ use feature 'switch';
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(new_repository add_triple);
+our @EXPORT = qw(new_repository add_triple complete_annotations);
 
 sub new_repository {
 
@@ -28,5 +28,8 @@ sub add_triple {
 
 }
 
+sub complete_annotations {
+	
+}
 
 1;

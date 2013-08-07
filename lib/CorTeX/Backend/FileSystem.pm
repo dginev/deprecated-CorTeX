@@ -50,7 +50,7 @@ sub insert_files {
   return 1;
 }
 
-sub complete_tasks {
+sub complete_documents {
   my ($self,$results) = @_;
   return unless @$results;
   my @conversion_results = grep {$_->{document}} @$results;

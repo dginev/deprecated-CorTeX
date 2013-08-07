@@ -113,9 +113,9 @@ sub complete_tasks {
   # TODO: A single transaction with each database here, speed everything along nicely
   # TODO: Validate the service is returning the correct type of data
   # Insert any new annotations from the conversion
-  $metadb->complete_tasks($results);
+  $metadb->complete_annotations($results);
   # Insert any new documents or resources from the conversion
-  $docdb->complete_tasks($results);
+  $docdb->complete_documents($results);
   # Update all as done, insert logs
   $taskdb->complete_tasks($results);
 }
