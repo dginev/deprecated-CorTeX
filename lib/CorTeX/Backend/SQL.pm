@@ -113,7 +113,9 @@ sub prepare {
   my ($self,$statement) = @_;
   my $query_cache = $self->{query_cache};
   if (! exists $query_cache->{$statement}) {
-    $query_cache->{$statement} = $self->safe->prepare($statement);
+    my $eval_return = eval { $query_cache->{$statement} = $self->safe->prepare($statement); 1; };
+    if ((! $eval_return) && (@$)) {
+      print STDERR "Fatal:SQL:Prepare ",@$,"\n at query $statement\n"; return; }
   }
   return $query_cache->{$statement};
 }

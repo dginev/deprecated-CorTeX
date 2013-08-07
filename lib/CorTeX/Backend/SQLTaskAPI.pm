@@ -139,7 +139,7 @@ sub register_service {
   $service{outputformat} = lc($service{outputformat});
   my $sth = $db->prepare("INSERT INTO services 
       (name,version,iid,type,xpath,url,inputformat,outputformat,resource) 
-      values(?,?,?,?,?,?,?,?,?,?)");
+      values(?,?,?,?,?,?,?,?,?)");
   $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
