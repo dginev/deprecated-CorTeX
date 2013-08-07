@@ -14,6 +14,7 @@
 package CorTeX::Blueprint::mock_spotter_v0_1;
 use warnings;
 use strict;
+use Data::Dumper;
 use base qw(CorTeX::Blueprint);
 
 sub type {'analysis'}
@@ -25,22 +26,19 @@ sub analyze {
   # Spot single-word sentences: 
   my $result={};
   $result->{annotations}=<<'EOL';
-<a1> <b1> <c1> .
-@base <http://example.org/ns/> .
-# In-scope base URI is http://example.org/ns/ at this point
-<a2> <http://example.org/ns/b2> <c2> .
-@base <foo/> .
-# In-scope base URI is http://example.org/ns/foo/ at this point
-<a3> <b3> <c3> .
-@prefix : <bar#> .
-:a4 :b4 :c4 .
-@prefix : <http://example.org/ns2#> .
-:a5 :b5 :c5 .
+<foaf:Person rdf:about="#danbri" xmlns:foaf="http://xmlns.com/foaf/0.1/">
+  <foaf:name>Dan Brickley</foaf:name>
+  <foaf:homepage rdf:resource="http://danbri.org/" />
+  <foaf:openid rdf:resource="http://danbri.org/" />
+  <foaf:img rdf:resource="/images/me.jpg" />
+</foaf:Person>
 EOL
   my $status = -4; # TODO
   my $log = "Fatal:mock:todo Needs to be implemented.";
   $result->{status}= $status; # Adapt to the CorTeX scheme
   $result->{log} = $log;  
+  print STDERR "\n\nMock Spotter:\n";
+  print STDERR Dumper($result);
   return $result; }
 
 1;
