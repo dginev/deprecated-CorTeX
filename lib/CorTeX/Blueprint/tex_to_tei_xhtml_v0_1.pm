@@ -43,7 +43,7 @@ sub convert {
   my $marktokens = LLaMaPUn::Preprocessor::MarkTokens->new(document=>$purified_dom,verbose=>0);
   my $tokenized_dom = $marktokens->process_document;
   # Move to TEI HTML
-  print STDERR $tokenized_dom->toString(1),"\n\n";
+  # print STDERR $tokenized_dom->toString(1),"\n\n";
   my $html_dom = xml_to_TEI_xhtml($tokenized_dom);
 
   my $result={};

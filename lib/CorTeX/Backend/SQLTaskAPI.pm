@@ -23,7 +23,7 @@ use CorTeX::Util::Data qw(parse_log);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
+  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service serviceiid_to_formats
   count_entries count_messages
   current_corpora current_services current_inputformats current_outputformats
   service_report classic_report get_custom_entries
@@ -33,7 +33,7 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
 
-our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora);
+our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats);
 our (%IIDs);
 sub corpus_to_id {
   my ($db, $corpus) = @_;
@@ -53,6 +53,16 @@ sub service_to_id {
     ($serviceid) = $sth->fetchrow_array();
     $ServiceIDs{$service} = $serviceid; }
   return $serviceid; }
+sub serviceiid_to_formats {
+  my ($db,$serviceiid) = @_;
+  my $service_formats = $ServiceFormats{$serviceiid};
+  if (! defined $service_formats) {
+    my $sth = $db->prepare("SELECT inputformat, outputformat from services where iid=?");
+    $sth->execute($serviceiid);
+    $service_formats = [ $sth->fetchrow_array() ];
+    print STDERR Dumper($service_formats),"\n\n";
+    $ServiceFormats{$serviceiid} = $service_formats; }
+  return $service_formats; }
 sub id_to_corpus {
   my ($db, $corpusid) = @_;
   my $corpus = $IDCorpora{$corpusid};
@@ -133,6 +143,7 @@ sub register_service {
   $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
+  $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
   # Register Dependencies
   $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
@@ -180,6 +191,7 @@ sub update_service {
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;
+  $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
   # TODO: Update Dependencies
   #$sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;

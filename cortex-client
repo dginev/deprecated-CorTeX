@@ -69,6 +69,7 @@ while (1) {
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
     my $service = $task->{iid};
+    $task->{formats} = $taskdb->serviceiid_to_formats($service);
     $client->add_task(
       $service => encode_json($task),
       on_complete => sub {
@@ -81,6 +82,7 @@ while (1) {
           $response->{entry} = $entry;
           $response->{taskid} = $taskid;
           $response->{service} = $service;
+          $response->{formats} = $task->{formats};
           push @$results, $response;
           # New queue if we're done here
           if (@$results == $queue_size) {

@@ -56,11 +56,12 @@ sub complete_tasks {
   my @conversion_results = grep {$_->{document}} @$results;
   my @aggregation_results = grep {$_->{resource}} @$results;
   foreach my $result(@conversion_results) {
+    print STDERR Dumper($result);
     my $document = $result->{document};
     # Conversion results - add a new document
     my $entry_dir = $result->{entry};
     $entry_dir =~ /\/([^\/]+)$/;
-    my $entry_name = $1 . "." . lc($result->{format});
+    my $entry_name = $1 . "." . lc($result->{formats}->[1]);
     my $result_dir = File::Spec->catdir($entry_dir,$result->{service});
     my $result_file = File::Spec->catfile($result_dir,$entry_name);
 
