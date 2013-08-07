@@ -268,6 +268,9 @@ function fetch_description(type,name) {
       $('#update-oldid').val(response.iid);
       $('#update-url').val(response.url);
       $('#update-xpath').val(response.xpath);
+      $('#update-inputformat').val(response.inputformat);
+      $('#update-outputformat').val(response.outputformat);
+      $('#update-resource').val(response.resource);
       $("#update-type option").filter(function() {
         //may want to use $.trim in here
         return $(this).val() == response.type; 

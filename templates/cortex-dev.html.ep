@@ -60,7 +60,7 @@ $(document).ready(function() {
      // Hide others
      $("#tr-service-xpath").show();
      $("#tr-service-outputformat").hide();
-     $("#tr-service-resourcename").hide();
+     $("#tr-service-resource").hide();
     } else {
       if (service_type == 2) {
         // Conversion submenus
@@ -68,20 +68,20 @@ $(document).ready(function() {
        $("#tr-service-xpath").hide();
        $("#tr-service-outputformat").show();
        // Hide others
-       $("#tr-service-resourcename").hide();
+       $("#tr-service-resource").hide();
       } else {
         if (service_type == 3) {
          // Aggregation submenus
          $("#tr-service-inputformat").show();
          $("#tr-service-xpath").show();
          $("#tr-service-outputformat").show();
-         $("#tr-service-resourcename").show();
+         $("#tr-service-resource").show();
         } else {
          // No menu, hide everything
          $("#tr-service-inputformat").hide();
          $("#tr-service-xpath").hide();
          $("#tr-service-outputformat").hide();
-         $("#tr-service-resourcename").hide();
+         $("#tr-service-resource").hide();
         }
       }
     }
@@ -97,7 +97,7 @@ $(document).ready(function() {
      // Hide others
      $("#tr-update-xpath").show();
      $("#tr-update-outputformat").hide();
-     $("#tr-update-resourcename").hide();
+     $("#tr-update-resource").hide();
     } else {
       if (service_type == 2) {
         // Conversion submenus
@@ -105,20 +105,20 @@ $(document).ready(function() {
        $("#tr-update-xpath").hide();
        $("#tr-update-outputformat").show();
        // Hide others
-       $("#tr-update-resourcename").hide();
+       $("#tr-update-resource").hide();
       } else {
         if (service_type == 3) {
          // Aggregation submenus
          $("#tr-update-inputformat").show();
          $("#tr-update-xpath").show();
          $("#tr-update-outputformat").show();
-         $("#tr-update-resourcename").show();
+         $("#tr-update-resource").show();
         } else {
          // No menu, hide everything
          $("#tr-update-inputformat").hide();
          $("#tr-update-xpath").hide();
          $("#tr-update-outputformat").hide();
-         $("#tr-update-resourcename").hide();
+         $("#tr-update-resource").hide();
         }
       }
     }
@@ -179,10 +179,10 @@ $(document).ready(function() {
         <td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>40) %></td>
       </tr>
 
-      <tr style="display:none;" id="tr-service-resourcename">
+      <tr style="display:none;" id="tr-service-resource">
         <td>New Resource</td><td>
-        <%= text_field 'service-resourcename' => (value=>'',size=>40, 
-            id=>"service-resourcename") %>
+        <%= text_field 'service-resource' => (value=>'',size=>40, 
+            id=>"service-resource") %>
         </td>
       </tr>
 
@@ -233,7 +233,7 @@ $(document).ready(function() {
     <tr style="display:none;" id="tr-update-inputformat">
       <td>Format (in)</td><td>
       <%= select_field 'update-inputformat' => ["",@$current_input_formats], 
-          id=>"update-inputformat-select" %>
+          id=>"update-inputformat" %>
       </td>
     </tr><% } %>
 

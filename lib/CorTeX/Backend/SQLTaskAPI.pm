@@ -128,9 +128,9 @@ sub register_service {
   $service{inputformat} = lc($service{inputformat});
   $service{outputformat} = lc($service{outputformat});
   my $sth = $db->prepare("INSERT INTO services 
-      (name,version,iid,type,xpath,url,inputformat,outputformat,xpath,resource) 
+      (name,version,iid,type,xpath,url,inputformat,outputformat,resource) 
       values(?,?,?,?,?,?,?,?,?,?)");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat xpath resource/);
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
   # Register Dependencies
@@ -174,9 +174,9 @@ sub update_service {
   my $old_service = $db->service_description($service{oldname});
   # Register the Service
   # TODO: Check the name, version and iid are unique!
-  my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=? ,url=?
+  my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=? ,url=?, inputformat=?, outputformat=?, resource=?
     WHERE iid=?");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url oldid/);
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource oldid/);
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;
