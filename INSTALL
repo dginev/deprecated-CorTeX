@@ -10,8 +10,7 @@ sudo apt-get install tomcat6 \
   libgearman-client-perl \
   gearman-server libgearman-client-async-perl \
   mysql-server libdbd-mysql-perl libdbd-sqlite-perl \
-  libanyevent-perl
-
+  libanyevent-perl librdf-linkeddata-perl
 
   cpan AnyEvent::Gearman Unix::Processors
 
