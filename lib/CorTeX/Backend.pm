@@ -18,6 +18,7 @@ use strict;
 use File::Basename;
 use feature qw(switch);
 use Data::Dumper;
+our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
 
 sub new {
   my ($class,%opts)=@_;
@@ -32,18 +33,23 @@ sub new {
     $opts{sesame}=CorTeX::Backend::Sesame->new(%opts);
     $opts{metadb}=$opts{sesame};
   }
-  
+
+  # Fallback defaults:  
   $opts{taskdb_type} //= 'SQLite';
   require CorTeX::Backend::SQL;
-  $opts{sql} = CorTeX::Backend::SQL->new(%opts);
+  $opts{taskdb} //= CorTeX::Backend::SQL->new(%opts);
 
-  # Fallback defaults:
   if (! defined $opts{docdb}) {
     require CorTeX::Backend::FileSystem;
     $opts{docdb} = CorTeX::Backend::FileSystem->new(%opts);
-  };
-  $opts{metadb} //= $opts{sql};
-  $opts{taskdb} = $opts{sql};
+  }
+
+  if (! defined $opts{metadb}) {
+    $opts{metadb} = CorTeX::Backend::SQL->new(
+      sqldbname=>"$INSTALLDIR/MetaDB.db",
+      metadb=>1,
+      %opts
+    );}
 
   bless {%opts}, $class;
 }

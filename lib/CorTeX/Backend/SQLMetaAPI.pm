@@ -14,22 +14,54 @@
 package CorTeX::Backend::SQLMetaAPI;
 use strict;
 use warnings;
-use feature 'switch';
+use Data::Dumper;
+use Scalar::Util qw(blessed);
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(new_repository add_triple complete_annotations);
+our @EXPORT = qw(new_repository add_triple complete_annotations model);
 
-sub new_repository {
+our $base_uri = 'http://cortex.kwarc.info';
+use RDF::Trine::Parser;
+use RDF::Trine::Store::DBI;
+#use RDF::Tine::Model;
 
-}
+# $store = RDF::Trine::Store::DBI->new( $modelname, $dbh );
+# my $model = RDF::Trine::Model->new($store);
+# print $model->size . " RDF statements in store\n";
 
-sub add_triple {
+sub new_repository { }
 
-}
+sub add_triple { }
+
+sub model {
+  my ($db,$name) = @_;
+  my $model = $db->{models}->{$name};
+  if (! blessed($model)) {
+    my $store = RDF::Trine::Store::DBI->new( $name, $db->safe );
+    $model = RDF::Trine::Model->new($store);
+    $db->{models}->{$name} = $model;
+  }
+  return $model; }
 
 sub complete_annotations {
-	
+  my ($db,$results) = @_;
+  print STDERR " Annotation results: \n",Dumper($results);
+  my $parsers = $db->{rdf_parsers};
+  foreach my $result(@$results) {
+    my $model = $db->model($result->{service});
+    my $data = $result->{annotations};
+    next unless $data;
+    my $rdf_format = $result->{formats}->[1];
+    my $parser = $parsers->{$rdf_format};
+    if (! defined $parser) {
+       $parser = RDF::Trine::Parser->new( $rdf_format );
+       $parsers->{$rdf_format} = $parser;
+    }
+    $parser->parse_into_model( $base_uri, $data, $model );
+  }
 }
 
 1;
+
+__END__

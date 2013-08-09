@@ -37,6 +37,7 @@ sub new {
   $options{sqldbms} = $input{taskdb_type} // 'SQLite';
   $options{query_cache} = $input{query_cache} // {};
   $options{handle} = $input{handle};
+  $options{metadb} = $input{metadb};
   if (!$options{sqldbname}) {
     if ($options{sqldbms} eq 'SQLite') {
       # Default SQLite db:
@@ -52,7 +53,7 @@ sub new {
       # Touch a file if it doesn't exist
       my $now = time;
       utime $now, $now, $options{sqldbname};  }
-    $self->reset_db; }
+    $self->reset_db unless $options{metadb}; }
   return $self; }
 
 # Methods:
@@ -127,6 +128,11 @@ sub _recover_cache {
   my $query_cache = $self->{query_cache};
   foreach my $statement (keys %$query_cache) {
     $query_cache->{$statement} = $self->safe->prepare($statement); 
+  }
+  my $models = delete $self->{models};
+  $models //= {};
+  foreach my $name (keys %$models) {
+    $self->model($name);
   }
 }
 

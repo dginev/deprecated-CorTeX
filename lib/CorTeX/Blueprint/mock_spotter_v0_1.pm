@@ -26,19 +26,23 @@ sub analyze {
   # Spot single-word sentences: 
   my $result={};
   $result->{annotations}=<<'EOL';
-<foaf:Person rdf:about="#danbri" xmlns:foaf="http://xmlns.com/foaf/0.1/">
-  <foaf:name>Dan Brickley</foaf:name>
-  <foaf:homepage rdf:resource="http://danbri.org/" />
-  <foaf:openid rdf:resource="http://danbri.org/" />
-  <foaf:img rdf:resource="/images/me.jpg" />
-</foaf:Person>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/">
+
+  <foaf:Person rdf:about="#danbri" xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <foaf:name>Dan Brickley</foaf:name>
+    <foaf:homepage rdf:resource="http://danbri.org/" />
+    <foaf:openid rdf:resource="http://danbri.org/" />
+    <foaf:img rdf:resource="/images/me.jpg" />
+  </foaf:Person>
+</rdf:RDF>
 EOL
   my $status = -4; # TODO
   my $log = "Fatal:mock:todo Needs to be implemented.";
   $result->{status}= $status; # Adapt to the CorTeX scheme
   $result->{log} = $log;  
-  print STDERR "\n\nMock Spotter:\n";
-  print STDERR Dumper($result);
   return $result; }
 
 1;

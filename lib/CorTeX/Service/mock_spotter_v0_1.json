@@ -5,7 +5,7 @@
   "url":"127.0.0.1",
   "type":"1",
   "inputformat":"xhtml",
-  "outputformat":"turtle",
+  "outputformat":"RDFXML",
   "xpath":"/",
   "parameters":{}
 }

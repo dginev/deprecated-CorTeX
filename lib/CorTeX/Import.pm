@@ -44,15 +44,14 @@ sub new {
 
     set_db_file_field('import_checkpoint',undef);
     $backend->docdb->delete_directory($opts{root},$opts{root});
-    # Initialize a Build System repository in the triple store
-    $backend->metadb->new_repository($main_repos,$opts{overwrite});
-    # Register corpus name in triple store?
-    $backend->metadb->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
-             object=>xsd("Corpus"),repository=>$main_repos,graph=>$meta_graph});
-    $backend->metadb->add_triple({subject=>$job_url, predicate=>'build:entryType', 
-             object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
-    if defined $opts{entry_setup};
-    # Delete corpus entries in the SQL database
+    # # Initialize a Build System repository in the triple store
+    # $backend->metadb->new_repository($main_repos,$opts{overwrite});
+    # # Register corpus name in triple store?
+    # $backend->metadb->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
+    #          object=>xsd("Corpus"),repository=>$main_repos,graph=>$meta_graph});
+    # $backend->metadb->add_triple({subject=>$job_url, predicate=>'build:entryType', 
+    #          object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
+    # if defined $opts{entry_setup};
   }
 
   my $checkpoint = get_db_file_field('import_checkpoint');

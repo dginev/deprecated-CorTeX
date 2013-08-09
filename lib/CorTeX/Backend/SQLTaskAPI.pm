@@ -60,7 +60,6 @@ sub serviceiid_to_formats {
     my $sth = $db->prepare("SELECT inputformat, outputformat from services where iid=?");
     $sth->execute($serviceiid);
     $service_formats = [ $sth->fetchrow_array() ];
-    print STDERR Dumper($service_formats),"\n\n";
     $ServiceFormats{$serviceiid} = $service_formats; }
   return $service_formats; }
 sub id_to_corpus {

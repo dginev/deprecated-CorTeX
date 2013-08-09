@@ -59,7 +59,7 @@ $(document).ready(function() {
      $("#tr-service-inputformat").show();
      // Hide others
      $("#tr-service-xpath").show();
-     $("#tr-service-outputformat").hide();
+     $("#tr-service-outputformat").show();
      $("#tr-service-resource").hide();
     } else {
       if (service_type == 2) {
@@ -96,7 +96,7 @@ $(document).ready(function() {
      $("#tr-update-inputformat").show();
      // Hide others
      $("#tr-update-xpath").show();
-     $("#tr-update-outputformat").hide();
+     $("#tr-update-outputformat").show();
      $("#tr-update-resource").hide();
     } else {
       if (service_type == 2) {
