@@ -225,7 +225,7 @@ get '/retval_detail' => sub {
   $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
   my $from = $self->param('from') || 0;
   my $limit = $self->param('limit') || 100;
-  my $entries = $backend->metadb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
+  my $entries = $backend->taskdb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
                                                       what=>$component->[3],from=>$from,limit=>$limit,
                                                       corpus=>$corpus_name,service=>$service_name,
                                                       repository=>$MAIN_REPOS, graph=>$META_GRAPH});
@@ -241,7 +241,7 @@ get '/retval_detail' => sub {
   # Prepare exploration links:
   my $count=0;
   if ($component->[1] ne 'ok') {
-    my $whats = $backend->metadb->get_result_summary(
+    my $whats = $backend->taskdb->get_result_summary(
       repository=>$MAIN_REPOS,
       corpus=>$corpus_name,
       service=>$service_name,
@@ -251,7 +251,7 @@ get '/retval_detail' => sub {
     );
     $count = $whats->{$component->[3] ? $component->[3] : $component->[2]};
   } else {
-    my $whats = $backend->metadb->get_result_summary(
+    my $whats = $backend->taskdb->get_result_summary(
       repository=>$MAIN_REPOS,
       countby=>$countby,
       corpus=>$corpus_name,
@@ -386,9 +386,9 @@ helper update_service => sub {
       $self->render(json=>{
         message=>"Please enter a valid $key of the service!"});
       return; }}
-  my @dependencies = $self->param('requires[]') ;
+  my @dependencies = $self->param('update-requires[]');
   $service{dependencies} = \@dependencies;
-  my @corpora = $self->param('corpora[]');
+  my @corpora = $self->param('update-corpora[]');
   $service{corpora} = \@corpora;
   my $backend = $self->backend;
   my ($success,$message) = $backend->taskdb->update_service(%service);

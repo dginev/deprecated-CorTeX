@@ -290,8 +290,17 @@ sub service_description {
   my $sth = $db->prepare("select * from services where name=?");
   $sth->execute($name);
   my $description = $sth->fetchrow_hashref;
-  return $description;
-}
+  # Collect list of corpora on which service is enabled:
+  return {} unless $description->{serviceid};
+  $sth = $db->prepare("select distinct(corpusid) from tasks where serviceid=?");
+  $sth->execute($description->{serviceid});
+  my @corpora; 
+  my $corpusid;
+  $sth->bind_columns(\$corpusid);
+  while ($sth->fetch) {
+      push @corpora, $db->id_to_corpus($corpusid); }
+  $description->{corpora} = \@corpora;
+  return $description; }
 
 sub mark_entry_queued {
   my ($db,$data) = @_;

@@ -220,7 +220,7 @@ $(document).ready(function() {
     <% if (@$current_corpora) { %>
       <tr><td>Corpora</td><td class="input">
       <% for my $corpus(@$current_corpora) { %>
-          <%= check_box 'corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
+          <%= check_box 'update-corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
       <% } %>
     </td></tr>
     <% } %>

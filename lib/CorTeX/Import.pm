@@ -100,8 +100,6 @@ sub process_next {
   $self->{processed_entries}++;
   if (! ($self->{processed_entries} % 100)) {
     set_db_file_field('import_checkpoint',$directory);
-    $self->backend->metadb->add_triples({triples=>$self->{triple_queue}, repository=>$self->{main_repos},graph=>$self->{meta_graph}});
-    $self->{triple_queue} = []; # TODO: Check for add failure!!!
   }
   my $added = $self->backend->docdb->already_added($directory,$self->{walker}->get_root);
   if (! $added) {

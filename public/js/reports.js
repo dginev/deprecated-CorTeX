@@ -276,8 +276,17 @@ function fetch_description(type,name) {
         return $(this).val() == response.type; 
       }).prop('selected', true);
       $("#update-type").change();
-      // TODO: Dependencies and Corpora
-      //
+      // Corpora:
+      // First unmark all
+      var all_corpora_checks = $('input:checkbox[name="update-corpora\\[\\]"]');
+      all_corpora_checks.prop('checked',false);
+      var corpora = response.corpora;
+      for (index in corpora) {
+        var corpus = corpora[index];
+        var corpus_check = $('input:checkbox[name="update-corpora\\[\\]"][value='+corpus+']');
+        corpus_check.prop('checked', true);
+      }
+      // TODO: Dependencies
       var checkbox = $('input:checkbox[name="update-requires\\[\\]"]');
       var label = checkbox.next('span');
       checkbox.show(); label.show();
