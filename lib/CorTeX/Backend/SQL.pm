@@ -129,12 +129,8 @@ sub _recover_cache {
   foreach my $statement (keys %$query_cache) {
     $query_cache->{$statement} = $self->safe->prepare($statement); 
   }
-  my $models = delete $self->{models};
-  $models //= {};
-  foreach my $name (keys %$models) {
-    $self->model($name);
-  }
-}
+  if (delete $self->{model}) {
+    $self->{model} = self->model; }}
 
 ### API for Initializing a SQLite Database:
 sub reset_db {

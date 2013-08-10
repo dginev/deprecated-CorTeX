@@ -35,21 +35,24 @@ sub new_repository { }
 sub add_triple { }
 
 sub model {
-  my ($db,$name) = @_;
-  my $model = $db->{models}->{$name};
+  my ($db) = @_;
+  my $model = $db->{model};
   if (! blessed($model)) {
-    my $store = RDF::Trine::Store::DBI->new( $name, $db->safe );
+    my $store = RDF::Trine::Store::DBI->new( "CorTeX", $db->safe );
     $model = RDF::Trine::Model->new($store);
-    $db->{models}->{$name} = $model;
+    $db->{model} = $model;
   }
   return $model; }
 
 sub complete_annotations {
   my ($db,$results) = @_;
-  print STDERR " Annotation results: \n",Dumper($results);
+  my @analysis_results = grep {defined $_->{annotations}} @$results;
+  return unless @analysis_results;
+  print STDERR " Annotation results: \n",Dumper(\@analysis_results);
   my $parsers = $db->{rdf_parsers};
-  foreach my $result(@$results) {
-    my $model = $db->model($result->{service});
+  my $model = $db->model;
+  $model->begin_bulk_ops;
+  foreach my $result(@analysis_results) {
     my $data = $result->{annotations};
     next unless $data;
     my $rdf_format = $result->{formats}->[1];
@@ -60,6 +63,7 @@ sub complete_annotations {
     }
     $parser->parse_into_model( $base_uri, $data, $model );
   }
+  $model->end_bulk_ops;
 }
 
 1;
