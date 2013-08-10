@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+The Shanks-Tonelli algorithm is a procedure for solving a congruence of the form $x^2 \equiv n \pmod{p}$, where $p$ is an odd prime and $n$ is a quadratic residue of $p$.  In other words, it can be used to compute modular square roots.
+
+First find positive integers $Q$ and $S$ such that $p - 1 = 2^SQ$, where $Q$ is odd.  Then find a quadratic nonresidue $W$ of $p$ and compute $V \equiv W^Q \pmod{p}$.  Then find an integer $n'$ that is the multiplicative inverse of $n \pmod{p}$ (i.e., $nn' \equiv 1 \pmod{p}$).
+
+Compute
+$$R \equiv n^{\frac{Q+1}{2}} \pmod{p}$$
+and find the smallest integer $i \geq 0$ that satisfies
+$$(R^2n')^{2^i} \equiv 1 \pmod{p}$$
+If $i=0$, then $x = R$, and the algorithm stops.  Otherwise, compute
+$$R' \equiv RV^{2^{(S-i-1)}} \pmod{p}$$
+and repeat the procedure for $R = R'$.
+\end{document}

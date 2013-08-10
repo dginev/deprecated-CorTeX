@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\F}{\mathbbmss{F}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\newcommand{\figura}[1]{\begin{center}\includegraphics{#1}\end{center}}
+\newcommand{\figuraex}[2]{\begin{center}\includegraphics[#2]{#1}\end{center}}
+\newcommand{\legsymp}[1]{\left(\frac{#1}{p}\right)}
+\begin{document}
+\PMlinkescapeword{root}
+\PMlinkescapeword{proposition}
+\PMlinkescapeword{identity}
+
+Gauss' lemma on quadratic residues is:
+
+% \noindent
+\textbf{Proposition 1:} Let $p$ be an odd prime and let $n$
+be an integer which is not a multiple of $p$. Let $u$ be the
+number of elements of the set
+$$\left\{n,2n,3n,\ldots,\frac{p-1}{2}n\right\}$$
+whose least positive residues, modulo $p$, are greater than $p/2$.
+Then $$\legsymp{n}=(-1)^u$$
+where $\legsymp{n}$ is the Legendre symbol.
+
+That is, $n$ is a quadratic residue modulo
+$p$ when $u$ is even and it is a quadratic nonresidue when $u$ is odd.
+
+Gauss' Lemma is the special case
+\[S=\left\{1,2,\ldots,\frac{p-1}{2}\right\}\]
+of the slightly more general statement below.
+Write $\F_p$ for the field of $p$ elements, and
+identify $\F_p$ with the set $\{0,1,\ldots,p-1\}$,
+with its addition and multiplication mod $p$.
+
+% \noindent
+\textbf{Proposition 2:} Let $S$ be a subset of $\F_p^{*}$ such that
+$x\in S$ or $-x\in S$, but not both, for any $x\in \F_p^{*}$.
+For $n\in \F_p^{*}$ let $u(n)$
+be the number of elements $k\in S$ such that $kn\notin S$. Then
+$$\legsymp{n} = (-1)^{u(n)}.$$
+\textbf{Proof:} If $a$ and $b$ are distinct elements of $S$, we cannot have
+$an=\pm bn$, in view of the hypothesis on $S$. Therefore
+$$\prod_{a\in S}an=(-1)^{u(n)}\prod_{a\in S}a.$$
+On the left we have
+$$n^{(p-1)/2}\prod_{a\in S}a=\legsymp{n}\prod_{a\in S}a$$
+by Euler's criterion. So
+$$\legsymp{n}\prod_{a\in S}a=(-1)^{u(n)}\prod_{a\in S}a$$
+The product is nonzero, hence can be cancelled, yielding the proposition.
+
+% \noindent
+\textbf{Remarks:} Using Gauss' Lemma, it is straightforward to prove that
+for any odd prime $p$:
+\[
+\legsymp{-1}=
+\begin{cases}
+1 & \textrm{ if $p\equiv 1\pmod 4$} \\
+-1 & \textrm{ if $p\equiv -1\pmod 4$}
+\end{cases}
+\]
+\[
+\legsymp{2}=
+\begin{cases}
+1 & \textrm{ if $p\equiv \pm 1\pmod 8$} \\
+-1 & \textrm{ if $p\equiv \pm 3\pmod 8$}
+\end{cases}
+\]
+
+The condition on $S$ can also be stated like this:
+for any square $x^2\in \F_p^{*}$, there is a unique $y\in S$ such
+that $x^2=y^2$. Apart from the usual choice
+$$S=\{1,2,\ldots,(p-1)/2\}\;,$$
+the set
+$$\{2,4,\ldots,p-1\}$$ has also been used, notably by Eisenstein.
+I think it was also Eisenstein who gave us this trigonometric identity,
+which is closely related to Gauss' Lemma:
+$$\legsymp{n}=\prod_{a\in S}\frac{\sin{(2\pi an/p)}}{\sin{(2\pi a/p)}}$$
+
+It is possible to prove Gauss' Lemma or Proposition 2 ``from scratch'', without
+leaning on Euler's criterion, the existence of a primitive
+root, or the fact that a polynomial over $\F_p$ has no more zeros
+than its degree.
+\end{document}

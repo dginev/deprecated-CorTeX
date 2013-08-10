@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{root of unity} is a number $\omega$ such that some power
+$\omega^n$, where $n$ is a positive integer, equals to $1$.
+
+Specifically, if $K$ is a field, then the $n$th roots of unity in $K$
+are the numbers $\omega$ in $K$ such that $\omega^n = 1$.
+Equivalently, they are all the roots of the polynomial $X^n-1$. No
+matter what field $K$ is, the polynomial can never have more than $n$
+roots.  Clearly $1$ is an example; if $n$ is even, then $-1$ will also
+be an example. Beyond this, the list of possibilities depends on $K$.
+
+\begin{itemize} 
+\item If $K$ is the set of real numbers, then $1$ and $-1$ are the
+only possibilities.
+
+\item If $K$ is the field of the complex numbers, the fundamental
+theorem of algebra assures us that the polynomial $X^n-1$ has exactly
+$n$ roots (counting multiplicities).  Comparing $X^n-1$ with its
+formal derivative, $nX^{n-1}$, we see that they are coprime, and
+therefore all the roots of $X^n-1$ are distinct.  That is, there exist
+$n$ distinct complex numbers $\omega$ such that $\omega^n=1$.
+
+If $\zeta=e^{2\pi i/n}=\cos(2\pi/n)+i \sin(2\pi/n)$, then all the
+$n$th roots of unity are: $\zeta^k=e^{2\pi ki/n}=\cos(2\pi k/n)+i
+\sin(2\pi k/n)$ for $k=1,2,\ldots,n$.\medskip
+
+If drawn on the complex plane, the $n$th roots of unity are the
+vertices of a regular $n$-gon centered at the origin and with a vertex
+at $1$.
+
+\item If $K$ is a finite field having $p^a$ elements, for $p$ a prime,
+then \emph{every} nonzero element is a $p^a-1$th root of unity (in
+fact this characterizes them completely; this is the role of the
+Frobenius operator).  For other $n$, the answer is more complicated.
+For example, if $n$ is divisible by $p$, the formal derivative of
+$X^n-1$ is $nX^{n-1}$, which is zero since the
+\PMlinkid{characteristic}{1160} of $K$ is $p$ and $n$ is zero modulo
+$p$.  So one is not guaranteed that the roots of unity will be
+distinct.  For example, in the field of two elements, $1=-1$, so there
+is only one square root of $1$.
+\end{itemize}
+
+If an element $\omega$ is an $n$th root of unity but is not an $m$th
+root of unity for any $0<m<n$, then $\omega$ is called a
+\emph{\PMlinkescapetext{primitive} $n$th root of unity}.  For example,
+the number $\zeta$ defined above is a \PMlinkescapetext{primitive}
+$n$th root of unity.  If $\omega \in \mathbb{C}$ is a primitive $n$th
+root of unity, then all of the primitive $n$th roots of unity have the
+form $\omega^m$ for some $m \in \mathbb{Z}$ with $\gcd(m,n)=1$.
+
+The roots of unity in any field have many special relationships to one
+another, some of which are true in general and some of which depend on
+the field.  It is upon these relationships that the various algorithms
+for computing fast Fourier transforms are based.
+
+Finally, one could ask about similar situations where $K$ is not a
+field but some more general object.  Here, things are much more
+complicated.  For example, in the ring of endomorphisms of a vector
+space, the unipotent linear transformations are the closest analogue
+to roots of unity.  They still form a group, but there may be many
+more of them than $n$.  In a finite group, every element $g$ has a
+power $n$ such that $g^n=1$.
+
+\PMlinkescapeword{primitive}
+\PMlinkescapeword{term}
+\end{document}

@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\g}{\mathfrak{g}}
+\newcommand{\h}{\mathfrak{h}}
+\begin{document}
+A {\em Lie algebra} over a field $k$ is a vector space $\mathfrak{g}$ with a bilinear map $[\ ,\ ] : \mathfrak{g}\times\mathfrak{g}\to\mathfrak{g}$, called the {\em Lie bracket} and denoted $(x,y)\mapsto [x,y]$.  It is required to satisfy:
+\begin{enumerate}
+\item $[x,x] = 0$ for all $x\in\mathfrak{g}$.
+\item The {\em Jacobi identity}: $[x,[y,z]] + [y,[z,x]] + [z,[x,y]] = 0$ for all $x,y,z\in\mathfrak{g}$.
+\end{enumerate}
+
+\section{Subalgebras \& Ideals}
+
+A vector subspace $\h$ of the Lie algebra $\g$ is a {\em subalgebra} if $\h$ is closed under the Lie bracket operation, or, equivalently, if $\h$ itself is a Lie algebra under the same bracket operation as $\g$. An {\em ideal} of $\g$ is a subspace $\h$ for which $[x,y] \in \h$ whenever either $x \in \h$ or $y \in \h$. Note that every ideal is also a subalgebra.
+
+Some general examples of subalgebras:
+\begin{itemize}
+\item The {\em center} of $\g$, defined by $Z(\g) := \{x \in \g \mid [x,y] = 0 \text{for all } y \in \g\}$. It is an ideal of $\g$.
+\item The {\em normalizer} of a subalgebra $\h$ is the set $N(\h) := \{x \in \g \mid [x,\h] \subset \h\}$. The Jacobi identity guarantees that $N(\h)$ is always a subalgebra of $\g$.
+\item The {\em centralizer} of a subset $X \subset \g$ is the set $C(X) := \{x \in \g \mid [x,X] = 0\}$. Again, the Jacobi identity implies that $C(X)$ is a subalgebra of $\g$.
+\end{itemize}
+
+\section{Homomorphisms}
+Given two Lie algebras $\g$ and $\g'$ over the field $k$, a {\em homomorphism} from $\g$ to $\g'$ is a linear transformation $\phi: \g \to \g'$ such that $\phi([x,y]) = [\phi(x),\phi(y)]$ for all $x,y \in \g$. An injective homomorphism is called a {\em monomorphism}, and a surjective homomorphism is called an {\em epimorphism}.
+
+The {\em kernel} of a homomorphism $\phi: \g \to \g'$ (considered as a linear transformation) is denoted $\ker(\phi)$. It is always an ideal in $\g$.
+
+\section{Examples}
+
+\begin{itemize}
+\item Any vector space can be made into a Lie algebra simply by setting $[x,y] = 0$ for all vectors $x,y$. The resulting Lie algebra is called an {\em abelian} Lie algebra.
+\item If $G$ is a Lie group, then the tangent space at the identity forms a Lie algebra over the real numbers.
+\item $\mathbb{R}^3$ with the cross product operation is a nonabelian three dimensional Lie algebra over $\mathbb{R}$.
+\end{itemize}
+
+\section{Historical Note}
+Lie algebras are so-named in honour of Sophus Lie, a Norwegian
+mathematician who pioneered the study of these mathematical objects.
+Lie's discovery was tied to his investigation of continuous
+transformation groups and symmetries.  One joint project with Felix
+Klein called for the classification of all finite-dimensional groups
+acting on the plane.  The task seemed hopeless owing to the generally
+non-linear nature of such group actions.  However, Lie was able to
+solve the problem by remarking that a transformation group can be
+locally reconstructed from its corresponding ``infinitesimal
+generators'', that is to say vector fields corresponding to various
+1-parameter subgroups.  In terms of this geometric correspondence, the
+group composition operation manifests itself as the bracket of vector
+fields, and this is very much a linear operation.  Thus the task of
+classifying group actions in the plane became the task of classifying
+all finite-dimensional Lie algebras of planar vector field; a project
+that Lie brought to a successful conclusion.
+
+This ``linearization trick'' proved to be incredibly fruitful and led
+to great advances in geometry and differential equations.  Such
+advances are based, however, on various results from the theory of  Lie
+algebras.   Lie was the first to make significant contributions to this
+purely algebraic theory, but he was surely not the last.
+\end{document}

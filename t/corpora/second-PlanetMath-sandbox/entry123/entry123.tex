@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+
+%\makeatletter
+%\@ifundefined{bibname}{}{\renewcommand{\bibname}{References}}
+%\makeatother
+\begin{document}
+{\bf Definition} Suppose $A$ is a subset of a set $X$. Then the
+function
+\begin{equation*}
+\chi_A(x) =
+\begin{cases}
+1,&\text{when }x\in A,\\
+0,&\text{when }x\in X\setminus A
+\end{cases}
+\end{equation*}
+is the \emph{characteristic function} for $A$.
+
+%From the definition, it follows that there is  a natural correspondence
+%between charactersitic functions in a set $X$ and the power set of $X$.
+
+\subsubsection{Properties}
+Suppose $A,B$ are subsets of a set $X$.
+\begin{enumerate}
+\item For set intersections and set unions, we have
+   \begin{eqnarray*}
+   \chi_{A\cap B} &=& \chi_A \chi_B, \\
+   \chi_{A\cup B} &=& \chi_A + \chi_B - \chi_{A\cap B},\\
+   \chi_{A\cap B} &=& \min(\chi_A,\chi_B),\\
+   \chi_{A\cup B} &=& \max(\chi_A,\chi_B).
+   \end{eqnarray*}
+\item For the symmetric difference,
+$$\chi_{A\bigtriangleup B} = \chi_A + \chi_B - 2\chi_{A\cap B}.$$
+\item For the set complement,
+$$\chi_{A^\complement} = 1-\chi_A. $$
+\end{enumerate}
+
+
+\subsubsection{Remarks}
+A synonym for characteristic function is \emph{indicator function}
+\cite{folland}.
+
+
+\begin{thebibliography}{9}
+ \bibitem{folland}
+ G.B. Folland, \emph{Real Analysis: Modern Techniques and Their Applications}, 2nd ed, John Wiley \& Sons, Inc., 1999.
+ \end{thebibliography}
+\end{document}

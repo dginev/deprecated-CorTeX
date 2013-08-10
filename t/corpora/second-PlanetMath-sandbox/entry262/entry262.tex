@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+
+\makeatletter
+\@ifundefined{bibname}{}{\renewcommand{\bibname}{References}}
+\makeatother
+\begin{document}
+\PMlinkescapeword{words}
+\PMlinkescapeword{variation}
+\PMlinkescapeword{term}
+
+A \emph{square-free} number is a natural number that contains no powers greater than 1 in its prime factorization.  In other words, if $x$ is our number, and
+
+$$ x = \prod_{i=1}^r p_i^{a_i} $$
+
+is the prime factorization of $x$ into $r$ distinct primes, then $a_i \ge 2$ is
+always false for square-free $x$.
+
+Note: we assume here that $x$ itself must be greater than 1; hence 1 is not considered square-free.  However, one must be alert to the particular context in which ``square-free'' is used as to whether this is considered the case.
+
+The name derives from the fact that if any $a_i$ were to be greater than or equal to two, we could be sure that at least one square divides $x$ (namely, $p_i^2$.)
+
+\section{Asymptotic Analysis}
+
+The asymptotic density of square-free numbers is $\frac{6}{\pi^2}$ which can be proved by application of a square-free variation of the \PMlinkname{sieve of Eratosthenes}{SieveOfEratosthenes2} as follows:
+\begin{align*}
+A(n)&=\sum_{k\leq n} [k \text{ is squarefree }]\\
+    &=\sum_{k\leq n} \sum_{d^2 | k} \mu(d)\\
+    &=\sum_{d \leq \sqrt{n}} \mu(d) \sum_{\substack{k \leq n\\d^2 | n}} 1 \\
+    &=\sum_{d \leq \sqrt{n}} \mu(d) \left\lfloor{\frac{n}{d^2}}\right\rfloor\\
+    &=n \sum_{d \leq \sqrt{n}} \frac{\mu(d)}{d^2}+O(\sqrt{n})\\
+    &=n \sum_{d\geq 1} \frac{\mu(d)}{d^2}+O(\sqrt{n})\\
+    &=n \frac{1}{\zeta(2)} + O(\sqrt{n}) \\
+    &=n \frac{6}{\pi^2}+O(\sqrt{n}).
+\end{align*}
+It was shown that the Riemann Hypothesis implies error term $O(n^{7/22+\epsilon})$ in the above \cite{cite:baker_pintz_sqfree}.
+
+\begin{thebibliography}{1}
+
+\bibitem{cite:baker_pintz_sqfree}
+R.~C. Baker and J.~Pintz.
+\newblock The distribution of square-free numbers.
+\newblock {\em Acta Arith.}, 46:73--79, 1985.
+\newblock \PMlinkexternal{Zbl 0535.10045}{http://www.emis.de/cgi-bin/zmen/ZMATH/en/quick.html?type=html&an=0535.10045}.
+
+\end{thebibliography}
+\end{document}

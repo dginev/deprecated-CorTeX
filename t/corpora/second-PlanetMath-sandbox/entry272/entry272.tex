@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{psfrag}
+\begin{document}
+The ``Golden Ratio'', or $\phi$, has the value 
+
+$$ 1.61803398874989484820\ldots $$
+
+This number gets its rather illustrious name from the fact that the Greeks thought that a rectangle with ratio of side lengths equal to $\phi$ was the most pleasing to the eye, and much of classical Greek architecture is based on this premise.  In \PMlinkescapetext{addition}, an aesthetically pleasing aspect of a rectangle with this ratio, from a mathematical viewpoint, is that if we embed and remove a $w\times w$ square in the below diagram, the remaining rectangle also has a width-to-length ratio of $\phi$.
+
+\begin{center}
+
+\psfrag{l}{$\;\;\;\;\;\;\;\;l$}
+\psfrag{w}{$\!\!\!w$}
+\includegraphics[scale=.6]{golden.eps}
+
+{\tiny Above: The golden rectangle; $l/w = \phi$. }
+\end{center}
+
+$\phi$ has plenty of interesting mathematical \PMlinkescapetext{properties}, however.  Its value is exactly
+
+$$ \frac{1+\sqrt{5}}{2} $$
+
+The value 
+$$ \frac{1-\sqrt{5}}{2} $$
+
+is often called $\phi'$.  $\phi$ and $\phi'$ are the two roots of the recurrence relation given by the Fibonacci sequence.  The following \PMlinkescapetext{identities} hold for $\phi$ and $\phi'$ :
+
+\begin{itemize}
+\item $\frac{1}{\phi} = - \phi' $
+\item $1-\phi = \phi'$
+\item $\frac{1}{\phi'} = - \phi $
+\item $1-\phi' = \phi $
+\end{itemize}
+
+and so on.  These give us
+
+$$ \phi^{-1} + \phi^0 = \phi^{1} $$
+
+which implies 
+
+$$ \phi^{n-1} + \phi^n = \phi^{n+1} $$
+\end{document}

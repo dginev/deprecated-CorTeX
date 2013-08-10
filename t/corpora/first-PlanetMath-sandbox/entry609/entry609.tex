@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+For a complex matrix $A$, let $A^\ast=\overline{A}^{T}$, where 
+$A^T$ is the transpose, and $\bar{A}$ is the complex conjugate of $A$.
+
+{\bf Definition}
+A complex square matrix $A$ is \emph{Hermitian}, if 
+$$ A = A^*. $$
+
+\subsubsection*{Properties}
+\begin{enumerate}
+\item The eigenvalues of a Hermitian matrix are real.
+\item The diagonal elements of a Hermitian matrix are real.
+\item The complex conjugate of a Hermitian matrix is a Hermitian matrix.
+\item If $A$ is a Hermitian matrix, and $B$ is a complex matrix
+of same order as $A$, then $BAB^\ast$ is a Hermitian matrix.
+\item A matrix is symmetric if and only if it is real and Hermitian.
+\item Hermitian matrices are a vector subspace of the vector space of 
+complex matrices. 
+The real symmetric matrices are a subspace of the Hermitian matrices.
+\item Hermitian matrices are also called \emph{self-adjoint} since if $A$ is
+Hermitian, then in the usual
+inner product of $\mathbb{C}^n$, we have 
+$$ \langle u,Av \rangle = \langle Au,v\rangle$$
+for all $u,v\in \mathbb{C}^n$.
+
+\end{enumerate}
+
+\subsubsection*{Example}
+\begin{enumerate}
+\item For any $n\times m$ matrix $A$, the $n\times n$ matrix $A A^\ast$ is
+Hermitian. 
+\item For any square matrix $A$, the Hermitian part of $A$,  
+      $\frac{1}{2}(A+A^\ast)$ is Hermitian. 
+      See \PMlinkname{this page}{DirectSumOfHermitianAndSkewHermitianMatrices}.
+\item 
+$$ \begin{bmatrix}
+  1 & 1 + i & 1 + 2i & 1 + 3i \\
+  1 - i & 2 & 2 + 2i & 2 + 3i \\
+  1 - 2i & 2 - 2i & 3 & 3 + 3i \\
+  1 - 3i & 2 - 3i & 3 - 3i & 4
+\end{bmatrix} $$
+\end{enumerate}
+The first two examples are also examples of normal matrices.
+
+\subsubsection*{Notes}
+\begin{enumerate}
+\item Hermitian matrices are named after Charles Hermite (1822-1901) \cite{hermite}, who proved  in 1855 that the 
+eigenvalues of these matrices are always real \cite{eves}.
+\item Hermitian, or self-adjoint operators on a Hilbert space play a fundamental
+role in quantum theories as their eigenvalues are observable, or measurable; such
+Hermitian operators can be represented by Hermitian matrices.
+\end{enumerate}
+
+\begin{thebibliography}{9}
+ \bibitem{eves} H. Eves,
+ \emph{Elementary Matrix Theory},
+ Dover publications, 1980.
+\bibitem{hermite}
+ The MacTutor History of Mathematics archive, 
+\PMlinkexternal{Charles Hermite}{http://www-gap.dcs.st-and.ac.uk/~history/Mathematicians/Hermite.html}
+\end{thebibliography}
+\end{document}

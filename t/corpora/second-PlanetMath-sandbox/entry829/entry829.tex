@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+A sequence $(s_n)$ is \emph{monotonically nonincreasing} if 
+
+$$ s_m \le s_n \text{ for all } m > n $$
+
+Similarly, a real function $f(x)$ is monotonically nonincreasing if 
+
+$$ f(x) \le f(y) \text{ for all } x > y $$
+
+Compare this to monotonically decreasing.
+
+\textbf{Conflict note.} In some contexts, such as \cite{NIST}, this is called \emph{monotonically decreasing} (in turn, our ``monotonically decreasing'' is called ``strictly decreasing'').  This is unfortunately counter-intuitive, since a sequence or function that is ``flat'' (such as $f(x) = 1$) is somehow ``decreasing.''  Beware!
+
+\section{Examples}
+
+\begin{itemize}
+
+\item $(s_n) = 1, 0, -1, -2, \ldots$ is monotonically nonincreasing.  It is also monotonically decreasing.
+
+\item $(s_n) = 1, 1, 1, 1, \ldots$ is nonincreasing but {\bf not} monotonically decreasing.
+
+\item $(s_n) = (\frac{1}{n+1})$  is nonincreasing (note that $n$ is nonnegative).
+
+\item $(s_n) = 1, 1, 2, 1, 1, \ldots$ is {\bf not} nonincreasing.  It also happens to fail to be monotonically nondecreasing.
+
+\item $(s_n) = 1, 2, 3, 4, 5, \ldots$ is {\bf not} nonincreasing, rather it is nondecreasing (and monotonically increasing).
+
+\end{itemize}
+
+\begin{thebibliography}{3}
+\bibitem{NIST} ``\PMlinkexternal{monotonically decreasing}{http://www.nist.gov/dads/HTML/monotoncdecr.html},'' from the NIST Dictionary of Algorithms and Data Structures, Paul E. Black, ed.
+\end{thebibliography}
+\end{document}

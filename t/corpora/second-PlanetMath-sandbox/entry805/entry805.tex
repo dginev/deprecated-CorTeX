@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\defined}{:=}
+\newcommand{\esssup}{{\mathrm{ess}\sup}}
+\newcommand{\essinf}{{\mathrm{ess}\inf}}
+
+\begin{document}
+\PMlinkescapeword{even}
+\PMlinkescapeword{state}
+\PMlinkescapeword{almost everywhere}
+\PMlinkescapeword{collection}
+\PMlinkescapeword{measurable}
+\PMlinkescapeword{measure}
+\PMlinkescapeword{inequalities}
+\PMlinkescapeword{conversely}
+
+\subsection*{Essential supremum of a function}
+
+Let $(\Omega, \mathcal{F}, \mu)$ be a measure space and let $f$ be a Borel measurable function from $\Omega$ to the extended real numbers $\mathbb{\bar R}$.  The \emph{essential supremum} of $f$ is the smallest number $a\in\mathbb{\bar R}$ for which $f$ only exceeds $a$ on a set of measure zero. This allows us to generalize the maximum of a function in a useful way.
+
+More formally, we define $\mathrm{ess } \sup f$ as follows.  Let $a \in \reals$, and define
+
+\begin{equation*}
+M_{a} = \set{x: f(x) > a},
+\end{equation*}
+the subset of $X$ where $f(x)$ is greater than $a$.  Then let
+\begin{equation*}
+A_{0} = \set{a \in \reals: \mu(M_a) = 0},
+\end{equation*}
+the set of real numbers for which $M_a$ has measure zero. The essential supremum of $f$ is
+\begin{equation*}
+\mathrm{ess } \sup f \defined \inf A_0.
+\end{equation*}
+The supremum is taken in the set of extended real numbers so, $\mathrm{ess}\sup f=\infty$ if $A_0=\emptyset$ and $\mathrm{ess}\sup f = -\infty$ if $A_0=\mathbb{R}$. 
+
+\subsection*{Essential supremum of a collection of functions}
+
+Let $(\Omega,\mathcal{F},\mu)$ be a measure space, and $\mathcal{S}$ be a collection of measurable functions $f\colon\Omega\rightarrow\mathbb{\bar R}$. The Borel $\sigma$-algebra on $\mathbb{\bar R}$ is used.
+
+If $\mathcal{S}$ is countable then we can define the pointwise supremum of the functions in $\mathcal{S}$, which will itself be measurable. However, if $\mathcal{S}$ is uncountable then this is often not useful, and does not even have to be measurable. Instead, the \emph{essential supremum} can be used.
+
+The essential supremum of $\mathcal{S}$, written as $\esssup\,\mathcal{S}$, if it exists, is a measurable function $f\colon\Omega\rightarrow\mathbb{\bar R}$ satisfying the following.
+\begin{itemize}
+\item $f\ge g$, $\mu$-\PMlinkname{almost everywhere}{AlmostSurely}, for any $g\in\mathcal{S}$.
+\item if $g\colon\Omega\rightarrow\mathbb{\bar R}$ is measurable and $g\ge h$ ($\mu$-a.e.) for every $h\in\mathcal{S}$, then $g\ge f$ ($\mu$-a.e.).
+\end{itemize}
+Similarly, the \emph{essential infimum}, $\essinf\mathcal{S}$ is defined by replacing the inequalities `$\ge$' by `$\le$' in the above definition.
+
+Note that if $f$ is the essential supremum and $g\colon\Omega\rightarrow\mathbb{\bar R}$ is equal to $f$ $\mu$-almost everywhere, then $g$ is also an essential supremum. Conversely, if $f,g$ are both essential supremums then, from the above definition, $f\le g$ and $g\le f$, so $f=g$ ($\mu$-a.e.). So, the essential supremum (and the essential infimum), if it exists, is only defined almost everywhere.
+
+It can be shown that, for a $\sigma$-finite measure $\mu$, the \PMlinkname{essential supremum and essential infimum always exist}{ExistenceOfTheEssentialSupremum}. Furthermore, they are always equal to the supremum or infimum of some countable subset of $\mathcal{S}$.
+
+\end{document}

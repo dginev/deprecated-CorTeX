@@ -1,0 +1,66 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+For $k = 5$ in Zn\'am's problem, two sets of integers can be constructed. To check each set involves calculating $k$ different deleted products.
+
+To check that 2, 3, 7, 47, 395 is a solution, we verify that
+
+$3 \cdot 7 \cdot 47 \cdot 395 + 1 = 389866$, and $2|389866$
+
+$2 \cdot 7 \cdot 47 \cdot 395 + 1 = 259911$, and $3|259911$
+
+$2 \cdot 3 \cdot 47 \cdot 395 + 1 = 111391$, and $7|111391$
+
+$2 \cdot 3 \cdot 7 \cdot 395 + 1 = 16591$, and $47|16591$
+
+$2 \cdot 3 \cdot 7 \cdot 47 + 1 = 1975$, and $395|1975$.
+
+To check that 2, 3, 11, 23, 31 is a solution, we verify that
+
+$3 \cdot 11 \cdot 23 \cdot 31 + 1 = 23530$, and $2|23530$
+
+$2 \cdot 11 \cdot 23 \cdot 31 + 1 = 15687$, and $3|15687$
+
+$2 \cdot 3 \cdot 23 \cdot 31 + 1 = 4279$, and $11|4279$
+
+$2 \cdot 3 \cdot 11 \cdot 31 + 1 = 2047$, and $23|2047$
+
+$2 \cdot 3 \cdot 11 \cdot 23 + 1 = 1519$, and $31|1519$.
+
+If we chose to ignore the requirement of proper divisors, and allow all divisors, then for $k = 4$ there would be the solution 2, 3, 7, 43. The verification would show that
+
+$3 \cdot 7  \cdot  43 + 1 = 904$, and $2|904$
+
+$2 \cdot 7  \cdot  43 + 1 = 603$, and $3|603$
+
+$2 \cdot 3  \cdot  43 + 1 = 259$, and $7|259$
+
+$2 \cdot 3  \cdot  7 + 1 = 43$, and obviously $43|43$ because $43 = 43$.
+
+The vast majority of the sets in the known solutions include 2. A set is known for $k = 13$ with its smallest two elements being 3 and 4. It's not known if there are any sets consisting entirely of odd numbers. But since 2 is a prime number, sets consisting entirely of prime numbers are possible, such as the second one given above, and for $k = 7$ there is 2, 3, 11, 17, 101, 149, 3109.
+
+For a complete listing of solutions up to $k = 8$, see \PMlinkexternal{PrimeFan's listing}{http://www.geocities.com/primefan/ZnamProbSols.html}
+\end{document}

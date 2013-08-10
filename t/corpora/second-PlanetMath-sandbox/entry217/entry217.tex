@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{metric space} is a set $X$ together with a real valued function $d: X \times X \longrightarrow \mathbb{R}$ (called a \emph{metric}, or sometimes a \emph{distance} function) such that, for every $x,y,z \in X$,
+\begin{itemize}
+\item $d(x,y) \geq 0$, with equality\footnote{This condition can be replaced with the weaker statement $d(x,y) = 0 \iff x=y$ without affecting the definition.} if and only if $x=y$
+\item $d(x,y) = d(y,x)$
+\item $d(x,z) \leq d(x,y) + d(y,z)$
+\end{itemize}
+For $x \in X$ and $\varepsilon \in \mathbb{R}$ with $\varepsilon > 0$, the \emph{open ball} around $x$ of radius $\varepsilon$ is the set $B_\varepsilon(x) := \{y \in X \mid d(x,y) < \varepsilon\}$. An \emph{open set} in $X$ is a set which equals an arbitrary (possibly empty) union of open balls in $X$, and $X$ together with these open sets forms a Hausdorff topological space. The topology on $X$ formed by these open sets is called the \emph{metric topology}, and in fact the open sets form a basis for this topology (\PMlinkname{proof}{PseudometricTopology}).
+
+Similarly, the set $\bar{B}_\varepsilon(x) := \{y \in X \mid d(x,y) \leq \varepsilon\}$ is called a \emph{closed ball} around $x$ of radius $\varepsilon$. Every closed ball is a closed subset of $X$ in the metric topology.
+
+The prototype example of a metric space is $\mathbb{R}$ itself, with the metric defined by $d(x,y) := |x-y|$. More generally, any normed vector space has an underlying metric space structure; when the vector space is finite dimensional, the resulting metric space is isomorphic to Euclidean space.
+
+\begin{thebibliography}{9}
+ \bibitem{kelley}
+ J.L. Kelley,
+ \emph{General Topology},
+ D. van Nostrand Company, Inc., 1955.
+ \end{thebibliography}
+\end{document}

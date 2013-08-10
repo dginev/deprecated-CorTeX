@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\DeclareMathOperator{\cha}{Char}
+\begin{document}
+Let $(F,+,\cdot)$ be a field.  The \emph{characteristic} $\cha(F)$ of $F$ is commonly given by one of three equivalent definitions:
+
+\begin{itemize}
+\item
+if there is some positive integer $n$ for which the result of adding any element to itself $n$ times yields $0$, then the characteristic of the field is the least such $n$.  Otherwise, $\cha(F)$ is defined to be $0$.
+\item
+if $f:\mathbb{Z}\to F$ is defined by $f(n) = n\cdot 1$ then $\cha(F)$ is the least strictly positive generator of $\operatorname{ker}(f)$ if $\operatorname{ker}(f)\neq \{ 0\}$; otherwise it is $0$.
+\item
+if $K$ is the prime subfield of $F$, then $\cha(F)$ is the size of $K$ if this is finite, and $0$ otherwise.
+\end{itemize}
+
+Note that the first definition also applies to arbitrary rings, and not just to fields.
+
+The characteristic of a field (or more generally an integral domain) is always prime.  For if the characteristic of $F$ were composite, say $mn$ for $m,n>1$, then in particular $mn$ would equal zero.  Then either $m$ would be zero or $n$ would be zero, so the characteristic of $F$ would actually be smaller than $mn$, contradicting the minimality condition.
+\end{document}

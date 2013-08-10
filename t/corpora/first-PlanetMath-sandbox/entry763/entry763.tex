@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bX}{\mathbf{X}}
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\bA}{\mathbf{A}}
+\newcommand{\bB}{\mathbf{B}}
+\newcommand{\bY}{\mathbf{Y}}
+\newcommand{\bZ}{\mathbf{Z}}
+\newcommand{\0}{\mathbf{0}}
+\begin{document}
+In this entry, unless otherwise specified, $R$ is a commutative ring with multiplicative identity $1$ and $M=R[X_1,\ldots,X_n]$ is a polynomial ring over $R$ in $n$ indeterminates.
+
+\subsubsection*{Definition}
+
+A homogeneous polynomial of degree 2 in $M$ is called a \emph{quadratic form} (over $R$) in $n$ indeterminates.  In general, a quadratic form (without specifying $n$) over a ring $R$ is a quadratic form in some polynomial ring over $R$.  
+
+For example, in $\mathbb{Z}[X,Y]$, $X^2-5XY$ is a quadratic form, while $Y^3+2XY$ and $X^2+Y^2+1$ are not.
+
+In general, a quadratic form $Q$ in $n$-indeterminates looks like 
+$$Q=a_{11}X_1^2+a_{12}X_1X_2+\cdots+a_{n,n-1}X_nX_{n-1}+a_{nn}X_n^2=\sum_{1\le i,j \le n}a_{ij}X_iX_j$$ where $a_{ij}\in R$.
+
+Letting $\bX=(X_1,\ldots,X_n)^{\mathrm{T}}$, and $\bA=\lbrace a_{ij} \rbrace$ the $n\times n$ matrix, then we can rewrite $Q$ as
+$$Q={\bX}^{\mathrm{T}} \bA \bX.$$
+
+For example, the quadratic form $X^2-5XY$ can be rewritten as 
+$$X^2-5XY=\begin{pmatrix} X & Y \end{pmatrix}\begin{pmatrix} 1 & -2 \\ -3 & 0 \end{pmatrix}\begin{pmatrix} X  \\ Y \end{pmatrix}.$$
+
+Now suppose the characteristic of $R$, $\operatorname{char}(R)\ne 2$.  In fact, suppose that $2$ is invertible in $R$ (its inverse denoted by $\frac{1}{2}$).  Since $X_iX_j=X_jX_i$, define $b_{ij}=\frac{1}{2}(a_{ij}+a_{ji})$.  Then $b_{ii}=a_{ii}$ and $b_{ij}=b_{ji}$.  Furthermore, if $\bB=\lbrace b_{ij}\rbrace$, then $\bB$ is a symmetric matrix and 
+$$Q={\bX}^{\mathrm{T}} \bB \bX.$$
+
+Again, in the example of $X^2-5XY$, over $\mathbb{Q}$ it can be written as 
+$$X^2-5XY=\begin{pmatrix} X & Y \end{pmatrix}\begin{pmatrix} 1 & -\frac{5}{2} \\ -\frac{5}{2} & 0 \end{pmatrix}\begin{pmatrix} X  \\ Y \end{pmatrix}.$$
+However, it is not possible to represent $X^2-5XY$ over $\mathbb{Z}$ by a symmetric matrix.
+
+\subsubsection*{Evaluating a Quadratic Form}
+
+It is not hard to see that, given a quadratic form $Q$ in $n$ indeterminates, setting one of its indeterminates to $0$ gives us another quadratic form, in $(n-1)$ indeterminates.  This is an informal way of saying the following: 
+\begin{quote}
+embed $R$ into $N=R[X_1,\ldots,X_{n-1}]$.  Let $\phi:M\to N$ be the (unique) evaluation homomorphism of the embedding, with $\phi(X_i)=X_i$ for $i<n$ and $\phi(X_n)=0$.  Then for any quadratic form $Q\in M$, $\phi(Q)$ is a quadratic form in $N$.
+\end{quote}
+
+In particular, if we take $N=R$, and $\bs=(s_1,\ldots,s_n)$ with $s_i\in R$.  Then the evaluation homomorphism $\phi$ at $\bs$ for any quadratic form $Q\in M$ is called the \emph{evaluation} of $Q$ at $\bs$, and we write it $\phi_{\bs}(Q)$, or simply $Q(\bs)$ (since $\phi$ is uniquely determined by $\bs$).  In this way, a quadratic form $Q$ can be realized as a quadratic map, as follows:
+\begin{quote}
+Let $Q\in M$ be a qudratic form.  Take the direct sum of $n$ copies of $R$ and call this $V$.  Define a map $q:V\to R$ by $q(v)=Q(v)$.  Then $q$ is a quadratic map.
+\end{quote}
+
+Conversely, if $2$ is invertible in $R$ (so that $\operatorname{char}(R)\ne 2$ is clear), then given a quadratic map $q:M\to R$, one can find a corresponding quadratic form $Q\in M$ such that $q(v)=Q(v)$, by setting $$a_{ij}=\frac{1}{2}\big(q(e_i+e_j)-q(e_i)-q(e_j)\big),$$ where $e_i$ and $e_j$ are coordinate vectors whose coordinates are all $0$ except at positions $i$ and $j$ respectively, where the coordinates are $1$.  Then $Q$ defined by ${\bX}^{\mathrm{T}} \bA \bX$, where $\bA=\lbrace a_{ij}\rbrace$ is the desired quadratic form.
+
+\subsubsection*{Equivalence of Quadratic Forms}
+
+From the above discussion, we shall identify a quadratic form as a quadratic map.
+
+Two quadratic forms $Q_1$ and $Q_2$ are said to be \emph{\PMlinkescapetext{equivalent}} if there is an invertible matrix $M$ such that $Q_1(v)=Q_2(Mv)$, for all $v\in R^n$.  The definition of equivalent quadratic forms is well-defined and it is not hard to see that this equivalence is an equivalence relation.
+
+In fact, if $\bA_1$ and $\bA_2$ are matrices corresponding to (see the definition section) the two equivalent quadratic forms $Q_1$ and $Q_2$ above, then $\bA_1=M^\mathrm{T}\bA_2M$.
+
+For example, the quadratic form $X^2-Y^2$ is equivalent to $XY$ over any ring $R$ where $2$ is invertible, with $M=\begin{pmatrix} 1 & -1 \\ 1 & 1 \end{pmatrix}$.
+
+In the case where $R=\mathbb{R}$ is the field of real numbers (or any formally real field), we say that a quadratic form is positive definite, negative definite, or positive semidefinite according to whether its corresponding matrix is positive definite, negative definite, or positive semidefinite.  The definiteness of a quadratic form is preserved under the equivalence relation on quadratic forms.
+
+\subsubsection*{Sums of Quadratic Forms}
+
+If $Q_1$ and $Q_2$ are two quadratic forms in $m$ and $n$ indeterminates.  We can define a quadratic form $Q$ in $m+n$ indeterminates in terms of $Q_1$ and $Q_2$, called the \emph{sum of $Q_1$ and $Q_2$}, as follows:
+\begin{quote}
+write $Q_1={\bX}^{\mathrm{T}} \bA \bX$ and $Q_2={\bY}^{\mathrm{T}} \bB \bY$, with $\bX=(X_1,\ldots,X_m)^{\mathrm{T}}$ and $\bY=(Y_1,\ldots,Y_n)^{\mathrm{T}}$.  Then 
+$$Q:={\bZ}^{\mathrm{T}} (\bA\oplus \bB) \bZ,$$ 
+where $\bZ=(\bX,\bY)=(X_1,\ldots,X_m,Y_1,\ldots,Y_n)^{\mathrm{T}}$, and $\bA\oplus \bB$ is the direct sum of matrices $\bA$ and $\bB$.
+\end{quote}
+Expressed in terms of $Q_1$ and $Q_2$, we write $Q=Q_1\oplus Q_2$.  For example, if $Q_1=5X_1^2+6X_2^2$ and $Q_2=10X_1X_2$, then $$Q_1\oplus Q_2=5X_1^2+6X_2^2+10X_3X_4,$$ not $5X_1^2+6X_2^2+10X_1X_2 (=Q_1+Q_2)$.
+
+\begin{thebibliography}{6}
+\bibitem{tyl} T. Y. Lam, {\it Introduction to Quadratic Forms over Fields}, American Mathematical Society (2004)
+\end{thebibliography}
+\end{document}

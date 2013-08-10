@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+For a topological space $X$ a presheaf $F$ with values in a category $\mathcal{C}$ associates to each open set $U\subset X$, an object $F(U)$ of $\mathcal{C}$ and to each inclusion $U\subset V$ a morphism of $\mathcal{C}$, $\rho_{UV} : F(V)\to F(U)$, the restriction morphism.  It is required that $\rho_{UU} = 1_{F(U)}$ and $\rho_{UW} = \rho_{UV}\circ \rho_{VW}$ for any $U\subset V\subset W$.
+
+A presheaf with values in the category of sets (or abelian groups) is called a presheaf of sets (or abelian groups).  If no target category is specified, either the category of sets or abelian groups is most likely understood.
+
+A more categorical way to state it is as follows.  For $X$ form the category ${\bf Top}(X)$ whose objects are open sets of $X$ and whose morphisms are the inclusions.  Then a presheaf is merely a contravariant functor ${\bf Top}(X)\to\mathcal{C}$.
+\end{document}

@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\documentclass{article}
+\usepackage{amssymb, amsmath, amsthm, alltt, setspace}
+\newtheorem{thm}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem*{defn}{Definition}
+\theoremstyle{definition}
+\newtheorem*{rem}{Remark}
+
+\theoremstyle{definition}
+\newtheorem*{nott}{Notation}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem*{eg}{Example}
+\newtheorem*{ex}{Exercise}
+\newtheorem*{prop}{Proposition}
+
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\leftbb}{[ \! [}
+\newcommand{\rightbb}{] \! ]}
+\newcommand{\bt}{\begin{thm}}
+\newcommand{\et}{\end{thm}}
+\newcommand{\Rel}{\mathbf{R}}
+\newcommand{\er}{\thicksim}
+\newcommand{\sqle}{\sqsubseteq}
+\newcommand{\floor}[1]{\lfloor{#1}\rfloor}
+\newcommand{\ceil}[1]{\lceil{#1}\rceil}
+\begin{document}
+Euclid's algorithm describes a procedure for finding the greatest common divisor of two integers.
+
+Suppose $a,~b \in \ZZ$, and without loss of generality, $b > 0$, because if $b < 0$, 
+then $\gcd(a,b) = \gcd (a, |b| )$, and if $b = 0$, then $\gcd (a,b) = |a| $.  
+Put $d := \gcd (a,b)$.
+
+By the division algorithm for integers, we may find integers $q$ and $r$ such that
+$a = q_0 b + r_0  $  where $ 0 \leq r_0 < b$.
+  
+Notice that $\gcd(a,b) = \gcd(b, r_0)$, because $d \mid a$ and $d \mid b$, so $d \mid r_0 = a - q_0b$ and 
+if $b$ and $r_0$ had a common divisor $d'$ larger  than $d$, then $d'$ would also be a common divisor of 
+$a$ and $b$, contradicting $d$'s maximality.  Thus, $d = \gcd(b, r_0)$.
+
+So we may repeat the division, this time with $b$ and $r_0$.  Proceeding recursively, we obtain
+\begin{eqnarray*}
+  a   &=& q_0b   + r_0 ~\mbox{  with } 0 \leq r_0 < b    \\
+  b   &=& q_1r_0 + r_1 \mbox{ with } 0 \leq r_1 < r_0  \\
+  r_0 &=& q_2r_1 + r_2 \mbox{ with } 0 \leq r_2 < r_1  \\
+  r_1 &=& q_3r_2 + r_3 \mbox{ with } 0 \leq r_3 < r_2  \\
+      &\vdots&
+\end{eqnarray*}
+Thus we obtain a decreasing sequence of nonnegative integers $b > r_0 > r_1 > r_2 > \dots$, which
+must eventually reach zero, that is to say,
+$r_n = 0$ for some $n$, and the algorithm terminates.  We may easily generalize the previous 
+argument to show that $d = \gcd(r_{k-1}, r_k) = \gcd(r_k, r_{k+1})$ for $k = 0, 1, 2, \dots$, 
+where $r_{-1} = b$.  Therefore, \[d = \gcd(r_{n-1}, r_n) = \gcd(r_{n-1}, 0) = r_{n-1}.\]  More 
+colloquially, the greatest common divisor is the last nonzero remainder in the algorithm.
+
+The algorithm provides a bit more than this.  It also yields a way to express the $d$ as a linear
+combination of $a$ and $b$, a fact obscurely known as Bezout's lemma.  For we have that
+\begin{eqnarray*}
+  a  -q_0b    &=&  r_0    \\
+  b  -q_1r_0  &=&   r_1   \\
+  r_0 - q_2r_1 &=& r_2    \\
+  r_1 - q_3r_2 &=& r_3    \\
+      &\vdots&            \\
+  r_{n-3} - q_{n-1}r_{n-2} &=& r_{n-1}  \\
+  r_{n-2} &=& q_nr_{n-1} \\
+\end{eqnarray*}
+so substituting each remainder $r_k$ into the next equation we obtain 
+\begin{table}[ht]
+\[
+\begin{array}{ccccc}
+  b                     - q_1(a - q_0b)    &=& k_1a + l_1b &=& r_1 \\
+  (a - q_0b)            - q_2(k_1a + l_1b) &=& k_2a + l_2b &=& r_2 \\
+  (k_1a + l_1b)         - q_3(k_2a + l_2b) &=& k_3a + l_3b &=& r_3  \\
+                                       &\vdots &        &\vdots&   \\
+  (k_{n-3}a + l_{n-3}b) - q_n(k_{n-2}a + l_{n-2}b) &=& k_{n-1} a + l_{n-1} b &=& r_{n-1} \\
+\end{array}
+\]
+\end{table}
+
+Sometimes, especially for manual computations, it is preferable to write  all the algorithm in a tabular
+format.  As an example, let us apply the algorithm to $a=756$ and $b=595$.  The following table details
+the procedure. The variables at the top of each column (without subscripts) have the same meaning as above.
+That is to say, $r$ is used for the sequence of remainders and $q$ for the corresponding sequence of 
+quotients.  The entries in the $k$ and $l$ columns are obtained by multiplying the current values for $k$
+and $l$ by the $q$ in this row, and subtracting the results from the $k$ and $l$ in the previous row.
+
+\begin{table}[h]
+\[
+\begin{array}{c@{~\vline~}c@{~\vline~}c@{~\vline~}c} 
+  r   & q  & k  &  l \\
+\hline
+ 756  &    &    1 &    0   \\
+ 595  & 1  &    0 &    1   \\
+ 161  & 3  &    1 &   -1   \\
+ 112  & 1  &   -3 &    4   \\
+  49  & 2  &    4 &   -5   \\
+  14  & 3  &  -11 &   14   \\
+   7  & 2  &   37 &  -47   \\
+   0  &    &      &        \\
+\end{array}
+\]
+\end{table}
+Thus, $gcd(756, 595) = 7$ and $37 \cdot 756 - 47 \cdot 595 = 7$.
+
+Euclid's algorithm was first described in his classic work {\it Elements} (see propositions VII 1 and VII 2),
+which also contained procedures
+for geometrical constructions. These are the first known 
+formally described algorithms. Prior to this, informally defined algorithms were in common use to 
+perform various computations, but {\it Elements} contained the first attempt to rigorously 
+describe a procedure and explain why its results are admissible. Euclid's algorithm for greatest 
+common divisor is still commonly used today; since {\it Elements} was published in the fourth 
+century BC, this algorithm has been in use for nearly 2400 years!
+\end{document}

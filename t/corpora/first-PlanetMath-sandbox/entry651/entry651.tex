@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+\PMlinkescapeword{fixed}
+\PMlinkescapeword{uniform}
+
+Let $X$ be a set.
+
+\section*{Definitions}
+
+A collection $\mathcal{U}$ of subsets of $X$ is an \emph{ultrafilter} if $\mathcal{U}$ is a filter, and whenever $A\subseteq X$ then either $A\in\mathcal{U}$ or $X\setminus A\in\mathcal{U}$.
+
+Equivalently, an ultrafilter on $X$ is a \PMlinkname{maximal}{MaximalElement} filter on $X$.
+
+More generally, an \PMlinkname{ultrafilter of a lattice}{LatticeFilter}
+is a maximal proper filter of the lattice.
+This is indeed a generalization, as an ultrafilter on $X$
+can then be defined as an ultrafilter of the power set $\mathcal{P}(X)$.
+
+\section*{Types of ultrafilter}
+
+For any $x\in X$ the set $\{A\subseteq X\mid x\in A\}$ is an ultrafilter on $X$.
+An ultrafilter formed in this way is called a \emph{fixed ultrafilter},
+or a \emph{principal ultrafilter}, or a \emph{trivial ultrafilter}.
+Any other ultrafilter on $X$ is called a \emph{free ultrafilter},
+or a \emph{non-principal ultrafilter}.
+An ultrafilter on a finite set is necessarily fixed.
+On any infinite set there are free ultrafilters
+(\PMlinkname{in great abundance}{NumberOfUltrafilters}),
+but their existence depends on the Axiom of Choice,
+and so none can be explicitly constructed.
+
+An ultrafilter $\mathcal{U}$ on $X$ is called a \emph{uniform ultrafilter}
+if every member of $\mathcal{U}$ has the same cardinality.
+(An ultrafilter on a singleton is uniform,
+but this is a degenerate case and is often excluded.
+All other uniform ultrafilters are free.)
+\end{document}

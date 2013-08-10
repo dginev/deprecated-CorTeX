@@ -1,0 +1,120 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\barQ}{\overline{\Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\renewcommand{\S}{\mathcal{S}}
+\renewcommand{\a}{{\mathfrak{a}}}
+\renewcommand{\b}{{\mathfrak{b}}}
+\newcommand{\m}{{\mathfrak{m}}}
+\newcommand{\p}{{\mathfrak{p}}}
+\renewcommand{\P}{{\mathfrak{P}}}
+\newcommand{\q}{{\mathfrak{q}}}
+\renewcommand{\c}{{\bf{c}}}
+\renewcommand{\d}{{\bf{d}}}
+\newcommand{\x}{{\bf{x}}}
+\renewcommand{\Re}{\operatorname{Re}}
+\newcommand{\0}{\bf{0}}
+\newcommand{\category}[1]{\mbox{\boldmath $\mathsf{{#1}}$}}
+\newcommand{\qr}[2]{{\mbox{$\left(\frac{{#1}}{{#2}}\right)$}}}
+\newcommand{\s}[1]{\EuScript{{#1}}}
+\newcommand{\conj}[1]{{\overline{{#1}}}}
+
+\newlength{\algcwidth} \newlength{\algcheight}
+\newcommand{\algc}[1]{%
+\settowidth{\algcwidth}{#1} \settoheight{\algcheight}{#1}%
+\raisebox{1.2\algcheight}[0pt]{%
+\makebox[0pt][l]{\hspace{.4\algcwidth}%
+\rule{.6\algcwidth}{0.05\algcheight}}}%
+{{#1}}}
+
+\newcommand{\jacobi}[2]{{\left(\frac{#1}{#2}\right)}}
+\renewcommand{\H}{\category{H}}
+\newcommand{\A}{\category{A}}
+\newcommand{\B}{\category{B}}
+\renewcommand{\O}{\mathcal{O}}
+\newcommand{\M}{\mathfrak{M}}
+\newcommand{\<}{\langle}
+\renewcommand{\>}{\rangle}
+\newcommand{\lra}{\longrightarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\iso}{\cong}
+\newcommand{\dsum}{\oplus}
+\newcommand{\bigdsum}{\bigoplus}
+\newcommand{\conv}{\circ}
+\newcommand{\comp}{\circ}
+%\newcommand{\st}{\text{\ s.t.\ }}
+\newcommand{\st}{\mid}
+\renewcommand{\div}{\mid}
+\newcommand{\ndiv}{\nmid}
+\newcommand{\intersect}{\cap}
+\newcommand{\union}{\cup}
+\newcommand{\bigintersect}{\bigcap}
+\newcommand{\bigunion}{\bigcup}
+\renewcommand{\Im}{\operatorname{Im}}
+\newcommand{\cross}{\times}
+\newcommand{\tensor}{\otimes}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\Sym}{\operatorname{Sym}^2}
+\newcommand{\Alt}{\operatorname{Alt}^2}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\Res}{\operatorname{Res}}
+\newcommand{\Spec}{\operatorname{Spec}}
+\newcommand{\Nil}{\operatorname{Nil}}
+\newcommand{\Ann}{\operatorname{Ann}}
+\newcommand{\Ass}{\operatorname{Ass}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\End}{\operatorname{End}}
+\newcommand{\Co}{\operatorname{Co}}
+\newcommand{\Supp}{\operatorname{Supp}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\coker}{\operatorname{coker}}
+\newcommand{\disc}{\operatorname{disc}}
+\newcommand{\Gal}{\operatorname{Gal}}
+\newcommand{\lcm}{\operatorname{lcm}}
+\newcommand{\sign}{\operatorname{sign}}
+\newcommand{\SL}{\operatorname{SL}}
+\newcommand{\GL}{\operatorname{GL}}
+\newcommand{\semidirect}{\times}
+\newcommand{\bd}{\partial}
+\newcommand{\dual}{\vee}
+\newcommand{\pth}{{\mbox{$p^{\text{th}}$}}}
+\newcommand{\qth}{{\mbox{$q^{\text{th}}$}}}
+\begin{document}
+To solve the cubic polynomial equation $x^3 + ax^2 + bx + c = 0$ for $x$, the first step is to apply the Tchirnhaus transformation $x = y-\frac{a}{3}$. This reduces the equation to $y^3 + py + q = 0$, where
+\begin{eqnarray*}
+p & = & b - \frac{a^2}{3} \\
+q & = & c - \frac{ab}{3} + \frac{2a^3}{27}
+\end{eqnarray*}
+The next step is to substitute $y = u-v$, to obtain
+\begin{equation}\label{original}
+(u-v)^3 + p(u-v) + q = 0
+\end{equation}
+or, with the terms collected,
+\begin{equation}\label{rearrange}
+(q - (v^3 - u^3)) + (u-v)(p - 3 u v) = 0
+\end{equation}
+From equation \eqref{rearrange}, we see that if $u$ and $v$ are chosen so that $q = v^3-u^3$ and $p = 3uv$, then $y = u-v$ will satisfy equation \eqref{original}, and the cubic equation will be solved!
+
+There remains the matter of solving $q = v^3-u^3$ and $p = 3uv$ for $u$ and $v$. From the second equation, we get $v = p/(3u)$, and substituting this $v$ into the first equation yields
+$$
+q = \frac{p^3}{(3u)^3} - u^3
+$$
+which is a quadratic equation in $u^3$. Solving for $u^3$ using the quadratic formula, we get
+\begin{eqnarray*}
+u^3 & = & \frac{-27q + \sqrt{108 p^3 + 729 q^2}}{54} = \frac{-9q + \sqrt{12 p^3 + 81 q^2}}{18}\\
+v^3 & = & \frac{27q + \sqrt{108 p^3 + 729 q^2}}{54} = \frac{9q + \sqrt{12 p^3 + 81 q^2}}{18}
+\end{eqnarray*}
+Using these values for $u$ and $v$, you can back--substitute $y=u-v$, $p=b-a^2/3$, $q=c-ab/3+2a^3/27$, and $x = y-a/3$ to get the expression for the first root $r_1$ in the cubic formula. The second and third roots $r_2$ and $r_3$ are obtained by performing synthetic division using $r_1$, and using the quadratic formula on the remaining quadratic factor.
+\end{document}

@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{image}The principal components analysis is a mathematical way of determining that linear transformation of a sample of points in $N$-dimensional space which exhibits the properties of the sample most clearly along the coordinate axes. Along the new axes the sample variances are extremes (maxima and minima), and uncorrelated. The name comes from the principal axes of an ellipsoid (e.g. the ellipsoid of inertia), which are just the coordinate axes in question.
+
+By their definition, the principal axes will include those along which the point sample has little or no spread (minima of variance). Hence, an analysis in terms of principal components can show (linear) interdependence in data. A point sample of $N$ dimensions for whose $N$ coordinates $M$ linear relations hold, will show only $(N-M)$ axes along which the spread is non-zero. Using a cutoff on the spread along each axis, a sample may thus be reduced in its dimensionality (see [Bishop95]).
+
+The principal axes of a point sample are found by choosing the origin at the ``centre of gravity'' and forming the dispersion matrix
+
+$$ t_{ij} = (1/N) \sum [(x_i-\left<x_i\right>)(x_j-\left<x_j\right>)] $$
+
+where the sum is over the $N$ points of the sample and the $x_i$ are the $i$th components of the point coordinates. $\left<.\right>$ stands for the average of the parameter. The principal axes and the variance along each of them are then given by the eigenvectors and associated eigenvalues of the dispersion matrix.
+
+Principal component analysis has in practice been used to reduce the dimensionality of problems, and to transform interdependent coordinates into significant and independent ones. An example used in several particle physics experiments is that of reducing redundant observations of a particle track in a detector to a low-dimensional subspace whose axes correspond to parameters describing the track. Another example is in image processing; where it can be used for color quantization. Principle components analysis is described in [O'Connel74].
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+
+\begin{itemize}
+\item[Bishop95]
+C.M. Bishop, Neural Networks for Pattern Recognition, Oxford University Press, Oxford, 1995.
+\item[O'Connel74]
+M.J. O'Connel, Search Program for Significant Variables, Comp. Phys. Comm. 8 (1974) 49.
+\end{itemize}
+\end{document}

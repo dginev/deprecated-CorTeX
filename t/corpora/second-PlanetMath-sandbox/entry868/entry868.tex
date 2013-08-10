@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+Let $S$ be a set. A \emph{cycle} is a permutation
+(bijective function of a set onto itself)
+such that there exist distinct elements $a_1, a_2,\ldots,a_k$ of $S$
+such that
+$$f(a_i) = a_{i+1}\qquad \mbox{and}\qquad f(a_k)=a_1$$
+that is
+\begin{eqnarray*}
+f(a_1)&=&a_{2}\\
+f(a_{2})&=&a_{3}\\
+&\vdots&\\
+f(a_{k})&=&a_{1}\\
+\end{eqnarray*}
+and $f(x)=x$ for any other element of $S$.
+
+This can also be pictured as
+$$a_1\mapsto a_{2}\mapsto a_{3}\mapsto\cdots\mapsto a_{k}\mapsto a_{1}$$
+and $$x\mapsto x$$ 
+for any other element $x\in S$, where $\mapsto$ represents the action of $f$.
+
+One of the basic results on symmetric groups
+says that any finite permutation can be expressed as product of disjoint cycles.
+\end{document}

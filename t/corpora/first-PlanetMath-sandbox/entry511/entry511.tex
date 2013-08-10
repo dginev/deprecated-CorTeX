@@ -1,0 +1,132 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\providecommand{\PP}{\mathbf{P}}
+\providecommand{\PB}{\mathbf{B}}
+\providecommand{\PQ}{\mathbf{Q}}
+\begin{document}
+\section{Introduction}
+B\'ezier curves are a particular family of curves in $\mathbb{R}^m$
+that parameterize a smooth path \PMlinkescapetext{between} given points.
+They are often used to model or approximate general curved shapes 
+because of their algebraic simplicity.
+
+B\'ezier curves were originally developed by Paul de Casteljau in 1959. But it became a famous shape only when Pierre B\'ezier, a French engineer at Renault, used it to \PMlinkescapetext{design} automobiles in the 1970's. 
+They are now widely used in many \PMlinkescapetext{fields} such as industrial and computer-aided \PMlinkescapetext{design}, 
+vector-based drawing, font design, and 3D modeling.
+
+\section{Definition}
+Given $n+1$ points $\PP_i$ in $\mathbb{R}^m$,
+the \emph{B\'ezier curve} for these \emph{control points} is the curve $\PB \colon [0,1] \to \mathbb{R}^m$
+defined by
+\[
+\PB(t) = \sum_{i=0}^{n} \binom{n}{i} (1-t)^{n-i} \, t^i \: \PP_i\,.
+\]
+The coefficients in this expression:
+\[
+b_{i,n}(t) = \binom{n}{i} (1-t)^{n-i} \, t^i \,, \quad  i=0,\ldots, n\,.
+\]
+are the Bernstein basis polynomials.
+
+\section{Special cases}
+A B\'ezier curve between two control points is simply the line segment
+between the two points:
+\[
+\PB(t) = (1-t) \, \PP_0  +  t \, \PP_1\,.
+\]
+
+For three control points, we have the quadratic B\'ezier curve:
+\[
+\PB(t) = (1-t)^2 \, \PP_0  +  2 t (1-t) \, \PP_1 +  t^2 \, \PP_2\,.
+\]
+
+For four control points, we have the cubic B\'ezier curve:
+\[
+\PB(t) =  (1-t)^3 \, \PP_0 +  3 t (1-t)^2 \, \PP_1 + 3 t^2 (1-t) \, \PP_2 + t^3\,  \PP_3\,.
+\]
+
+These are the most commonly employed versions of B\'ezier curves.
+
+
+\section{Properties}
+
+\begin{itemize}
+\item Except for the first and the last points, where the curve starts and ends, the B\'ezier curve should not pass through any of the control points. i.e. all the controls points lie on the curve if and only if the curve is a straight line.
+
+\item The curve is tangent to the segment of line $\overline{\PP_0 \, \PP_1}$ at the start and $\overline{\PP_{n-1} \, \PP_n}$ at the end.
+
+\item It is easy to keep until the first order continuity when chaining curves. Moreover, every B\'ezier curve can be cut at any point into two new B\'ezier curves. In fact, the \PMlinkescapetext{design} industry uses series of B\'ezier curves with only 4 control points (a bicubic version of the equations) to draw complex shapes.
+
+\item The curves never do fancy stuff and always remain within the convex hull of the control points.
+
+\item For one and two points the definition is still valid and the result became a point and a segment of line, respectively.
+
+\item But it is impossible to draw circles or arcs of circle.
+
+\item It is also impossible to draw two parallel curves (except in trivial cases: straight line B\'eziers and coincident B\'eziers curves)
+
+\item If the first and the last point are the same, the curve is closed. And if $\PP_1$ and $\PP_{n-1}$ are aligned with $\PP_0$ then the curve is closed with a first order continuity.
+
+\end{itemize}
+
+\section{Curve Cut}
+\PMlinkescapetext{Section} in progress... started the 21th of september 2009... if it seems abandonned while unfinished, delete this section
+
+Let $\PB_p(t)$ be a Bezier curve, defined by its control points $\PP_0$ to $\PP_{n}$ for $t \in [0,1]$.
+
+Let choose $a,b$ such as $[a,b] \subset [0,1]$
+Let take $u = {{t - a} \over {b - a}}$ such as $\forall u \in [0,1], t \in [a,b]$
+
+
+$\PB_q(u)$ is a part of the initial bezier curve with new control points $\PQ_{0}$
+to $\PQ_{n}$ whose \PMlinkescapetext{coordinates} will be determined.
+
+For $n$ control points $\PB(t)$ is a $n-1$-order polynom.
+
+$\PB_p(a) = \PB_q(0)$
+
+$\PB_p(b) = \PB_q(1)$
+
+Let take $n-2$ more points, evenly spaced in [a,b]
+$u_i = k / {n-1} \forall k \in [1 .. n-1]$
+
+$\PB_p(u (b - a) + a) = \PB_q(u_i)$ for each $u_i$
+
+For a 4 points bezier curve
+Let's take $u$ in $(0, {1 \over 3}, {2 \over 3}, 1)$
+
+ie $t$ in $(a, {{b - 2 a} \over {3}}, {{2b - a} \over {3}}, b)$
+
+$ \PQ_0 = \PB_p(a) $
+
+$ {8 \over 27} \PQ_0 + {4 \over 9 } \PQ_1 + {2 \over 9} \PQ_2 + {1 \over 27} \PQ_3 = \PB_p(a) $
+
+$ {1 \over 27} \PQ_0 + {2 \over 9 } \PQ_1 + {4 \over 9} \PQ_2 + {8 \over 27} \PQ_3 = \PB_p(a) $
+
+$ \PQ_3 = \PB_p(b) $
+
+\PMlinkexternal{Wiki}{http://en.wikipedia.org/wiki/Bezier_curve}
+\end{document}

@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\defined}{:=}
+\begin{document}
+\PMlinkescapephrase{invariant}
+
+\section{Ergodicity}
+
+{\bf Definition -} Let $(X, \mathfrak{B}, \mu)$ be a probability space and $T:X \longrightarrow X$ a measure-preserving transformation.  We say that $T$ is \emph{ergodic} if all the subsets $A \in \mathfrak{B}$ such that $T^{-1}(A)=A$ have measure $0$ or $1$.
+
+In other words, if $A \in \mathfrak{B}$ is \PMlinkname{invariant}{InvariantByAMeasurePreservingTransformation} by $T$ then $\mu(A) = 0$ or $\mu(A)=1$.\\
+
+\subsubsection{Motivation}
+
+Suppose $(X, \mathfrak{B}, \mu)$ is a probability space and $T:X \longrightarrow X$ is a measure-preserving transformation. If $A \in \mathfrak{B}$ is an \PMlinkname{invariant}{InvariantByAMeasurePreservingTransformation} measurable subset, with $0 < \mu(A) < 1$, 
+then $X \setminus A$ is also invariant and $0 < \mu(X \setminus A) < 1$. Thus, in this situation, we can study the transformation $T$ by studying the two simpler transformations $T|_{A}$ and $T|_{X \setminus A}$ in the spaces $A$ and $X \setminus A$, respectively.
+
+The transformation $T$ is ergodic precisely when $T$ cannot be decomposed into simpler transformations. Thus, ergodic transformations are the \emph{\PMlinkescapetext{irreducible}} measure-preserving transformations, in the sense described above.
+
+{\bf Remark:} When the invariant \PMlinkescapetext{subset} $A \in \mathfrak{B}$ has measure $\mu(A)=0$ we can ignore it (as usual in measure theory), as its presence does not affect $T$ significantly. Thus, the study of $T$ is not simplified when restricting to $X \setminus A$.
+
+\section{Examples}
+
+\begin{itemize}
+\item The identity transformation in a probability space $(X, \mathfrak{B}, \mu)$ is ergodic if (and only if) all measurable sets have measure $0$ or $1$.
+\end{itemize}
+\begin{itemize}
+\item Let $\mathbb{T}$ be the unit circle in $\mathbb{C}$, endowed with the arc length Lebesgue measure (or Haar measure). The transformation of $\mathbb{T}$ given by $S(x)= ax$, where $a \in \mathbb{T}$, is ergodic if and only if $a$ is not a root of unity.
+\end{itemize}
+\end{document}

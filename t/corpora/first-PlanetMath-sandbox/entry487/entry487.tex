@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $A$ be an $m \times n$ matrix with $m \ge n$  and full rank (viz. rank $n$). An orthogonal matrix triangularization (QR Decomposition) consists of determining an $m \times m$ orthogonal matrix $Q$ such that
+
+$$ Q^T A = \begin{bmatrix} R \\ 0 \end{bmatrix} $$
+
+with the $n \times n$ upper triangular matrix $R$. One only has then to solve the triangular system $Rx = Py$, where $P$ consists of the first $n$ rows of $Q$.
+
+Householder transformations clear whole columns except for the first element of a vector. If one wants to clear parts of a matrix one element at a time, one can use Givens rotation, which is particularly practical for parallel implementation .
+
+A matrix
+
+$$ G = \begin{bmatrix}
+1 & \cdots & 0 & \cdots & 0 & \cdots & 0 \\
+\vdots & \ddots & \vdots & \; & \vdots & \; & \vdots \\
+0 & \cdots & c & \cdots & s & \cdots & 0 \\
+\vdots & \; & \vdots & \ddots & \vdots & \; & \vdots \\
+0 & \cdots & -s & \cdots & c & \cdots & 0 \\
+\vdots & \; & \vdots & \; & \vdots & \ddots & \vdots \\
+0 & \cdots & 0 & \cdots & 0 & \cdots & 1 
+\end{bmatrix} $$
+
+with properly chosen $c=\cos(\varphi)$ and $s=\sin(\varphi)$ for some rotation angle $\varphi$ can be used to zero the element $a_{ki}$. The elements can be zeroed column by column from the bottom up in the following order:
+
+$$(m,1),(m,-1,1),\ldots,(2,1),(m,2),\ldots, \\
+ (3,2),\ldots,(m,n),\ldots,(n+1,n).$$
+
+$Q$ is then the product of $g = \frac{\left( 2m -n -1 \right)n}{2}$ Givens matrices $Q=G_1G_2\cdots G_g$.
+
+To annihilate the bottom element of a $2 \times 1$ vector:
+
+$$ \begin{pmatrix}c & s \\ -s & c\end{pmatrix}^T \begin{pmatrix} a \\ b \end{pmatrix} = \begin{pmatrix}r \\ 0\end{pmatrix} $$
+
+the conditions $sa + cb = 0$ and $c^2 + s^2 = 1$ give:
+
+$$ c = \frac{a}{\sqrt{a^2+b^2}} , s = \frac{b}{\sqrt{a^2+b^2}} $$
+
+For ``Fast Givens'', see [Golub89].
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize} 
+
+\begin{itemize}
+\item[Golub89] Gene H. Golub and Charles F. van Loan: Matrix Computations, 2nd edn., The John Hopkins University Press, 1989.
+\end{itemize}
+\end{document}

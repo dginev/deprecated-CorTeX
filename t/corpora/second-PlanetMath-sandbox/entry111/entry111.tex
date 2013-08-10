@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $a_1, a_2, \ldots , a_{\phi (n)}$ be all positive integers less than $n$ which are coprime to $n$. Since $\text{gcd}(a,n)=1$, then the set $aa_1, aa_2,\ldots ,aa_{\phi (n)}$ are each congruent to one of the integers $a_1, a_2, \ldots ,a_{\phi (n)}$ in some order. Taking the product of these congruences, we get
+\[ (aa_1)(aa_2) \cdots (aa_{\phi (n)}) \equiv a_1 a_2 \cdots a_{\phi (n)} \pmod{n} \]
+hence
+\[ a^{\phi (n)}(a_1 a_2 \cdots a_{\phi (n)}) \equiv a_1 a_2 \cdots a_{\phi (n)} \pmod{n}. \]
+
+Since $\text{gcd}(a_1a_2\cdots a_{\phi (n)},n) = 1$, we can divide both sides by $a_1a_2\cdots a_{\phi (n)}$, and the desired result follows.
+\end{document}

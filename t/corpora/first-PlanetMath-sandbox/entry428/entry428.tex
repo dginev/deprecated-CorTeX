@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A subset $F$ of a topological space $X$ is {\em reducible} if it can be written as a union $F = F_1 \cup F_2$ of two closed proper subsets $F_1$, $F_2$ of $F$ (closed in the subspace topology).  That is, $F$ is reducible if it can be written as a union $F = (G_1\cap F)\cup(G_2\cap F)$ where $G_1$,$G_2$ are closed subsets of $X$, neither of which contains $F$.
+
+A subset of a topological space is {\em irreducible} (or \emph{hyperconnected}) if it is not reducible.
+
+As an example, consider $\{ (x,y)\in\mathbb{R}^2 : xy = 0 \}$ with the subspace topology from $\mathbb{R}^2$.  This space is a union of two lines $\{ (x,y)\in\mathbb{R}^2 : x = 0 \}$ and $\{ (x,y)\in\mathbb{R}^2 : y = 0 \}$, which are proper closed subsets.  So this space is reducible, and thus not irreducible.
+\end{document}

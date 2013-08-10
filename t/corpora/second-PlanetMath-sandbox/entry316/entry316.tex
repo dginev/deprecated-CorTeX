@@ -1,0 +1,83 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\newcommand{\pt}[1]{\mathbf{#1}}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\df}[1]{[\mathbf{D}\vec{f}(#1)]}
+%\newcommand{\Bbb}[1]{\mathbb{#1}}
+\begin{document}
+Let $\pt{a}_0$ be a point in $\Bbb{R}^n, U$ an open neighborhood of
+$\pt{a}_0$ in $\Bbb{R}^n$ and $\vec{f}\colon U\rightarrow\Bbb{R}^n$ a
+differentiable mapping, with its derivative $\df{\pt{a}_0}$
+invertible. Define
+\[
+\vec{h}_0=-\df{\pt{a}_0}^{-1}\vec{f}(\pt{a}_0)\: ,\: \pt{a}_1=\pt{a}_0 + \vec{h}_0\: ,\: U_0 = \{\pt{x}|\: |\pt{x}-\pt{a}_1|\leq |\vec{h}_0|\}.
+\]
+If $U_0\subset U$ and the derivative $\df{\pt{x}}$ satisfies the
+\PMlinkid{Lipschitz condition}{765}
+\[
+|\df{\pt{u}_1} - \df{\pt{u}_2}|\leq M|\pt{u}_1-\pt{u}_2|
+\]
+for all points $\pt{u}_1,\pt{u}_2\in U_0$, and if the inequality
+\[
+\left|\vec{f}(\pt{a_0})\right|\left|\df{\pt{a_0}}^{-1}\right|^2M\leq\frac{1}{2}
+\]
+is satisfied, the equation $\vec{f}(\pt{x})=\vec{0}$ has a unique
+solution in $U_0$, and Newton's method with initial guess $\pt{a}_0$
+converges to it.  If we replace $\leq$ with $<$, then it can be shown
+that Newton's method \PMlinkid{superconverges}{793}! If you want an
+even stronger version, one can replace $|...|$ with the norm
+$||...||$.
+
+\subsection*{Logic behind the theorem:} 
+Let's look at the useful part of the theorem:
+\[
+\left|\vec{f}(\pt{a_0})\right|\left|\df{\pt{a_0}}^{-1}\right|^2M\leq\frac{1}{2}.
+\]
+It is a product of three distinct properties of your function such
+that the product is less than or equal to a certain number, or
+bound. If we call the product $R$, then it says that $\pt{a}_0$ must
+be within a ball of radius $R$. It also says that the solution
+$\pt{x}$ is within this same ball. How was this ball defined?
+
+The first term, $|\vec{f}(\pt{a_0})|$, is a measure of how far the
+function is from the domain; in the Cartesian plane, it would be how
+far the function is from the x-axis. Of course, if we're solving for
+$\vec{f}(\pt{x})=\vec{0}$, we want this value to be small, because it
+means we're closer to the axis. However a function can be annoyingly
+close to the axis, and yet just happily curve away from the axis. Thus
+we need more.
+
+The second term, $|\df{\pt{a_0}}^{-1}|^2$ is a little more
+difficult. This is obviously a measure of how fast the function is
+changing with respect to the domain (x-axis in the plane). The larger
+the derivative, the faster it's approaching wherever it's going
+(hopefully the axis). Thus, we take the inverse of it, since we want
+this product to be \emph{less than} a number. Why it's squared though,
+is because it is the denominator where a product of two terms of like
+units is the numerator. Thus to conserve units with the numerator, it
+is multiplied by itself. Combined with the first term, this also seems
+to be enough, but what if the derivative changes sharply, but it
+changes the wrong way?
+
+The third term is the Lipschitz ratio $M$. This measures sharp changes
+in the first derivative, so we can be sure that if this is small, that
+the function won't try to curve away from our goal on us too sharply.
+
+By the way, the number $\frac{1}{2}$ is unitless, so all the units on
+the left side cancel. Checking units is essential in applications,
+such as physics and engineering, where Newton's method is used.
+
+\PMlinkescapeword{measure}
+\PMlinkescapeword{measures}
+\PMlinkescapeword{means}
+\PMlinkescapeword{units}
+
+\end{document}

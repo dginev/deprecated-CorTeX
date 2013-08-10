@@ -1,0 +1,78 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\defined}{:=}
+\newcommand{\1}{{{\bf 1}}}
+\begin{document}
+The \emph{integral} of a measurable function $f\colon X \to \mathbb{R} \cup \{\pm \infty\}$ on a measure space $(X, \borel, \mu)$ is usually written
+
+\begin{equation}
+\int_{X} f\ d\mu,
+\end{equation}
+although alternative notations such as $\int_X f\ dx$ or even $\int f$ are commonplace.
+
+It is defined via the following steps:
+
+\begin{itemize}
+\item If $f = \1_A$ is the characteristic function of a set $A \in \borel$, then set
+\begin{equation}
+\int_{X} \1_A\ d\mu \defined \mu(A).
+\end{equation}
+\item
+If $f$ is a \emph{simple function} (i.e. if $f$ can be written as
+\begin{equation}
+f = \sum_{k=1}^{n} c_k \1_{A_k}, \qquad c_k \in \mathbb{R}
+\end{equation}
+for some finite collection $A_k \in \mathfrak{B}$), then define
+\begin{equation}
+\int_{X} f\ d\mu \defined \sum_{k=1}^{n} c_k \int_{X} \1_{A_k}\ d\mu = \sum_{k=1}^{n} c_k \mu(A_k).
+\end{equation}
+\item
+If $f$ is a nonnegative measurable function (possibly attaining the value $\infty$ at some points), then we define
+\begin{equation}
+\int_{X} f\ d\mu \defined \sup\left\{ \int_{X} h\ d\mu : h \text{ is simple and  } h(x) \le f(x) \text{ for all }\ x \in X \right\}.
+\end{equation}
+\item
+For any measurable function $f$ (possibly attaining the values $\infty$ or $-\infty$ at some points), write $f = f^{+} - f^{-}$ where
+\begin{equation}
+f^{+} \defined \max(f, 0) \quad \text{and} \quad f^{-} \defined \max(-f, 0),
+\end{equation}
+so that $|f|=f^+ + f^-$, and define the integral of $f$ as
+\begin{equation}
+\int_{X} f\ d\mu \defined \int_{X} f^{+}\ d\mu - \int_{X} f^{-}\ d\mu,
+\end{equation}
+provided that $\int_{X} f^{+}\ d\mu$ and $\int_{X} f^{-}\ d\mu$ are not both $\infty$.
+\end{itemize}
+
+If $\mu$ is Lebesgue measure and $X$ is any interval in $\mathbb{R}^{n}$ then the integral is called the \emph{Lebesgue integral}.  If the Lebesgue integral of a function $f$ on a set $X$ exists and is finite (or, equivalently, if $\int_X |f|\ d\mu < \infty$), then $f$ is said to be \emph{Lebesgue integrable}.  The Lebesgue integral equals the Riemann integral everywhere the latter is defined; the advantage to the Lebesgue integral is that it is often well defined even when the corresponding Riemann integral is undefined. For example, the Riemann integral of the characteristic function of the rationals in $[0,1]$ is undefined, while the Lebesgue integral of this function is simply the measure of the rationals in $[0,1]$, which is 0. Moreover, the conditions under which Lebesgue integrals may be exchanged with each other or with limits or derivatives, etc., are far less stringent, making the Lebesgue theory a more convenient tool than the Riemann integral for theoretical purposes.
+
+The introduction of the Lebesgue integral was a major advancement in real analysis, soon awakening a large interest in the scientific community. In 1916 Edward Burr Van Vleck, in "Bulletin of the American Mathematical Society", vol. 23, wrote: "This new integral of Lebesgue is proving itself a wonderful tool. I might compare it with a modern Krupp gun, so easily does it penetrate barriers which were impregnable."
+\end{document}

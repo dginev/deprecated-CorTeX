@@ -1,0 +1,334 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{enumerate}
+
+% define commands here
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\rat}{\mathbb{Q}}
+\newcommand{\nat}{\mathbb{N}}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\providecommand{\absW}[1]{\left\lvert#1\right\rvert}
+\providecommand{\absB}[1]{\Bigl\lvert#1\Bigr\rvert}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\providecommand{\normW}[1]{\left\lVert#1\right\rVert}
+\providecommand{\normB}[1]{\Bigl\lVert#1\Bigr\rVert}
+\providecommand{\defnterm}[1]{\emph{#1}}
+
+\DeclareMathOperator{\D}{D}
+
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+
+\newcommand{\vF}{\mathbf{F}}
+\newcommand{\vs}{\mathbf{s}}
+\newcommand{\vv}{\mathbf{v}}
+
+\newcommand{\vi}{\mathbf{i}}
+\newcommand{\vj}{\mathbf{j}}
+\newcommand{\vk}{\mathbf{k}}
+\newcommand{\ve}{\mathbf{e}}
+
+\newcommand{\vx}{\mathbf{x}}
+\newcommand{\vX}{\mathbf{X}}
+\newcommand{\vA}{\mathbf{A}}
+
+\newcommand{\grad}{\operatorname{grad}}
+\newcommand{\curl}{\operatorname{curl}}
+\begin{document}
+\paragraph{Summary.}
+
+The \defnterm{gradient} is a first-order differential operator that maps
+scalar functions to vector fields. It is a generalization of the ordinary
+derivative, and as such conveys information about the rate of change
+of a function relative to small variations in the independent
+variables. The gradient of a function $f$ is customarily denoted by
+$\nabla f$ or by $\grad f$.
+\tableofcontents
+
+%\paragraph{Definition: Euclidean space.}
+\section{Definition: Euclidean space}
+
+Let $f\colon \real^n \to \real$ be continuously differentiable.
+The \defnterm{gradient} of $f$, denoted by $\nabla f$, 
+is defined 
+by the property:
+\begin{equation}\label{inner-prod-def}
+\D_\vv f = \nabla f \cdot \vv \quad \text{for all vectors $\vv \in \real^n$.}
+\end{equation}
+The middle dot is the dot product,
+and $\D_\vv$ is the directional derivative with respect to $\vv$.
+
+\smallskip
+
+If $x^1, \dotsc, x^n$ are Euclidean coordinates,
+corresponding to the orthonormal basis $\ve_1, \dotsc, \ve_n$,
+then
+\begin{equation}\label{euclidean-def}
+\nabla f = \sum_{i=1}^n \frac{\partial f}{\partial x^i}\, \ve_i\,.
+\end{equation}
+The formula \eqref{euclidean-def} is sometimes given as the definition of $\nabla f$.
+We prefer to define $\nabla f$ by the coordinate-free formula \eqref{inner-prod-def} instead,
+because then the geometric interpretations (see below) become obvious,
+and \eqref{inner-prod-def} also indicates how we would go about
+calculating the gradient in other curvilinear coordinate systems.
+Formula \eqref{inner-prod-def} also makes it clear that the gradient
+is a physical vector, depending only on the inner product structure of $\real^n$,
+and not on the specific coordinate system used to calculate it.
+
+There is the issue of whether the $\nabla f$ as defined by \eqref{inner-prod-def}
+exists; but this is proved easily enough, by substituting the concrete expression \eqref{euclidean-def}
+and seeing that it satisfies \eqref{inner-prod-def}.
+
+\medskip
+
+The gradient can be considered to be a
+vector-valued differential operator, written as
+\[
+\nabla = \sum_{i=1}^n \ve_i \, \frac{\partial}{\partial x^i}\,,
+\]
+or, in the context of Euclidean 3-space, as
+\[
+\nabla = \vi \, \frac{\partial}{\partial x} +\vj \,
+\frac{\partial}{\partial y} +\vk \, \frac{\partial}{\partial z} \,,
+\]
+where
+$\vi, \vj, \vk$ are the unit vectors lying along the positive
+direction of the $x, y, z$ axes, respectively. 
+
+\section{Geometric and physical interpretations}
+\begin{enumerate}[(a)]
+\item
+The direction of the vector $\nabla f$ is the direction of the greatest positive change, or increase, in $f$.
+The magnitude of $\nabla f$ is the magnitude of this increase.
+This follows immediately from \eqref{inner-prod-def}:
+\[
+\D_\vv f = \nabla f \cdot \vv = \norm{\nabla f} \, \norm{\vv} \, \cos \theta\,,
+\]
+where $\theta$ is the angle between $\nabla f$ and $\vv$.
+So among all unit directions $\vv$ of change, if $\vv$ is perpendicular to $\nabla f$
+then the change $\D_\vv f$ is zero; if $\vv$ is parallel to $\nabla f$ then the change is maximized.
+
+Similarly,
+$-\nabla f$ is the direction of the greatest negative change, or decrease, in $f$.
+
+\item
+If $M$ is the hypersurface in $\real^n$ defined by
+\[
+M = \{ p \in \real^n : f(p) = 0 \,, \: \D f(p) \neq 0 \}\,,
+\]
+then $\nabla f(p)$ is the normal to the hypersurface $M$ at the point $p$.  For $\ker \D f(p)$ is the tangent space $\mathrm{T}_p M$
+to $M$ at $p$, that is, $\D_\vv f(p) = 0$ for all $\vv \in \mathrm{T}_p M$,
+and by definition \eqref{inner-prod-def}, $\nabla f(p)$ must be perpendicular to all $\vv \in \mathrm{T}_p M$.
+
+Note that $\D f \neq 0$ is equivalent to $\nabla f \neq 0$.  Consequently, $\nabla f$ also gives
+an orientation to the hypersurface $M$.
+
+For example, if $f(\vx) = \norm{\vx} - 1$ for $\vx \in \real^n$,
+$M$ is the $(n-1)$-dimensional sphere of unit radius, embedded in $\real^n$.
+Its normal, $\nabla f(\vx) = \vx/\norm{\vx}$, as one would expect, points outward radially.
+
+\item
+As a simple case of (b), consider the 
+surface $z = f(x, y)$ in $\real^3$, with Cartesian coordinates $(x, y, z)$.
+Think of this surface as describing a hill, with height $z$.
+Then the direction of the gradient vector $\nabla f$
+is the direction of steepest ascent of the hill, while its
+magnitude 
+\[
+\Vert \nabla f \Vert = \sqrt{ \lp \frac{\partial f}{\partial x}
+\rp^2 + \lp \frac{\partial f}{\partial y} \rp^2 }
+\]
+is the slope or steepness in that direction. 
+
+If a ball is placed on the hill at a point $(x, y, z)$,
+theoretically it should roll down the hill in the direction of the gradient
+vector $-\nabla f(x, y)$.  This may be easily derived by considering the mechanical forces
+on the ball.  The direction of $-\nabla f(x, y)$ is, in fact, the projection
+to the xy-plane of an outward normal vector to the hill at $(x, y, z)$;
+the normal vector is involved because the movement of the ball
+arises from the normal force from the hill.
+
+\item
+Suppose the surface $z = f(x, y)$ in (c) describes a bowl instead of a hill,
+and we place a marble at any point $(x, y, z)$ on this bowl.
+We would expect the marble to roll down to a local minimum point of $f(x, y)$.
+Since the marble should roll down in the direction of $-\nabla f$,
+we might hope that we can \emph{find} local minima
+of a \emph{given function} $f$ by following the path mapped out
+by the gradients $-\nabla f$.  Formally, this method of
+finding local extrema (with some modifications) is called \defnterm{gradient descent}.
+
+
+\item
+If $U$ is the potential function corresponding to a
+conservative physical force, then $\vF = -\nabla U$
+is the corresponding force field.
+
+Consequently, the gradient theorem,
+\[
+\int_\gamma \vF \cdot d\vs = -\int_\gamma \nabla U \cdot d\vs = -U(\gamma(b)) + U(\gamma(a)), \quad \gamma\colon [a, b] \to \real^3
+\]
+simply gives the formula for the change in the potential energy $U$
+when an object ``does work'' along a path $\gamma$ in a conservative force field $\vF$.
+
+\end{enumerate}
+
+
+
+%\paragraph{Physical Interpretation.}
+
+
+\section{Definition: Riemannian geometry}
+
+%\paragraph{Definition: Riemannian geometry.}
+It is obvious how \eqref{inner-prod-def}
+can be generalized to the setting of Riemannian manifolds:
+the dot product of $\real^n$ must be replaced
+by the Riemannian metric, and the analogue
+of $\D_\vv f$ is the directional derivative $\vv[f]$, for tangent vectors $\vv$ on the Riemannian manifold.
+Thus for a smooth scalar-valued function $f$ on a Riemannian manifold,
+\begin{equation}\label{eq:riemann-def}
+\vX = \grad f  \: \Leftrightarrow \: df_p(\vv) = \vv[f] = \langle \vX, \vv \rangle_p\,.
+\end{equation}
+We can calculate $\vX$ explicitly as follows.
+If $x^i$ are local coordinates on the manifold (not necessarily orthonormal),
+set $\vX = X^i \frac{\partial}{\partial x^i}$ (the Einstein summation convention is being used).
+Let $ g_{ij}$ and $ g^{ij}$ be the covariant and contravariant metric tensors, respectively.
+Then from \eqref{eq:riemann-def},
+\[
+\frac{\partial f}{\partial x^j} = \left\langle X^i 
+\frac{\partial}{\partial x^i}, \frac{\partial}{\partial x^j} \right\rangle
+= X^i \, \left\langle \frac{\partial}{\partial x^i}, \frac{\partial}{\partial x^j} \right\rangle 
+=  g_{ij} \, X^i\,,
+\]
+and taking inverses,
+\begin{equation}\label{eq:gendef}
+X^i = g^{ij} \, \frac{\partial f}{\partial x^j}\,.
+\end{equation}
+
+
+\section{Duality with differential one-forms}
+%\paragraph{Duality with differential one-forms.}
+Definitions \eqref{inner-prod-def} and \eqref{eq:riemann-def}
+exhibit $\nabla f$ as the vector field
+dual to the differential form $df$.
+The isomorphism is given by applying the inner product or Riemannian metric.
+This isomorphism is, of course, linear;
+in particular it leads to the identity
+\begin{equation}\label{eq:linearity}
+\nabla f = \frac{\partial f}{\partial x^i} \, \nabla x^i\,, 
+\end{equation}
+which is the dual to the standard formula of differential one-forms:
+\[
+df = \frac{\partial f}{\partial x^i} \, dx^i \,.
+\]
+Using \eqref{eq:riemann-def} and \eqref{eq:gendef},
+we have
+\begin{equation}\label{eq:grad-coord}
+\nabla x^i = g^{ij} \frac{\partial}{\partial x^j} \,, \quad
+\frac{\partial}{\partial x^i} = g_{ij} \nabla x^j\,.
+\end{equation}
+So the isomorphism between vector fields and one-forms
+is expressed by changing
+the $\nabla$'s in \eqref{eq:grad-coord} to $d$'s, and vice versa.  That is,
+\begin{equation}
+d x^i \leftrightarrow g^{ij}  \frac{\partial}{\partial x^j} \,, \quad
+\frac{\partial}{\partial x^i} \leftrightarrow g_{ij} \, d x^j\,.
+\end{equation}
+It is commonly said that this isomorphism is expressed by 
+``raising and lowering the indices of a tensor field,
+using contractions with $g_{ij}$ and $g^{ij}$''.
+
+\smallskip
+
+Notice that when $x^i$ are orthonormal coordinates
+on $\real^n$, equation \eqref{eq:linearity}
+reduces to equation \eqref{euclidean-def}, because
+$g_{ij} = \ve_i \cdot \ve_j = \delta_{ij}$ (Kronecker delta).
+
+The formulae presented in this section are useful in the Euclidean setting as
+well, for deriving the formulae for the \PMlinkname{gradient in various curvilinear coordinate systems}{GradientInCurvilinearCoordinates}.
+
+
+
+%\paragraph{Differential identities.}
+\section{Differential identities}
+Several properties of the one-dimensional derivative generalize to a
+multi-dimensional setting
+\begin{align*}
+\nabla(af+bg) &= a\nabla f + b\nabla g & \text{Linearity}\\
+\nabla(fg) &= f\nabla g + g\nabla f & \text{Product rule}\\
+\nabla( f \circ \phi ) (p) &= \D \phi(p)^* \nabla f(\phi(p)) & \text{Chain rule} \\
+\nabla(h \circ f)(p) &= h'(f(p)) \, \nabla f(p) & \text{Another Chain rule} 
+\end{align*}
+The function $h$ is $h\colon \real \to \real$.
+The notation $(\D \phi)^*$ denotes the transpose of the Jacobian matrix,
+in Euclidean coordinates, of $\phi \colon \real^m \to \real^n$.
+In the abstract setting, $(\D \phi)^*$ is the adjoint to the tangent map $\D \phi$
+between the tangent bundles of two Riemannian manifolds.  
+
+
+These identities can be proved directly from the definition,
+but the first three are really just the duals
+of the following well-known identities for differential forms:
+\begin{align*}
+d(af + bg) &= a df + b dg \\
+d(fg) &= f dg + g df \\
+d(\phi^* f) &= \phi^* df
+\end{align*}
+and so may be derived by changing the $d$'s here
+to $\nabla$'s!  (Though the third identity may take a bit of thought.)
+
+\smallskip
+
+The following identity
+\[
+\curl \grad f = \nabla \times \nabla f = 0\,,
+\]
+is a special case of the differential forms identity $d^2 = 0$.
+Conversely, if $\curl g = 0$ on a simply connected domain, then there
+is $f$ such that $g = \grad f$.  See laminar field for details.
+
+
+\section{The $\nabla$ symbolism}
+(This discussion does not really belong here, but should be moved
+to the nabla entry.)
+
+Using the $\nabla$ formalism,
+the divergence operator can be expressed as
+$\nabla\cdot$, the curl operator as $\nabla\times$, and the
+Laplacian operator as $\nabla^2$. To wit, for a given vector field
+$$\vA = A_x\, \vi + A_y\, \vj + A_z\, \vk,$$ and a given function $f$
+we have
+\begin{align*}
+\nabla\cdot \vA &= \frac{\partial A_x}{\partial x} +
+\frac{\partial A_y}{\partial y} +\frac{\partial A_z}{\partial z} \\
+\nabla\times \vA &=
+\lp\frac{\partial A_z}{\partial y} - \frac{\partial A_y}{\partial z}
+\rp \vi+
+\lp \frac{\partial A_x}{\partial z} -
+\frac{\partial A_z}{\partial x}\rp \vj+
+\lp \frac{\partial A_y}{\partial x} -
+\frac{\partial A_x}{\partial y}\rp \vk\\
+\nabla^2 f &= \frac{\partial^2 f}{\partial x^2} +
+\frac{\partial^2 f}{\partial y^2} +\frac{\partial^2 f}{\partial z^2}.
+\end{align*}
+
+\begin{thebibliography}{3}
+\bibitem{Spivak1}
+Michael Spivak. \emph{A Comprehensive Introduction to Differential Geometry},
+Volume I. Publish or Perish, 1979.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Generated in a digital computer by a numerical algorithm, pseudorandom numbers are not random, but should appear to be random when used in Monte Carlo calculations.
+
+The most widely used and best understood pseudorandom generator is the Lehmer multiplicative congruential generator, in which each number $r$ is calculated as a function of the preceding number in the sequence
+\[
+r_i = a r_{i-1}  \pmod{m}
+\]
+or
+\[
+r_i = a r_{i-1} + c  \pmod{m},
+\]
+where $a$ and $c$ are carefully chosen constants, and $m$ is usually a power of two, $2^k$. All quantities appearing in the formula (except $m$) are integers of $k$ bits. The expression in brackets is an integer of length $2k$ bits, and the effect of the modulo $\mod m$ is to mask off the most significant part of the result of the multiplication. $r_0$ is the seed of a generation sequence; many generators allow one to start with a different seed for each run of a program, to avoid re-generating the same sequence, or to preserve the seed at the end of one run for the beginning of a subsequent one. Before being used in calculations, the $r_i$ are usually transformed to floating point numbers normalized into the range $[0,1]$. Generators of this type can be found which attain the maximum possible period of $2^{k-2}$, and whose sequences pass all reasonable tests of ``randomness'', provided one does not exhaust more than a few percent of the full period.
+
+Multiplicative random number generators have serious limitations as random number generators for many tasks, especially those that involve looking at spectra.  A number of other fast random number generators exist (such as the Mersenne Twister) all with various proven good qualities.
+
+For many scientific projects, analysis techniques are used that are extremely sensitive to patterns in the input, so when generating fake input using pseudorandom number generators, it is often necessary to use extremely good quality pseudorandom numbers.  For some projects it is in fact appropriate to use a hardware device which generates truly random numbers, although even this must be scoured clean of patterns.  Some computers now have hardware random number generators built in.
+
+However, there is a completely separate category of pseudorandom number generators, namely those used in cryptography.  Here the goal is to make it computationally infeasible to deduce the next ``random'' bit in spite of knowing all preceding (and possibly many future) bits.  Such pseudorandom number generators can in fact serve as cryptosystems themselves: the requirements for such a random number generator are exactly the same as those for a stream cipher.  They are generally more expensive to run but produce much higher quality random numbers.  To be used in a cryptographic application, they should also have a sophisticated reseeding schedule and a source of genuine randomness to provide recovery from exposure of their internal state.
+
+\section*{References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+\end{document}

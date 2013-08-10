@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{words}
+
+Given a random variable $X$, the \emph{moment generating function} of $X$ is the following function:\\
+\par
+$M_X(t) = E[e^{tX}]$ for $t \in R$ (if the expectation converges).
+\par
+\par
+It can be shown that if the moment generating function of $X$ is defined on an interval around the origin, then\\
+\par
+$E[X^k] = M_X^{(k)}(t) |_{t=0} $\\
+\par
+In other words, the $k$th-derivative of the moment generating function evaluated at zero is the $k$th moment of $X$.
+\end{document}

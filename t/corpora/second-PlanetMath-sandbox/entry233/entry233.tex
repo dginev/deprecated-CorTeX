@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\begin{document}
+$X$ is a \textbf{uniform (discrete) random variable} with parameter \textbf{$N$} if\\
+\par
+$f_X(x) = \frac{1}{N}$,     $x=\{1,2,...,N\}$	\\
+\par
+Parameters:\\
+\par
+\begin{list}{$\star$ }{}
+\item $N \in \{1,2,...\}$
+\end{list}
+\par
+Syntax:\\
+\par
+$X\sim U\{N\}$\\
+\par
+Notes:\\
+\par
+\begin{enumerate}
+
+\item $X$ represents the experiment in which all N outcomes are equally likely to ocurr.
+\item $E[X] = \frac{N+1}{2}$
+\item $Var[X] = \frac{N^2-1}{12}$
+\item $M_X(t) = \sum_{j=1}^{N}{\frac{1}{N} e^{jt}}$
+
+\end{enumerate}
+\end{document}

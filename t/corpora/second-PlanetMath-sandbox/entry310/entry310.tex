@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+
+\newcommand{\lin}{\operatorname{lin}}
+
+\newcommand{\Df}{{\operatorname{D}f}}
+
+
+\newtheorem{theorem}[proposition]{Theorem}
+\begin{document}
+If $X$ and $Y$ are Banach spaces, e.g. $\reals^n$, one can inquire about the relation
+between differentiability and the Lipschitz condition.    If $f$ is Lipschitz, the ratio
+$$\frac{ \Vert f(q)-f(p)\Vert}{\Vert q-p \Vert},\quad p,q\in X$$
+is bounded but is not assumed to converge to a limit.
+
+\begin{proposition}
+  Let $f:X\to Y$ be a \PMlinkname{continuously differentiable mapping}{DifferentiableMapping} between
+  Banach spaces.  If $K\subset X$ is a compact
+  subset, then the restriction $f:K\to Y$ satisfies the Lipschitz
+  condition.
+\end{proposition}
+\emph{Proof.}
+Let $\lin(X,Y)$ denote the Banach space of bounded linear maps from
+$X$ to $Y$.  Recall that the norm $\Vert T\Vert$ of a linear mapping
+$T\in\lin(X,Y)$ is defined by
+$$\Vert T \Vert = \sup \{ \frac{\Vert Tu \Vert}{\Vert u\Vert} : u\neq 0\}.$$
+
+Let $\Df:X\to \lin(X,Y)$ denote the derivative of $f$.  By definition
+$\Df$ is continuous, which really means that
+$\Vert \Df \Vert: X\to \reals$
+is a continuous function.  Since
+$K\subset X$ is compact, there exists a finite upper bound $B_1>0$ for
+$\Vert \Df\Vert$ restricted to $K$.  In particular, this means that
+$$\Vert \Df(p) u \Vert \leq \Vert \Df(p)\Vert \Vert u\Vert \leq B_1
+\Vert u\Vert,$$
+for all $p\in K,\; u\in X$.
+
+Next, consider the secant mapping $s:X\times X\to\reals$ defined by
+$$s(p,q) = 
+\begin{cases}
+  \displaystyle \frac{\Vert f(q) - f(p) - \Df(p)(q-p)\Vert}{\Vert q-p\Vert} & q\neq
+  p \\
+  0 & p=q
+\end{cases}
+$$
+This mapping is continuous, because $f$ is assumed to be continuously
+differentiable.  Hence, there is a finite
+upper bound $B_2>0$ for $s$ restricted to the compact set $K\times K$.  It
+follows that for all $p,q\in K$ we have
+\begin{align*}
+  \Vert f(q) - f(p) \Vert &\leq \Vert f(q) - f(p) -
+  \Df(p)(q-p)\Vert  + \Vert \Df(p)(q-p)\Vert\\
+  &\leq B_2 \Vert q-p\Vert +   B_1 \Vert q-p\Vert\\
+  &= (B_1+B_2)\Vert q-p\Vert
+\end{align*}
+Therefore $B_1+ B_2$ is the desired Lipschitz constant.  QED
+
+Neither condition is stronger. For example, the function $f:\reals \to \reals$
+given by $f(x) = x^2$ is differentiable but not Lipschitz.
+\end{document}

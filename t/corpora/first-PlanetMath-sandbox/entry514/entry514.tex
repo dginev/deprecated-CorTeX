@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\def\ip#1{{\left\langle #1\right\rangle}}
+
+\begin{document}
+\PMlinkescapeword{bases}
+\PMlinkescapeword{clear}
+\PMlinkescapeword{columns}
+\PMlinkescapeword{origin}
+\PMlinkescapeword{orthogonal}
+\PMlinkescapeword{rows}
+\PMlinkescapeword{term}
+\PMlinkescapeword{unit}
+
+\section*{Definition}
+
+An \emph{orthonormal set} is a subset $S$ of an inner product space,
+such that $\ip{x,y}=\delta_{xy}$ for all $x,y\in S$.
+Here $\ip{\cdot,\cdot}$ is the inner product,
+and $\delta$ is the Kronecker delta.
+
+More verbosely, we may say that an orthonormal set
+is a subset $S$ of an inner product space
+such that the following two conditions hold:
+\begin{enumerate}
+\item If $x,y \in S$ and $x\ne y$, then $x$ is \PMlinkname{orthogonal}{OrthogonalVector} to $y$.
+\item If $x \in S$, then the norm of $x$ is $1$.
+\end{enumerate}
+Stated this way, the origin of the term is clear:
+an orthonormal set of vectors is both orthogonal and normalized.
+
+\section*{Notes}
+
+Note that the empty set is orthonormal,
+as is a set consisting of a single vector of unit norm
+in an inner product space.
+
+The columns (or rows) of a real orthogonal matrix form an orthonormal set.
+In fact, this is an example of an orthonormal basis.
+
+\section*{Applications}
+
+A standard application is finding an orthonormal basis for a vector space,
+such as by Gram-Schmidt orthonormalization.
+Orthonormal bases are computationally simple to work with.
+
+\end{document}

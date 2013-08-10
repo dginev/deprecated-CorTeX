@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\textbf{Definition:} \newline Let $A$ be an square matrix of
+ order $n$ with real entries $(a_{ij})$. 
+The matrix $A$ is skew-symmetric if $a_{ij} =
+ -a_{ji}$ for all $1 \leq i \leq n, 1 \leq j \leq n$.
+ \begin{center}$A =
+ \begin{pmatrix}
+  a_{11}=0 & \cdots & a_{1n} \\
+  \vdots & \ddots & \vdots \\
+  a_{n1} & \cdots & a_{nn}=0
+ \end{pmatrix}$
+ \end{center}
+ The main diagonal entries are zero because 
+$a_{i,i} = -a_{i,i}$ implies $a_{i,i} = 0$.
+
+One can see skew-symmetric matrices as a
+special case of  complex skew-Hermitian matrices. Thus, 
+all properties of skew-Hermitian matrices also hold
+for skew-symmetric matrices. 
+
+ \textbf{Properties:}
+ \begin{enumerate}
+ \item The matrix $A$ is skew-symmetric if and only if 
+$A^t = -A$, where $A^t$ is the matrix transpose
+ \item For the trace operator, we have that 
+$\operatorname{tr}(A) = \operatorname{tr}(A^t)$.
+Combining this with property (1), it follows
+that $ \operatorname{tr}(A)=0$ for a skew-symmetric matrix $A$.
+ \item Skew-symmetric matrices form a vector space: If $A$ and $B$
+are skew-symmetric and $\alpha, \beta\in \mathbb{R}$, then 
+$\alpha A + \beta B$ is also skew-symmetric. 
+ \item Suppose $A$ is a skew-symmetric matrix and $B$ is a matrix of
+same order as $A$. Then $B^t A B$ is skew-symmetric.
+\item All eigenvalues of skew-symmetric matrices are
+purely imaginary or zero. This result is proven on the page
+for skew-Hermitian matrices. 
+\item According to Jacobi's Theorem, the determinant of a
+skew-symmetric matrix of odd order is zero. 
+ \end{enumerate}
+ 
+\textbf{Examples:}
+ \begin{itemize}
+ \item $\begin{pmatrix}
+  0 & b \\
+  -b & 0
+  \end{pmatrix}$
+ \item $\begin{pmatrix}
+  0 & b & c \\
+  -b & 0 & e \\
+  -c & -e & 0
+  \end{pmatrix}$
+ \end{itemize}
+\end{document}

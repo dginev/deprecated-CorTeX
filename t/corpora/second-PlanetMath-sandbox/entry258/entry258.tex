@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\begin{document}
+A sequence $\{s_j\}$ of real numbers is \emph{superincreasing} if $\displaystyle s_{n+1} > \sum_{j=1}^n s_j$ for every positive integer $n$.  That is, any element of the sequence is greater than all of the previous elements added together.
+
+A commonly used superincreasing sequence is that of powers of two ($s_n = 2^n$.)
+
+Suppose that $\displaystyle x=\sum_{j=1}^n a_j s_j$.  If $\{s_j\}$ is a superincreasing sequence and every $a_j \in \{0,1\}$, then we can always determine the $a_j$'s simply by knowing $x$.  This is analogous to the fact that, for any natural number, we can always determine which bits are on and off in the binary bitstring representing the number.
+\end{document}

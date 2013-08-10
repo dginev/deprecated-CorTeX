@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\newcommand{\pt}{\mathbf}
+\newcommand{\R}{\mathbb{R}}
+
+The \emph{Jacobian matrix} $[\mathbf{J}f(\pt{a})]$ of a function $f\colon\R^n\rightarrow\R^m$ at the point $\pt{a}$ with respect to some choice of bases for $\R^n$ and $\R^m$ is the matrix of the linear map from $\R^n$ into $\R^m$ that generalizes the definition of the derivative of a function on $\R$. It can be defined as the matrix of the linear map $D$, such that 
+$$\lim_{\pt{h}\rightarrow\pt{0}}\frac{\|f(\pt{a + h}) - f(\pt{a}) - D(\pt{h})\|}{\|\pt{h}\|} = 0$$
+The linear map that satisfies the above limit is called the derivative of $f$ at $\pt{a}$. It is easy to show that the Jacobian matrix of a given differentiable function at $\pt{a}$ with respect to chosen bases is just the matrix of \PMlinkid{partial derivatives}{841} of the component functions of $f$ at $\pt{a}$:
+$$[\mathbf{J}f(\pt{x})]=\left[\begin{array}{ccc}
+D_1f_1(\pt{x}) & \dots & D_nf_1(\pt{x})\\
+\vdots & \ddots & \vdots\\
+D_1f_m(\pt{x}) & \dots & D_nf_m(\pt{x})\\
+\end{array}\right]$$
+A more concise way of writing it is
+$$[\mathbf{J}f(\pt{x})]=[\overrightarrow{D_1 f}\;,\cdots\;, \overrightarrow{D_n f}]=\left[\begin{array}{c}\nabla f_1\\ \vdots\\ \nabla f_m\end{array}\right]$$
+where $\overrightarrow{D_n\pt{f}}$ is the partial derivative with respect to the $n$'th variable and $\nabla f_m$ is the gradient of the $m$'th component of $\mathbf{f}$. 
+
+Note that the Jacobian matrix represents the matrix of the derivative $D$ of $f$ at $\pt{x}$ iff $f$ is differentiable at $\pt{x}$. Also, if $f$ is differentiable at $\pt{x}$, then the directional derivative in the direction $\vec{v}$ is $D(\vec{v}) = [\mathbf{J}f(\pt{x})]\vec{v}$.
+
+Given local coordinates for some real submanifold $M$ of $\R^n$, it is easy to show that the effect of a change of coordinates on volume forms is a local scaling of the volume form by the determinant of the Jacobian matrix of the derivative of the backwards change of coordinates, which is called the inverse Jacobian. The determinant of the inverse Jacobian is thus commonly seen in integration over a change of coordinates.
+$$\int_{\Omega_x} f(x) d\Omega_x = \int_{\Omega_\xi} f(\xi) |J^{-1}| d\Omega_\xi$$
+where $x \in \Omega_x \subset M$, $\xi \in \Omega_\xi \subset M$, and $\mathbf{J} = \nabla \xi(x)$ is the derivative of the function $\xi(x)$ which maps points in $\Omega_x$ to points in $\Omega_\xi$.
+\end{document}

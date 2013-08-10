@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+A linear transformation $N: U\rightarrow U$ is called nilpotent if there exists a $k\in\mathbb{N}$ such that 
+$$N^k = 0.$$
+A nilpotent transformation naturally determines a flag of subspaces
+$$ \{0\} \subset \ker N^1 \subset \ker N^2 \subset \ldots \subset \ker N^{k-1} \subset \ker N^k = U$$
+and a signature
+$$0  = n_0 < n_1 < n_2 < \ldots < n_{k-1} < n_k = \dim U,\qquad n_i =
+\dim \ker N^i.$$
+The signature is governed by the following constraint, and
+characterizes $N$ up to linear isomorphism.
+\begin{proposition}
+A sequence of increasing natural numbers is the signature of a nil-potent transformation if and only if
+$$n_{j+1} - n_{j} \leq n_{j} - n_{j-1}$$
+for all $j=1,\ldots,k-1$.  Equivalently, there exists a basis of $U$
+such that the matrix of $N$ relative to this basis is block diagonal
+$$\begin{pmatrix}
+N_1 & 0 & 0 & \ldots & 0\\
+0 & N_2 & 0 & \ldots & 0 \\
+0 & 0 & N_3 & \ldots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \ldots & N_k
+\end{pmatrix},$$
+with each of the blocks having the form
+$$
+N_i = \begin{pmatrix}
+  0 & 1 & 0 & \ldots & 0 & 0 \\
+  0 & 0 & 1 & \ldots & 0 & 0 \\
+  \vdots & \vdots & \vdots & \ddots & \vdots \\
+  0 & 0 & 0 & \ldots & 1 & 0 \\
+  0 & 0 & 0 & \ldots & 0 & 1 \\
+  0 & 0 & 0 & \ldots & 0 & 0   
+\end{pmatrix}
+$$
+Letting $d_i$ denote the number of blocks of size $i$, the
+signature of $N$ is given by
+$$n_i = n_{i-1} + d_i + d_{i+1} + \ldots + d_k,\quad i=1,\ldots,k$$
+\end{proposition}
+\end{document}

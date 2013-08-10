@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+Let $T: V\rightarrow V$ be a linear transformation of a vector space $V$.   A subspace $U\subset V$ is
+called a {\em $T$-invariant subspace} if $T(u)\in U$ for all $u\in U$.
+
+If $U$ is an invariant subspace, then the restriction of $T$ to $U$
+gives a well defined linear transformation of $U$.  Furthermore,
+suppose that $V$ is $n$-dimensional and that $v_1,\ldots, v_n$ is a
+basis of $V$ with the first $m$ vectors giving a basis of $U$.  Then,
+the representing matrix of the transformation $T$ relative to this
+basis takes the form
+$$
+\begin{pmatrix}
+  A & B \\
+  0 & C
+\end{pmatrix}$$
+where $A$ is an $m\times m$ matrix representing the restriction
+transformation $T\big|_U:U\to U$ relative to the basis $v_1,\ldots, v_m$.
+\end{document}

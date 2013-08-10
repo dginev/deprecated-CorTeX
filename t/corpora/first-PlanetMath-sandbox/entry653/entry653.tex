@@ -1,0 +1,155 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\Rset}{\mathbb{R}}
+\begin{document}
+\paragraph{Definition.}
+Let $U,V,W$ be vector spaces over a field $K$.  A  \emph{bilinear map}
+is a function $B: U
+\times V \to W$ such that 
+\begin{enumerate}
+\item the map $x \mapsto B(x,y)$ from $U$ to $W$ is linear for each $y
+  \in V$
+\item the map $y \mapsto B(x,y)$ from $V$ to $W$ is linear for each $x
+  \in U$.
+\end{enumerate}
+That is, $B$ is \emph{bilinear} if it is linear in each parameter,
+taken separately.  
+
+\paragraph{Bilinear forms.}
+A \emph{bilinear form} is a bilinear map $B:V\times V\to K$.  A
+$W$-valued bilinear form is a bilinear map $B: V\times V\to W$.  One
+often encounters bilinear forms with additional assumptions.  A
+bilinear form is called
+\begin{itemize}
+\item \emph{symmetric} if $B(x,y) = B(y,x)$, $x,y \in V$;
+\item \emph{skew-symmetric} if $B(x,y) = -B(y,x)$, $x,y \in V$;
+\item \emph{alternating} if $B(x,x) = 0$, $x \in V$.
+\end{itemize}
+By expanding $B(x+y,x+y) = 0$, we can show alternating implies
+skew-symmetric. Further if $K$ is not of characteristic $2$, then
+skew-symmetric implies alternating.
+
+\paragraph{Left and Right Maps.}
+Let $B:U\times V\to W$ be a bilinear map. We may identify $B$ with the
+linear map $B_\otimes: U\otimes V\to W$ (see tensor product).  We may
+also identify $B$ with the linear maps
+\begin{align*}
+  & B_L:U\to L(V,W),\qquad B_L(x)(y) = B(x,y),\; x\in U,\; y\in V;\\
+  & B_R:V\to L(U,W),\qquad B_R(y)(x) = B(x,y),\; x\in U,\; y\in V.
+\end{align*}
+called the left and right map, respectively.  
+
+Next, suppose that $B:V\times V\to K$ is a bilinear form.  Then both
+$B_L$ and $B_R$ are linear maps from $V$ to $V^*$, the dual vector
+space of $V$. We can therefore say that $B$ is symmetric if and only
+if $B_L = B_R$ and that $B$ is anti-symmetric if and only if
+$B_L=-B_R$.  If $V$ is finite-dimensional, we can identify $V$ and
+$V^{**}$, and assert that $B_L=(B_R)^*$; the left and right maps are, in
+fact, dual homomorphisms.
+
+
+\paragraph{Rank.}
+Let $B:U\times V\to K$ be a bilinear form, and suppose that $U,V$ are
+finite dimensional. One can show that $\rank B_L = \rank B_R$. We call
+this integer $\rank B$, the \emph{\PMlinkescapetext{rank}} of $B$.
+Applying the rank-nullity theorem to both the left and right maps
+gives the following results:
+\begin{align*}
+  \dim U &= \dim \ker {B_L} + \rank B\\
+  \dim V &= \dim \ker {B_R} + \rank B
+\end{align*}
+We say that $B$ is
+\emph{non-degenerate} if both the left and right map are
+non-degenerate.  Note that in \PMlinkescapetext{order} for $B$ to be non-degenerate it is
+necessary that $\dim U = \dim V$.  If this holds, then $B$ is
+non-degenerate if and only if $\rank B$ is equal to $\dim U, \dim V$.
+
+\paragraph{Orthogonal complements.}
+Let $B:V\times V\to K$ be a bilinear form, and let $S \subset V$ be a
+subspace.  The left and right orthogonal complements of $S$ are
+subspaces ${^\perp}S, S^\perp \subset V$ defined as follows:
+\begin{align*}
+&{}^\perp S =  \{ u\in V \mid B(u,v) = 0 \; \text{for all } v \in S \},\\
+&S^\perp = \{ v\in V \mid B(u,v) = 0 \; \text{for all } u \in S \} .
+\end{align*}
+We may also realize $S^\perp$ by considering the linear map $B_{R}':
+V\to S^*$ obtained as the composition of  $B_R: 
+V\to V^*$ and the dual homomorphism $V^*\to S^*$.
+Indeed, $S^\perp = \ker B^\prime_R$. An analogous
+statement can be made for ${}^\perp S$.  
+
+Next, suppose that $B$ is non-degenerate.
+By the rank-nullity
+theorem  we have that
+\begin{align*}
+  \dim V &= \dim S + \dim  S^\perp\\
+  &= \dim S + \dim {}^\perp S.   
+\end{align*}
+Therefore, if $B$ is non-degenerate, then 
+\[\dim  S^\perp = \dim {}^\perp S. \]
+Indeed, more can be said if $B$ is either symmetric or 
+skew-symmetric.  In this case, we actually have
+\[{}^\perp S = S^\perp.\]
+
+
+
+
+We say that $S\subset V$ is a non-degenerate subspace relative to $B$
+if the restriction of $B$ to $S\times S$ is non-degenerate.  Thus, $S$
+is a non-degenerate subspace if and only if $S \cap S^\perp = \{0\}$,
+and also $S\cap {}^\perp S = \{ 0\}$.  Hence, if $B$ is non-degenerate
+and if $S$ is a non-degenerate
+subspace, we have
+\[ V = S \oplus S^\perp = S\oplus {}^\perp S.\] Finally, note that if
+$B$ is positive-definite, then $B$ is necessarily non-degenerate and
+that every subspace is non-degenerate.  In this way we arrive at the
+following well-known result: if $V$ is positive-definite inner product
+space, then
+\[V = S \oplus S^\perp \] for every subspace $S\subset V$.
+
+\paragraph{Adjoints.}
+Let $B: V \times V \rightarrow K$ be a non-degenerate bilinear
+form, and let  $T \in L(V,V)$ be a linear endomorphism.  We define the
+right adjoint $T^\star \in 
+L(V,V)$ to be the unique linear map such that
+\[ B(Tu, v) = B(u, T^\star v) ,\quad u,v \in V.\]
+Letting $T^\ast : V^\ast \to V^\ast$ denote the  dual homomorphism,
+we also have
+\[ T^\star = {B_R}^{-1} \circ T^\ast \circ B_R.\]
+Similarly, we define the left adjoint ${}^\star T\in L(V,V)$ by
+\[ {}^\star T = {B_L}^{-1} \circ T^\ast \circ B_L.\] We then have
+\[ B(u, Tv) = B({}^\star  T u, v) ,\quad u,v \in V.\]
+If $B$ is either symmetric or skew-symmetric, then ${}^\star T =
+T^\star$, and we simply use $T^\star$ to refer to the adjoint homomorphism.
+
+\paragraph{Additional remarks.}
+\begin{enumerate}
+\item 
+if $B$ is a symmetric, non-degenerate bilinear form,
+then the adjoint operation is represented, relative to an orthogonal
+basis (if one exists), by the matrix transpose.
+
+\item  If $B$ is a symmetric, non-degenerate bilinear form
+then $T\in L(V,V)$ is then said to be a \emph{normal operator} (with
+respect to $B$) if $T$ commutes with its adjoint $T^\star$.
+
+
+\item An $n \times m$ matrix may be regarded as a bilinear form over
+  $K^n\times K^m$. Two such matrices, $B$ and $C$, are said to be
+  congruent if there exists an invertible $P$ such that $B = P^{T}CP$.
+
+\item The identity matrix, $I_n$ on $\Rset^n\times \Rset^n$ gives the standard
+Euclidean inner product on $\Rset^n$.
+\end{enumerate}
+
+
+
+\end{document}

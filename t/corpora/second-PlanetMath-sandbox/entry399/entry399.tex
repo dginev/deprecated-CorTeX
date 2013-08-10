@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+An Euler circuit is a connected graph such that starting at a vertex $a$, one can traverse along every edge of the graph once to each of the other vertices and return to vertex $a$. In other words, an Euler circuit is an Euler path that is a circuit. Thus, using the properties of odd and even \PMlinkid{degree}{788} vertices given in the definition of an Euler path, an Euler circuit exists if and only if every vertex of the graph has an even degree.
+
+\begin{center}
+  \includegraphics[width=1in,height=1in]{ecircuit}
+\end{center}
+
+This graph is an Euler circuit as all vertices have degree 2.
+
+\begin{center}
+\includegraphics[width=1in,height=1in]{epath}
+\end{center}
+
+This graph is not an Euler circuit.
+\end{document}

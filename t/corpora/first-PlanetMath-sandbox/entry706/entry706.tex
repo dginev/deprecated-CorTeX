@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+% The below lines should work as the command
+% \renewcommand{\bibname}{References}
+% without creating havoc when rendering an entry in
+% the page-image mode.
+\makeatletter
+\@ifundefined{bibname}{}{\renewcommand{\bibname}{References}}
+\makeatother
+\begin{document}
+\PMlinkescapeword{index}
+\PMlinkescapeword{divide}
+
+\newtheorem*{thm}{Theorem}
+\begin{thm}[Eisenstein criterion]
+Let $f$ be a primitive polynomial over a commutative unique factorization domain $R$, say
+$$f(x)=a_0 + a_1x + a_2x^2 + \ldots + a_nx^n \;.$$
+If $R$ has an irreducible element $p$ such that
+$$p\mid a_m \qquad 0\le m\le n-1$$
+$$p^2 \nmid a_0$$
+$$p \nmid a_n$$
+then $f$ is irreducible.
+\end{thm}
+
+\begin{proof}
+Suppose
+$$f=(b_0 + \ldots + b_s x^s)(c_0 + \ldots + c_t x^t)$$
+where $s>0$ and $t>0$. Since $a_0 = b_0 c_0$, we know that $p$ divides one but not both of $b_0$ and $c_0$; suppose $p \mid c_0$. By hypothesis, not all the $c_m$ are divisible by $p$; let $k$ be the smallest index such that $p\nmid c_k$. We have $a_k = b_0 c_k + b_1 c_{k-1} + \ldots + b_k c_0$.
+We also have $p\mid a_k$, and $p$ divides every summand except one on the right side, which yields a contradiction. QED
+\end{proof}
+\end{document}

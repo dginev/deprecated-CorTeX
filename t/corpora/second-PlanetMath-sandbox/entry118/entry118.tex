@@ -1,0 +1,46 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+\PMlinkescapeword{axioms}
+\PMlinkescapeword{contained}
+\PMlinkescapeword{extension}
+\PMlinkescapeword{invariant}
+\PMlinkescapeword{length}
+\PMlinkescapeword{properties}
+\PMlinkescapeword{property}
+\PMlinkescapeword{theorem}
+\PMlinkescapeword{satisfies}
+\PMlinkescapeword{weaker}
+\PMlinkescapephrase{extension theorem}
+
+Let $S$ be a subset of $\mathbb{R}$, let $L(I)$ be the traditional definition of the length of an interval $I \subseteq \mathbb{R}$: If $I = (a, b)$, then $L(I) = b - a$.  Finally, let $M$ be the set consisting of the values
+
+$$\sum_{A\in C}L(A)$$
+
+for all possible countable collections of open intervals $C$ that covers $S$ (that is, $S \subseteq \cup C$).
+\medskip
+Then the \emph{Lebesgue outer measure of $S$} is defined by:
+
+$$m^{*}(S) = \inf(M)$$
+
+Note that $(\mathbb{R},\mathcal{P}(\mathbb{R}),m^{*})$ is an \PMlinkname{outer measure space}{OuterMeasure2}.  In particular:
+\begin{itemize}
+\item Lebesgue outer measure is defined for any subset of $\mathbb{R}$ (and $\mathcal{P}(\mathbb{R})$ is a $\sigma$-algebra).
+\item $m^{*}(A) \geq 0$ for any $A \subseteq \mathbb{R}$, and $m^{*}(\emptyset) = 0$.
+\item If $A$ and $B$ are disjoint sets, then $m^{*}(A \cup B) \leq m^{*}(A) + m^{*}(B)$.  More generally, if $\langle A_i \rangle$ is a countable sequence of disjoint sets, then $m^{*}\left( \bigcup A_i \right) \leq \sum m^{*}(A_i)$.  This property is known as \emph{countable subadditivity} and is weaker than countable additivity.  In fact, $m^{*}$ is \emph{not} countably additive.
+\end{itemize}
+
+Lebesgue outer measure has other nice properties:
+\begin{itemize}
+\item The outer measure of an interval is its length: $m^{*}((a,b)) = b-a$.
+\item $m^{*}$ is translation-invariant.  That is, if we define $A + y$ to be the set $\{ x + y : x \in A \}$, we have $m^{*}(A) = m^{*}(A + y)$ for any $y \in \mathbb{R}$.
+\end{itemize}
+
+The outer measure satisfies all the axioms of a measure except (countable) additivity.  However, it is countably additive when one restricts to at least the Borel sets, as this is the usual construction of Borel measure.  This result is roughly contained in the Caratheodory Extension theorem.
+\end{document}

@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{closed form} function which gives the value of a sequence at index $n$ has only one parameter, $n$ itself.  This is in contrast to the recurrence relation form, which can have all of the previous values of the sequence as parameters.
+
+The benefit of the closed form is that one does not have to calculate all of the previous values of the sequence to get the next value.  This is not too useful if one wants to print out or utilize all of the values of a sequence up to some $n$, but it is very useful to get the value of the sequence \emph{just} at some index $n$.
+
+There are many techniques used to find a closed-form solution for a recurrence relation.  Some are
+
+\begin{itemize}
+\item Repeated substitution.  Replace each $s_k$ in the expression of $s_n$ (with $k < n$) with its recurrence relation representation.  Repeat again on the resulting expression, until some pattern is evident.
+\item Estimate an upper bound for $s_n$ in terms of $n$.  Then, solve for the unknowns (say there are $r$ unknowns) by finding the first $r$ values of the recurrence relation and solving the linear system formed by them and the unknowns.
+\item Find the characteristic equation of the recurrence relation and solve for the roots.  If the recurrence relation is not homogeneous, then you'll have to apply a method such as the method of undetermined coefficients.
+\end{itemize}
+\end{document}

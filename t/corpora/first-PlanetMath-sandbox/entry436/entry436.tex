@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+\newcommand{\kf}{\mathbb{K}}
+\newcommand{\KP}{{\mathbb{K}\mathrm{P}}}
+\newcommand{\RP}{{\reals\mathrm{P}}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\nzkn}{\kf^{n+1}\backslash \{0\}}
+\newcommand{\PSL}{{\mathrm{PSL}}}
+\newcommand{\SL}{{\mathrm{SL}}}
+\newcommand{\PGL}{{\mathrm{PGL}}}
+\newcommand{\GL}{{\mathrm{GL}}}
+\newcommand{\GammaL}{\operatorname{\Gamma L}}
+\newcommand{\PGammaL}{{\operatorname{P\Gamma L}}}
+
+\begin{document}
+\paragraph{Projective space and homogeneous coordinates.}
+Let $\kf$ be a field.  {\em Projective space} of dimension $n$ over
+$\kf$, typically denoted by $\KP^n$, is the set of lines passing
+through the origin in $\kf^{n+1}$.  More formally, consider the
+equivalence relation $\sim$ on the set of non-zero points $\nzkn$
+defined by
+$$\bx \sim \lambda \bx,\quad \bx\in \nzkn,\quad \lambda \in
+\kf\backslash\{0\}.$$
+Projective space is defined to be the set of the
+corresponding equivalence classes.
+
+Every $\bx=(x_0,\ldots,x_n)\in\nzkn$ determines an element of
+projective space, namely the line passing through $\bx$. Formally,
+this line is the equivalence class $[\bx]$, or $[x_0:x_1:\ldots:x_n]$,
+as it is commonly denoted. The numbers $x_0,\ldots,x_n$ are referred
+to as \emph{homogeneous coordinates} of the line.  Homogeneous coordinates
+differ from ordinary coordinate systems in that a given element of
+projective space is labeled by multiple homogeneous ``coordinates''.
+
+\paragraph{Affine coordinates.} Projective space also admits a more
+conventional type of coordinate system, called affine coordinates.
+Let $A_0\subset\KP^n$ be the subset of all elements
+$p=[x_0:x_1:\ldots:x_n]\in\KP^n$ such that $x_0\neq 0$.  We then
+define the functions
+$$X_i:A_0\rightarrow \kf^n,\quad i=1,\ldots,n,$$
+according to
+$$X_i(p) = \frac{x_i}{x_0},$$
+where $(x_0,x_1,\ldots,x_n)$ is {\em
+  any} element of the equivalence class representing $p$. This
+definition makes sense because other elements of the same equivalence
+class have the form
+$$(y_0,y_1,\ldots,y_n)=(\lambda x_0,\lambda x_1,\ldots,\lambda x_n)$$
+for some non-zero $\lambda\in\kf$, and hence 
+$$\frac{y_i}{y_0} = \frac{x_i}{x_0}.$$
+
+The functions $X_1,\ldots,X_n$ are called \emph{affine coordinates} relative
+to the hyperplane $$H_0=\{x_0=1\}\subset\kf^{n+1}.$$
+Geometrically,
+affine coordinates can be described by saying that the elements of
+$A_0$ are lines in $\kf^{n+1}$ that are not parallel to $H_0$, and
+that every such line intersects $H_0$ in one and exactly one point.
+Conversely points of $H_0$ are represented by tuples
+$(1,x_1,\ldots,x_n)$ with $(x_1,\ldots,x_n)\in\kf^n$, and each such
+point uniquely labels a line $[1:x_1:\ldots:x_n]$ in $A_0$.  
+
+It must be noted that a single system of affine coordinates does not
+cover {\em all} of projective space.  However, it is possible to
+define a system of affine coordinates relative to every hyperplane in
+$\kf^{n+1}$ that does not contain the origin.  In particular, we get
+$n+1$ different systems of affine coordinates corresponding to the
+hyperplanes $\{ x_i = 1\},\; i=0,1,\ldots,n.$ Every element of
+projective space is covered by at least one of these $n+1$ systems of
+coordinates.
+
+\paragraph{Projective automorphisms.}
+A projective automorphism, also known as a projectivity, is a
+bijective transformation of projective space that preserves all
+incidence relations.  For $n\geq 2$, every automorphism of $\KP^n$ is
+engendered by a semilinear invertible transformation of $\kf^{n+1}$.
+Let $A:\kf^{n+1}\rightarrow\kf^{n+1}$ be an invertible semilinear
+transformation.  The corresponding projectivity
+$[A]:\KP^n\rightarrow\KP^n$ is the transformation $$[\bx] \mapsto
+[A\bx],\quad \bx\in\kf^{n+1}.$$
+For every non-zero $\lambda\in\kf$ the
+transformation $\lambda A$ gives the same projective automorphism as
+$A$.  For this reason, it is convenient we identify the group of
+projective automorphisms with the quotient $$\PGammaL_{n+1}(\kf) =
+\GammaL_{n+1}(\kf)/ \kf.$$
+Here $\GammaL$ refers to the group of
+invertible semi-linear transformations, while the quotienting $\kf$
+refers to the subgroup of scalar multiplications.
+
+A collineation is a special kind of projective automorphism, one that
+is engendered by a strictly linear transformation.  The group of
+projective collineations is therefore denoted by $\PGL_{n+1}(\kf)$
+Note that for fields such as $\reals$ and $\cnums$, the group of
+projective collineations is also described by the projectivizations
+$\PSL_{n+1}(\reals), \PSL_{n+1}(\cnums)$, of the corresponding
+unimodular group.
+
+Also note that if a field, such as $\reals$, lacks non-trivial
+automorphisms, then all semi-linear transformations are linear.  For
+such fields all projective automorphisms are collineations.
+Thus, 
+$$\PGammaL_{n+1}(\reals)=\PSL_{n+1}(\reals)=\SL_{n+1}(\reals)/\{\pm\,
+I_{n+1}\}.$$  By contrast, since $\cnums$
+possesses non-trivial automorphisms, complex conjugation for example,
+the group of automorphisms of complex projective space is larger than
+$\PSL_{n+1}(\cnums)$, where the latter denotes the quotient of
+$\SL_{n+1}(\cnums)$ by the subgroup of scalings by the $(n+1)$st roots
+of unity.
+\end{document}

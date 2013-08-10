@@ -1,0 +1,61 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\newtheorem{proposition}{Proposition}
+\begin{document}
+Let $V$ be a finite-dimensional linear space over a field $K$, and
+$T:V\rightarrow V$ a linear transformation. To {\em diagonalize} $T$
+is to find a basis of $V$ that consists of eigenvectors. The
+transformation is called {\em diagonalizable} if such a basis exists.
+The choice of terminology reflects the fact that
+the matrix of a linear transformation relative to a given basis is  diagonal
+if and only if that basis consists of
+eigenvectors.
+
+Next, we give necessary and sufficient conditions for $T$ to be
+diagonalizable. For $\lambda\in K$ set
+$$E_\lambda = \{ u\in V: Tu = \lambda u\}.$$
+It isn't hard to show that $E_\lambda$ is a subspace of $V$, and that this subspace is
+non-trivial if and only if $\lambda$ is an {\em eigenvalue} of $T$.  In that case, $E_\lambda$ is called the eigenspace
+associated to $\lambda$. 
+\begin{proposition}
+A transformation is diagonalizable if and only if
+$$\dim V = \sum_\lambda \dim E_\lambda,$$
+where the sum is taken over all eigenvalues of the transformation.
+\end{proposition}
+
+\paragraph{The Matrix Approach.}
+As was already mentioned, the  term  ``diagonalize'' comes from a matrix-based perspective.  Let
+$M$ be a \PMlinkname{matrix representation}{matrix} of $T$ relative to some basis $B$.  Let
+$$P=[v_1,\ldots,v_n],\quad n=\dim V,$$
+be a matrix whose column vectors are eigenvectors expressed relative
+to $B$.  Thus,
+$$M v_i = \lambda_i v_i,\quad i=1,\ldots,n$$
+where $\lambda_i$ is the eigenvalue associated to $v_i$.  The above
+$n$ equations are more succinctly as the matrix equation
+$$MP = PD,$$
+where $D$ is the diagonal matrix with $\lambda_i$ in the $i$-th
+position.  Now the eigenvectors in question form a basis, if and only
+if $P$ is invertible.  In that case, we may write
+\begin{equation}
+  \label{eq:diag}
+  M=PDP^{-1}.  
+\end{equation}
+Thus in the matrix-based approach, to ``diagonalize'' a matrix $M$ is
+to find an invertible matrix $P$ and a diagonal matrix $D$ such that
+equation (\ref{eq:diag}) is satisfied.  
+
+
+\paragraph{Subtleties.}
+There are two fundamental reasons why a transformation $T$ can fail to
+be diagonalizable.
+\begin{enumerate}
+\item The characteristic polynomial of $T$ does not factor into linear
+factors over $K$.
+\item There exists an eigenvalue $\lambda$, such that the kernel of
+$(T-\lambda I)^2$ is strictly greater than the kernel of $(T-\lambda
+I)$. Equivalently, there exists an invariant subspace where $T$
+acts as a nilpotent transformation plus some multiple of the
+identity. Such subspaces manifest as non-trivial Jordan blocks in the Jordan canonical form of the transformation.\end{enumerate}
+\end{document}

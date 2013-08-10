@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $K/F$ be a Galois extension, and let $x \in K$. The {\em norm} $\operatorname{N}_F^K(x)$ of $x$ is defined to be the product of all the elements of the orbit of $x$ under the group action of the Galois group $\operatorname{Gal}(K/F)$ on $K$; taken with multiplicities if $K/F$ is a finite extension.
+
+In the case where $K/F$ is a finite extension, the norm of $x$ can be defined to be the determinant of the linear transformation $[x]: K \to K$ given by $[x](k) := xk$, where $K$ is regarded as a vector space over $F$. This definition does not require that $K/F$ be Galois, or even that $K$ be a field---for instance, it remains valid when $K$ is a division ring (although $F$ does have to be a field, in order for determinant to be defined). Of course, for finite Galois extensions $K/F$, this definition agrees with the previous one, and moreover the formula
+$$
+\operatorname{N}_F^K(x) := \prod_{\sigma \in \operatorname{Gal}(K/F)} \sigma(x)
+$$
+holds.
+
+The norm of $x$ is always an element of $F$, since any element of $\operatorname{Gal}(K/F)$ permutes the orbit of $x$ and thus fixes $\operatorname{N}_F^K(x)$.
+\end{document}

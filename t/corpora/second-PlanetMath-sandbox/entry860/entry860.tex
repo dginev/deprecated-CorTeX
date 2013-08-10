@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+Let  $p\in \reals$ and $x\in\reals,\;|x|<1$ be given.  We wish to show
+that 
+$$(1+x)^p = \sum_{n=0}^\infty p^{\underline{n}}\; \frac{x^n}{n!},$$
+where $p^{\underline{n}}$ denotes the $n\supth$ falling factorial of $p$.  
+
+The convergence of the series in the right-hand side of the above
+equation is a straight-forward consequence of the ratio test. Set 
+$$f(x) = (1+x)^p.$$
+and note that
+$$f^{(n)}(x) = p^{\underline{n}}\, (1+x)^{p-n}.$$
+The desired equality now follows from Taylor's Theorem. Q.E.D.
+\end{document}

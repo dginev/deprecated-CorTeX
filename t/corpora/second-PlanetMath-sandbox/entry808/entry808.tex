@@ -1,0 +1,189 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\md}{d}
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mderiv}[1]{\frac{\md}{\md {#1}}} %d/dx
+\newcommand{\mnthderiv}[2]{\frac{\md^{#2}}{\md {#1}^{#2}}} %d^n/dx
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}} %partial d^n/dx
+\newcommand{\mnthpderiv}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}} %partial d^n/dx
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\complexes}{\mathbb{C}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+\newcommand{\bra}[1]{\langle#1 \vert}
+\newcommand{\ket}[1]{\vert \hspace{1pt}#1\rangle}
+\newcommand{\braket}[2]{\langle #1 \ket{#2}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+\newcommand{\esssup}{\mathrm{ess\ sup}}
+\newcommand{\Lspace}[1]{L^{#1}}
+\newcommand{\Lone}{\Lspace{1}}
+\newcommand{\Ltwo}{\Lspace{2}}
+\newcommand{\Lp}{\Lspace{p}}
+\newcommand{\Lq}{\Lspace{q}}
+\newcommand{\Linf}{\Lspace{\infty}}
+
+% character creep scotch tape fix ...........................
+\begin{document}
+\PMlinkescapeword{between}
+\PMlinkescapeword{canonical}
+\PMlinkescapeword{entire}
+\PMlinkescapeword{even}
+\PMlinkescapeword{infinite}
+\PMlinkescapeword{moment}
+\PMlinkescapeword{observation}
+\PMlinkescapeword{right}
+\PMlinkescapeword{rights}
+\PMlinkescapeword{similar}
+
+The Cantor set $C$ is the canonical example of an uncountable set of measure zero.  We construct $C$ as follows.
+
+Begin with the unit interval $C_0 = [0,1]$, and remove the open segment $R_1 \defined (\frac{1}{3},\frac{2}{3})$ from the middle.  We 
+define $C_1$ as the two remaining pieces
+\begin{equation}
+C_1 \defined C_0 \setminus R_1 = \left[0,\frac{1}{3}\right] \bigcup \left[\frac{2}{3},1\right]
+\end{equation}
+Now repeat the process on each remaining segment, removing the open set
+\begin{equation}
+R_2 \defined \left(\frac{1}{9},\frac{2}{9}\right) \bigcup \left(\frac{7}{9},\frac{8}{9}\right)
+\end{equation}
+to form the four-piece set
+\begin{equation}
+C_2 \defined C_1 \setminus R_2 = \left[0,\frac{1}{9}\right] \bigcup \left[\frac{2}{9},\frac{1}{3}\right] \bigcup \left[\frac{2}{3},\frac{7}{9}\right] \bigcup \left[\frac{8}{9},1\right]
+\end{equation}
+Continue the process, forming $C_3, C_4, \ldots$  Note that $C_k$ has $2^k$ pieces.
+\newline
+%Commented out, as the picture has disappeared!
+%\begin{figure}[hhp]
+%\begin{center}
+%\caption{The sets $C_0$ through $C_5$ in the construction of the Cantor set}
+%\includegraphics[width=\textwidth]{cantor-set.eps}
+%\end{center}
+%\end{figure}
+
+Also note that at each step, the endpoints of each closed segment will stay in the set forever---e.g., the point $\frac{2}{3}$ isn't 
+touched as we remove sets.
+
+The \emph{Cantor set} is defined as
+\begin{equation}
+C \defined \bigcap_{k=1}^{\infty} C_k = C_0 \setminus \bigcup_{n=1}^{\infty}R_n
+\end{equation}
+
+\paragraph{Cardinality of the Cantor set}
+To establish cardinality, we want a bijection between the Cantor set
+and some set whose cardinality we know .
+
+Start at $C_1$, which has two pieces.  Mark the left-hand segment ``0'' and the right-hand segment ``1''.  Then continue to $C_2$, 
+and consider only the leftmost pair.  Again, mark the segments ``0'' and ``1'', and do the same for the rightmost pair.
+
+Keep doing this all the way down the $C_k$, starting at the left side and marking the segments 0, 1, 0, 1, 0, 1 as you encounter them, 
+until you've labeled the entire Cantor set.
+
+Now, pick a path through the tree starting at $C_0$ and going left-left-right-left\ldots and so on.  Mark a decimal point for $C_0$, and 
+record the zeros and ones as you proceed.  Each path has a unique number based on your decision at each step.
+%Commented out, as the picture has disappeared!
+%For example, the 
+%figure represents your choice of left-left-right-left-right at the first five %steps, representing the number beginning 0.00101...
+%\newline
+%\begin{figure}[!hbp]
+%\begin{center}
+%\caption{One possible path through $C_5: 0.00101$}
+%\includegraphics[width=\textwidth]{cantor-set-ladder.eps}
+%\end{center}
+%\end{figure}
+Every point in the Cantor set will have a unique address dependent solely on the pattern of lefts and rights, 0's and 1's, required to 
+reach it.
+The Cantor set therefore has the same cardinality as the set of sequences of 0's and 1's, which is $2^{\aleph_0}$, the cardinality of the continuum.
+
+\paragraph{The Cantor set and ternary expansions}
+Return, for a moment, to the earlier observation that numbers such as $\frac{1}{3}$, $\frac{2}{9}$, the endpoints of deleted intervals, 
+are themselves never deleted.  In particluar, consider the first deleted interval:  the ternary expansions of its constituent numbers are 
+precisely those that begin $0.1$, and proceed thence with at least one non-zero ``ternary'' digit further along.  Note 
+also that the point $\frac{1}{3}$, with ternary expansion $0.1$, may also be written $0.0\dot{2}$ (or $0.0\bar{2}$), which has no ternary digit $1$.
+Similar descriptions apply to further deleted intervals.
+The result is that the Cantor set is precisely those numbers in the set 
+$[0,1]$ that have a ternary expansion contains no digits $1$.
+
+\paragraph{Measure of the Cantor set}
+Let $\mu$ be Lebesgue measure.  The measure of the sets $R_k$ that we remove during the construction of the Cantor set are
+\begin{align}
+\mu(R_1) &= \frac{2}{3} - \frac{1}{3} = \frac{1}{3}\\
+\mu(R_2) &= \left(\frac{2}{9} - \frac{1}{9}\right) + \left(\frac{8}{9} - \frac{7}{9}\right) = \frac{2}{9}\\
+&\ \vdots\\
+\mu(R_k) &= \sum_{n=1}^{k}\frac{2^{n-1}}{3^n}
+\end{align}
+Note that the $R$'s are disjoint, which will allow us to sum their measures without worry.  In the limit $k \to \infty$, this gives us
+\begin{equation}
+\mu\left(\bigcup_{n=1}^{\infty}R_n\right) = \sum_{n=1}^{\infty} \frac{2^{n-1}}{3^n} = 1.
+\end{equation}
+But we have $\mu(C_0) = 1$ as well, so this means
+\begin{equation}
+\mu(C) = \mu\left(C_0 \setminus \bigcup_{n=1}^{\infty}R_n\right) = \mu(C_0) - \sum_{n=1}^{\infty} \frac{1}{2^n} = 1-1 = 0.
+\end{equation}
+
+Thus we have seen that the measure of $C$ is zero (though see below for more on this topic).  How many points are there in $C$?  
+Lots, as we shall see.
+
+
+So we have a set of measure zero (very tiny) with uncountably many points (very big).  This non-intuitive result is what 
+makes Cantor sets so interesting.
+
+\paragraph{Cantor sets with positive measure}
+Clearly, Cantor sets can be constructed for all sorts of ``removals''---we can remove middle halves, or thirds, or any amount 
+$\frac{1}{r}, r>1$ we like.  All of these Cantor sets have measure zero, since at each step $n$ we end up with
+\begin{equation}
+L_n = \left(1 - \frac{1}{r}\right)^n
+\end{equation}
+of what we started with, and $\lim_{n \to \infty} L_n = 0$ for any $r>1$.
+%With apologies, the figure above is drawn for the case $r=2$,
+%rather than the $r=3$ which seems to be the publicly favored example.
+
+However, it is possible to construct Cantor sets with positive 
+measure as well; the key is to remove less and less as we proceed.  These Cantor sets have the same ``shape'' (topology) as the 
+Cantor set we first constructed, and the same cardinality, but a different ``size.''
+
+Again, start with the unit interval for $C_0$, and choose a number $0 < p < 1$.  Let
+\begin{equation}
+R_1 \defined \left(\frac{2-p}{4},\frac{2+p}{4}\right)
+\end{equation}
+which has length (measure) $\frac{p}{2}$.  Again, define $C_1 \defined C_0 \setminus R_1$.  Now define
+\begin{equation}
+R_2 \defined \left(\frac{2-p}{16},\frac{2+p}{16}\right) \bigcup \left(\frac{14-p}{16},\frac{14+p}{16}\right)
+\end{equation}
+which has measure $\frac{p}{4}$.  Continue as before, such that each $R_k$ has measure $\frac{p}{2^k}$; note again that all the 
+$R_k$ are disjoint.  The resulting Cantor set has measure
+\begin{equation*}
+\mu\left(C_0 \setminus \bigcup_{n=1}^{\infty}R_n \right) = 1 - \sum_{n=1}^{\infty} \mu(R_n) = 1 - \sum_{n=1}^{\infty} p\ 2^{-n} = 1-p > 0.
+\end{equation*}
+Thus we have a whole family of Cantor sets of positive measure to accompany their vanishing brethren.
+
+% character creep scotch-tape fix  ...................................
+\end{document}

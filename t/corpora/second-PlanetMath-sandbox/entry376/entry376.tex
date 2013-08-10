@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+The \emph{transpose} of a matrix $A$ is the matrix formed by ``flipping'' $A$ about the diagonal line from the upper left corner.  It is usually denoted $A^t$, although sometimes it is written as $A^T$ or $A'$. So if $A$ is an $m \times n$ matrix and
+
+$$
+ A = 
+\begin{pmatrix}
+ a_{11} & a_{12} & \cdots & a_{1n} \\
+ a_{21} & a_{22} & \cdots & a_{2n} \\
+ \vdots & \vdots & \ddots & \vdots \\
+ a_{m1} & a_{m2} & \cdots & a_{mn} 
+\end{pmatrix} 
+$$
+then
+
+$$ A^t =
+\begin{pmatrix}
+ a_{11} & a_{21} & \cdots & a_{m1} \\
+ a_{12} & a_{22} & \cdots & a_{m2} \\
+ \vdots & \vdots & \ddots & \vdots \\
+ a_{1n} & a_{2n} & \cdots & a_{nm} 
+\end{pmatrix} 
+$$
+
+Note that the transpose of an $m \times n$ matrix is a $n \times m$ matrix.
+
+\subsubsection*{Properties}
+
+Let $A$ and $B$ be $m \times m$ matrices, $C$ and $D$ be $m\times n$ matrices, $E$ be an $n\times k$ matrix, and $c$ be a constant.  Let $x$ and $y$ be column vectors with $n$ rows. Then
+
+\begin{enumerate}
+\item $(C^t)^t = C$
+\item $(C+D)^t = C^t + D^t$
+\item $(cD)^t = cD^t$
+\item $(DE)^t=E^tD^t.$
+\item $(AB)^t = B^t A^t.$
+\item If $A$ is invertible , then $(A^t)^{-1} = (A^{-1})^t $
+\item If $A$ is real, $\operatorname{trace}(A^tA) \ge 0$ (where $\operatorname{trace}$ is the trace of a matrix).
+\item The transpose is a linear mapping from the vector space of matrices to itself.  That is, $(\alpha A + \beta B)^t = \alpha (A)^t + \beta (B)^t$, for same-sized matrices $A$ and $B$ and scalars $\alpha$ and $\beta$.
+\end{enumerate}
+
+The familiar vector dot product can also be defined using the matrix transpose.  If $x$ and $y$ are column vectors with $n$ rows each, 
+
+$$ x^t y = x \cdot y $$
+
+which implies
+
+$$ x^t x = x \cdot x = ||x||_2^2 $$
+
+which is another way of defining the square of the vector Euclidean norm.
+\end{document}

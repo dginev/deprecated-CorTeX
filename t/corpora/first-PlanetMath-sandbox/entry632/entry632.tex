@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+
+\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+%\DeclareMathOperator{\det}{det}
+\DeclareMathOperator{\GL}{GL}
+\begin{document}
+\PMlinkescapeword{theory}
+\textbf{Definition}.
+Let $\mathcal{C}$ and $\mathcal{D}$ be categories, and let 
+$S,T:\mathcal{C}\to\mathcal{D}$ be covariant functors. Then suppose
+that for every object $A$ in $\mathcal{C}$ one has a morphism 
+$\eta_A :  S(A) \to T(A) $ in $\mathcal{D}$ such that for every morphism 
+$\alpha: A \to B$ in $\mathcal{C}$ the following
+$$
+\xymatrix@+=4pc{S(A) \ar[d]_{S(\alpha)} \ar[r]^{\eta_A} & T(A) \ar[d]^{T(\alpha)} \\
+S(B) \ar[r]^{\eta_{B}} & T(B)
+}
+$$
+
+is \PMlinkname{commutative}{CommutativeDiagram}.  Then we variously write 
+$$\eta: S \dot{\to} T \quad\mbox{ or }\quad \eta: S\Rightarrow T\quad \mbox{ or } \quad \eta:S\to T$$ and call $\eta$ a 
+\emph{natural trasformation} from $S$ to $T$.
+
+One may think of a natural transformation $\eta:S\to T$ as a `function' from the class of objects of $\mathcal{C}$ to the class of morphisms of $\mathcal{D}$.
+
+As a first example, for every functor $S:\mathcal{C}\to \mathcal{D}$, we can associate the natural transformation $1_S: S\to S$ (the \emph{identity natural transformation} on $S$) that assigns every object $A$ of $\mathcal{C}$, the corresponding identity morphism $1_{S(A)}$.
+
+Natural transformations are composed in a similar manner to morphisms, but they are nevertheless defined as correspondences between both objects and morphisms as shown in the square commutative diagram depicted above. 
+%On the other hand, natural transformations can be regarded as functorial morphisms, because they do act as morphisms between functors in the 2-category of small categories that has been defined as a functor category.
+
+ More precisely, given three functors $R,S,T:\mathcal{C}\to \mathcal{D}$, and two natural transformations, $\tau:R\to S$ and $\eta:S\to T$, we define the composition of $\tau$ with $\eta$, written $\eta \bullet \tau$, as a class of morphisms in $\mathcal{D}$ given by 
+$$(\eta\bullet \tau)_A := \eta_A\circ \tau_A,$$ for every object $A$ in $\mathcal{C}$.
+It is easy to see that $\eta\bullet \tau$ is a natural transformation, since we may ``compose'' two commutative squares and obtain a third one:
+$$
+\xymatrix@+=4pc{R(A) \ar[d]_{R(\alpha)} \ar[r]^{\tau_A}  & S(A) \ar[d]_{S(\alpha)} \ar[r]^{\eta_A} & T(A) \ar[d]^{T(\alpha)} \ar@{}[dr]|{=} &  
+R(A) \ar[d]_{R(\alpha)} \ar[r]^{\eta_A \circ \tau_A} & T(A) \ar[d]^{T(\alpha)} 
+\\
+R(B) \ar[r]^{\tau_{B}} & S(B) \ar[r]^{\eta_{B}} & T(B) & 
+R(B) \ar[r]^{\eta_B \circ \tau_B} & T(B)
+}
+$$
+It is easy to see that the composition ``operation'' on natural transformations is associative:
+$$(\zeta\bullet \eta)\bullet \tau = \zeta\bullet (\eta \bullet \tau)$$
+for natural transformations $\tau:R\to S$, $\eta:S\to T$, and $\zeta:T\to U$.  In addition, any identity natural transformation acts as a compositional identity: if $\tau:R\to S$ and $\eta:S\to T$, then $$1_S\bullet \tau=\tau \qquad\mbox{ and }\qquad \eta \bullet 1_S = \eta.$$
+
+%This replaces the previous \\
+%\textbf{Definition 0.2}:
+%A \emph{natural transformation} $\tau: S\dot{\to} T$ is a \emph{function}
+%that carries each object $A$ of $\mathcal{C}$ to a morphism
+%$\tau_A:S(A)\to T(A)$ of $\mathcal{D}$, and such that for any
+%morphism $f:A\to B$ of $\mathcal{C}$, the diagram
+%\[
+%\xymatrix{& S(A) \ar[d]^{Sf} \ar[r]^{\tau_A} & T(A) \ar[d]^{Tf} \\
+%& S(B) \ar[r]^{\tau_{B}} & T(B)
+%}
+%\]
+%is \PMlinkname{commutative}{CommutativeDiagram}.  If every $\tau_A$ happens to be an isomorphism, then $\tau$ is %called a \emph{natural isomorphism}, a \emph{natural equivalence}, or an \emph{isomorphism of functors}.
+
+%which was not either sufficiently general or explicit because it involved \emph{functions} rather than morphisms. \\
+
+\textbf{Remarks}.  
+\begin{itemize}
+\item
+Natural transformations arise frequently in mathematics.  Here's a ``concrete'' example of a natural transformation: the boundary map $H_n(X,A)\to H_{n-1}(A)$ in a homology theory. By definition, every morphism of presheaves is a natural transformation.
+More prosaically, the determinant 
+$\det:\GL_n\dot{\to}(\ )^*$
+is natural.
+%\item
+%In the definition above, if $\eta_A$ is an \emph{isomorphism} for each $A$ in $\mathcal{C}$ then we call $\eta$ a \emph{natural equivalence} (or a functor isomorphism, or isomorphism of two functors), which has the obvious inverse denoted as $\eta^{-1}$.
+%\item
+%If $\mathcal{C}$ is a $\mathcal{U}$-category, then we can also define the \emph{functor category} $\mathcal{D}^\mathcal{C}$; the objects of $\mathcal{D}^\mathcal{C}$ are the functors $T:\mathcal{C}\to\mathcal{D}$, and the morphisms are the natural transformations $\tau:S\dot{\to} T$.  The composition of two composable functions which are natural transformations is again a natural transformation, and so $\mathcal{D}^\mathcal{C}$ is a category.
+\item
+Natural transformations are sometimes called also \emph{functorial morphisms} especially in applications related to the category theory development line pursued by Charles Ehresmann and the `Nicolas Bourbaki' group; this is also a natural translation of the same concept from French, viz. (ref. \cite{CE1965}).
+\end{itemize}
+
+\begin{thebibliography}{9}
+
+\bibitem{Ha}A. Hatcher, \emph{Algebraic Topology}, Cambridge University Press, 2002.
+\bibitem{Ma}S. Mac Lane, \emph{Categories for the Working Mathematician} (2nd edition), Springer-Verlag, 1997.
+
+%\bibitem{EC1966}
+%C. Ehresmann, Trends Toward Unity in Mathematics., \emph{Cahiers de Topologie et Geometrie Differentielle}
+%\textbf{8}: 1-7, 1966.
+
+\bibitem{CE1965}
+C. Ehresmann, \emph{Cat\'egories et Structures}. Dunod: Paris , 1965.
+
+\bibitem{Eh-quintettes}
+C. Ehresmann, Cat\'egories doubles des quintettes: applications covariantes
+, \emph{C.R.A.S. Paris}, \textbf{256}: 1891-1894, 1963.
+
+%\bibitem{Eh-Oe}
+%C. Ehresmann, \emph{Oeuvres compl\`etes et  comment\'ees:
+%Amiens, 1980-84}, 1984 (\emph{edited and commented by Andr\'ee Ehresmann}).
+
+%\bibitem{EML1}
+%S. Eilenberg and S. Mac Lane.,  Natural Isomorphisms in Group Theory., \emph{American Mathematical Society 43}: %757-831, 1942.
+
+\bibitem{EML45}
+S. Eilenberg and S. Mac Lane,  The General Theory of Natural Equivalences, \emph{Transactions of the American Mathematical Society} \textbf{58}: 231-294, 1945.
+
+%\bibitem{Gabriel1962}
+%P. Gabriel, Des cat\'egories ab\'eliennes, \emph{Bull. Soc.Math. France} 
+%\textbf{90}: 323-448, 1962.
+
+%\bibitem{Alex3}
+%A. Grothendieck, and J. Dieudon\'{e},  \emph{El\'{e}ments de geometrie alg\'{e}brique.}, \emph{Publ. Inst. des Hautes %Etudes de Science}, \textbf{4}, 1960.
+
+\bibitem{MitchellB1965}
+B. Mitchell., \emph{Theory of Categories}, Academic Press: New York and London.
+
+%\bibitem{NP1973}
+%N. Popescu, \emph{Abelian Categories with Applications to Rings and Modules.}, New York and London: Academic Press.,
+%1973, 2nd edn. 1975, \emph{(English translation by I.C. Baianu)}.
+
+\end{thebibliography}
+\end{document}

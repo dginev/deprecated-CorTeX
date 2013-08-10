@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+\section{Fermat's Last Theorem}
+
+Fermat's last theorem was put forth by Pierre de Fermat around 1630.  It states that the Diophantine equation ($a, b, c, n \in \mathbb{N}$)
+
+$$ a^n + b^n = c^n $$
+
+has no non-zero solutions for $n>2$. 
+
+\section{History}
+
+Fermat's last theorem was actually a conjecture and remained unproved for over 300 years.  It was finally proven in 1994 by Andrew Wiles, an English mathematician working at Princeton.  It was always called a ``theorem'', due to Fermat's uncanny ability to propose true conjectures. Originally the statement was discovered by Fermat's son Clement-Samuel among margin notes that Fermat had made in his copy of Diophantus' \emph{Arithmetica}.  Fermat followed the statement of the conjecture with the infamous teaser:
+
+{\it ``I have discovered a truly remarkable proof which this margin is too small to contain''}
+
+Over the years, Fermat's last theorem was proven for various sub-cases which required specific values of $n$, but no direct progress was made along these lines towards a general proof.  These proofs were bittersweet victories, as each one still left an infinite number of cases unproved.  Among the big names who took a crack at the theorem are Euler, Gauss, Germaine, Cauchy, Dirichlet, and Legendre.  
+
+The theorem finally began to yield to direct attack in the 20th century.
+
+\section{The Proof}
+
+In 1982 Gerhard Frey conjectured that if FLT has a solution ($a$,$b$,$c$,$n$), then the elliptic curve defined by
+
+$$ y^2 = x(x-a^n)(x+b^n) $$
+
+is semistable, but not modular.  The above equation is known as Frey's equation, or the Frey curve. Ribet proved this conjecture in 1986.
+
+The Taniyama-Shimura conjecture, which appeared in an early form in 1955, says that all elliptic curves are modular.  If in fact this conjecture were to be proven in the semistable case, then it would follow that the Frey equation would be semistable \emph{and} modular, hence FLT could have no solutions. 
+
+After a flawed attempt in 1993, Wiles along with Richard Taylor successfully proved the semistable case of the Taniyama-Shimura conjecture in 1994, hence proving Fermat's last theorem.  The proof appears in the May 1995 {\it Annals of Mathematics}, Vol. 151, No. 3. It is 129 pages.
+
+\section{Speculation}
+
+Wiles' proof rests upon the work of hundreds of mathematicians and the mathematics created up to and including the 20th century.  We cannot imagine how Fermat's last theorem could be proved without these advanced mathematical tools, which include group theory and Galois theory, the theory of modular forms, Riemannian topology, and the theory of elliptic equations.  
+
+Could Fermat, then, have possibly had a proof to his own conjecture, in the year 1630?  It doesn't seem likely, given the requisite mathematics behind the proof as we know it.  Assuming Fermat's teaser was truthful, and Fermat was not in error, this apparent paradox has led some to jokingly attribute supernatural abilities to Fermat.
+
+A more interesting possibility is that there is yet another proof, which is elementary and utilizes no more knowledge than Fermat had available in his day.          
+
+Most mathematicians, however, think that Fermat was just in error.  It is also possible that he realized later that he didn't have a solution, but of course did not amend the margin notes where he wrote his tantalizing statement.  
+
+Still, we cannot rule out the existence of a simpler proof, so for some, the search continues...
+
+\begin{thebibliography}{3}
+
+\bibitem{OConnor} \PMlinkexternal{Fermat's Last Theorem}{http://www-groups.dcs.st-andrews.ac.uk/~history/HistTopics/Fermat's_last_theorem.html},  by J J O'Connor and E F Robertson.
+
+\bibitem{Shay} \PMlinkexternal{Fermat's Last Theorem}{http://fermat.workjoke.com}, web site by David Shay.
+
+\bibitem{Singh} \PMlinkexternal{Fermat's Enigma}{http://www.simonsingh.com/fermat.htm} (offline book), by Simon Singh.
+
+\end{thebibliography}
+\end{document}

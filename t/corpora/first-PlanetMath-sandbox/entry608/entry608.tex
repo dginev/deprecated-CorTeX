@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\PMlinkescapeword{fixed}
+\PMlinkescapeword{name}
+\PMlinkescapeword{equivalent}
+\PMlinkescapeword{theory}
+For positive integers $s$ and $n$, the complex number
+$$c_s(n)=\sum_{\substack{0\le k<n \\ (k,n)=1}}e^{2\pi iks/n}$$
+is referred to as a \emph{Ramanujan sum}, or a \emph{Ramanujan trigonometric sum}.
+Since $e^{2\pi i}=1$, an equivalent definition is
+$$c_s(n)=\sum_{k\in r(n)}e^{2\pi iks/n}$$
+where $r(n)$ is some reduced residue system mod $n$, meaning any
+subset of $\mathbb{Z}$ containing exactly one element of each
+invertible residue class mod $n$.
+
+Using a symmetry argument about roots of unity, one can show
+$$
+\sum_{d|s}c_s(n)=
+\begin{cases}
+s & \textrm{if $s|n$} \\ 0 & \text{otherwise.}
+\end{cases}
+$$
+Applying M\"obius inversion, we get
+$$c_s(n)=\sum_{\substack{d|n \\ d|s}}\mu(n/d)d
+=\sum_{d|(n,s)}\mu(n/d)d$$
+which shows that $c_s(n)$ is a real number, and indeed an integer. 
+In particular $c_s(1)=\mu(s)$. More generally,
+$$c_{st}(mn)=c_s(m)c_t(n)\text{ if }(m,t)=(n,s)=1\;.$$
+
+Using the Chinese remainder theorem, it is not hard to show that
+for any fixed $n$, the function $s\mapsto c_s(n)$ is multiplicative:
+$$c_s(n)c_t(n)=c_{st}(n) \text{ if }(s,t)=1 \;.$$
+
+If $m$ is invertible mod $n$, then the mapping $k\mapsto km$
+is a permutation of the invertible residue classes mod $n$. Therefore
+$$c_s(mn)=c_s(n)\text{ if }(m,s)=1\;.$$
+\textbf{Remarks: } Trigonometric sums often make
+convenient apparatus in number theory, since any
+function on a quotient ring of $\mathbb{Z}$ defines
+a periodic function on $\mathbb{Z}$ itself, and conversely. For
+another example, see Landsberg-Schaar relation.
+
+Some writers use different notation from ours, reversing the roles
+of $s$ and $n$ in the expression $c_s(n)$.
+
+The name ``Ramanujan sum'' was introduced by Hardy.
+\end{document}

@@ -1,0 +1,14 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A topological space $X$ is said to be \emph{connected} if there is no pair of nonempty subsets $U,V$ such that both $U$ and $V$ are open in $X$, $U \cap V=\emptyset$ and $U \cup V=X$. If $X$ is not connected, i.e. if there are sets $U$ and $V$ with the above properties, then we say that $X$ is \emph{disconnected}.
+
+Every topological space $X$ can be viewed as a collection of subspaces each of which are connected.  These subspaces are called the \emph{connected components} of $X$.  Slightly more rigorously, we define an equivalence relation $\sim$ on points in $X$ by declaring that $x\sim y$ if there is a connected subset $Y$ of $X$ such that $x$ and $y$ both lie in $Y$.  Then a connected component of $X$ is defined to be an equivalence class under this relation.
+\end{document}

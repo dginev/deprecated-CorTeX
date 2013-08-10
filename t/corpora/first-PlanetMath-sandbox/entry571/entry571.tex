@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $X$ and $P$ be modules.
+We say that $P$ is a {\it projective cover} of $X$
+if $P$ is a projective module
+and there exists an epimorphism $p \colon P \to X$
+such that $\operatorname{ker} p$ is a superfluous submodule of $P$.
+
+Equivalently, $P$ is an projective cover of $X$
+if $P$ is projective,
+and there is an epimorphism $p \colon P \to X$,
+and if $g \colon P' \to X$ is an epimorphism
+from a projective module $P'$ to $X$,
+then there exists an epimorphism $h \colon P' \to P$
+such that $ph = g$.
+$$
+\xymatrix{
+  &
+  P'
+        \ar[d]^g
+        \ar@{-->}[dl]_h
+  \\
+  P
+        \ar[r]_p
+  &
+  X
+        \ar[r]
+        \ar[d]
+  &
+  0
+  \\
+  &
+  0
+}
+$$
+\end{document}

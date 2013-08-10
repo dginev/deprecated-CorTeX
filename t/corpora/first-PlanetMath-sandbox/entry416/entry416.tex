@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+If $F :\mathcal{C}\to\mathcal{D}$ and $G :\mathcal{D}\to\mathcal{E}$ are two covariant left exact functors between abelian categories, and if $F$ takes injective objects of $\mathcal{C}$ to $G$-acyclic objects of $\mathcal{D}$ then there is a spectral sequence for each object $A$ of $\mathcal{C}$:
+
+$E_2^{pq} = ({\rm R}^p G \circ{\rm R}^q F)(A) \implies {\rm R}^{p+q} (G\circ F)(A)$
+
+If $X$ and $Y$ are topological spaces and $\mathcal{C} = {\bf Ab}(X)$ is the category of sheaves of abelian groups on $X$ and $\mathcal{D} = {\bf Ab}(Y)$ and $\mathcal{E} = {\bf Ab}$ is the category of abelian groups, then for a continuous map $f : X \to Y$ we have a functor $f_* : {\bf Ab}(X) \to {\bf Ab}(Y)$, the direct image functor.  We also have the global section functors $\Gamma_X : {\bf Ab}(X)\to {\bf Ab}$, and $\Gamma_Y : {\bf Ab}(Y) \to {\bf Ab}$.  Then since $\Gamma_Y \circ f_* = \Gamma_X$ and we can verify the hypothesis (injectives are flasque, direct images of flasque sheaves are flasque, and flasque sheaves are acyclic for the global section functor), the sequence in this case becomes:
+
+$H^p(Y,{\rm R}^q f_*\mathcal{F})\implies H^{p+q}(X,\mathcal{F})$
+
+for a sheaf $\mathcal{F}$ of abelian groups on $X$, exactly the Leray spectral sequence.
+
+I can recommend no better book than Weibel's book on homological algebra.  Sheaf theory can be found in Hartshorne or in Godement's book.
+\end{document}

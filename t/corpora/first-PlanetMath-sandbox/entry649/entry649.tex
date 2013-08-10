@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+
+\def\dim{\operatorname{dim}}
+
+\begin{document}
+Let $S$ and $T$ be subspaces of a vector space.
+By the rank-nullity theorem and the second isomorphism theorem (for modules)
+we have
+\begin{align*}
+\dim(S+T) &= \dim S + \dim((S+T)/S) \\
+          &= \dim S + \dim(T/(S\cap T)).
+\end{align*}
+Therefore
+\begin{align*}
+\dim(S+T) + \dim(S\cap T) &= \dim S + \dim(T/(S\cap T)) + \dim(S\cap T) \\
+                          &= \dim S + \dim T,
+\end{align*}
+by the rank-nullity theorem again.
+
+
+\end{document}

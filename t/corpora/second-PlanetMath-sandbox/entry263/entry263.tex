@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A square-free sequence is a sequence which has no adjacent repeating subsequences of any length.  
+
+The name ``square-free'' comes from notation: Let $\{s\}$ be a sequence.    Then $\{s,s\}$ is also a sequence, which we write ``compactly'' as $\{s^2\}$.  In the rest of this entry we use a compact notation, lacking commas or braces.  This notation is commonly used when dealing with sequences in the capacity of strings. Hence we can write $\{s,s\} = ss = s^2$.
+
+Some examples:
+
+\begin{itemize}
+\item $xabcabcx = x(abc)^2x$, not a square-free sequence.
+\item $abcdabc$ cannot have any subsequence written in square notation, hence it is a square-free sequence.
+\item $ababab = (ab)^3 = ab(ab)^2$, not a square-free sequence.
+\end{itemize}
+
+Note that, while notationally similar to the number-theoretic sense of ``square-free,'' the two concepts are distinct.  For example, for integers $a$ and $b$ the product $aba = a^2b$, a square.   But as a sequence, $aba = \{a,b,a\}$; clearly lacking any commutativity that might allow us to shift elements.  Hence, the sequence $aba$ is square-free.
+\end{document}

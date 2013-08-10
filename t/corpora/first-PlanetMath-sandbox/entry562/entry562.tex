@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A module $P$ is {\it projective}
+if it satisfies the following equivalent conditions:
+
+(a) Every short exact sequence
+of the form $0 \to A \to B \to P \to 0$ 
+is \PMlinkname{split}{SplitShortExactSequence};
+
+(b) The functor ${\rm Hom}(P, -)$ 
+is \PMlinkname{exact}{ExactFunctor};
+
+(c) If $f : X \to Y$ is an epimorphism
+and there exists a homomorphism $g : P \to Y$,
+then there exists a homomorphism $h : P \to X$
+such that $fh = g$.
+$$
+\xymatrix{
+  &
+  P
+        \ar@{-->}[dl]_h
+        \ar[d]^g
+  \\
+  X
+        \ar[r]_f
+  &
+  Y
+        \ar[r]
+  &
+  0
+}
+$$
+
+(d) The module $P$ is a direct summand of a free module.
+\end{document}

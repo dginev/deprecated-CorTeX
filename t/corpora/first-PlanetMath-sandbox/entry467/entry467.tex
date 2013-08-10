@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{singular}
+Any real $m \times n$ matrix $A$ can be decomposed into
+
+$$ A = USV^T $$
+
+where $U$ is an $m \times m$ orthogonal matrix, $V$ is an $n \times n$ orthogonal matrix, and $S$ is a unique $m \times n$ diagonal matrix with real, non-negative elements $\sigma_i$, $i = 1, \ldots , \min(m,n)$ , in descending order:
+
+$$ \sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_{\min(m,n)} \ge 0 $$
+
+The $\sigma_i$ are the \emph{singular values} of $A$ and the first $\min(m,n)$ columns of $U$ and $V$ are the left and right (respectively) \emph{singular vectors} of $A$.  $S$ has the form:
+
+$$ \begin{bmatrix}\Sigma \\ 0\end{bmatrix} \operatorname{if} m \ge n \;\operatorname{and}\; \begin{bmatrix}\Sigma & 0 \end{bmatrix} \operatorname{if} m < n,$$
+
+where $\Sigma$ is a diagonal matrix with the diagonal elements $\sigma_1,\sigma_2,\ldots , \sigma_{\min(m,n)}$.  We assume now $m \ge n$. If $r=\operatorname{rank}(A) < n $ , then
+
+$$ \sigma_1 \ge \sigma_2 \ge \cdots \ge \sigma_r > \sigma_{r+1} = \cdots = \sigma_n = 0.$$
+
+If $\sigma_r \ne 0$ and $\sigma_{r+1} = \cdots = \sigma_n = 0$, then $r$ is the rank of $A$.  In this case, $S$ becomes an $r \times r$ matrix, and $U$ and $V$ shrink accordingly.  SVD can thus be used for rank determination.
+
+The SVD provides a numerically robust solution to the least-squares problem.  The matrix-algebraic phrasing of the least-squares solution $x$ is 
+
+$$ x = (A^T A)^{-1} A^T b $$
+
+Then utilizing the SVD by making the replacement $A=USV^T$ we have
+
+$$ x = V \begin{bmatrix} \Sigma^{-1} & 0 \end{bmatrix} U^T b .$$
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook (\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+\end{document}

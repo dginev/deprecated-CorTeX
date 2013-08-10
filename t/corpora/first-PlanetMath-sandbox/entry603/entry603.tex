@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $F$ be a finite field of characteristic $p$, and let $f$ and $g$ be distinct monic irreducible (non-constant) polynomials in the polynomial ring $F[X]$. Define the {\em Legendre symbol} $\left(\frac{f}{g}\right)$ by
+$$
+\left(\frac{f}{g}\right) :=
+\begin{cases}
+1 & \text{ if $f$ is a square in the quotient ring $F[X]/(g)$,} \\
+-1 & \text{ otherwise.}
+\end{cases}
+$$
+The quadratic reciprocity theorem for polynomials over a finite field states that
+$$
+\left(\frac{f}{g}\right) \left(\frac{g}{f}\right) = (-1)^{\frac{p-1}{2} \deg(f) \deg(g)}.
+$$
+\begin{thebibliography}{9}
+\bibitem{feng-ying}
+Feng, Ke Qin and Ying, Linsheng,
+{\em An elementary proof of the law of quadratic reciprocity in $F\sb q(T)$.}
+Sichuan Daxue Xuebao {\bf 26} (1989), Special Issue, 36--40.
+\bibitem{merrill-walling}
+Merrill, Kathy D. and Walling, Lynne H.,
+{\em On quadratic reciprocity over function fields.}
+Pacific J. Math. {\bf 173} (1996), no. 1, 147--150.
+\end{thebibliography}
+\end{document}

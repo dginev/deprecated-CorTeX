@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $R$ be a commutative ring and let $S$ be a nonempty multiplicative subset of $R$. The {\em localization} of $R$ at $S$ is the ring $S^{-1} R$ whose elements are equivalence classes of $R \times S$ under the equivalence relation $(a,s) \sim (b,t)$ if $r(at - bs) = 0$ for some $r \in S$. Addition and multiplication in $S^{-1}R$ are defined by:
+\begin{itemize}
+\item $(a,s) + (b,t) = (at+bs,st)$
+\item $(a,s) \cdot (b,t) = (a \cdot b,s \cdot t)$
+\end{itemize}
+The equivalence class of $(a,s)$ in $S^{-1}R$ is usually denoted $a/s$. For $a \in R$, the localization of $R$ at the minimal multiplicative set containing $a$ is written as $R_a$. When $S$ is the complement of a prime ideal $\mathfrak{p}$ in $R$, the localization of $R$ at $S$ is written $R_{\mathfrak{p}}$.
+\end{document}

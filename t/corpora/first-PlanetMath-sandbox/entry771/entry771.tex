@@ -1,0 +1,20 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+Given a topological space $(X,\tau)$, a \emph{regularly open set} is an open set $A\in \tau$ such that 
+$$\mathrm{int}\, \overline{A}=A$$
+(the interior of the closure is the set itself).
+
+An example of non regularly open set on the standard topology for $\R$ is
+$A=(0,1)\cup(1,2)$ since $\mathrm{int}\overline{A}=(0,2)$.
+\end{document}

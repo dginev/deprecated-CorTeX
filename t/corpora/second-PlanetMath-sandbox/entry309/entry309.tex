@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+
+\newtheorem{theorem}[proposition]{Theorem}
+\begin{document}
+A mapping $f: X \to Y$ between metric spaces is said to satisfy the
+Lipschitz condition, or to be \emph{Lipschitz continuous} or \emph{$L$-Lipschitz} if there exists a real constant $L$ such
+that
+$$ d_Y(f(p),f(q)) \leq L d_X(p,q),\quad \text{for all}\; p,q\in X.$$
+
+The least constant $L$ for which the previous inequality holds, is called the \emph{Lipschitz constant} of $f$.
+The space of Lipschitz continuous functions is often denoted by $\mathrm{Lip}(X,Y)$.
+
+Clearly, every Lipschitz continuous function is continuous.
+
+\paragraph{Notes.}
+More generally, one says that a mapping satisfies
+a Lipschitz condition of order $\alpha>0$ if there exists a real constant $C$ such that
+$$ d_Y(f(p),f(q)) \leq C d_X(p,q)^\alpha,\quad \text{for all}\; p,q\in X.$$
+
+Functions which satisfy this condition are also called \emph{H{\"o}lder continuous} or \emph{$\alpha$-H{\"o}lder}. The vector space of such functions is denoted by $C^{0,\alpha}(X,Y)$ and hence $\mathrm{Lip}=C^{0,1}$.
+\end{document}

@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+{\bf Definition} 
+Let $V$ be a vector space over a field $F$, 
+and let $W$ be a subset of $V$.
+If $W$ is itself a vector space,
+then $W$ is said to be a \emph{vector subspace} of $V$.
+If in addtition $V\neq W$, then $W$ is a \emph{proper vector subspace} of $V$. 
+
+If $W$ is a nonempty subset of $V$,
+then a necessary and sufficient condition for $W$ to be a subspace
+is that $a+\gamma b \in W$ 
+for all $a,b \in W$ and all $\gamma \in F$.
+
+\subsubsection{Examples}
+\begin{enumerate}
+\item Every vector space is a vector subspace of itself.
+\item In every vector space, $\{0\}$ is a vector subspace.
+\item If $S$ and $T$ are vector subspaces of a vector space $V$, 
+then the vector sum 
+\[
+  S+T=\{s+t \in V \mid s\in S, t\in T\}
+\]
+and the intersection 
+\[
+  S\cap T = \{u \in V \mid u\in S, u\in T \}
+\]
+are vector subspaces of $V$.
+\item Suppose $S$ and $T$ are vector spaces,
+and suppose $L$ is a linear
+mapping $L\colon S\to T$.
+Then $\operatorname{Im}L$ is a vector subspace of $T$,
+and $\operatorname{Ker}L$ is a vector subspace of $S$.
+\item If $V$ is an inner product space,
+then the orthogonal complement of any subset of $V$
+is a vector subspace of $V$.
+\end{enumerate}
+
+\subsubsection{Results for vector subspaces}
+
+{\bf Theorem 1} \cite{lang}
+ Let $V$ be a finite dimensional vector space.
+ If $W$ is a vector subspace of $V$ and $\dim W=\dim V$, then $W=V$.
+ 
+ {\bf Theorem 2} \cite{deskins} (Dimension theorem for subspaces)
+ Let $V$ be a vector space with
+ subspaces $S$ and $T$. Then
+ \begin{eqnarray*}
+ \dim (S+T) + \dim (S\cap T) &=& \dim S + \dim T.
+ \end{eqnarray*}
+ 
+ \begin{thebibliography}{9}
+ \bibitem {lang} S. Lang,
+ \emph{Linear Algebra},
+ Addison-Wesley, 1966.
+ \bibitem {deskins} W.E. Deskins,
+ \emph{Abstract Algebra},
+ Dover publications,
+ 1995.
+ \end{thebibliography}
+\end{document}

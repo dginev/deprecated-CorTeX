@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\PMlinkescapeword{independent}
+
+\emph{Arclength} is the \PMlinkescapetext{length} of a section of a differentiable curve. Finding the length of an arc is useful in many applications, for the length of a curve can represent distance traveled, work, etc. It is commonly represented as $S$ or the differential $ds$ if one is differentiating or integrating with respect to change in arclength. 
+
+If one knows the vector function or parametric equations of a curve, finding the arclength is \PMlinkescapetext{simple}, as it can be given by the sum of the lengths of the tangent vectors to the curve or 
+
+$$ \int_a^b |\vec{F}'(t)| \; dt=S $$ 
+
+Note that $t$ is an independent parameter. In Cartesian coordinates, arclength can be calculated by the formula 
+
+$$ S=\int_a^b \sqrt{1+(f'(x))^2} \; dx $$ 
+
+This formula is derived by viewing arclength as the Riemann sum 
+
+$$ \lim_{\Delta x\rightarrow\infty}\sum_{i=1}^n \sqrt{1+f'(x_i)^2}\; \Delta x $$ 
+
+The term being summed is the length of an approximating secant to the curve over the distance $\Delta x$. As $\Delta x$ vanishes, the sum approaches the arclength, as desired. Arclength can also be derived for polar coordinates from the general formula for vector functions given above. The result is
+$$ L = \int_a^b \sqrt{r(\theta)^2 + (r'(\theta))^2}\; d\theta$$
+\end{document}

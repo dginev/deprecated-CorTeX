@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+{\bf Note: this entry is being rewritten in response to the discussion "\PMlinkexternal{euclidean space has no origin}{http://planetmath.org/?op=getmsg&id=6329}" to make it more useful.}
+
+$\mathbb{R}^n$, the set of $n$-tuplets of elements of $\mathbb{R}$ can be made into a geometric space in several ways by imposing various geometric structures on it.  In this entry, we shall explore four such structures.
+
+\subsection{$\mathbb{R}^n$ as an affine space}
+
+To make $\mathbb{R}^n$ into an affine space, we will specify two functions, $D \colon \mathbb{R} \times \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}^n$ and $T \colon \mathbb{R}^n \times \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}^n$ as follows:
+ $$D \left( s, \begin{pmatrix} a_1, \ldots,  a_n \end{pmatrix}, \begin{pmatrix} b_1, \ldots, b_n \end{pmatrix} \right) = \begin{pmatrix} (1-s) a_1 + s b_1, \ldots,  (1-s) a_n + s b_n \end{pmatrix}$$
+ $$T \left( \begin{pmatrix} a_1, \ldots,  a_n \end{pmatrix}, \begin{pmatrix} b_1, \ldots, b_n \end{pmatrix}, \begin{pmatrix} c_1, \ldots, c_n \end{pmatrix} \right) = \begin{pmatrix} b_1 + c_1 - a_1, \ldots, b_n + c_n - a_n \end{pmatrix}$$
+Intuitively, $D (s,p,q)$ is the point to which $q$ is mapped under dilating space by a factor $s$ about the point $p$ and $T(p,q,r)$ is the point which completes the parallelogram with vertices $p,q,r$.
+
+\subsection{$\mathbb{R}^n$ as a Euclidean space}
+
+In order to make $\mathbb{R}^n$ into a Euclidean space, we specify a distance function $d \colon \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ as follows:
+ \[d \left( \begin{pmatrix} a_1, \ldots,  a_n \end{pmatrix}, \begin{pmatrix} b_1, \ldots, b_n \end{pmatrix} \right) = \sqrt{ (a_1-b_1)^2 + \cdots + (a_n-b_n)^2 }\]
+This function is also known as a metric, but one needs to be careful with the term "metric" because it is sometimes also used to refer to an inner product.
+
+\subsection{$\mathbb{R}^n$ as vector space}
+
+In order to make $\mathbb{R}^n$ into a vector space, we specify two maps: the addition map $+ \colon \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}^n$ and the scalar product map $\times \colon \mathbb{R} \times \mathbb{R}^n \to \mathbb{R}^n$.  These maps are defined as follows:
+ $$\begin{pmatrix} a_1, \ldots,  a_n \end{pmatrix} + \begin{pmatrix} b_1, \ldots, b_n \end{pmatrix} = 
+\begin{pmatrix} a_1 + b_1, \ldots, a_n + b_n \end{pmatrix}$$
+ $$c \times \begin{pmatrix} a_1, \ldots, a_n \end{pmatrix}
+ = \begin{pmatrix} c a_1, \ldots, c a_n \end{pmatrix}$$
+
+\subsection{$\mathbb{R}^n$ as an inner product space}
+
+In order to make $\mathbb{R}^n$ into an inner product space we specify, in addition to the addition map and the scalar product map, another map, namely the inner product map, $\cdot \colon \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$, which is defined as follows:
+ $$\begin{pmatrix} a_1, \ldots, a_n \end{pmatrix} \cdot
+ \begin{pmatrix} b_1, \ldots, b_n \end{pmatrix} = 
+a_1 b_1 + \ldots + a_n b_n$$
+
+\section{Relations between structures}
+
+Some of these geometries impose more structure on our space than others.  Affine geometry imposes the least structure and inner product space imposes the most.  The situation may be summarized in the following diagram, where the arrows mean that we can get from one geometry to the next by imposing more structure:
+  $$\begin{matrix} & & \hbox{Affine space} & & \\
+& \swarrow & & \searrow & \\
+\hbox{Euclidean space} & & & & \hbox{Vector Space} \\
+& \searrow & & \swarrow & \\
+& & \hbox{Inner product space} & & \\ \end{matrix}$$
+
+\section{Symmetry}
+
+The four geometric structures described above may be characterized in
+terms of the symmetry groups which preserve the structures in question.
+These groups happen to be Lie groups and are as follows:
+\begin{enumerate}
+\item The symmetry group is $IGL(n,\mathbb{R})$, the set of all
+inhomogeneous linear transformations.  (Here and in the next item,
+"inhomogeneous" means that translations are included in the
+transformation group.)
+\item The symmetry group is $IO(n,\mathbb{R})$, the set of all
+inhomogeneous orthogonal transformations.  These include rotations,
+translations, and reflections.
+\item The symmetry group is $GL(n,\mathbb{R})$, the set of all
+homogeneous linear transformations.
+\item The symmetry group is $O(n,\mathbb{R})$, the set of all
+homogeneous orthogonal transformations. 
+\end{enumerate}
+
+These different groups act differently on the same underlying space and hence we have different invariants.  These invariants may be described in algebraic and in geometric terms.
+
+
+\section{Generalizations}
+
+Although we presented considered $\mathbb{R}^n$, most of these constructions also work more generally.  In this section, we shall discuss under what conditions we can use the same constructions to impose geometric structure on $\mathbb{K}^n$ when $\mathbb{K}$ is a algebraic system.
+
+\section{Abuses of language}
+
+{\bf Below is the old entry, which will be erased as soon as it has been supplanted by the new entry.}
+
+{\em Affine space} of dimension $n$ over a field $k$ is $k^n$, the set of \PMlinkid{$n$-tuplets}{6617} of elements of $k$.  The reason that the finite dimensional vector space $k^n$ has such a special name ``affine space'' is because it is acted upon by the set of affine transformations, which are transforms of the form
+ $$\left( \begin{matrix} x_1 \\ \vdots \\ x_n \end{matrix} \right) \mapsto \left( \begin{matrix} m_{11} & \cdots & m_{1n} \\ \vdots & \ddots & \vdots \\ m_{n1} & \cdots & m_{nn} \end{matrix} \right) \left( \begin{matrix} x_1 \\ \vdots \\ x_n \end{matrix} \right) + \left( \begin{matrix} v_1 \\ \vdots \\ v_n \end{matrix} \right)$$
+and hence is the natural setting for affine geometry.  (For more information on affine geometry, please see section 1.1.2 of the \PMlinkid{topic entry on geometry.}{3824})  It is worth mentioning that the name ``affine space'' is used primarily in geometry and in commutative algebra.  (In algebra, one does not concern oneself with affine transforms and simply uses the term ``affine space'' as synonym for ``vector space'').
+\end{document}

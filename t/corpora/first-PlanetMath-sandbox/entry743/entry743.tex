@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\begin{document}
+\begin{defn}
+A topological space is a \emph{regular space} if
+ it is both a \PMlinkname{$T_0$ space}{T0Space} and a 
+ \PMlinkname{$T_3$ space}{T3Space}.
+\end{defn}
+
+{\bf Example.}
+Consider the set $\R$ with the topology $\sigma$ generated  by the basis $$\beta=\{ U=V-C: V \mbox{ is open with the standard topology and\ } C \mbox{ is (infinite) numerable}\}.$$
+
+Since $\Q$ is numerable and $\R$ open, the set of irrational numbers $\R-\Q$ is open and therefore $\Q$ is closed.
+It can be shown that $\R-\Q$ is an open set with this topology and $\Q$ is closed. 
+
+Take any irrational number $x$. Any open set $V$  containing all $\Q$ must contain also $x$, so the regular space property cannot be satisfied. Therefore, $(\R,\sigma)$ is not a regular space.
+
+\subsubsection*{Note}
+In topology, the terminology for separation axioms is not
+standard. Therefore there are also other meanings of regular. 
+In some references (e.g. \cite{kelley})
+the meanings of regular and $T_3$ is exchanged. That is, 
+$T_3$ is a stronger property than regular. 
+
+ \begin{thebibliography}{9}
+ \bibitem{steen} L.A. Steen, J.A.Seebach, Jr.,
+ \emph{Counterexamples in topology},
+ Holt, Rinehart and Winston, Inc., 1970.
+\bibitem{kelley}
+J.L. Kelley, \emph{General Topology}, D. van Nostrand Company, Inc., 1955.
+
+ \end{thebibliography}
+\end{document}

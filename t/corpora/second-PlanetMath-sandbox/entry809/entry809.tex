@@ -1,0 +1,153 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\va}{\mathbf{a}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\hva}{\mathbf{a}'}
+\newcommand{\hvb}{\mathbf{b}'}
+\newcommand{\kfield}{\mathbb{K}}
+\newcommand{\hI}{I'}
+\newcommand{\hJ}{J'}
+\newcommand{\hi}{{i'}}
+\newcommand{\hj}{{j'}}
+\newcommand{\hc}{c'}
+\begin{document}
+{\bf Definition.} The classical conception of the tensor product
+operation involved finite dimensional vector spaces $A$, $B$, say over
+a field $\kfield$.  To describe the tensor product $A\otimes B$ one
+was obliged to chose bases
+$$\va_i\in A,\; i\in I,\quad \vb_j\in B,\; j\in J$$
+of $A$ and $B$ indexed
+by finite sets $I$ and $J$, respectively, and represent elements of
+$\va\in A$ and $\vb\in B$ by their coordinates relative to these bases,
+i.e. as mappings $a:I\rightarrow \kfield$ and $b:J\rightarrow \kfield$
+such that
+$$\va = \sum_{i\in I} a^i \va_i,\qquad \vb=\sum_{j\in J} b^j \vb_j.$$
+One then represented $A\otimes B$ relative to this particular choice
+of bases as the vector space of mappings $c:I\times J\rightarrow
+\kfield$.  These mappings were called ``second-order contravariant
+tensors'' and their values were customarily denoted by superscripts,
+a.k.a. contravariant indices:
+$$c^{ij}\in \kfield,\quad i\in I,\; j\in J.$$
+The canonical bilinear
+multiplication (also known as outer multiplication)
+$$\otimes:A\times B\rightarrow A\otimes B$$
+was defined by
+representing $\va\otimes \vb$, relative to the chosen bases, as the
+tensor
+$$c^{ij} = a^ib^j,\quad i\in I,\;j\in J.$$
+In this system, the
+products
+$$\va_i\otimes \vb_j,\quad i\in I,\; j\in J$$
+were represented by basic
+tensors, specified in terms of the Kronecker deltas as the mappings
+$$(i',j')\mapsto \delta^{i'}_i \delta^{j'}_j,\quad i'\in I,\; j'\in J.$$
+These gave a basis of $A\otimes B$.
+
+
+The construction is independent of the choice of bases in the
+following sense.  Let
+$$\hva_i\in A,\; i\in \hI,\qquad \hvb_j\in B,\; j\in \hJ$$
+be different bases of $A$ and $B$ with indexing sets $\hI$
+and $\hJ$ respectively.  Let
+$$
+r:I\times \hI\rightarrow \kfield,\qquad
+s:J\times \hJ\rightarrow \kfield,
+$$
+be the corresponding change of basis matrices determined by
+\begin{align*}
+\hva_{\hi} &= \sum_{i\in I} \lp r^i_{i'}\rp \va_i,\quad \hi\in I'\\
+\hvb_{\hj} &= \sum_{j\in I} \lp s^j_{j'}\rp \vb_j,\quad \hj\in J'.
+\end{align*}
+One then stipulated that tensors $c:I\times J\rightarrow \kfield$ and 
+$\hc:\hI\times \hJ\rightarrow \kfield$ represent the same element of
+$A\otimes B$ if 
+\begin{equation}
+  \label{eq:eq1}
+c^{ij} = \sum_{\genfrac{}{}{0pt}{}{i'\in I'}{j'\in J'}}
+\lp r^i_{i'}\rp \lp s^j_{j'}\rp (c')^{i'j'}  
+\end{equation}
+for all $i\in I, j\in J$.  This relation corresponds to the fact that
+the products
+$$\hva_i\otimes \hvb_j,\quad i\in I',\; j\in J'$$
+constitute an alternate basis of $A\otimes B$, and that the change of
+basis relations are
+\begin{equation}
+  \label{eq:eq2}
+  \hva_\hi \otimes \hvb_\hj = \sum_{\genfrac{}{}{0pt}{}{i\in I}{j\in J}}
+  \lp r^i_{i'}\rp \lp s^j_{j'}\rp \va_i\otimes \vb_j,\quad
+  \hi\in I',\; \hj\in J'.  
+\end{equation}
+
+{\bf Notes.} Historically, the tensor product was called the {\em
+  outer} product, and has its origins in the absolute differential
+calculus (the theory of manifolds).  The old-time tensor calculus is
+difficult to understand because it is afflicted with a particularly
+lethal notation that makes coherent comprehension all but impossible.
+Instead of talking about an element $\va$ of a vector space, one was
+obliged to contemplate a symbol $\va^i$, which signified a list of
+real numbers indexed by $1,2,\ldots,n$, and which was understood to
+represent $\va$ relative to some specified, but unnamed basis.  
+
+What makes this notation truly lethal is the fact a symbol $\va^j$ was
+taken to signify an alternate list of real numbers, also indexed by
+$1,\ldots, n$, and also representing $\va$, albeit relative to a
+different, but equally unspecified basis.  Note that the choice of
+{\em dummy variables make all the difference.}  Any sane system of
+notation would regard the expression
+$$\va^i,\quad i=1,\ldots,n$$
+as representing a list of $n$ symbols
+$$\va^1,\va^2,\ldots,\va^n.$$
+However, in the classical system, one was strictly forbidden from
+using
+$$\va^1,\va^2,\ldots,\va^n$$
+because where, after all, is the all important
+dummy variable to indicate choice of basis?
+
+Thankfully, it is possible to shed some light onto this confusion (I
+have read that this is credited to Roger Penrose) by interpreting the
+symbol $\va^i$ as a mapping from some finite index set $I$ to
+$\reals$, whereas $\va^j$ is interpreted as a mapping from another
+finite index set $J$ (of equal cardinality) to $\reals$.  
+
+
+My own surmise is that the source of this notational difficulty stems
+from the reluctance of the ancients to deal with geometric objects
+directly.  The prevalent superstition of the age held that in order to
+have meaning, a geometric entity had to be {\em measured} relative to
+some basis.  Of course, it was understood that geometrically no one
+basis could be preferred to any other, and this leads directly to the
+definition of geometric entities as lists of measurements modulo the
+equivalence engendered by changing the basis.
+
+It is also worth remarking on the contravariant nature of the
+relationship between the actual elements of $A\otimes B$ and the
+corresponding representation by tensors relative to a basis --- compare
+equations (1) and (2).
+This relationship is the source of the
+terminology ``contravariant tensor'' and ``contravariant index'', and
+I surmise that  it
+is this very medieval pit of darkness and confusion that spawned the
+present-day notion of ``contravariant functor''.
+\bigskip
+
+{\bf References.}
+\begin{enumerate}
+\item Levi-Civita, ``The Absolute Differential Calculus.''
+\end{enumerate}
+\end{document}

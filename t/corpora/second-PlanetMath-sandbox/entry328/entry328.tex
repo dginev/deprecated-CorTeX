@@ -1,0 +1,57 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\R{\mathbb{R}}
+\def\N{\mathbb{N}}
+\def\Z{\mathbb{Z}}
+
+\begin{document}
+\PMlinkescapeword{dimensions}
+\PMlinkescapeword{series}
+
+Let $(X,x_{0})$ be a pointed topological space (that is, a topological space with a chosen basepoint $x_{0}$).
+Denote by $[(S^1,1),(X,x_{0})]$
+the set of homotopy classes of maps $\sigma\colon S^{1} \to X$
+such that $\sigma(1)=x_{0}$.
+Here, $1$ denotes the basepoint $(1,0) \in S^{1}$.
+Define a product
+$[(S^1,1),(X,x_{0})] \times [(S^1,1),(X,x_{0})] \to [(S^1,1),(X,x_{0})]$
+by $[\sigma][\tau]=[\sigma\tau]$,
+where $\sigma\tau$ means ``travel along $\sigma$ and then $\tau$''.
+This gives $[(S^1,1),(X,x_{0})]$ a group structure
+and we define the \emph{fundamental group} of $(X,x_0)$
+to be $\pi_1(X,x_{0})= [(S^1,1),(X,x_{0})]$.
+
+In general, the fundamental group of a topological space
+depends upon the choice of basepoint.
+However, basepoints in the same path-component of the space
+will give isomorphic groups.
+In particular, this means that the fundamental group of a (non-empty) path-connected space is well-defined, up to isomorphism,
+without the need to specify a basepoint.
+
+Here are some examples of fundamental groups of familiar spaces: 
+\begin{itemize}
+\item $\pi_1(\R^n)\cong\{0\}$ for each $n\in\N$.
+\item $\pi_1(S^1)\cong\mathbb{Z}$.
+\item $\pi_1(T)\cong \mathbb{Z}\oplus\mathbb{Z}$, where $T$ is the torus.
+\end{itemize}
+
+It can be shown that $\pi_1$ is a functor
+from the category of pointed topological spaces to the category of groups.
+In particular, the fundamental group is a topological invariant,
+in the sense that
+if $(X,x_0)$ is homeomorphic to $(Y,y_0)$ via a basepoint-preserving map,
+then $\pi_1(X,x_0)$ is isomorphic to $\pi_1(Y,y_{0})$. 
+
+It can also be shown that two homotopically equivalent path-connected spaces
+have isomorphic fundamental groups.
+
+Homotopy groups generalize the concept of the fundamental group to higher dimensions.
+The fundamental group is the first homotopy group,
+which is why the notation $\pi_1$ is used.
+\end{document}

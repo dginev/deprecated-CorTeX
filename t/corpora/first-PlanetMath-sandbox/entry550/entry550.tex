@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% This is Cosmin's preamble version 1.01 (planetmath.org version)
+ 
+% Packages
+  \usepackage{amsmath}
+  \usepackage{amssymb}
+  \usepackage{amsfonts}
+  \usepackage{amsthm}
+  \usepackage{mathrsfs}
+  %\usepackage[]{graphicx}
+  %\usepackage{xypic}
+  %\usepackage[]{babel}
+
+% Theorem Environments
+  \newtheorem*{thm}{Theorem}
+  \newtheorem{thmn}{Theorem}
+  \newtheorem*{lem}{Lemma}
+  \newtheorem{lemn}{Lemma}
+  \newtheorem*{cor}{Corollary}
+  \newtheorem{corn}{Corollary}
+  \newtheorem*{prop}{Proposition}
+  \newtheorem{propn}{Proposition}
+
+% New Commands
+  % Other Commands
+    \renewcommand{\geq}{\geqslant}
+    \renewcommand{\leq}{\leqslant}
+    \newcommand{\vect}[1]{\boldsymbol{#1}}
+    \renewcommand{\div}{\!\mid\!}
+  % Local
+    %\DeclareMathOperator{}{}
+\begin{document}
+\PMlinkescapeword{inverse}
+\PMlinkescapeword{pairing}
+\PMlinkescapeword{satisfy}
+\PMlinkescapeword{equation}
+
+We first show that, if $p$ is a prime, then $(p-1)! \equiv -1 \pmod p.$ Since $p$ is prime, $\mathbb{Z}_p$ is a field and thus, pairing off each element with its inverse in the product $(p-1)! = \prod_{x=1}^{p-1}x,$ we are left with the elements which are their own inverses (i.e. which satisfy the equation $x^2 \equiv 1 \pmod p$), $1$ and $-1$, only. Consequently, $(p-1)! \equiv -1 \pmod p.$
+
+To prove that the condition is necessary, suppose that $(p-1)! \equiv -1 \pmod p$ and that $p$ is not a prime. The case $p=1$ is trivial. Since $p$ is composite, it has a divisor $k$ such that $1 < k < p$, and we have $(p-1)! \equiv -1 \pmod k$. However, since $k\leq p-1$, it divides $(p-1)!$ and thus $(p-1)! \equiv 0 \pmod k,$ a contradiction.
+\end{document}

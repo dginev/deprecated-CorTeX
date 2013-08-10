@@ -1,0 +1,129 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+\newcommand{\nl}[1]{\PMlinkescapetext{{#1}}}
+\newcommand{\pln}[2]{\PMlinkname{{#1}}{#2}}
+\begin{document}
+\subsection{Definitions}
+\begin{itemize}
+\item A {\bf unitary space} $V$ is a complex vector space with a
+distinguished positive definite Hermitian form,
+$$
+\langle -,-\rangle: V\times V \rightarrow \cnums,$$
+which serves as
+the inner product on $V$.  
+\end{itemize}
+\begin{itemize}
+\item A {\bf unitary transformation} is a surjective linear transformation
+$T:V\rightarrow V$ satisfying
+\begin{equation}
+  \label{eq:def}
+\langle u,v \rangle = \langle Tu,Tv\rangle,\quad  u, v \in V.  
+\end{equation}
+These are isometries of $V$.
+\end{itemize}
+\begin{itemize}
+\item More generally, a {\bf unitary transformation} is a surjective linear transformation $T:U \longrightarrow V$ between two unitary spaces $U,V$ satisfying
+\begin{displaymath}
+\langle Tv , Tu \rangle_{V} = \langle v , u \rangle_{U},\quad\; u,v \in U
+\end{displaymath}
+In this entry will restrict to the case of the first \PMlinkescapetext{definition}, i.e. $U = V$.
+\end{itemize}
+\begin{itemize}
+\item A {\bf unitary matrix} is a square complex-valued matrix, $A$, whose inverse 
+is equal to its conjugate transpose:
+$$A^{-1}=\bar{A}^t.$$
+\end{itemize}
+\begin{itemize}
+\item When $V$ is a Hilbert space, a bounded linear operator $T:V \longrightarrow V$ is said to be a {\bf unitary operator} if its inverse is equal to its adjoint:
+\begin{displaymath}
+T^{-1} = T^*
+\end{displaymath}
+
+In Hilbert spaces unitary transformations correspond precisely to unitary operators.
+\end{itemize}
+
+\subsection{Remarks}
+
+\begin{enumerate}
+\item 
+
+A standard example of a unitary space is
+$\cnums^n$ with inner product
+\begin{equation}
+  \label{eq:cprod}
+  \langle u,v \rangle = \sum_{i=1}^n u_i\, \overline{v_i},\quad
+  u,v \in\cnums^n.  
+\end{equation}
+
+
+\item Unitary transformations and unitary matrices
+are closely related.  On the one hand, a unitary matrix defines a
+unitary transformation of $\cnums^n$ relative to the inner product
+\eqref{eq:cprod}.  On the other hand, the representing matrix of a
+unitary transformation relative to an orthonormal basis is, in fact, a
+unitary matrix.
+
+\item A unitary transformation is an automorphism.  This follows from
+  the fact that a unitary transformation $T$ preserves the
+  inner-product norm:
+  \begin{equation}
+    \label{eq:def1}
+    \Vert T u \Vert= \Vert u\Vert,\quad u\in V.    
+  \end{equation}
+  Hence, if $$Tu=0,$$
+  then by  the definition \eqref{eq:def}
+  it follows that  
+  $$\Vert u \Vert = 0,$$
+  and hence by the inner-product axioms that 
+  $$u=0.$$
+  Thus, the kernel of $T$ is trivial, and therefore it is an
+  automorphism.
+\item Moreover, relation \eqref{eq:def1} can be taken as the definition
+  of a unitary transformation.  Indeed, using the polarization
+  identity it is possible to show that if
+  $T$ preserves the norm, then \eqref{eq:def} must hold as well.
+
+
+\item A simple example of a unitary matrix is the change of
+  coordinates matrix between two orthonormal bases.  Indeed, let
+  $u_1,\ldots, u_n$ and $v_1,\ldots,v_n$ be two orthonormal bases, and
+  let $A=(A^i_j)$ be the corresponding change of basis matrix
+  defined by
+$$v_j = \sum_i A^i_j\, u_i,\quad j=1,\ldots, n.$$
+Substituting the above relation into the defining relations for an
+orthonormal basis,
+\begin{eqnarray*}
+\langle u_i,u_j\rangle &=& \delta_{ij},\\
+\langle v_k,v_l\rangle &=& \delta_{kl},  
+\end{eqnarray*}
+we obtain
+$$\sum_{ij} \delta_{ij} A^i_k \overline{A^j_l}  = \sum_i A^i_k \overline{A^i_l} =
+\delta_{kl}.$$
+In matrix notation, the above is simply
+$$A \bar{A}^t = I,$$
+as desired.
+\item Unitary transformations form a group under composition. Indeed, if $S, T$ are unitary transformations then $ST$ is also surjective and
+\begin{displaymath}
+\langle STu, STv \rangle = \langle Tu, Tv\rangle = \langle u, v\rangle
+\end{displaymath}
+for every $u,v \in V$. Hence $ST$ is also a unitary transformation.
+\item Unitary spaces, transformations, matrices and operators are of fundamental
+  importance in quantum mechanics.
+\end{enumerate}
+\end{document}

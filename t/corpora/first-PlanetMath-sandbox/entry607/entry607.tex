@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+Let $A$ be an $n \times n$ square matrix and $x$ an $n\times 1$ column vector. Then a (right) \emph{eigenvector} of $A$ is a nonzero vector $x$ such that
+
+$$ Ax = \lambda x $$
+
+for some scalar $\lambda$, i.e. such that the image of $x$ under the transformation $A$ is a \emph{scalar \PMlinkescapetext{multiple}} of $x$.  One can similarly define left eigenvectors in the case that $A$ acts on the right.
+
+One can find eigenvectors by first finding eigenvalues, then for each eigenvalue $\lambda_i$, solving the system
+
+$$ (A-\lambda_i I) x_i = 0 $$
+
+to find a form which characterizes the eigenvector $x_i$ (any \PMlinkescapetext{multiple} of $x_i$ is also an eigenvector).  Of course, this is not necessarily the best way to do it; for this, see  singular value decomposition.
+\end{document}

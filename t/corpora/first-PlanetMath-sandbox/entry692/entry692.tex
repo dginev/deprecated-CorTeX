@@ -1,0 +1,21 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+A relation $\mathcal{R}$ on a set $A$ is \emph{transitive} if and only if
+$\forall x,y,z \in A$, $(x\mathcal{R}y \land y\mathcal{R}z) \rightarrow (x\mathcal{R}z)$.
+
+For example, the ``is a subset of'' relation $\subseteq$
+on any set of sets is transitive.
+The ``less than'' relation $<$ on the set of real numbers
+is also transitive.
+
+The ``is not equal to'' relation $\neq$
+on the set of integers is not transitive,
+because $1\neq 2$ and $2\neq 1$ does not imply $1\neq 1$.
+
+\end{document}

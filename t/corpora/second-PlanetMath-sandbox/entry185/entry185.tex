@@ -1,0 +1,87 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+\newcommand{\medio}{\frac{1}{2}}
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{url}
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newcommand{\mc}{\mathcal}
+\newcommand{\mb}{\mathbb}
+\newcommand{\mf}{\mathfrak}
+\newcommand{\ol}{\overline}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\newcommand{\La}{\Leftarrow}
+\newcommand{\Ra}{\Rightarrow}
+\newcommand{\nor}{\vartriangleleft}
+\newcommand{\Gal}{\text{Gal}}
+\newcommand{\GL}{\text{GL}}
+\newcommand{\Z}{\mb{Z}}
+\newcommand{\R}{\mb{R}}
+\newcommand{\Q}{\mb{Q}}
+\newcommand{\C}{\mb{C}}
+\newcommand{\<}{\langle}
+\renewcommand{\>}{\rangle}
+\begin{document}
+The symbol $\pi$ was first introduced by William Jones \cite{higham, jones} in 1706 to denote the ratio between the perimeter and the diameter on any given circle.  In other words, dividing the perimeter of any circle by its diameter always gives the same answer, and this number is defined to be $\pi$.  A 12-digit approximation of $\pi$ is given by $3.14159265358...$
+
+Over human history there were many attempts to calculate this number precisely. One of the oldest approximations appears in the Rhind Papyrus (circa 1650 B.C.) where a geometrical construction is given where $(16/9)^2=3.1604\ldots$ is used as an approximation to $\pi$ although this was not explicitly mentioned. 
+
+It wasn't until the Greeks that there were systematical attempts to calculate $\pi$. Archimedes \cite{Mact}, in the third century B.C. used regular polygons inscribed and circumscribed to a circle to approximate $\pi$: the more sides a polygon has, the closer to the circle it becomes and therefore the ratio between the polygon's area between the square of the radius yields approximations to $\pi$. Using this method he showed that $223/71<\pi<22/7$ $(3.140845\ldots<\pi<3.142857\ldots)$. 
+
+Around the world there were also attempts to calculate $\pi$. 
+Brahmagupta \cite{Mact} gave the value of $\sqrt{10}=3.16227\ldots$ using a method similar to Archimedes'. Chinese mathematician Tsu Chung-Chih (ca. 500 A.D.) gave the approximation $355/113=3.141592920\ldots$.
+
+Later, during the renaissance, Leonardo de Pisa (Fibonacci) \cite{Mact} used 96-sideed regular polygons to find the approximation $864/275=3.141818\ldots$
+
+For centuries, variations on Archimedes' method were the only tool known, but  Vi\`ete \cite{Mact} gave in 1593 the formula $$\frac{2}{\pi}=\sqrt{\medio}\sqrt{\medio+\medio\sqrt{\medio}}\sqrt{\medio+\medio\sqrt{\medio+\medio\sqrt{\medio}}}\cdots$$
+which was the first analytical expression for $\pi$ involving infinite summations or products. Later with the advent of calculus many of these formulas were discovered. Some examples are 
+Wallis' \cite{Mact} formula:
+$$\frac{\pi}{2}=\frac{2}{1}\cdot\frac{2}{3}\cdot\frac{4}{3}\cdot\frac{4}{5}\cdot\frac{6}{5}\cdots$$
+and Leibniz's formula,
+$$\frac{\pi}{4}=1-\frac{1}{3}+\frac{1}{5}-\frac{1}{7}+\frac{1}{9}-\frac{1}{11}+\cdots,$$
+obtained by developing $\arctan(\pi/4)$ using power series, and with some more advanced techniques,
+$$\pi=\sqrt{6\zeta(2)},$$
+found by determining the \PMlinkname{value of the Riemann Zeta function at $s=2$}{ValueOfTheRiemannZetaFunctionAtS2}.
+
+The Leibniz expression provides an alternate way to define $\pi$ (namely 4 times the limit of the series) and it is one of the formal ways to define $\pi$ when studying analysis in order to avoid the geometrical definition.
+
+It is known that $\pi$ is not a rational number (quotient of two integers). Moreover, $\pi$ is not algebraic over the rationals (that is, it is a transcendental number). This means that no polynomial with rational coefficients can have $\pi$ as a root.  Its irrationality implies that its decimal expansion (or any integer base for that matter) is not finite nor periodic.
+
+\begin{thebibliography}{99}
+\bibitem{Mact} The MacTutor History of Mathematics archive, \PMlinkexternal{The MacTutor History of Mathematics Archive}{http://www-groups.dcs.st-and.ac.uk/~history/BiogIndex.html}
+\bibitem{Cast}\emph{The ubiquitous $\pi$} [Dario Castellanos] Mathematics Magazine Vol 61, No. 2. April 1988. Mathematical Association of America.\\
+\bibitem{Ocon} A history of pi. [O'Connor and Robertson]
+\url{http://www-groups.dcs.st-and.ac.uk/~history/HistTopics/Pi_through_the_ages.html}\\
+\bibitem{Ocon} Pi chronology. [O'Connor and Robertson]
+\url{http://www-groups.dcs.st-and.ac.uk/~history/HistTopics/Pi_chronology.html}\\
+\bibitem{Gang} Asian contributions to Mathematics. [Ramesh Gangolli]
+\url{http://www.pps.k12.or.us/depts-c/mc-me/be-as-ma.pdf}\\
+\bibitem{Lind} Archimedes' approximation of pi. [Chuck Lindsey]
+\url{http://itech.fgcu.edu/faculty/clindsey/mhf4404/archimedes/archimedes.html}\\
+\bibitem{higham} N. Higham, Handbook of writing for the mathematical sciences, Society for Industrial and Applied Mathematics, 1998.
+\bibitem{jones}
+The MacTutor History of Mathematics archive,
+\PMlinkexternal{ William Jones}{http://www-gap.dcs.st-and.ac.uk/~history/Mathematicians/Jones.html}
+\end{thebibliography}
+\end{document}

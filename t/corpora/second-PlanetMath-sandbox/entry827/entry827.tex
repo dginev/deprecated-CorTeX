@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+To prove the Bolzano-Weierstrass theorem, we will first need two lemmas.  
+
+{\bf Lemma 1.}
+
+All bounded monotone sequences converge.
+
+{\bf proof.}
+
+Let $(s_n)$ be a bounded, nondecreasing sequence.  Let $S$ denote the set $\{s_n : n \in \mathbb{N}\}$.  Then let $b=\sup S$ (the supremum of $S$.)
+
+Choose some $\epsilon > 0$.  Then there is a corresponding $N$ such that $s_N>b-\epsilon$.  Since $(s_n)$ is nondecreasing, for all $n>N$, $s_n > b-\epsilon$.  But $(s_n)$ is bounded, so we have $b-\epsilon < s_n \le b$.  But this implies $|s_n-b|<\epsilon$, so $\lim s_n= b$. $\square$
+
+(The proof for nonincreasing sequences is analogous.)
+
+{\bf Lemma 2.}
+
+Every sequence has a monotonic subsequence.
+
+{\bf proof.}
+
+First a definition: call the $n$th term of a sequence \emph{dominant} if it is greater than every term following it.
+
+For the proof, note that a sequence $(s_n)$ may have finitely many or infinitely many dominant terms.  
+
+First we suppose that $(s_n)$ has infinitely many dominant terms.  Form a subsequence $(s_{n_k})$ solely of dominant terms of $(s_n)$.  Then $s_{n_{k+1}} < s_{n_k}$ $k$ by definition of ``dominant'', hence $(s_{n_k})$ is a decreasing  (monotone) subsequence of ($s_n$).
+
+For the second case, assume that our sequence $(s_n)$ has only finitely many dominant terms.  Select $n_1$ such that $n_1$ is beyond the last dominant term.  But since $n_1$ is not dominant, there must be some $m>n_1$ such that $s_m > s_{n_1}$.  Select this $m$ and call it $n_2$.  However, $n_2$ is still not dominant, so there must be an $n_3>n_2$ with $s_{n_3} > s_{n_2}$, and so on, inductively.  The resulting sequence
+
+$$ s_1,s_2,s_3,\ldots $$
+
+is monotonic (nondecreasing). $\square$
+
+{\bf proof of Bolzano-Weierstrass.}
+
+The proof of the Bolzano-Weierstrass theorem is now simple: let $(s_n)$ be a bounded sequence.  By Lemma 2 it has a monotonic subsequence.  By Lemma 1, the subsequence converges.  $\square$
+\end{document}

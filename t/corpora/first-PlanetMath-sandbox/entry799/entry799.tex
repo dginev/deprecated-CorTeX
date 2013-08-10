@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\md}{d}
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mderiv}[1]{\frac{\md}{\md {#1}}} %d/dx
+\newcommand{\mnthderiv}[2]{\frac{\md^{#2}}{\md {#1}^{#2}}} %d^n/dx
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}} %partial d^n/dx
+\newcommand{\mnthpderiv}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}} %partial d^n/dx
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\complexes}{\mathbb{C}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\bra}[1]{\langle#1 \vert}
+\newcommand{\ket}[1]{\vert \hspace{1pt}#1\rangle}
+\newcommand{\braket}[2]{\langle #1 \ket{#2}}
+\begin{document}
+An \emph{imaginary number} is the product of a nonzero real number multiplied by an imaginary unit (such as $i$) but having having real part 0.
+
+Any complex number $c \in \mathbb{C}$ may be written in the form $c = a + b i$ where $i$ is the imaginary unit $i = \sqrt{-1}$ and $a$ and $b$ are real numbers ($a, b \in \reals$). So an imaginary number is a complex number $c$ such that $a = 0$ in the above formulation, i.e. such that $c$ can be written as $c = b i$. Such a complex number is then sometimes called a {\em purely imaginary number}. For a purely imaginary number $c$, then it is the case that $\Re(c) = 0$ and $\Im(c) \neq 0$ and $b \in \mathbb{R}*$.  A few examples of purely imaginary numbers: $0 + 47i$, $0 - \pi i$, $\frac{3}{4} i$.
+
+Note that the imaginary numbers are closed under addition but not under multiplication, since $i \times i = -1$ is not imaginary.
+
+Whether $0 + 0i$ is an imaginary number is a matter of debate. It is in the middle of the number line of the real numbers but it is also in the middle of the number line of purely imaginary numbers.
+
+The \PMlinkescapetext{term} imaginary has had its definition expanded by analogy to several areas of mathematics.  For example, if $V$ is vector space with a linear involution (denoted $v\rightarrow v^*$), then an imaginary element in $V$ is one such that $v^* = -v$.
+
+Much in the same way that the Impressionist painters came to be known by a term initially intended to be derogatory, the term ``imaginary number'' comes from a sneer by Descartes as to the validity of the concept: ``For any equation one can imagine as many roots [as its degree would suggest], but in many cases no quantity exists which corresponds to what one imagines.''
+
+\begin{thebibliography}{2}
+\bibitem{ta} Titu Andreescu \& Dorin Andrica, {\it Complex Numbers from A to... Z}.
+
+
+\bibitem{bb} Bryan E. Blank, Book Review of {\it An Imaginary Tale: The Story of $\sqrt{-1}$}, {\it Notices of the AMS} {\bf 46} 10 (1999): 1236
+\bibitem{pn} Paul Nahin, {\it An Imaginary Tale: The Story of $\sqrt{-1}$}. Princeton: Princton University Press (1998)
+\end{thebibliography}
+\end{document}

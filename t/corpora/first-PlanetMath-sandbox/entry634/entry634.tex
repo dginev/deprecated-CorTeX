@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $(A,d)$ and $(A^{'},d^{'})$ be chain complexes and $f:A \to A^{'}$, $g:A \to A^{'}$ be chain maps. A \emph{chain homotopy} $D$ between $f$ and $g$ is a sequence of homomorphisms $\{D_{n}:A_{n} \to A_{n+1}^{'}\}$ so that $d_{n+1}^{'} \circ D_{n} + D_{n-1} \circ d_{n}=f_{n}-g_{n}$ for each $n$. Thus, we have the following diagram: 
+$$
+\xymatrix{
+& A_{n+1} \ar[r]^{d_{n+1}} \ar[d]_{f_{n+1}-g_{n+1}} & A_{n} \ar[dl]^{D_{n}} \ar[r]^{d_{n}} \ar[d]  & A_{n-1} \ar[dl]_{D_{n-1}} \ar[d]^{f_{n-1}-g_{n-1}} \\
+& A_{n+1}^{'} \ar[r]_{d_{n+1}^{'}} & A_{n}^{'} \ar[r]_{d_{n}^{'}} & A_{n-1}^{'}
+}
+$$
+
+If there exists a chain homotopy between $f$ and $g$, then $f$ and $g$ are said to be \emph{chain homotopic.}
+\end{document}

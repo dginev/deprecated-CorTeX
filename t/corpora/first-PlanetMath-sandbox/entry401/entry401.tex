@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapephrase{states}
+
+Let $(A_n)$ be a sequence of mutually exclusive events whose \PMlinkname{union}{Union} is the sample space and let $E$ be any event.  All of the events have nonzero probability ($P(E) > 0$ and $P(A_n) > 0$ for all $n$).  Bayes' Theorem states
+
+$$ P(A_j|E) = \frac{P(A_j)P(E|A_j)}{\sum_i P(A_i)P(E|A_i)} $$
+
+for any $A_j \in (A_n)$.
+
+A simpler formulation is:
+
+$$ P(A|B) = \frac{P(B|A)P(A)}{P(B)} $$
+
+For two events, $A$ and $B$ (also with nonzero probability).  
+
+\begin{thebibliography}{3}
+\bibitem{Milton} Milton, J.S., Arnold, Jesse C., \textsl{Introduction to Probability and Statistics: Principles and Applications for Engineering and the Computing Sciences}, McGraw Hill, 1995.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,187 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\md}{d}
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mderiv}[1]{\frac{\md}{\md {#1}}} %d/dx
+\newcommand{\mnthderiv}[2]{\frac{\md^{#2}}{\md {#1}^{#2}}} \newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}\newcommand{\mnthpderiv}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}} %partial d^n/dx
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\complexes}{\mathbb{C}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\bra}[1]{\langle#1 \vert}
+\newcommand{\ket}[1]{\vert \hspace{1pt}#1\rangle}
+\newcommand{\braket}[2]{\langle #1 \ket{#2}}
+\newcommand{\mvar}{t}
+\begin{document}
+\PMlinkescapeword{derivation}
+\PMlinkescapeword{force}
+\PMlinkescapeword{represent}
+\PMlinkescapeword{simple}
+\PMlinkescapeword{constant}
+\PMlinkescapeword{boundary}
+\PMlinkescapeword{mass}
+\PMlinkescapeword{solution}
+\PMlinkescapeword{expansion}
+\PMlinkescapeword{place}
+\PMlinkescapeword{equations}
+Imagine a bead of mass $m$ on a wire whose endpoints are at $a = (0,0)$ and $b = (x_f, y_f)$, with $y_f$ lower than the starting position.  If gravity acts on the bead with force $F = m g$, what path (arrangement of the wire) minimizes the bead's travel time from $a$ to $b$, assuming no friction?
+
+This is the famed \emph{brachistochrone problem}, and its solution was one of the first accomplishments of the calculus of variations.  Many minimum problems can be solved using the techniques introduced here. 
+
+In its general form, the calculus of variations concerns quantities
+\begin{equation}
+S[q,\dot{q}, \mvar] = \int_{a}^{b} L(q(\mvar),\dot{q}(\mvar), \mvar) d\mvar
+\end{equation}
+for which we wish to find a minimum or a maximum.
+
+To make this concrete, let's consider a much simpler problem than the brachistochrone: what's the shortest distance between two points $p = (x1,y1)$ and $q = (x2,y2)$?  Let the variable $s$ represent distance along the path, so that $\int_{p}^{q} ds = S$.  We wish to find the path such that $S$ is a minimum.  Zooming in on a small portion of the path, we can see that
+\begin{align}
+ds^2 &= dx^2 + dy^2\\
+ds &= \sqrt{dx^2 + dy^2}
+\end{align}
+If we parameterize the path by $t$, then we have
+\begin{equation}
+ds = \sqrt{\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2}\ dt
+\end{equation}
+
+Let's assume $y = f(x)$, so that we may simplify (4) to
+\begin{equation}
+ds = \sqrt{1 + \left(\frac{dy}{dx}\right)^2}\ dx = \sqrt{1 + f'(x)^2}\ dx.
+\end{equation}
+
+Now we have
+\begin{equation}
+S = \int_{p}^{q} L\ dx = \int_{x1}^{x2} \sqrt{1 + f'(x)^2}\ dx
+\end{equation}
+In this case, $L$ is particularly simple.  Converting to $q$'s and $t$'s to make the comparison easier, we have $L = L[f'(x)] = L[\dot{q}(t)]$, not the more general $L[q(t), \dot{q}(t), t]$ covered by the calculus of variations.  We'll see later how to use our $L$'s simplicity to our advantage.  For now, let's talk more generally.
+
+We wish to find the path described by $L$, passing through a point $q(a)$ at $\mvar=a$ and through $q(b)$ at $\mvar=b$, for which the quantity $S$ is a minimum, for which \PMlinkescapetext{small perturbations} in the path produce no first-order change in $S$, which we'll call a ``stationary point.''  This is directly analogous to the idea that for a function $f(t)$, the minimum can be found where \PMlinkescapetext{small perturbations} $\delta t$ produce no first-order change in $f(t)$.  This is where $f(t + \delta t) \approx f(t)$; taking a Taylor series expansion of $f(t)$ at $t$, we find
+\begin{equation}
+f(t + \delta t) = f(t) + \delta t f'(t) + O({\delta t}^2) = f(t),
+\end{equation}
+with $f'(t) := \mderiv{t}{f(t)}$.  Of course, since the whole point is to consider $\delta t \neq 0$, once we neglect terms $O({\delta t}^2)$ this is just the point where $f'(t) = 0$.  This point, call it $t = t_0$, could be a minimum or a maximum, so in the usual calculus of a single variable we'd proceed by taking the second derivative, $f''(t_0)$, and seeing if it's positive or negative to see whether the function has a minimum or a maximum at $t_0$, respectively.
+
+In the calculus of variations, we're not considering \PMlinkescapetext{small perturbations} in $t$---we're considering \PMlinkescapetext{small perturbations} in the \emph{integral} of the relatively complicated \emph{function} $L(q,\dot{q}, \mvar)$, where $\dot{q} = \mderiv{\mvar}{q(\mvar)}$.  Also, $S$ is a functional, and we can think of the minimization problem as the discovery of a minimum in $S$-space as we jiggle the parameters $q$ and $\dot{q}$.
+
+For the shortest-distance problem, it's clear the maximum time doesn't exist, since for any finite path length $S_0$ we (intuitively) can always find a curve for which the path's length is greater than $S_0$.  This is often true, and we'll assume for this discussion that finding a stationary point means we've found a minimum.
+
+Formally, we write the condition that \PMlinkescapetext{small parameter perturbations} produce no change in $S$ as $\delta S = 0$.  To make this precise, we simply write
+\begin{align*}
+\delta S 
+&\defined S[q + \delta q,\ \dot{q} + \delta \dot{q},\ \mvar] - S[q, \dot{q},\mvar] \\
+&= \int_{a}^{b} L(q + \delta q,\ \dot{q} + \delta \dot{q}) \md \mvar - S[q, \dot{q},\mvar] \\
+\end{align*}
+How are we to simplify this mess?  We are considering \PMlinkescapetext{small perturbations} to the path, which suggests a Taylor series expansion of $L(q + \delta q,\dot{q} + \delta \dot{q})$ about $(q, \dot{q})$:
+\begin{equation*}
+L(q + \delta q,\dot{q} + \delta \dot{q}) = L(q,\dot{q}) + \delta q \mpderiv{q}L(q,\dot{q}) + \delta \dot{q} \mpderiv{\dot{q}}L(q,\dot{q}) + O(\delta q^2) + O(\delta \dot{q}^2)
+\end{equation*}
+and since we make little error by discarding higher-order terms in $\delta q$ and $\delta \dot{q}$, we have
+\begin{equation*}
+\int_{a}^{b} L(q + \delta q,\dot{q} + \delta \dot{q}) \md \mvar 
+= S[q, \dot{q}, \mvar] + \int_{a}^{b} \delta q \mpderiv{q}L(q,\dot{q}) + \delta \dot{q} \mpderiv{\dot{q}}L(q,\dot{q}) \md \mvar
+\end{equation*}
+Keeping in mind that $\delta \dot{q} = \mderiv{\mvar}{\delta q}$ and noting that
+\begin{align*}
+\mderiv{\mvar}{\left(\delta q \mpderiv{\dot{q}}L(q,\dot{q})\right)} &= \delta q \mderiv{\mvar}{\mpderiv{\dot{q}}L(q,\dot{q})} + \delta \dot{q} \mpderiv{\dot{q}}L(q,\dot{q}),\\
+\end{align*}
+a simple application of the product rule $\mderiv{\mvar}{(fg)} = \dot{f}g + f\dot{g}$ which allows us to substitute
+\begin{align*}
+\delta \dot{q} \mpderiv{\dot{q}}L(q,\dot{q}) &= \mderiv{\mvar}{\left(\delta q \mpderiv{\dot{q}}L(q,\dot{q})\right)} - \delta q \mderiv{\mvar}{\mpderiv{\dot{q}}L(q,\dot{q})},
+\end{align*}
+we can rewrite the integral, shortening $L(q,\dot{q})$ to $L$ for convenience, as:
+\begin{align*}
+\int_{a}^{b} \delta q \mpderiv{q} L + \delta \dot{q} \mpderiv{\dot{q}} L \md \mvar
+&= \int_{a}^{b} \delta q \mpderiv{q} L - \delta q \mderiv{\mvar}{\mpderiv{\dot{q}} L} + \mderiv{\mvar}{\left(\delta q \mpderiv{\dot{q}} L \right)} \md \mvar\\
+&= \int_{a}^{b} \delta q \left[ \mpderiv{q} L - \mderiv{\mvar}{\mpderiv{\dot{q}} L}\right] \md \mvar + \delta q \mpderiv{\dot{q}} L \Big|_{a}^{b}\\
+\end{align*}
+Substituting all of this progressively back into our original expression for $\delta S$, we obtain
+\begin{align*}
+\delta S 
+&= \int_{a}^{b} L(q + \delta q,\dot{q} + \delta \dot{q}) \md \mvar - S[q, \dot{q}, \mvar]\\
+&= S + \int_{a}^{b} \left[\delta q \mpderiv{q}L + \delta \dot{q} \mpderiv{\dot{q}}L \right]\md \mvar - S\\
+&= \int_{a}^{b} \delta q \left[ \mpderiv{q} L - \mderiv{\mvar}{\mpderiv{\dot{q}} L}\right] \md \mvar + \delta q \mpderiv{\dot{q}} L \Big|_{a}^{b} = 0.
+\end{align*}
+Two conditions come to our aid.  First, we're only interested in the neighboring paths that still begin at $a$ and end at $b$, which corresponds to the condition $\delta q = 0$ at $a$ and $b$, which lets us cancel the final term.  Second, between those two points, we're interested in the paths which \emph{do} vary, for which $\delta q \neq 0$.
+This leads us to the condition
+\begin{equation}
+\int_{a}^{b} \delta q \left[ \mpderiv{q} L - \mderiv{\mvar}{\mpderiv{\dot{q}} L}\right] \md \mvar = 0.
+\end{equation}
+The fundamental theorem of the calculus of variations is that for continuous functions $f(t), g(t)$ with $g(t) \ne 0\ \forall t \in (a,b)$,
+\begin{equation}
+\int_{a}^{b} f(t) g(t)\,dt = 0 \quad \Longrightarrow \quad f(t) = 0 \;\; \forall t \in (a,b).
+\end{equation}
+Using this theorem, we obtain
+\begin{equation}
+\mpderiv{q} L - \mderiv{\mvar}\left(\mpderiv{\dot{q}} L\right) = 0.
+\end{equation}
+
+This condition, one of the fundamental equations of the calculus of variations, is called the \emph{Euler--Lagrange condition}.  When presented with a problem in the calculus of variations, the first thing one usually does is to ask why one simply doesn't plug the problem's $L$ into this equation and solve.
+
+Recall our shortest-path problem, where we had arrived at
+\begin{equation}
+S = \int_{a}^{b} L\ dx = \int_{x1}^{x2} \sqrt{1 + f'(x)^2}\ dx.
+\end{equation}
+Here, $x$ takes the place of $\mvar$, $f$ takes the place of $q$, and (8) becomes
+\begin{equation}
+\mpderiv{f} L - \mderiv{x}{\mpderiv{f'} L} = 0
+\end{equation}
+Even with $\mpderiv{f} L = 0$, this is still ugly.  However, because $\mpderiv{f}L = 0$, we can use the Beltrami identity,
+\begin{equation}
+L - q' {\mpderiv{q'} L} = C.
+\end{equation}
+(For the derivation of this useful little trick, see the corresponding entry.)  Now we must simply solve
+\begin{equation}
+\sqrt{1 + f'(x)^2} - f'(x) {\mpderiv{f'} L} = C
+\end{equation}
+which looks just as daunting, but quickly reduces to
+\begin{align}
+\sqrt{1 + f'(x)^2} - f'(x)\frac{\frac{1}{2}2f'(x)}{\sqrt{1 + f'(x)^2}} &= C\\
+\frac{1 + f'(x)^2 - f'(x)^2}{\sqrt{1 + f'(x)^2}} &= C\\
+\frac{1}{\sqrt{1 + f'(x)^2}} &= C\\
+f'(x) &= \sqrt{\frac{1}{C^2} - 1} = m.
+\end{align}
+That is, the slope of the curve representing the shortest path between two points is a constant, which means the searched curve, i.e. the extremal of this variational problem, must be a straight line.  Through this lengthy process, we've proved that a straight line is the shortest distance between two points.
+
+To find the actual function $f(x)$ given endpoints $(x_1,y_1)$ and $(x_2,y_2)$, simply integrate with respect to $x$:
+\begin{equation}
+f(x) = \int f'(x) dx = \int b dx = mx + d
+\end{equation}
+and then apply the boundary conditions
+\begin{align}
+f(x_1) &= y_1 = mx_1 + d\\
+f(x_2) &= y_2 = mx_2 + d
+\end{align}
+Subtracting the first condition from the second, we get $m = \frac{y_2 - y_1}{x_2 - x_1}$, the standard equation for the slope of a line.  Solving for $d = y_1 - mx_1$, we get
+\begin{equation}
+f(x) = \frac{y_2 - y_1}{x_2 - x_1}(x - x_1) + y_1
+\end{equation}
+which is the basic equation for a line passing through $(x_1,y_1)$ and $(x_2,y_2)$.
+
+The solution to the brachistochrone problem, while slightly more complicated, follows along exactly the same lines.
+\end{document}

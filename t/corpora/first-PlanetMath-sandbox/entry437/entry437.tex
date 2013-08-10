@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+An {\em affine variety} over an algebraically closed field $k$ is a subset of some affine space $k^n$ over $k$ which can be described as the vanishing set of finitely many polynomials in $n$ variables with coefficients in $k$, and which cannot be written as the union of two smaller such sets.
+
+For example, the locus described by $Y - X^2 = 0$ as a subset of $\mathbb{C}^2$ is an affine variety over the complex numbers.  But the locus described by $YX = 0$ is not (as it is the union of the loci $X = 0$ and $Y = 0$).
+
+One can define a subset of affine space $k^n$ or an affine variety in $k^n$ to be \emph{closed} if it is a subset defined by the vanishing set of finitely many polynomials in $n$ variables with coefficients in $k$.  The closed subsets then actually satisfy the requirements for closed sets in a topology, so this defines a topology on the affine variety known as the Zariski topology.  The definition above has the  extra condition that an affine variety not be the union of two closed subsets, i.e. it is required to an irreducible topological space in the Zariski topology.  Anything then satisfying the definition without possibly the irreducibility is known as an (affine) algebraic set.
+
+A {\em quasi-affine variety} is then an open set (in the Zariski topology) of an affine variety.
+
+Note that some geometers do not require what they call a variety to be irreducible, that is they call algebraic sets varieties.  The most prevalent definition however requires varieties to be irreducible.
+
+
+\begin{thebibliography}{9}
+\bibitem{a} Hartshorne, Robin.  \emph{Algebraic Geometry}, Graduate Texts in Mathematics, Number 52.  Springer-Verlag, New York, NY.  1977
+\end{thebibliography}
+\end{document}

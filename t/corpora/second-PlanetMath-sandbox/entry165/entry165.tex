@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+The set of integers, denoted by the symbol $\mathbb{Z}$, is the set $\{\dots -3, -2, -1, 0, 1, 2, 3, \dots\}$ consisting of the natural numbers and their negatives.
+
+Mathematically, $\mathbb{Z}$ is defined to be the set of equivalence classes of pairs of natural numbers $\mathbb{N} \times \mathbb{N}$ under the equivalence relation $(a,b) \sim (c,d)$ if $a+d = b+c$.
+
+Addition and multiplication of integers are defined as follows:
+\begin{itemize}
+\item $(a,b)+(c,d) := (a+c,b+d)$
+\item $(a,b)\cdot(c,d) := (ac+bd,ad+bc)$
+\end{itemize}
+Typically, the class of $(a,b)$ is denoted by symbol $n$ if $b \leq a$ (resp. $-n$ if $a \leq b$), where $n$ is the unique natural number such that $a=b+n$ (resp. $a+n=b$). Under this notation, we recover the familiar representation of the integers as $\{\dots, -3, -2, -1, 0, 1, 2, 3, \dots\}$. Here are some examples:
+\begin{itemize}
+\item $0 = $ equivalence class of $(0,0) = $ equivalence class of $(1,1) = \dots$
+\item $1 = $ equivalence class of $(1,0) = $ equivalence class of $(2,1) = \dots$
+\item $-1 = $ equivalence class of $(0,1) = $ equivalence class of $(1,2) = \dots$
+\end{itemize}
+The set of integers $\mathbb{Z}$ under the addition and multiplication operations defined above form an integral domain. The integers admit the following ordering relation making $\mathbb{Z}$ into an ordered ring: $(a,b) \leq (c,d)$ in $\mathbb{Z}$ if $a+d \leq b+c$ in $\mathbb{N}$.
+
+The ring of integers is also a Euclidean domain, with valuation given by the absolute value function.
+\end{document}

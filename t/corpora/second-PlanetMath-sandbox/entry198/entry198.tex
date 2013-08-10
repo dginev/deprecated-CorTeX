@@ -1,0 +1,148 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+% define commands here
+\begin{document}
+\section{Definition}
+There are several equivalent definitions of real number, all in common use. We give one definition in detail and mention the other ones.
+
+A {\em Cauchy sequence of rational numbers} is a sequence $\{x_i\},\ i=0,1,2,\dots$ of rational numbers with the property that, for every rational number $\epsilon > 0$, there exists a natural number $N$ such that, for all natural numbers $n,m > N$, the absolute value $|x_n - x_m|$ satisfies $|x_n - x_m| < \epsilon$.
+
+The set $\mathbb{R}$ of {\em real numbers} is the set of equivalence classes of Cauchy sequences of rational numbers, under the equivalence relation $\{x_i\} \sim \{y_i\}$ if the interleave sequence of the two sequences is itself a Cauchy sequence.
+The real numbers form a ring, with addition and multiplication defined by
+\begin{itemize}
+\item $\{x_i\} + \{y_i\} = \{(x_i+y_i)\}$
+\item $\{x_i\} \cdot \{y_i\} = \{(x_i \cdot y_i)\}$
+\end{itemize}
+There is an ordering relation on $\mathbb{R}$, defined by $\{x_i\} \leq \{y_i\}$ if either $\{x_i\} \sim \{y_i\}$ or there exists a natural number $N$ such that $x_n < y_n$ for all $n > N$. This definition is well-defined and does not depend on the choice of Cauchy sequences used to represent the equivalence classes.
+
+One can prove that the real numbers form an ordered field and that they satisfy the \emph{Dedekind completeness property} (also known as the \emph{least upper bound property}): For every nonempty subset $S \subset \mathbb{R}$, if $S$ has an upper bound then $S$ has a lowest upper bound. It is also true that every ordered field with the least upper bound property is isomorphic to the real numbers.
+
+Alternative definitions of the set of real numbers include:
+\begin{enumerate}
+\item Equivalence classes of decimal sequences (sequences consisting of natural numbers between 0 and 9, and a single decimal point), where two decimal sequences are equivalent if they are identical, or if one has an infinite tail of 9's, the other has an infinite tail of 0's, and the leading portion of the first sequence is one lower than the leading portion of the second.
+\item Dedekind cuts of rational numbers (that is, subsets $S$ of $\mathbb{Q}$ with the property that, if $a \in S$ and $b < a$, then $b \in S$).
+\item The real numbers can also be defined as the unique (up to isomorphism) ordered field satisfying the least upper bound property, after one has proved that such a field exists and is unique up to isomorphism.
+\end{enumerate}
+
+\section{Completeness}
+
+The main reason for introducing the reals is that the reals contain all limits.
+More technically, the reals are complete (in the sense of metric spaces or
+uniform spaces, which is a different sense than the Dedekind completeness of
+the order in the previous section). This means the following:
+                                                                                
+A sequence $(x_n)$ of real numbers is called a Cauchy sequence if for any
+$\varepsilon > 0$
+there exists an integer $N$ (possibly depending on $\varepsilon$) such that the
+distance $|x_n - x_m|$ is less than $\varepsilon$ provided that $n$ and $m$ are
+both greater than $N$. In other
+words, a sequence is a Cauchy sequence if its elements $x_n$ eventually come
+and remain arbitrarily close to each other.
+                                                                                
+A sequence $(x_n)$ converges to the limit $x$ if for any $\varepsilon > 0$
+there exists an integer $N$ (possibly depending on $\varepsilon$) such that the
+distance $|x_n - x|$ is less than $\varepsilon$ provided that $n$ is greater
+than $N$. In other words, a sequence has limit $x$ if its elements eventually
+come and remain arbitrarily close to $x$.
+                                                                                
+It is easy to see that every convergent sequence is a Cauchy sequence. Now the
+important fact about the real numbers is that the converse is true:
+\begin{quotation}
+    Every Cauchy sequence of real numbers is convergent.
+\end{quotation}
+That is, the reals are complete.
+                                                                                
+Note that the rationals are not complete. For example, the sequence $1$, $1.4$,
+$1.41$, $1.414$, $1.4142$, $1.41421$, $\ldots$ is Cauchy but it does not
+converge to a rational number. (In the real numbers, in contrast, it converges
+to the square root of $2$.)
+                                                                                
+The existence of limits of Cauchy sequences is what makes calculus work and is
+of great practical use. The standard numerical test to determine if a sequence
+has a limit is to test if it is a Cauchy sequence, as the limit is typically
+not known in advance.
+                                                                                
+For example the standard series of the exponential function
+                                                                                
+$$
+e^x = \sum_{n=0}^\infty \frac{x^n}{n!}
+$$
+                                                                                
+converges to a real number because for every $x$ the sums
+                                                                                
+                                                                                
+$$
+\sum_{n=N}^M \frac{x^n}{n!}
+$$
+                                                                                
+can be made arbitrarily small by choosing $N$ sufficiently large. This proves
+that the sequence is Cauchy, so we know that the sequence converges even if we
+don't know ahead of time what the limit is.
+                                                                               
+\section{``The complete ordered field''}
+
+The real numbers are often described as ``the complete ordered field,'' a phrase
+that can be interpreted in several ways.
+
+First, an order can be lattice complete. It's easy to see that no ordered field
+can be lattice complete, because it can have no largest element (given any
+element $z$, $z + 1$ is larger), so this is not the sense that is meant.
+
+Additionally, an order can be Dedekind-complete, as defined in the Definitions section. The uniqueness result at the end of that section justifies using the
+word ``the'' in the phrase ``complete ordered field'' when this is the sense of
+``complete'' that is meant. This sense of completeness is most closely related to the construction of the reals from Dedekind cuts, since that construction
+starts from an ordered field (the rationals) and then forms the Dedekind-completion of it in a standard way. 
+
+These two notions of completeness ignore the field structure. However, an
+ordered group (and a field is a group under the operations of addition and
+subtraction) defines a uniform structure, and uniform structures have a notion
+of completeness (topology); the description in the Completeness section above
+is a special case. (We refer to the notion of completeness in uniform spaces
+rather than the related and better known notion for metric spaces, since the
+definition of metric space relies on already having a characterisation of the
+real numbers.) It is not true that $\mathbb{R}$ is the only uniformly complete
+ordered
+field, but it is the only uniformly complete Archimedean field, and indeed one
+often hears the phrase ``complete Archimedean field'' instead of ``complete
+ordered field.'' Since it can be proved that any uniformly complete Archimedean
+field must also be Dedekind complete (and vice versa, of course), this
+justifies using ``the'' in the phrase ``the complete Archimedean field.'' This
+sense of completeness is most closely related to the construction of the reals
+from Cauchy sequences (the construction carried out in full in this article),
+since it starts with an Archimedean field (the rationals) and forms the uniform
+completion of it in a standard way.
+                                                                                
+But the original use of the phrase ``complete Archimedean field'' was by David
+Hilbert, who meant still something else by it. He meant that the real numbers
+form the largest Archimedean field in the sense that every other Archimedean
+field is a subfield of $\mathbb{R}$. Thus $\mathbb{R}$ is ``complete'' in the
+sense that nothing
+further can be added to it without making it no longer an Archimedean field.
+This sense of completeness is most closely related to the construction of the
+reals from surreal numbers, since that construction starts with a proper class
+that contains every ordered field (the surreals) and then selects from it the
+largest Archimedean subfield.
+
+\emph{This article contains material from the \PMlinkexternal{Wikipedia article on Real numbers}{http://en.wikipedia.org/wiki/Real_numbers} which is incorporated herein under the terms of the \PMlinkexternal{GNU Free Documentation License}{http://en.wikipedia.org/wiki/Wikipedia:Text_of_the_GNU_Free_Documentation_License}.}
+\end{document}

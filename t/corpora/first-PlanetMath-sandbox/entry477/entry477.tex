@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+A subset $D$ of a topological space $X$
+is said to be \emph{dense} (or \emph{everywhere dense}) in $X$
+if the closure of $D$ is equal to $X$.
+Equivalently, $D$ is dense if and only if
+$D$ intersects every nonempty open set.
+
+In the special case that $X$ is a metric space with metric $d$,
+then this can be rephrased as:
+for all $\varepsilon > 0$ and all $x\in X$
+there is $y\in D$ such that $d(x,y)<\varepsilon$.
+
+For example, both the rationals $\mathbb{Q}$
+and the irrationals $\mathbb{R} \setminus \mathbb{Q}$
+are dense in the reals $\mathbb{R}$.
+
+The least cardinality of a dense set of a topological space
+is called the \emph{density} of the space.
+It is conventional to take the density to be $\aleph_0$
+if it would otherwise be finite;
+with this convention,
+the spaces of density $\aleph_0$ are precisely the separable spaces.
+The density of a topological space $X$ is denoted $d(X)$.
+If $X$ is a Hausdorff space,
+it can be shown that $|X| \le 2^{2^{d(X)}}$.
+\end{document}

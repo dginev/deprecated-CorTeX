@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+For a matrix to be in \emph{reduced row echelon form} (or \emph{Hermite normal form}) it has to first satisfy the requirements to be in row echelon form and additionally satisfy the following requirements:
+
+\begin{enumerate}
+\item The first non-zero element in any row must be 1.
+\item The first element of value 1 in any row must be the only non-zero value in its column.
+\end{enumerate}
+An example of a matrix in reduced row echelon form could be:
+\begin{displaymath}
+\left( \begin{array}{cccccccccc}
+0 & 1 & 2 & 6 & 0 & 1 & 0 & 0 & 4 & 0\\
+0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1\\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 4 & 1\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 2 & 1\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+\end{array}
+\right)
+\end{displaymath}
+\end{document}

@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+An integral domain $D$ satisfying
+\begin{itemize}
+\item Every nonzero element of $D$ that is not a unit can be factored into a product of a finite number of irreducibles,
+\item If\, $p_1p_2\cdots p_r$\, and\, $q_1q_2\cdots q_s$\, are two factorizations of the same element $a$ into irreducibles, then\, $r = s$\, and we can reorder the $q_j$'s in a way that $q_j$ is an associate  element of $p_j$ for all $j$
+\end{itemize}
+is called a \emph{unique factorization domain} (UFD), also a {\em factorial ring}.
+
+The factors\, $p_1,\,p_2,\,\ldots,\,p_r$\, are called the {\em prime factors} of $a$.
+
+Some of the classic results about UFDs:
+\begin{itemize}
+\item {On a UFD, the concept of prime element and irreducible element coincide.}
+
+\item {If $F$ is a field, then $F[x]$ is a UFD.}
+
+\item If $D$ is a UFD, then $D[x]$ (the ring of polynomials on the variable $x$ over $D$) is also a UFD.
+
+Since\, $R[x,\,y]\cong R[x][y]$,\, these results can be extended to rings of polynomials with a finite number of variables.
+
+\item If $D$ is a principal ideal domain, then it is also a UFD.
+
+The converse is, however, not true.\, Let $F$ a field and consider the UFD $F[x,\,y]$.
+Let $I$ the ideal consisting of all the elements of $F[x,\,y]$ whose constant term  is $0$.\, Then it can be proved that $I$ is not a principal ideal.\, Therefore not every  UFD is a PID.
+\end{itemize}
+\end{document}

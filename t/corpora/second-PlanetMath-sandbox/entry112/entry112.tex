@@ -1,0 +1,88 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\newcommand{\fm}[1]{{\it #1}}
+\begin{document}
+To prove the fundamental theorem of arithmetic, we must show that each
+positive integer has a prime decomposition and that each such
+decomposition is unique up to the \PMlinkname{order}{OrderingRelation} of the factors.  Before
+proceeding with the proof, we note that in any integral domain, every
+prime is an irreducible element.  Furthermore, by Euclid's lemma, every irreducible element in $\mathbb{Z}$ is prime.  As a result, prime elements and irreducible elements are equivalent in $\mathbb{Z}$.  We will use this fact to prove the theorem.
+
+Note: all our arithmetic will be carried out in the natural numbers, not the integers.
+
+\begin{description}
+\item[Existence]
+
+Now we prove the existence of a prime decomposition.  Since 1 has a
+prime decomposition and any prime has a prime decomposition, it
+suffices to show that any composite number has a prime decomposition.
+We claim that any composite number is divisible by some prime number.
+To see this, assume \fm{n} is a composite positive integer.  Then
+there exist positive integers \fm{a} and \fm{b}, necessarily strictly
+smaller than \fm{n}, such that \fm{n} = \fm{ab}.  If \fm{a} is not
+prime we can write it as a product of smaller positive integers in the
+same way.  Continuing this process, we obtain a strictly decreasing
+sequence of natural numbers.  By the well-ordering principle, this
+sequence must terminate, and by construction, it must terminate in a
+prime number.  Hence \fm{n} is divisible by a prime number, as
+desired.
+
+To complete the proof of existence, we apply the well-ordering
+principle again.  If \fm{n} is composite, then it is divisible by some
+prime.  Moreover, the quotient is strictly smaller than \fm{n}.  If
+the quotient is not prime then as before we find a prime that divides
+it; continuing this process, we produce a strictly decreasing sequence
+of natural numbers.  By the well-ordering principle, this sequence
+terminates in a prime number.  The product of the prime numbers we
+found in the construction of this sequence is simply \fm{n}.  Thus
+every composite number has a prime decomposition.
+
+\item[Uniqueness]
+
+Now we show uniqueness up to order of factors.  Suppose we are given
+two prime decompositions
+\[
+  n = p_1 \cdots p_k = q_1 \cdots q_{\ell}
+\]
+of \fm{n}, where $k\le\ell$ and the factors in each prime decomposition
+are arranged in nondecreasing order.  Since $p_1$ divides \fm{n}, it
+divides the product $q_1 \cdots q_{\ell}$, so by primality must divide
+some $q_i$.  Thus there is a natural number \fm{b} such that $q_i =
+b\cdot p_1$.  Since $q_i$ is an irreducible element and $p_1$ is not a
+unit, it must be that \fm{b} is a unit, that is, \fm{b} = 1.  Hence
+$p_1 = q_i \ge q_1$.  Similarly, there is some \fm{j} such that $q_1 =
+p_j \ge p_1$.  Since $p_1 \ge q_1$ and $q_1 \ge p_1$, it follows that
+$p_1 = q_1$.  Cancelling these factors yields the simpler equation
+\[
+  p_2 \cdots p_k = q_2 \cdots q_{\ell}.
+\]
+By repeating the above procedure we can show that $p_i = q_i$ for all
+\fm{i} from 0 to \fm{k}.  Cancelling these factors gives the equation
+\[
+  1 = q_{k+1} \cdots q_{\ell}.
+\]
+Since a nontrivial product of primes is greater than 1, the right-hand
+side of this equation is the empty product.  We conclude that \fm{k} =
+\fm{l}.  Hence all prime decompositions of \fm{n} use the same number
+of factors, and the factors which appear are unique up to the order in
+which they appear.  This completes the proof of uniqueness and thereby
+the proof of the theorem.
+
+\end{description}
+
+\textbf{Remark}.  Note that Euclid's Lemma is necessary in order to prove the uniqueness portion of the theorem.  Also, an alternative way of proving the existence portion of the theorem is to use induction: if $n$ is composite, then $n=ab$ for some integers $a,b<n$ (this is true, for if one of $a,b$ is $n$, then the other integer must be $1$).  By induction, both $a$ and $b$ can be written as product of primes, which implies that $n$ is a product of primes.
+
+\PMlinkescapeword{arithmetic}
+\PMlinkescapeword{complete}
+\PMlinkescapeword{completes}
+\PMlinkescapeword{order}
+\PMlinkescapeword{quotient}
+\PMlinkescapeword{side}
+\end{document}

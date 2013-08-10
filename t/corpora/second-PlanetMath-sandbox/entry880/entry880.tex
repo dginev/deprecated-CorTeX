@@ -1,0 +1,128 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+\newcommand{\supth}{^{\text{th}}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+\newcommand{\nl}[1]{\PMlinkescapetext{{#1}}}
+\newtheorem{theorem}[proposition]{Theorem}
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\pnorm}{\operatorname{p}}
+\newcommand{\snorm}[1]{\pnorm(#1)}
+\begin{document}
+Let $V$ be a real, or a complex vector space, with $K$ denoting the
+corresponding field of scalars. A \emph{seminorm}  is a function
+$$\operatorname{p}:V\to\reals^+,$$
+from $V$ to the set of non-negative real numbers, that satisfies the
+following two properties.
+\begin{align*}
+\snorm{k\, \bu} &= \vert k\vert \snorm{\bu},\quad k\in K,\; \bu\in V
+& \text{\bf 
+Homogeneity}\\
+\snorm{\bu+\bv} &\leq \snorm{\bu}+\snorm{\bv},\quad \bu,\bv\in V,
+&\text{\bf Sublinearity} 
+\end{align*}
+A seminorm differs from a norm in that it is permitted that $\snorm{\bu}=0$
+for some non-zero $\bu\in V.$
+
+It is possible to characterize the seminorms properties
+geometrically. For $k>0$, let
+$$B_k = \{ \bu \in V: \snorm{\bu}\leq k\}$$ denote
+the ball of radius $k$. The homogeneity property is equivalent to the
+assertion that
+$$B_k = k B_1,$$
+in the sense that
+$\bu \in B_1$ if and only if
+$k\bu\in B_k.$
+Thus, we see that a seminorm is fully determined by its unit ball.
+Indeed, given $B\subset V$ we may define a function
+$\pnorm_B:V\to \reals^+$
+by
+$$\pnorm_B(\bu) = \inf\{ \lambda\in\reals^+ : \lambda^{-1}\bu\in B\}.$$
+The geometric nature of the unit ball is described by the following.
+\begin{proposition}
+The function $\pnorm_B$ satisfies the homegeneity property if and only if
+for every $\bu\in
+V$, there exists a $k\in\reals^+\cup \{\infty\}$ such that
+$$\lambda\,\bu \in B\quad\text{if and only if}\quad \Vert \lambda\Vert
+\leq k.$$
+
+\end{proposition}
+\begin{proposition}
+  Suppose that $\pnorm$ is homogeneous. Then, it is sublinear if and
+  only if its unit ball, $B_1$, is a convex subset of $V$.
+\end{proposition}
+\emph{Proof.} First, let us suppose that the seminorm is both sublinear
+and homogeneous, and prove that $B_1$ is necessarily convex. Let
+$\bu,\bv\in B_1$, and let $k$ be a real number between $0$ and $1$.
+We must show that the weighted average $k\bu+(1-k)\bv$ is in $B_1$ as
+well. By assumption,
+$$\snorm{k\,\bu +(1-k)\bv} \leq k\snorm{\bu} +(1-k)\snorm{\bv}.$$
+The right side is a
+weighted average of two numbers between $0$ and $1$, and is therefore
+between $0$ and $1$ itself. Therefore
+$$k\,\bu+(1-k)\bv \in B_1,$$
+as desired.
+
+Conversely, suppose that the seminorm function is homogeneous, and
+that the unit ball is convex. Let $\bu,\bv\in
+V$ be given, and let us show that
+$$\snorm{\bu+\bv}\leq \snorm{\bu}+\snorm{\bv}.$$
+The essential complication here is that we do not exclude the
+possibility that $\snorm{\bu}=0$, but that $\bu\neq 0$.
+First, let us consider the case where
+$$\snorm{\bu}=\snorm{\bv}=0.$$
+By homogeneity, for every $k>0$ we have
+$$k\bu,\,k\bv\in B_1,$$
+and hence
+$$\frac{k}{2}\, \bu + \frac{k}{2}\,\bv\in B_1, $$
+as well. By homogeneity, again,
+$$\snorm{\bu+\bv}\leq \frac{2}{k}.$$
+Since the above is true for all positive $k$, we infer that
+$$\snorm{\bu+\bv} = 0,$$
+as desired.
+
+Next suppose that $\snorm{\bu}=0$, but that $\snorm{\bv}\neq 0$. We will show
+that in this case, necessarily,
+$$\snorm{\bu+\bv} = \snorm{\bv}.$$
+Owing to the homogeneity assumption, we may without loss of generality
+assume that
+$$\snorm{\bv}=1.$$
+For every $k$ such that $0\leq k<1$ we have
+$$ k\,\bu+k\,\bv = (1-k) \frac{k\,\bu}{1-k} + k\,\bv.$$
+The right-side expression is an element of $B_1$ because
+$$\frac{k\,\bu}{1-k},\, \bv \in B_1.$$
+Hence
+$$k\snorm{\bu+\bv} \leq 1,$$
+and since this holds for $k$ arbitrarily close to $1$ we conclude that
+$$\snorm{\bu+\bv}\leq \snorm{\bv}.$$
+The same argument also shows that
+$$\snorm{\bv} = \snorm{-\bu+(\bu+\bv)} \leq \snorm{\bu+\bv},$$
+and hence
+$$\snorm{\bu+\bv}=\snorm{\bv},$$
+as desired.
+
+Finally, suppose that neither $\snorm{\bu}$ nor $\snorm{\bv}$ is zero. Hence,
+$$\frac{\bu}{\snorm{u}},\, \frac{\bv}{\snorm{v}}$$
+are both in $B_1$, and hence
+$$\frac{\snorm{u}}{\snorm{u}+\snorm{v}} \frac{\bu}{\snorm{u}}+
+\frac{\snorm{v}}{\snorm{u}+\snorm{v}} \frac{\bv}{\snorm{v}} =
+\frac{\bu+\bv}{\snorm{u}+\snorm{v}} 
+$$
+is in $B_1$ also. Using homogeneity, we conclude that
+$$\snorm{u+v}\leq \snorm{u}+\snorm{v},$$
+as desired.
+\end{document}

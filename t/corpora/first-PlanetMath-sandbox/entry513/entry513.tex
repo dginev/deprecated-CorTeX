@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\begin{document}
+The inverse $A^{-1}$ of a matrix $A$ exists only if $A$ is square and has full rank. In this case, $Ax = b$ has the solution $x = A^{-1}b$.
+
+The \emph{pseudoinverse} $A^+$ (beware, it is often denoted otherwise) is a generalization of the inverse, and exists for any $m \times n$ matrix. We assume $m > n$. If $A$ has full rank ($n$) we define:
+
+$$ A^+ = (A^T A)^{-1} A^T $$
+
+and the solution of $Ax = b$ is $x = A^+b$.
+
+More accurately, the above is called the \emph{Moore-Penrose pseudoinverse}.
+
+\section{Calculation}
+
+The best way to compute $A^+$ is to use singular value decomposition. With $A=USV^T$ , where $U$ and $V$ (both $n \times n$) orthogonal and $S$ ($m \times n$) is diagonal with real, non-negative singular values $\sigma_i$, $i=1,\ldots,n$.  We find 
+
+$$ A^+ = V(S^TS)^{-1}S^TU^T $$
+
+If the rank $r$ of $A$ is smaller than $n$, the inverse of $S^TS$ does not exist, and one uses only the first $r$ singular values; $S$ then becomes an $r \times r$ matrix and $U$,$V$ shrink accordingly. see also Linear Equations.
+
+\section{Generalization}
+
+The term ``pseudoinverse'' is actually used for any operator $\operatorname{pinv}$ satisfying
+
+$$ M \operatorname{pinv}(M) M = M $$
+
+for a $m \times n$ matrix $M$.  Beyond this, pseudoinverses can be 
+defined on any reasonable matrix identity.
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+\end{document}

@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem*{ex*}{Example}
+\begin{document}
+The square root of a nonnegative real number $x$, written as $\sqrt{x}$, is the unique nonnegative real number $y$ such that $y^2=x$.  Thus, $(\sqrt{x})^2 \equiv x$.  Or, $\sqrt{x}\times\sqrt{x}\equiv x$.
+
+\begin{ex*}
+$\sqrt{9}=3$ because $3\geq 0$ and $3^2=3\times 3=9$.
+\end{ex*}
+
+\begin{ex*}
+$\sqrt{x^2+2x+1}=\vert x+1\vert$ (see absolute value and even-even-odd rule) because $(x+1)^2=(x+1)(x+1)=x^2+x+x+1=x^2+2x+1$.
+\end{ex*}
+
+In some situations it is better to allow two values for $\sqrt{x}$.  For example, $\sqrt{4}=\pm 2$ because $2^2=4$ and $(-2)^2=4$.
+
+Over nonnegative real numbers, the square root operation is left distributive over multiplication and division, but not over addition or subtraction.  That is, if $x$ and $y$ are nonnegative real numbers, then $\sqrt{x\times y}=\sqrt{x}\times\sqrt{y}$ and $\displaystyle \sqrt{\frac{x}{y}}=\frac{\sqrt{x}}{\sqrt{y}}$.
+
+\begin{ex*}
+$\sqrt{x^{2}y^{2}}=xy$ because $(xy)^2=xy\times xy=x\times x\times y\times y=x^2\times y^2=x^{2}y^{2}$.
+\end{ex*}
+
+\begin{ex*}
+$\displaystyle \sqrt{\frac{9}{25}}=\frac{3}{5}$ because $\displaystyle\left(\frac{3}{5}\right)^2=\frac{3^2}{5^2}=\frac{9}{25}$.
+\end{ex*}
+
+On the other hand, in general, $\sqrt{x+y}\neq\sqrt{x}+\sqrt{y}$ and $\sqrt{x-y}\neq\sqrt{x}-\sqrt{y}$.  This error is an instance of the freshman's dream error.
+
+The square root notation is actually an alternative to exponentiation.  That is, $\sqrt{x} \equiv x^\frac{1}{2}$.  When it is defined, the square root operation is commutative with exponentiation.  That is, $\sqrt{x^a}=x^\frac{a}{2}=(\sqrt{x})^a$ whenever both $x^a>0$ and $x>0$.  The restrictions can be lifted if we extend the domain and codomain of the square root function to the complex numbers.
+
+Negative real numbers do not have real square roots.  For example, $\sqrt{-4}$ is not a real number.  This fact can be \PMlinkname{proven by contradiction}{ProofByContradiction} as follows:  Suppose $\sqrt{-4}=x\in\mathbb{R}$.  If $x$ is negative, then $x^2$ is positive, and if $x$ is positive, then $x^2$ is also positive.  Therefore, $x$ cannot be positive or negative.  Moreover, $x$ cannot be zero either, because $0^2=0$.  Hence, $\sqrt{-4}\notin\mathbb{R}$.
+
+For additional discussion of the square root and negative numbers, see the discussion of complex numbers.
+
+The square root function generally maps rational numbers to algebraic numbers; $\sqrt{x}$ is rational if and only if $x$ is a rational number which, after cancelling, is a fraction of two \PMlinkescapetext{perfect} squares.  In particular, $\sqrt{2}$ is irrational. 
+
+The function is continuous for all nonnegative $x$, and differentiable for all positive $x$ (it is not differentiable for $x=0$). Its derivative is given by:
+\[
+\frac{d}{dx}\big(\sqrt{x}\big)=\frac{1}{2\sqrt{x}}
+\]
+
+It is possible to consider square roots in rings other than the integers or the rationals. For any ring $R$, with $x,y\in R$, we say that $y$ is a square root of $x$ if $y^2=x$. 
+
+When working in the ring of \PMlinkname{integers modulo $n$}{MathbbZ_n}, we give a special name to members of the ring that have a square root. We say $x$ is a quadratic residue modulo $n$ if there exists $y$ coprime to $x$ such that $y^2\equiv x\pmod{n}$. Rabin's cryptosystem is based on the difficulty of finding square roots modulo an integer $n$.
+\end{document}

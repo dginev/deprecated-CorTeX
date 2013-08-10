@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{field} is a set $F$ together with two binary operations on $F$, called addition and multiplication, and denoted $+$ and $\cdot$, satisfying the following properties, for all $a,b,c \in F$:
+
+\begin{enumerate}
+\item $a + (b+c) = (a+b)+ c$ (associativity of addition)
+\item $a+b = b+a$ (commutativity of addition)
+\item $a+0 = a$ for some element $0 \in F$ (existence of zero element)
+\item $a+(-a) = 0$ for some element $-a \in F$ (existence of additive inverses)
+\item $a\cdot (b\cdot c) = (a\cdot b)\cdot c$ (associativity of multiplication)
+\item $a\cdot b = b\cdot a$ (commutativity of multiplication)
+\item $a\cdot 1 = a$ for some element $1 \in F$, with $1 \neq 0$ (existence of unity element)
+\item If $a \neq 0$, then $a \cdot a^{-1} = 1$ for some element $a^{-1} \in F$ (existence of multiplicative inverses)
+\item $a\cdot (b+c) = (a\cdot b) + (a\cdot c)$ (distributive property)
+\end{enumerate}
+
+Equivalently, a field is a commutative ring $F$ with identity such that:
+\begin{itemize}
+\item $1 \neq 0$
+\item If $a \in F$, and $a \neq 0$, then there exists $b \in F$ with $a \cdot b = 1$.
+\end{itemize}
+
+\end{document}

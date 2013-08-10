@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\R{\mathbb{R}}
+
+\def\vec#1{\mathbf{#1}}   % override standard \vec
+\begin{document}
+\PMlinkescapeword{between}
+\PMlinkescapeword{coordinate}
+\PMlinkescapephrase{imaginary part}
+\PMlinkescapeword{length}
+\PMlinkescapeword{mean}
+\PMlinkescapeword{orthogonal}
+\PMlinkescapeword{properties}
+\PMlinkescapephrase{real part}
+\PMlinkescapeword{similar}
+\PMlinkescapephrase{spanned by}
+\PMlinkescapeword{vertices}
+
+The \emph{cross product} (or \emph{vector product}) of two vectors in $\R^3$ is a vector \PMlinkid{orthogonal}{1285} to the plane of the two vectors being crossed, whose magnitude is equal to the area of the parallelogram defined by the two vectors. Notice there can be two such vectors. The cross product produces the vector that would be in a right-handed coordinate system with the plane.
+
+We write the cross product of the vectors $\vec{a}$ and $\vec{b}$ as
+\begin{eqnarray*}
+\vec{a}\times\vec{b} &=& \det\left(\begin{array}{ccc}\vec{i} & \vec{j} & \vec{k}\\ a_1 & a_2 & a_3\\ b_1 & b_2 & b_3\end{array}\right) \\
+ &=& (a_2b_3-a_3b_2)\vec{i} + (a_3b_1-a_1b_3)\vec{j} + (a_1b_2-a_2b_1)\vec{k} \\
+\end{eqnarray*}
+with $\vec{a}=a_1\vec{i}+a_2\vec{j}+a_3\vec{k}$ and $\vec{b}=b_1\vec{i} + b_2\vec{j}+b_3\vec{k}$, where $(\vec{i},\vec{j},\vec{k})$ is a right-handed orthonormal basis for $\R^3$.
+
+If we regard vectors in $\R^3$ as quaternions with real part equal to zero, with $i=\vec{i}$, $j=\vec{j}$ and $k=\vec{k}$, then the cross product of two vectors can be obtained by zeroing the real part of the product of the two quaternions. (A similar construction using octonions instead of quaternions gives a ``cross product'' in $\R^7$ which shares many of the properties of the $\R^3$ cross product.)
+
+If we write vectors in the form $\vec{a}=\left(\begin{array}{c}a_1 \\ a_2 \\ a_3\end{array}\right)$, then we can express the cross product as
+\[
+\vec{a}\times\vec{b} = \left(\begin{array}{ccc}0 & -a_3 & a_2 \\ a_3 & 0 & -a_1 \\ -a_2 & a_1 & 0\end{array}\right)\vec{b}.
+\]
+The spectrum of this matrix
+(and therefore of the map $\vec{b}\mapsto\vec{a}\times\vec{b}$)
+is $\{0, i|\vec{a}|, -i|\vec{a}| \}$.
+
+\section*{Properties of the cross product}
+In the following, $\vec{a}$, $\vec{b}$ and $\vec{c}$ will be arbitrary vectors in $\R^3$, and $s$ and $t$ will be arbitrary real numbers.
+\begin{itemize}
+\item $\vec{a}\times\vec{a}=0$.
+\item $\vec{a}\times(\vec{b}\times\vec{c})+\vec{b}\times(\vec{c}\times\vec{a})
++\vec{c}\times(\vec{a}\times\vec{b})=0$.
+\item The cross product is a bilinear map.
+This means that $(s\vec{a})\times(t\vec{b})=(st)(\vec{a}\times\vec{b})$,
+and that the cross product is distributive over vector addition,
+that is, $\vec{a}\times(\vec{b}+\vec{c})=\vec{a}\times\vec{b}+\vec{a}\times\vec{c}$
+and
+$(\vec{b}+\vec{c})\times\vec{a}=\vec{b}\times\vec{a}+\vec{c}\times\vec{a}$.
+\item The three properties above mean that the cross product makes $\R^3$ into a Lie algebra.
+\item $\vec{a}\times\vec{b}$ is orthogonal to both $\vec{a}$ and $\vec{b}$.
+\item $\vec{a}\times\vec{b}=-\vec{b}\times\vec{a}$.
+\item The length of $\vec{a}\times\vec{b}$ is the area of the parallelogram spanned by $\vec{a}$ and $\vec{b}$, so $|\vec{a}\times\vec{b}|=|\vec{a}||\vec{b}|\sin\theta$, where $\theta$ is the angle between $\vec{a}$ and $\vec{b}$. This gives us an expression for the area of a triangle in $\R^3$: if the vertices are at $\vec{a}$, $\vec{b}$ and $\vec{c}$, then the area is $\frac{1}{2}|(\vec{a}-\vec{c})\times(\vec{b}-\vec{c})|$, which can be written more symmetrically as  $\frac{1}{2}|\vec{a}\times\vec{b}+\vec{b}\times\vec{c}+\vec{c}\times\vec{a}|$.
+\item From the above, you can see that the cross product of any vector with $\vec{0}$ is $\vec{0}$. More generally, the cross product of two parallel vectors is $\vec{0}$, since $\sin 0 = 0$.
+\item One can also see that $|\vec{a}\times \vec{b}|^2=|\vec{a}|^2|\vec{b}|^2-|\vec{a}\cdot \vec{b}|^2$.
+\item $\vec{a}\times(\vec{b}\times\vec{c})
+=(\vec{a}\cdot\vec{c})\vec{b}-(\vec{a}\cdot\vec{b})\vec{c}$.
+This is the vector triple product.
+\item \PMlinkname{The cross product is rotationally invariant}{RotationalInvarianceOfCrossProduct}.
+That is, for any $3\times 3$ rotation matrix $M$ we have
+$M(\vec{a}\times\vec{b})=(M\vec{a})\times(M\vec{b})$.
+\end{itemize}
+\end{document}

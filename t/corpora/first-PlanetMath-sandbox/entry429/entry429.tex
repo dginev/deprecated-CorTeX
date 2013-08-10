@@ -1,0 +1,161 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+\newcommand{\fg}{\mathfrak{g}}
+\newcommand{\lact}{\lambda}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+\begin{document}
+A Lie group is a group endowed with a compatible \PMlinkname{analytic structure}{ComplexAnalyticManifold}.
+To be more precise, Lie group structure consists of two kinds of
+data
+\begin{itemize}
+\item a finite-dimensional, real-analytic manifold $G$, and
+\item  two analytic maps, one for multiplication $G\times
+  G\rightarrow G$ and one for inversion $G\rightarrow G$, which obey
+  the appropriate
+  group axioms.
+\end{itemize}
+Thus, a homomorphism in the category of Lie groups is a group
+homomorphism that is simultaneously an analytic mapping between two
+real-analytic manifolds.
+
+Next, we describe a natural construction that associates a certain
+Lie algebra $\fg$ to every Lie group $G$.  Let $e\in G$ denote the
+identity element of $G$.
+% and let $\fg$ denote $T_e G$, the tangent space of $G$ at the
+% identity.
+For $g\in G$ let $\lact_g \colon G \to G$ denote the
+diffeomorphisms corresponding to left multiplication by $g$.  
+
+\begin{definition}
+  A vector field $V$ on $G$ is called left-invariant if $V$ is
+  invariant with respect to all left multiplications.  To be more
+  precise, $V$ is left-invariant if and only if
+  $$(\lact_g)_*(V) = V$$
+  (see push-forward of a vector-field) for all
+  $g\in G$.   
+\end{definition}
+\begin{proposition}
+  The Lie bracket of two left-invariant vector fields is
+  again, a left-invariant vector field.
+\end{proposition}
+{\em Proof.}
+Let $V_1, V_2$ be left-invariant vector fields, and let $g\in G$.
+The bracket operation is covariant with respect to diffeomorphism, and
+in particular
+$$(\lact_g)_*[V_1,V_2] = [(\lact_g)_*V_1,(\lact_g)_*V_2] =
+[V_1,V_2].$$
+Q.E.D.
+
+\begin{definition}
+  The Lie algebra of $G$, denoted hereafter by $\fg$, is the vector space
+  of all left-invariant vector fields equipped with the vector-field
+  bracket.
+\end{definition}
+
+Now a right multiplication is invariant with respect to all
+left multiplications, and it turns out that we can characterize a
+left-invariant vector field as being an infinitesimal right multiplication.
+\begin{proposition}
+  Let $a\in T_eG$ and let $V$ be a left-invariant vector-field such that
+  $V_e = a$.  Then for all $g\in G$ we have
+  $$V_g = (\lact_g)_*(a).$$
+\end{proposition}
+The intuition here is that $a$
+gives an infinitesimal displacement from the identity element and that
+$V_g$ gives a corresponding infinitesimal right displacement away from $g$.
+Indeed consider a curve 
+$$\gamma \colon (-\epsilon,\epsilon) \to G$$
+passing through the identity element with velocity $a$; i.e.
+$$\gamma(0) = e,\quad \gamma'(0) = a.$$
+The above proposition is then
+saying that the curve 
+$$t\mapsto g\gamma(t),\quad t\in(-\epsilon,\epsilon)$$
+passes through
+$g$ at $t=0$ with velocity $V_g$.
+
+Thus we see that a left-invariant vector field is completely
+determined by the value it takes at $e$, and that therefore $\fg$ is
+isomorphic, as a vector space to $T_eG$.
+
+Of course, we can also consider the Lie algebra of right-invariant
+vector fields.  The resulting Lie-algebra is anti-isomorphic (the
+order in the bracket is reversed) to the Lie algebra of left-invariant
+vector fields.  Now it is a general principle that the group inverse
+operation gives an anti-isomorphism between left and right group
+actions.  So, as one may well expect, the anti-isomorphism between the
+Lie algebras of left and right-invariant vector fields can be realized
+by considering the linear action of the inverse operation on $T_e G$.
+
+Finally, let us remark that one can induce the Lie algebra structure
+directly on $T_e G$ by considering adjoint action of $G$ on $T_eG$. 
+
+\paragraph{History and motivation.}
+
+\paragraph{Examples.}
+
+
+
+\paragraph{Notes.}
+\begin{enumerate}
+\item 
+No generality is lost in assuming that a Lie group has analytic,
+rather than $C^\infty$ or even $C^k,\; k=1,2,\ldots$ structure.
+Indeed, given a $C^1$ differential manifold with a $C^1$
+multiplication rule, one can show that the exponential mapping endows
+this manifold with a compatible real-analytic structure.  
+
+Indeed, one can go even further and show that even $C^0$ suffices.  In
+other words, a topological group that is also a finite-dimensional
+topological manifold possesses a compatible analytic structure.  This
+result was formulated by Hilbert as his \PMlinkexternal{fifth problem}{http://www.reed.edu/~wieting/essays/LieHilbert.pdf}, and
+proved in the 50's by Montgomery and Zippin.
+
+
+\item One can also speak of a complex Lie group, in which case $G$ and the
+multiplication mapping are both complex-analytic.  The theory of
+complex Lie groups requires the notion of a holomorphic vector-field.
+Not withstanding this complication, most of the essential features of
+the real theory carry over to the complex case.
+
+\item The name ``Lie group'' honours the Norwegian mathematician
+  Sophus Lie who pioneered and developed the theory of continuous
+  transformation groups and the corresponding theory of Lie algebras
+  of vector fields (the group's infinitesimal generators, as Lie
+  termed them).  Lie's original impetus was the study of continuous
+  symmetry of geometric objects and differential equations.  
+  
+  The scope of the theory has grown enormously in the 100+ years of
+  its existence.  The contributions of Elie Cartan and Claude
+  Chevalley figure prominently in this evolution. Cartan is
+  responsible for the celebrated ADE classification of simple Lie
+  algebras, as well as for charting the essential role played by Lie
+  groups in differential geometry and mathematical physics.  Chevalley
+  made key foundational contributions to the analytic theory, and did
+  much to pioneer the related theory of algebraic groups.  Armand
+  Borel's book ``Essays in the History of Lie groups and algebraic
+  groups'' is the definitive source on the evolution of the Lie group
+  concept.  Sophus Lie's contributions are the subject of a number of
+  excellent articles by T. Hawkins.
+
+\end{enumerate}
+\end{document}

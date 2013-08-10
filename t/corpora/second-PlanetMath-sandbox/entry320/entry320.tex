@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+\PMlinkescapeword{between}
+\PMlinkescapeword{dimensions}
+\PMlinkescapeword{maps}
+
+Let $T\colon V\to W$ be a linear mapping between vector spaces.
+
+The set of all vectors in $V$ that $T$ maps to $0$
+is called the \emph{kernel} (or \emph{nullspace}) of $T$,
+and is denoted $\ker T$. So
+\[
+  \ker T = \{\, x \in V\mid T(x)=0\,\}.
+\]
+
+The kernel is a vector subspace of $V$,
+and its \PMlinkname{dimension}{Dimension2} is called the nullity of $T$.
+
+The function $T$ is injective if and only if $\ker T=\{0\}$
+(see the \PMlinkname{attached proof}{OperatornamekerL0IfAndOnlyIfLIsInjective}).
+In particular, if the dimensions of $V$ and $W$ are equal and finite,
+then $T$ is invertible if and only if $\ker T=\{0\}$.
+
+If $U$ is a vector subspace of $V$, then we have
+\[
+  \ker T|_U = U \cap \ker T,
+\]
+where $T|_U$ is
+the \PMlinkname{restriction}{RestrictionOfAFunction} of $T$ to $U$.
+
+When the linear mappings are given by means of matrices,
+the kernel of the matrix $A$ is
+\[
+  \ker A=\{\,x\in V \mid Ax=0\,\}.
+\]
+\end{document}

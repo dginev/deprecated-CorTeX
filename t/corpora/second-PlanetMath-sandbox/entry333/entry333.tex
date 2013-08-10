@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Suppose we have a set of $n$ congruences of the form
+\[ \begin{array}{ccc}
+ x & \equiv & a_1 \pmod{p_1} \\
+ x & \equiv & a_2 \pmod{p_2} \\
+   & \vdots &  \\
+x & \equiv & a_n \pmod{p_n} \\
+\end{array} \]
+where $p_1, p_2, \dots, p_n$ are relatively prime.  Let
+$$P = \prod_{i=1}^n p_i$$
+and, for all $i \in \mathbb{N}$ ($1 \leq i \leq n$), let $y_i$ be an integer that satisfies
+$$y_i \cdot \frac{P}{p_i} \equiv 1 \pmod{p_i}$$
+Then one solution of these congruences is
+$$x_0 = \sum_{i=1}^n a_iy_i \cdot \frac{P}{p_i}$$
+Any $x \in \mathbb{Z}$ satisfies the set of congruences if and only if it satisfies
+\[ x \equiv x_0 \pmod{P} \]
+
+The Chinese remainder theorem originated in the book \emph{``Sun Zi Suan Jing''}, or Sun Tzu's Arithmetic Classic, by the Chinese mathematician Sun Zi, or Sun Tzu, who also wrote ``Sun Zi Bing Fa'', or Sun Tzu's The Art of War.  The theorem is said to have been used to count the size of the ancient Chinese armies (i.e., the soldiers would split into groups of 3, then 5, then 7, etc, and the ``leftover'' soldiers from each grouping would be counted).
+\end{document}

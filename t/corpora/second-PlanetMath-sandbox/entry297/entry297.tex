@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{xypic} 
+
+\newcommand{\figura}[1]{\begin{center}\includegraphics{#1}\end{center}}
+\newcommand{\figuraex}[2]{\begin{center}\includegraphics[#2]{#1}\end{center}}
+\begin{document}
+\PMlinkescapeword{mean}
+
+
+There are some polynomial equations with real coefficients that don't have real solutions.\, Examples of these are\, $x^2+5=0$,\, $x^2+x+1=0$.\, Mathematically we express this by saying that $\mathbb{R}$ is not an algebraically closed field.
+
+In \PMlinkescapetext{order} to solve that kind of equation, we have to ``extend'' our number system $\mathbb{R}$ by adjoining a number $i$ that has the property that\, $i^2=-1$.\, In this way we extend the field of real numbers $\mathbb{R}$ to a field $\mathbb{C}$ whose elements are called \emph{\PMlinkescapetext{complex numbers}}.\, A formal construction can be seen at [\PMlinkid{complex numbers}{471}] (cf. the field adjunction).\, The field $\mathbb{C}$ is algebraically closed: every polynomial with complex coefficients, and especially every polynomial with real coefficients, (and with positive degree) has at least one complex zero (which might be real as well).
+
+Any complex number can be written as\, $z = x+iy$ (with $x,\,y\in\mathbb{R}$). Here we call $x$ the {\em real part}  of $z$ and $y$ the {\em imaginary part} of $z$.\,
+We write this as 
+$$x=\mbox{Re}(z), \qquad y=\mbox{Im}(z).$$
+Real numbers are a subset of complex numbers, and a real number $r$ can be written also as $r+i0$.\, Thus, a complex number is real if and only if its imaginary part is equal to zero.
+
+By writing $x\!+\!iy$ as\, $(x,\,y)$ we can also look at complex numbers as ordered pairs.\, With this notation, real numbers are the pairs of the form\, $(r,\,0)$. 
+
+The rules of addition and multiplication for complex numbers are:
+\begin{eqnarray*}
+(a+ib)+(x+iy)=(a+x)+i(b+y)&\qquad&(a,\,b)+(x,\,y) = (a+x,\,b+y)\\
+(a+ib)\cdot(x+iy)=(ax-by)+i(ay+bx)&\qquad&(a,\,b)\cdot(x,\,y)=(ax-by,\,ay+bx)
+\end{eqnarray*}
+(to see why the last identity holds, expand the first product and then simplify 
+by using\, $i^2 = -1$).
+
+We have also the \PMlinkname{negatives}{OppositeNumber}:\, $-(a,\,b) =
+(-a,\,-b)$\, and the multiplicative inverses:
+$$(a,\,b)^{-1}=\left(\frac{a}{a^2+b^2},\,\frac{-b}{a^2+b^2}\right).$$
+
+Seeing complex numbers as ordered pairs also let us give $\mathbb{C}$ the structure of vector space (over $\mathbb{R}$).\, The \emph{norm} of\, $z = x+iy$\, is defined as
+$$|z| = \sqrt{x^2+y^2}.$$
+Then we have\, $|z|^2=z\overline{z}$\, where $\overline{z}$ is the \emph{conjugate} of $z = x+iy$ and it's defined as\, $\overline{z} = x-iy$.\, Thus we can also characterize real numbers as those complex numbers $z$ such that $z=\overline{z}$.
+
+Conjugation obeys the following rules:
+\begin{eqnarray*}
+\overline{z_1+z_2}&=&\overline{z_1}+\overline{z_2}\\
+\overline{z_1z_2}&=&\overline{z_1}\,\overline{z_2}\\
+\overline{\overline{z}}&=& z
+\end{eqnarray*}
+
+The real and imaginary parts of a complex number may be expressed with the conjugate as
+$$\mbox{Re}(z) = \frac{z+\overline{z}}{2}, \quad \mbox{Im}(z) = \frac{z-\overline{z}}{2i}.$$
+
+
+The ordered-pair notation lets us visualize complex numbers as points in the plane; this is called the {\em complex plane}, often also the {\em $z$-plane}.\, As well, we can also describe complex numbers with polar coordinates.
+\begin{center}
+\includegraphics{argand}
+\end{center}
+Using this representation, we see that the real numbers are located at the abscissa (horizontal) axis, which is then known as the real axis.\, The ordinate (vertical) axis is known as the imaginary axis, since it consists of all complex numbers with real part equal to zero.
+
+If\, $z = a+ib$\, is represented in polar coordinates as\, $(r,\,t)$\, we call $r$ the \PMlinkescapetext{\emph{modulus}} of $z$ and $t$ its \emph{argument}.
+
+If\, $r = a+ib = (r,\,t)$,\, then\, $a = r\sin{t}$\, and\, $b = r\cos{t}$.\, So we have the following expression, called the {\em polar form} of complex number $z$:
+$$z = a+ib = r(\cos{t}+i\sin{t})$$
+
+Multiplication of complex numbers can be done in a very neat way using polar coordinates:
+$$(r_1,\,t_1)(r_2,\,t_2) = (r_1r_2,\,t_1\!+\!t_2).$$
+
+\textbf{Remark.}\, The adjective\, {\em complex}\, qualifying such nouns as ``number'', ``root'' and ``solution'' is in the English \PMlinkescapetext{language} ambiguous; it may mean that it is a question of a element belonging to either $\mathbb{C}$ or to $\mathbb{C}\!\smallsetminus\!\mathbb{R}$, i.e. the \PMlinkescapetext{word} {\em complex}\, may either have its basic sense or mean `non-real'.
+\end{document}

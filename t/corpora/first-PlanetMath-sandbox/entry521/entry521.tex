@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{color,multido,pstricks,pst-plot}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $X$ be a metric space, and $c\in X$. An open \emph{ball} around $c$ with radius $r>0$ is the set
+$$B_r(c)=\{x\in X: d(c,x)<r\}$$
+where $d(c,x)$ is the distance from $c$ to $x$.
+Sometimes, when there is no danger of confusion, an open ball is simply called a ball.
+
+The name is derived from the fact that, in the euclidean space $\mathbb{R}^3$ with the usual metric (distance between two points), a ball has the shape of a ``ball'' in the literal sense.  Also, under the usual metric, balls are open discs in the euclidean plane $\mathbb{R}^2$ (see the figure below), and open intervals in the line $\mathbb{R}$.
+
+\begin{center}
+\begin{pspicture}(-1,-0.5)(5,3)
+\psaxes[Dx=5,Dy=5]{->}(0,0)(-1,-0.5)(5,3)
+\pscircle[linestyle=dashed,fillcolor=lightgray,fillstyle=solid](2.5,1.75){1}
+\end{pspicture}
+\end{center}
+
+So, on $\mathbb{R}$ (with the standard topology), the ball with radius 1 around $5$ is the open interval given by $\{x : |5-x|<1\}$, that is, $(4,6)$.
+
+It should be noted that the definition of ball depends on the metric attached to the space. If we had considered $\mathbb{R}^2$ with the \emph{taxicab metric}, the ball with radius $1$ around zero would be the rhombus with vertices at $(-1,0),(0,-1),(1,0),(0,1)$ (see the figure below).
+
+\begin{center}
+\begin{pspicture}(-2,-2)(2,2)
+\pspolygon[linestyle=dashed,fillcolor=lightgray,fillstyle=solid](-1,-1)(-1,1)(1,1)(1,-1)
+\psaxes[Dx=5,Dy=5]{->}(0,0)(-2,-2)(2,2)
+\end{pspicture}
+\end{center}
+
+Balls are open sets under the topology induced by the metric, and therefore are examples of neighborhoods.
+
+We can also talk of closed balls (or discs):
+$$\overline B_r(c)=\{x\in X: d(c,x)\leq r\}$$
+
+Another common notation is $B(c,r)$.
+
+\textbf{Remark}.  A ball is sometimes referred to as a \emph{disc}, although disc is usually reserved for a ball in a metric space having the structure of a two-dimensional vector space.  The boundary of a closed ball is called a \emph{sphere}.  In the case when the metric space is a two-dimensional vector space, a sphere is called a \emph{circle}.
+\end{document}

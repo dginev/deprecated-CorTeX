@@ -1,0 +1,20 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+If $f(x)$ is a polynomial over a ring with identity, then $x-a$ is a factor if and only if $a$ is a root (that is, $f(a)=0$).
+
+This theorem is of great help for finding factorizations of higher degree polynomials. As example, let us think that we need to factor the polynomial $p(x)=x^3+3x^2-33x-35$. With some help of the rational root theorem we can find that $x=-1$ is a root (that is, $p(-1)=0$), so we know $(x+1)$ must be a factor of the polynomial. We can write then
+$$p(x)=(x+1)q(x)$$
+where the polynomial $q(x)$ can be found using long or synthetic division of $p(x)$ between $x-1$. In our case $q(x)=x^2+2x-35$ which can be easily factored as $(x-5)(x+7)$. We conclude that
+$$p(x)=(x+1)(x-5)(x+7).$$
+\end{document}

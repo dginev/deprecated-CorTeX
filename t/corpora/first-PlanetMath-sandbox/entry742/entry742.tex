@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\emptyset{\varnothing}
+\begin{document}
+A topological space $(X,\tau)$ is said to be $T_2$ 
+(or said to satisfy the $T_2$ axiom) if given 
+distinct $x,y\in X$, there exist disjoint 
+open sets $U,V\in\tau$ (that is, $U\cap V=\emptyset$) 
+such that $x\in U$ and $y\in V$.
+
+A $T_2$ space is also known as a \emph{Hausdorff space}.
+A \emph{Hausdorff topology} for a set $X$ is a topology 
+$\tau$ such that $(X,\tau)$ is a Hausdorff space.
+
+\subsubsection*{Properties}
+The following properties are equivalent:
+\begin{enumerate}
+\item $X$ is a Hausdorff space. 
+\item The set 
+$$
+\Delta=\{(x,y)\in X\times X:x=y\}
+$$
+is closed in the product topology of $X\times X$.
+\item For all $x\in X$, we have
+$$
+  \{x\} = \bigcap \{A : A\subseteq X\ \mbox{closed}, \mbox{$\exists$ open set}\  U\ \mbox{such that}\ x\in U\subseteq A\}.
+$$
+\end{enumerate}
+
+Important examples of Hausdorff spaces are metric spaces, manifolds, 
+and topological vector spaces.
+\end{document}

@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+Let $L/F$ be a Galois extension of finite degree,
+with Galois group $G := \operatorname{Gal}(L/F)$.
+There is a bijective, inclusion-reversing correspondence
+between subgroups of $G$ and extensions of $F$ contained in $L$, given by
+\begin{itemize}
+\item $K \mapsto \operatorname{Gal}(L/K)$,
+       for any field $K$ with $F \subseteq K \subseteq L$.
+\item $H \mapsto L^H$ (the fixed field of $H$ in $L$),
+       for any subgroup $H \leq G$.
+\end{itemize}
+The extension $L^H/F$ is normal if and only if $H$ is a normal subgroup of $G$,
+and in this case the homomorphism $G \longrightarrow \operatorname{Gal}(L^H/F)$
+given by $\sigma \mapsto \sigma|_{L^H}$
+induces (via the first isomorphism theorem)
+a natural identification $\operatorname{Gal}(L^H/F) = G/H$
+between the Galois group of $L^H/F$ and the quotient group $G/H$.
+
+For the case of Galois extensions of infinite degree,
+see the entry on infinite Galois theory.
+\end{document}

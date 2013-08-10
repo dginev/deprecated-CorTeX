@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $I=[a,b]$ be a closed interval, $f: I \rightarrow \mathbb{R}$ be bounded on $I$, $n \in \mathbb{N}$, and $P = \{[x_0, x_1), [x_1, x_2), \dots [x_{n-1}, x_n]\}$ be a partition of $I$.  The \emph{Riemann sum} of $f$ over $I$ with respect to the partition $P$ is defined as
+
+$$S=\sum_{j=1}^n f(c_j)(x_j-x_{j-1})$$
+
+where $c_j \in [x_{j-1},x_j]$ is chosen arbitrary.
+
+If $c_j=x_{j-1}$ for all $j$, then $S$ is called a \emph{left Riemann sum}.
+
+If $c_j=x_j$ for all $j$, then $S$ is called a \emph{\PMlinkescapetext{right} Riemann sum}.
+
+Equivalently, the Riemann sum can be defined as
+
+$$S=\sum_{j=1}^n b_j(x_j-x_{j-1})$$
+
+where $b_j \in \{ f(x):x\in[x_{j-1},x_j]\}$ is chosen arbitrarily.
+
+If $\displaystyle b_j=\sup_{x\in[x_{j-1},x_j]} f(x)$, then $S$ is called an \emph{upper Riemann sum}.
+
+If $\displaystyle b_j=\inf_{x\in[x_{j-1},x_j]} f(x)$, then $S$ is called a \emph{lower Riemann sum}.
+
+For some examples of Riemann sums, see the entry examples of estimating a Riemann integral.
+\end{document}

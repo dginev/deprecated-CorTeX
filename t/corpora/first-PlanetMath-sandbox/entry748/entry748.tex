@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+The {\em category of sets} has, as its objects, all sets and, 
+as its morphisms, functions between sets.  (This works if a 
+category's objects are only required to be part of a class, 
+as the class of all sets exists.)  The category of sets is often denoted by \textbf{Set}.
+
+Alternately one can specify a universe, containing all sets 
+of interest in the situation, and take the category to contain 
+only sets in that universe and functions between those sets.
+
+One of the most famous endofunctors associated with the category of sets 
+is the \emph{powerset functor} $P$, which takes every set $A$ to its 
+power set $P(A)$, and any function $f:A\to B$ to the function 
+$P(f): P(A)\to P(B)$, given by 
+\[
+ P(f)(S) := f(S) = \lbrace b\in B\mid b = 
+ f(a)\mbox{ for some }a\in S\rbrace.
+\]
+If $f \colon A\to B$ and $g \colon B\to C$ are functions, then $(P(g)\circ P(f))(S) = 
+P(g)(P(f)(S)) = P(g)(f(S))=g(f(S))= (g\circ f)(S)=P(g\circ f)(S)$, 
+so that $P$ is a covariant functor.  This functor may also be defined
+in an ``arrow theoretic'' fashion as a ${\rm Hom}$ functor.  Let $T$
+be a set with two elements, for instance $T = \{ \{\}, \{\{\}\}\}$.
+(Since, by the definition of cardinality, all sets with the same 
+number of elements are isomorphic in the category of sets, it does
+not matter which set with two elements we pick as $T$.) 
+Then define $P(A) = {\rm Hom} (A,T)$; likewise, given a function
+$f \colon A \to B$, define $P(f) \colon P(B) \to P(A)$ by
+$P(f)(g) = g \circ f$.
+\end{document}

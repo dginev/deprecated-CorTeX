@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+If $\mathcal{C}$ is a category, write $\hat{\mathcal{C}}$ for the category of contravariant functors from $\mathcal{C}$ to ${\bf Sets}$, the category of sets.  The morphisms in $\hat{\mathcal{C}}$ are natural transformations of functors.
+
+(To avoid set theoretical concerns, one can take a universe $\mathcal{U}$ and take all categories to be $\mathcal{U}$-small.)
+
+For any object $X$ of $\mathcal{C}$, $h_X = {\rm Hom}(-,X)$ is a contravariant functor from $\mathcal{C}$ to ${\bf Sets}$, and therefore is an object of $\hat{\mathcal{C}}$.  
+
+\emph{Yoneda Lemma} says that $X\mapsto h_X$ is a covariant functor $\mathcal{C}\to\hat{\mathcal{C}}$, which embeds $\mathcal{C}$ faithfully as a full subcategory of $\hat{\mathcal{C}}$. This embedding is called the \emph{Yoneda embedding}.
+\end{document}

@@ -1,0 +1,20 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Amdahl's Law reveals the maximum speedup that can be expected from parallel algorithms given the proportion of parts that must be computed sequentially.  It gives the speedup $S$ as
+
+$$ S \le \frac{1}{f+(1-f)/N}  $$
+
+Where $f$ is the fraction of the problem that must be computed sequentially and $N$ is the number of processors.
+
+Note that as $f$ approaches zero, $S$ nears $N$, which we'd expect from a perfectly parallelizable algorithm.
+
+% dummy change
+\end{document}

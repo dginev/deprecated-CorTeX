@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\renewcommand{\v}{\mathbf{v}}
+\newcommand{\w}{\mathbf{w}}
+
+\begin{document}
+A \emph{sesquilinear form} over a pair of complex vector spaces $(V,W)$ is a function $B\colon V \times W \to \mathbb{C}$ satisfying the following properties:
+\begin{enumerate}
+\item $B(\v_1+\v_2,\w) = B(\v_1,\w) + B(\v_2,\w)$
+\item $B(\v,\w_1+\w_2) = B(\v,\w_1) + B(\v,\w_2)$
+\item $B(c\v, d\w) = c B(\v,\w) \overline{d}$
+\end{enumerate}
+for all $\v,\v_1,\v_2 \in V$, $\w, \w_1, \w_2 \in W$, and $c,d \in \mathbb{C}$.  The vector spaces $V$ and $W$ are often identical, although the definition does not require them to be the same vector space.
+
+A sesquilinear form $B\colon V \times V \to \mathbb{C}$ over a single vector space $V$ is called a \emph{Hermitian form} if it is complex conjugate symmetric: namely, if $B(\v_1,\v_2) = \overline{B(\v_2,\v_1)}$.
+
+An inner product over a complex vector space is a positive definite Hermitian form.
+\end{document}

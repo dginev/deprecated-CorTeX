@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+
+\begin{document}
+\PMlinkescapeword{order}
+
+If $f$ is a real-valued continuous function on the interval $[a,b]$,
+and $x_1$ and $x_2$ are points with $a\le x_1<x_2\le b$
+such that $f(x_1)\ne f(x_2)$,
+then for every $y$ strictly between $f(x_1)$ and $f(x_2)$
+there is a $c\in(x_1,x_2)$ such that $f(c)=y$.
+
+Bolzano's theorem is a special case of this.
+
+The theorem can be generalized as follows:
+If $f$ is a real-valued continuous function
+on a connected topological space $X$,
+and $x_1, x_2 \in X$ with $f(x_1) \ne f(x_2)$,
+then for every $y$ between $f(x_1)$ and $f(x_2)$
+there is a $\xi \in X$ such that $f(\xi) = y$.
+(However, this ``generalization'' is essentially trivial,
+and in order to derive the intermediate value theorem from it
+one must first establish the less trivial fact that $[a,b]$ is connnected.)
+This result remains true
+if the codomain is an arbitrary ordered set with its order topology;
+see the entry
+\PMlinkname{proof of generalized intermediate value theorem}{ProofOfGeneralizedIntermediateValueTheorem}
+for a proof.
+
+
+
+
+
+\end{document}

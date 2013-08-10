@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\{#1\}}
+\begin{document}
+Let $(X, \borel, \mu)$ be a probability space, $f \in L^1(\mu)$, and $T\colon X \to X$ a measure preserving transformation.  Birkhoff's \emph{ergodic theorem} (often called the \emph{pointwise} or \emph{strong} ergodic theorem) states that there exists $f^*\in L^1(\mu)$ such that
+\begin{equation*}
+\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1} f(T^k x) = f^*(x)
+\end{equation*}
+for almost all $x\in X$. Moreover, $f^*$ is $T$-invariant (i.e., $f^*\circ T = f^*$) almost everywhere and $$\int f^*d\mu = \int f d\mu.$$ 
+In particular, if $T$ is ergodic then the $T$-invariance of $f^*$ implies that it is constant almost everywhere, and so this constant must be the integral of $f^*$; that is, if $T$ is ergodic, then 
+$$\lim_{n\to\infty}\frac{1}{n}\sum_{k=0}^{n-1} f(T^k x) = \int fd\mu$$ 
+for almost every $x$. This is often interpreted in the following way: for an ergodic transformation, the time average equals the space average almost surely.
+\end{document}

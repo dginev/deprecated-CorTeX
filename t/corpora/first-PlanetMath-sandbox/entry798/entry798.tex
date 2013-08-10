@@ -1,0 +1,92 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\md}{d}
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mderiv}[1]{\frac{\md}{\md {#1}}} %d/dx
+\newcommand{\mnthderiv}[2]{\frac{\md^{#2}}{\md {#1}^{#2}}} %d^n/dx
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}} %partial d^n/dx
+\newcommand{\mnthpderiv}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}} %partial d^n/dx
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\complexes}{\mathbb{C}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\bra}[1]{\langle#1 \vert}
+\newcommand{\ket}[1]{\vert \hspace{1pt}#1\rangle}
+\newcommand{\braket}[2]{\langle #1 \ket{#2}}
+\begin{document}
+Let $q(t)$ be a function $\reals \to \reals$, $\dot{q} = \mderiv{t}{q}$, and $L = L(q, \dot{q}, t)$.  Begin with the time-relative Euler-Lagrange condition
+
+\begin{equation}\label{el}
+\mpderiv{q} L - \mderiv{t}\left(\mpderiv{\dot{q}} L\right) = 0.
+\end{equation}
+
+If $\mpderiv{t}L = 0$, then the Euler-Lagrange condition reduces to
+
+\begin{equation}
+L - \dot{q}{\mpderiv{\dot{q}} L} = C,
+\end{equation}
+which is the \emph{Beltrami identity}.  In the calculus of variations, the ability to use the Beltrami identity can vastly simplify problems, and as it happens, many physical problems have $\mpderiv{t}L = 0$.
+
+In space-relative terms, with $q' \defined \mderiv{x}q$, we have 
+\begin{equation}
+\mpderiv{q} L - \mderiv{x}{\mpderiv{q'} L} = 0.
+\end{equation}
+
+If $\mpderiv{x}L = 0$, then the Euler-Lagrange condition reduces to
+
+\begin{equation}
+L - q' {\mpderiv{q'} L} = C.
+\end{equation}
+
+To derive the Beltrami identity, note that
+\begin{equation}\label{step2}
+\mderiv{t}\left(\dot{q}\mpderiv{\dot{q}}L\right) = \ddot{q}\mpderiv{\dot{q}}L + \dot{q}\mderiv{t}\left(\mpderiv{\dot{q}}L\right) 
+\end{equation}
+Multiplying (1) by $\dot{q}$, we have
+\begin{equation}\label{step3}
+\dot{q}\mpderiv{q} L - \dot{q}\mderiv{t}\left(\mpderiv{\dot{q}} L\right) = 0.
+\end{equation}
+Now, rearranging (5) and substituting in for the rightmost term of (6), we obtain
+\begin{equation}\label{step4}
+\dot{q}\mpderiv{q} L + \ddot{q}\mpderiv{\dot{q}}L - \mderiv{t}\left(\dot{q}\mpderiv{\dot{q}}L\right) = 0.
+\end{equation}
+Now consider the total derivative
+\begin{equation}\label{step1}
+\mderiv{t}L(q, \dot{q}, t) = \dot{q}\mpderiv{q}L + \ddot{q}\mpderiv{\dot{q}}L + \mpderiv{t}L.
+\end{equation}
+If $\mpderiv{t}L = 0$, then we can substitute in the left-hand side of (8) for the leading portion of (7) to get
+\begin{equation}
+\mderiv{t}L - \mderiv{t}\left(\dot{q}\mpderiv{\dot{q}}L\right) = 0.
+\end{equation}
+Integrating with respect to $t$, we arrive at
+\begin{equation}
+L - \dot{q}{\mpderiv{\dot{q}} L} = C,
+\end{equation}
+which is the Beltrami identity.
+\end{document}

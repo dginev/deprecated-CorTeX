@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+Let $V$ be a vector space over a
+field $F$. We say that $v_1,\ldots, v_k\in V$ are \emph{linearly dependent} if there exist scalars $\lambda_1,\ldots, \lambda_k\in F$, not all zero, such that
+\[
+\lambda_1 v_1+  \cdots  +\lambda_k v_k = 0 .
+\]
+If no such scalars exist, then we say that the vectors are \emph{linearly independent}. 
+More generally, we say that a (possibly infinite) subset $S\subset V$ is linearly independent if all finite subsets of $S$ are linearly independent.
+
+In the case of two vectors, linear dependence means that one of the
+vectors is a scalar multiple of the other.  As an alternate
+characterization of dependence, we also have the following.
+\begin{proposition}
+  Let $S\subset V$ be a subset of a vector space.  Then, $S$ is
+  linearly dependent if and only if there exists a $v\in S$ such that
+  $v$ can be expressed as a linear combination of the vectors in the
+  set $S\backslash \{v\}$ (\PMlinkname{all the vectors in $S$ other
+    than $v$}{SetDifference}).
+\end{proposition}
+
+\textbf{Remark}.  Linear independence can be defined more generally for modules over rings: if $M$ is a (left) module over a ring $R$.  A subset $S$ of $M$ is linearly independent if whenever $r_1m_1+\cdots +r_nm_n=0$ for $r_i\in R$ and $m_i\in M$, then $r_1=\cdots =r_n=0$.
+\end{document}

@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\{#1\}}
+\begin{document}
+Let $f:\reals \to \reals$ be a function which is continuous on the interval $[a,b]$ and differentiable on $(a,b)$.  Then there exists a number $c: a < c < b$ such that
+
+\begin{equation}
+f'(c) = \frac{f(b) - f(a)}{b - a}.
+\end{equation}
+The geometrical meaning of this theorem is illustrated in the picture:\\[10pt]
+\begin{center}
+\includegraphics[scale=0.4]{mittelwertsatz.ps}
+\end{center}
+The dashed line connects the points $(a,f(a))$ and $(b,f(b))$. There is $c$ between $a$ and $b$ at which the tangent to $f$ has the same slope as the dashed line.
+
+The mean-value theorem is often used in the integral context: There is a $c \in [a,b]$ such that
+
+\begin{equation}
+(b-a)f(c) = \int_{a}^{b} f(x) dx.
+\end{equation}
+\end{document}

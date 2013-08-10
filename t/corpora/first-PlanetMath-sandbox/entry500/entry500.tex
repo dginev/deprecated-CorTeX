@@ -1,0 +1,151 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+\newcommand{\znums}{\mathbb{Z}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}[proposition]{Definition}
+\begin{document}
+\emph{Row reduction}, also known as \emph{Gaussian elimination}, is an algorithm for solving a system of linear equations
+\[
+\begin{array}{ccccccccl}
+a_{11} x_1 &+ &a_{12} x_2 &+ &\ldots &+ &a_{1m} x_m &=& b_1 \\
+a_{21} x_1 &+ &a_{22} x_2 &+ &\ldots &+ &a_{2m} x_m &=& b_2 \\
+\vdots & & \vdots & & \ddots && \vdots && \vdots\\
+a_{n1} x_1 &+ &a_{n2} x_2 &+ &\ldots &+ &a_{nm} x_m &=& b_n \\
+\end{array}
+\]
+To describe row reduction, it is convenient to formulate a linear
+system as a single matrix-vector equation $Ax = b,$ where
+\[
+A = \begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1m} \\
+a_{21} & a_{22} & \cdots & a_{2m} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nm}
+\end{bmatrix}, \qquad
+b = \begin{bmatrix}
+b_1 \\ b_2 \\ \vdots \\ b_n
+\end{bmatrix},  \qquad
+x = \begin{bmatrix}
+x_1 \\ x_2 \\ \vdots \\ x_m
+\end{bmatrix}
+\]
+are, respectively, the $n\times m$ matrix of coefficients of the
+linear system, the $n$-place column vector of the scalars from the
+right-hand of the equations, and the $m$-place column vector of
+unknowns.
+
+The method consists of combining the coefficient matrix $A$ with the
+right hand vector $b$ to form the ``augmented'' $n \times (m + 1)$ matrix
+
+$$ \begin{bmatrix} A & b \end{bmatrix} =
+\begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1m} & b_1 \\
+a_{21} & a_{22} & \cdots & a_{2m} & b_2 \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nm} & b_n
+\end{bmatrix} =
+\begin{bmatrix}
+  R_1 \\ R_2 \\ \vdots \\ R_n,
+\end{bmatrix}
+$$
+where each $R_i$ is the $m+1$-place row vector corresponding to row
+$i$ of the augmented matrix.
+
+A sequence of elementary row operations is then applied to this matrix
+so as to transform it to row echelon form. The elementary operations are:
+\begin{itemize}
+\item \textbf{row scaling:} the multiplication a row by a nonzero
+  scalar;
+\[ R_i \mapsto c R_i,\quad c\neq 0;\]
+\item \textbf{row exchange:} the  exchanges of two rows;
+  \[ R_i \leftrightarrow R_j;\]
+\item \textbf{row replacement:} the  addition of a multiple of one row to
+  another row;
+  \[ R_i \mapsto R_i + c R_j,\quad c\neq 0,\; i\neq j.\]
+\end{itemize}
+Note that these operations are ``legal'' because $x$ is a solution of
+the transformed system if and only if it is a solution of the initial system.
+
+If the number of equations equals the number of variables ($m=n$), and
+if the coefficient matrix $A$ is \PMlinkname{non-singular}{singular}, then the algorithm will
+terminate when the augmented matrix has the following form:
+
+$$ \begin{bmatrix}
+a'_{11} & a'_{12} & \cdots & a'_{1n} & b_1 \\
+0 & a_{22}' & \cdots & a_{2n}' & b_2' \\
+\vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & \cdots & a_{nn}' & b_n'
+\end{bmatrix} $$
+With these assumptions, there exists a unique solution, which can be
+obtained from the above matrix by back substitution.
+
+% Assume we have transformed the first column, and we want to continue the elimination with the
+% following matrix
+
+% $$ \begin{bmatrix}
+% a_{11} & a_{12} & \cdots & a_{1n} & b_1 \\
+% 0 & a_{22}' & \cdots & a_{2n}' & b_2' \\
+% 0 & a_{32}' & \cdots & a_{3n}' & b_3' \\
+% \vdots & \vdots & \ddots & \vdots & \vdots \\
+% 0 & a_{n2}' & \cdots & a_{nn}' & b_n'
+% \end{bmatrix} $$
+
+% To zero $a_{32}'$, we want to divide the second row by the ``pivot''
+% $a_{22}'$ , multiply it with $a_{32}'$, and subtract it from the third
+% row. If the pivot is zero, we have to swap two rows. This procedure
+% frequently breaks down, not only for ill-conditioned matrices.
+% Therefore, most programs perform partial pivoting or complete pivoting
+% (normally not necessary.)
+
+For the general case, the termination procedure is somewhat more
+complicated. First recall that a matrix is in echelon form if each
+row has more leading zeros than the rows above it. A pivot is the
+leading non-zero entry of some row. We then have
+\begin{itemize}
+\item If there is a pivot in the last column, the system is
+inconsistent ; there will be no solutions.
+\item If that is not the case, then the general solution will have $d$
+degrees of freedom, where $d$ is the number of columns from $1$ to
+$m$ that have no pivot. To be more precise, the general solution
+will have the form of one particular solution plus an arbitrary linear
+combination of $d$ linearly independent $n$-vectors.
+
+In even more prosaic language, the variables in the non-pivot
+columns are to be considered ``free variables'' and should be
+``moved'' to the right-hand side of the equation. The general
+solution is then obtained by arbitrarily choosing values of the free
+variables, and then solving for the remaining ``non-free'' variables
+that reside in the pivot columns.
+\end{itemize}
+
+A variant of Gaussian elimination is Gauss-Jordan elimination. In
+this variation we reduce to echelon form, and then if the system
+proves to be consistent, continue to apply the elementary row
+operations until the augmented matrix is in {\em reduced echelon
+form}. This means that not only does each pivot have all zeroes
+below it, but that each pivot also has all zeroes above it.
+
+In essence, Gauss-Jordan elimination performs the back substitution;
+the values of the unknowns can be read off directly from the terminal
+augmented matrix. Not surprisingly, Gauss-Jordan elimination is
+slower than Gaussian elimination. It is useful, however, for solving
+systems on paper.
+\end{document}

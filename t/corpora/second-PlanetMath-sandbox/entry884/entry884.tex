@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\newcommand{\figura}[1]{\begin{center}\includegraphics{#1}\end{center}}
+\newcommand{\figuraex}[2]{\begin{center}\includegraphics[#2]{#1}\end{center}}
+\begin{document}
+The Lagrange multiplier method is used when one needs to find the extreme or stationary points of a function on a set which is a subset of the domain.
+
+{\bf Method}
+
+Suppose that $f(\mathbf{x})$ and $g_{i}(\mathbf{x}), i=1,...,m$ ($\mathbf{x}\in \R^n$) are differentiable functions that map $\R^n \mapsto \R$, and we want to solve 
+$$\min f(\mathbf{x}), \max f(\mathbf{x})\quad\mbox{such that}\quad g_{i}(\mathbf{x})=0,\quad i=1,\ldots,m$$
+
+By a calculus theorem, if the constaints are independent, the gradient of $f$, $\nabla f$, must satisfy the following equation at the stationary points:
+
+$$\nabla f = \sum_{i=1}^{m} \lambda_{i} \nabla g_{i}$$
+
+The constraints are said to be independent iff all the gradients of each constraint are linearly independent, that is:
+
+$\left \{\nabla g_{1}(\mathbf{x}), \ldots, \nabla g_{m}(\mathbf{x})\right \}$ is a set of linearly independent vectors on all points where the constraints are verified.
+
+
+Note that this is equivalent to finding the stationary points of:
+
+$$f(\mathbf{x})-\sum_{i=1}^{m} \lambda_{i}( g_{i}(\mathbf{x}))$$
+
+for $\mathbf{x}$ in the domain and the \emph{Lagrange multipliers} $\lambda_{i}$ without restrictions.
+
+After finding those points, one applies the $g_i$ constraints to get the actual stationary points subject to the constraints.
+\end{document}

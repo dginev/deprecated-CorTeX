@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\PMlinkescapeword{clearly}
+\PMlinkescapeword{information}
+\PMlinkescapeword{scheme}
+\PMlinkescapeword{connection}
+Let $V$ be a vector space over a field $k$, and let $A$ be an
+endomorphism of $V$ (meaning a linear mapping of $V$ into itself).
+A scalar $\lambda\in k$ is said to be an
+\emph{eigenvalue} of $A$ if there is a nonzero $x \in V$ for which
+\begin{equation}
+Ax = \lambda x\;.
+\end{equation}
+Geometrically, one thinks of a vector whose direction is unchanged
+by the action of $A$, but whose magnitude is multiplied by $\lambda$.
+
+If $V$ is finite dimensional, elementary linear algebra shows that
+there are several equivalent definitions of an eigenvalue:
+
+\noindent
+(2) The linear mapping $$B=\lambda I - A$$
+i.e. $B:x\mapsto \lambda x-Ax$, has no inverse.
+
+\noindent
+(3) $B$ is not injective.
+
+\noindent
+(4) $B$ is not surjective.
+
+\noindent
+(5) $\det(B)=0$, i.e. $\det(\lambda I-A)=0$.
+
+But if $V$ is of infinite dimension, (5) has no meaning and the
+conditions (2) and (4) are not equivalent to (1).
+A scalar $\lambda$ satisfying (2) (called a \emph{spectral value} of
+$A$) need not be an eigenvalue. Consider for example the complex
+vector space $V$ of all sequences $(x_n)_{n=1}^{\infty}$ of complex
+numbers with the obvious operations, and the map $A: V \to V$ given by
+$$ A(x_1, x_2, x_3, \dots) = (0, x_1, x_2, x_3, \dots) \;. $$
+Zero is a spectral value of $A$, but clearly not an eigenvalue.
+
+Now suppose again that $V$ is of finite dimension, say $n$.
+The function $$\chi(\lambda)=\det(B)$$
+is a polynomial of degree $n$ over $k$ in the
+variable $\lambda$, called the \emph{characteristic polynomial} of the
+endomorphism $A$. (Note that some writers define the characteristic
+polynomial as $\det(A-\lambda I)$ rather than $\det(\lambda I-A)$, but the
+two have the same zeros.)
+
+If $k$ is $\C$ or any other algebraically closed field, or if $k=\R$
+and $n$ is odd, then $\chi$ has at least one zero, meaning that $A$
+has at least one eigenvalue. In no case does $A$ have more than $n$
+eigenvalues.
+
+Although we didn't need to do so here, one can compute the coefficients
+of $\chi$ by introducing a basis of $V$ and the corresponding matrix for
+$B$. Unfortunately, computing $n \times n$ determinants and finding roots
+of polynomials of degree $n$ are computationally messy procedures
+for even moderately large $n$, so for most practical purposes
+variations on this naive scheme are needed.  See the eigenvalue
+problem for more information.
+
+If $k=\C$ but the coefficients of $\chi$ are real (and in particular if
+$V$ has a basis for which the matrix of $A$ has only real entries), then
+the non-real eigenvalues of $A$ appear in conjugate pairs. For example,
+if $n=2$ and, for some basis, $A$ has the matrix
+$$ A = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix} $$
+then $\chi(\lambda)=\lambda^2+1$, with the two zeros $\pm i$.
+
+Eigenvalues are of relatively little importance in connection with
+an infinite-dimensional vector space, unless that space is endowed with
+some additional structure, typically that of a Banach space or Hilbert space. But in those cases the notion is of great value in
+physics, engineering, and mathematics proper. Look for ``spectral theory''
+for more on that subject.
+\end{document}

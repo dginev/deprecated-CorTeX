@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+
+\newcommand{\ccj}[1]{\overline{#1}}
+\newcommand{\trace}[0]{\operatorname{trace}}
+\begin{document}
+\section{Definition}
+\subsection{Scalar Complex Conjugate}
+
+Let $z$ be a complex number with real part $a$ and imaginary part $b$,
+
+$$ z = a+bi $$
+
+Then the \emph{complex conjugate} of $z$ is 
+
+$$ \bar{z} = a - bi $$
+
+Complex conjugation represents a reflection about the real axis on the Argand diagram representing a complex number.
+
+Sometimes a star ($*$) is used instead of an overline, e.g. in physics you might see
+
+$$ \int_{-\infty}^{\infty}\Psi^{*}\Psi dx=1 $$
+
+where $\Psi^*$ is the complex conjugate of a wave \PMlinkescapetext{function}.
+
+\subsection{Matrix Complex Conjugate}
+
+Let $A=(a_{ij})$ be a $n\times m$ matrix with complex
+entries.  Then the \emph{complex conjugate} of $A$ is the matrix
+$\ccj{A}=(\ccj{a_{ij}})$. In particular, if
+$v=(v^1, \ldots, v^n)$ is a complex row/column vector, then
+$\ccj{v}=(\ccj{v^1}, \ldots, \ccj{v^n})$.
+
+Hence, the matrix complex conjugate is what we would expect: the same matrix with all of its scalar components conjugated.
+
+\section{Properties of the Complex Conjugate}
+
+\subsection{Scalar Properties}
+
+If $u,v$ are complex numbers, then
+
+\begin{enumerate}
+ \item $\ccj{uv}= (\ccj{u})(\ccj{v})$
+ \item $\ccj{u+v}= \ccj{u}+\ccj{v}$
+ \item $\big(\ccj{u}\big)^{-1} = \ccj{u^{-1}}$
+ \item $\ccj{(\ccj{u})} = u$
+ \item If $v\neq 0$, then $\ccj{(\frac{u}{v})} = {\ccj{u}}/{\ccj{v}}$
+ \item Let $u = a + bi$.  Then $\ccj{u} u = u \ccj{u} = a^2+b^2 \ge 0$ (the complex modulus).
+ \item If $z$ is written in polar form as $z=r e^{i\phi}$, then
+$\ccj{z}=re^{-i\phi}$.
+\end{enumerate}
+
+\subsection{Matrix and Vector Properties}
+
+Let $A$ be a matrix with complex entries, and let $v$ be a complex row/column vector. 
+
+Then
+\begin{enumerate}
+ \item $\ccj{A^T}=\big(\ccj{A}\big)^T$
+ \item $\ccj{Av}=\ccj{A}\ccj{v}$, and $\ccj{vA}=\ccj{v}\ccj{A}$. (Here we assume that $A$ and $v$ are
+compatible size.)
+\end{enumerate}
+
+Now assume further that $A$ is a complex square matrix, then
+
+\begin{enumerate}
+ \item $\trace \ccj{A} = \ccj{(\trace\ A)}$
+ \item $\det \ccj{A} = \ccj{(\det A)}$
+ \item $\big(\ccj{A}\big)^{-1} = \ccj{A^{-1}}$
+\end{enumerate}
+\end{document}

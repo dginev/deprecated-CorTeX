@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\newcommand{\Ker}{\mathop{\mathrm{Ker}}}
+\newcommand{\Img}{\mathop{\mathrm{Img}}}
+\begin{document}
+Let $T:V\rightarrow W$ be a linear mapping, with $V$
+finite-dimensional.  We wish to show that
+$$\dim V = \dim \Ker T + \dim\Img T$$
+
+The images of a basis of $V$ will span $\Img T$, and hence $\Img T$ is
+finite-dimensional.  Choose then a basis $w_1,\ldots,w_n$ of $\Img T$
+and choose preimages $v_1,\ldots,v_n\in U$ such that 
+$$w_i = T(v_i),\quad i=1\ldots n$$
+Choose a basis $u_1,\ldots,u_k$ of $\Ker T$.  The result will follow
+once we show that $u_1,\ldots,u_k,v_1,\ldots,v_n$ is a basis of $V$.
+
+Let $v\in V$ be given.  Since $T(v)\in \Img T$, by definition, we can
+choose scalars $b_1,\ldots,b_n$ such that
+$$T(v)= b_1 w_1 + \ldots b_n w_n.$$
+Linearity of $T$ now implies that
+$T(b_1 v_1 + \ldots + b_n v_n-v) = 0,$
+and hence we can choose scalars $a_1,\ldots, a_k$ such that
+$$b_1 v_1 + \ldots + b_n v_n-v = a_1 u_1 + \ldots a_k u_k.$$
+Therefore $u_1,\ldots,u_k,v_1,\ldots,v_n$ span $V$.
+
+Next, let $a_1,\ldots, a_k,b_1,\ldots,b_n$ be scalars such that
+$$a_1 u_1+\ldots +a_k u_k + b_1 v_1 + \ldots + b_n v_n = 0.$$
+By applying $T$ to both sides of this equation it follows that
+$$b_1 w_1 + \ldots + b_n w_n =0,$$
+and since $w_1,\ldots, w_n$ are linearly independent that
+$$b_1= b_2 = \ldots = b_n = 0.$$
+Consequently 
+$$a_1 u_1+\ldots +a_k u_k = 0$$
+as well, and since $u_1,\ldots, u_k$ are also assumed to be linearly
+independent we conclude that
+$$a_1= a_2 = \ldots = a_k = 0$$
+also.  Therefore $u_1,\ldots,u_k,v_1,\ldots,v_n$ are linearly
+independent, and are therefore a basis. Q.E.D.
+\end{document}

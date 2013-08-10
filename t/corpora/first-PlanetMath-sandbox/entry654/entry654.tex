@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\ip#1{{\langle #1\rangle}}
+\begin{document}
+\PMlinkescapeword{induced}
+\PMlinkescapeword{norm}
+\PMlinkescapeword{satisfies}
+
+An \emph{inner product space} (or \emph{pre-Hilbert space}) is a vector space
+(over $\mathbb{R}$ or $\mathbb{C}$)
+with an inner product $\ip{\cdot,\cdot}$.
+
+For example, $\mathbb{R}^n$ with the familiar dot product
+forms an inner product space.
+
+Every inner product space is also a normed vector space,
+with the norm defined by $\Vert x \Vert := \sqrt{\ip{x,\,x}}$.
+This norm satisfies the parallelogram law.
+
+If the metric $\Vert{x-y}\Vert$
+induced by the norm is \PMlinkname{complete}{Complete},
+then the inner product space is called a Hilbert space.
+
+The Cauchy--Schwarz inequality 
+\begin{align}
+  |\ip{x,\,y}| \le \Vert x\Vert \cdot\Vert y\Vert
+\end{align}
+holds in any inner product space.
+
+According to (1), one can define the {\em angle between two non-zero vectors} $x$ and $y$:
+\begin{align}
+  \cos(x,\,y) := \frac{\ip{x,\,y}}{\Vert{x}\Vert\cdot\Vert{y}\Vert}.
+\end{align}
+This provides that the scalars are the real numbers.  In any case, the {\em perpendiculatity} of the vectors may be defined with the condition
+ $$\ip{x,\,y} =0.$$
+\end{document}

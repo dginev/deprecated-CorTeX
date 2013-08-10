@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{category} $\mathcal{C}$ consists of the following data:
+\begin{enumerate}
+\item a \PMlinkname{class}{Class} $\operatorname{ob}(\mathcal{C})$ of objects (of $\mathcal{C}$)
+\item for each ordered pair $(A,B)$ of objects of $\mathcal{C}$, a collection (we will assume it is
+ a set) $\hom(A,B)$ of morphisms from the domain $A$ to the codomain $B$
+\item a function $\circ:\hom(A,B)\times\hom(B,C)\to\hom(A,C)$ called composition.
+\end{enumerate}
+
+We normally denote $\circ(f,g)$ by $g \circ f$ for morphisms $f,g$. The above data must satisfy the following axioms: for objects $A,B,C,D$,
+
+\textbf{A1}: $\hom(A,B) \cap \hom(C,D)=\emptyset$ whenever $(A,B)\neq (C,D)$, i.e. the intersection is non-trivial only when $A=C$ and $B=D$.
+
+\textbf{A2}: (Associativity) if $f \in \hom(A,B)$, $g\in\hom(B,C)$ and $h\in\hom(C,D)$, $h\circ (g\circ f)=(h\circ g)\circ f$
+
+\textbf{A3}: (Existence of an identity morphism) for each object $A$ there exists an identity morphism $ {}id_{A}\in\hom(A,A)$ such that for every $f\in\hom(A,B)$, $f\circ id_{A}=f$ and $ {}id_{A}\circ g=g$ for every $g \in \hom(B,A)$.
+
+Some examples of categories:
+\begin{itemize}
+\item \textbf{0} is the empty category with no objects or morphisms, \textbf{1} is the category with one object and one (identity) morphism.
+\item If we assume we have a universe $U$ which contains all sets encountered in ``everyday'' mathematics,
+\textbf{Set} is the category of all such \PMlinkname{small}{Small} sets with morphisms being set functions
+\item \textbf{Top} is the category of all small topological spaces with morphisms \PMlinkescapetext{continuous functions}
+\item \textbf{Grp} is the category of all small groups whose morphisms are group homomorphisms 
+\end{itemize}
+
+\textbf{Remark}.  If $\hom(A,B)$ in the second condition above is not required to be a set (but a class), we usually call $\mathcal{C}$ a \emph{large category}.
+\end{document}

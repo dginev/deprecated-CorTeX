@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+\usepackage{amsmath} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+Let $V$ be a vector space where an inner product $\langle,\rangle$ has been defined.
+Such spaces can be given also a norm by defining 
+\[
+\Vert x\Vert = \sqrt{\langle x,x\rangle}.
+\]
+
+Then in such a space the Cauchy-Schwarz inequality holds:
+\[
+\vert \langle v,w\rangle\vert\le \Vert v\Vert\Vert w\Vert
+\]
+for any $v,w\in V$. That is, the modulus (since it might as well be a complex number) of the inner product for two given vectors is less or equal than the product of their norms. Equality happens if and only if the two vectors are linearly dependent.
+
+
+A very special case is when $V=\R^n$ and the inner product is the dot product defined as $\langle v,w\rangle  = v^t w$ and usually denoted as $v\cdot w$ and the resulting norm is the Euclidean norm.
+
+If $\mathbf{x}=(x_1,x_2,\ldots,x_n)$ and $\mathbf{y}=(y_1,y_2,\ldots,y_n)$ the Cauchy-Schwarz inequality becomes
+\[
+\vert \mathbf{x}\cdot \mathbf{y}\vert=\vert x_1y_1+x_2y_2+\cdots+x_ny_n\vert \le
+\sqrt{x_1^2+x_2^2+\cdots+x_n^2}\sqrt{y_1^2+y_2^2+\cdots+y_n^2}=\Vert \mathbf{x}\Vert\Vert \mathbf{y} \Vert,\]
+which implies
+\[
+(x_1y_1+x_2y_2+\cdots+x_ny_n)\sp2 \le\left(x_1^2+x_2^2+\cdots+x_n^2\right)\left( y_1^2+y_2^2+\cdots+y_n^2\right)
+\]
+Notice that in this case inequality holds even if the modulus on the middle term (which is a real number) is not used.
+
+Cauchy-Schwarz inequality is also a special case of H\"older inequality.
+The inequality arises in lot of fields, so it is known under several other names as 
+Bunyakovsky inequality or Kantorovich inequality. Another form that arises often is Cauchy-Schwartz inequality but this is a misspelling since the inequality is named after \PMlinkexternal{Hermann Amandus Schwarz}{http://www-groups.dcs.st-and.ac.uk/~history/Mathematicians/Schwarz.html} (1843--1921).
+
+This inequality is similar to the triangle inequality, talking about products instead of sums:
+\begin{align*}
+\Vert\mathbf{x}+\mathbf{y}\Vert\leq\Vert \mathbf{x}\Vert+\Vert \mathbf{y}\Vert & \qquad\text{triangle inequality}\\
+\vert\mathbf{x}\cdot\mathbf{y}\vert\leq\Vert \mathbf{x}\Vert\cdot\Vert \mathbf{y}\Vert &\qquad \text{CS inequality}\\
+\end{align*}
+\end{document}

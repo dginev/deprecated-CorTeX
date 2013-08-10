@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $f \colon \mathbb{C}\rightarrow\mathbb{C}$ be a polynomial, and suppose $f$ has no root in $\mathbb{C}$.  We will show $f$ is constant.
+
+Let $g=\frac{1}{f}$.  Since $f$ is never zero, $g$ is defined and holomorphic on $\mathbb{C}$ (ie. it is entire).  Moreover, since $f$ is a polynomial, $|f(z)|\rightarrow\infty$ as $|z|\rightarrow\infty$, and so $|g(z)|\rightarrow 0$ as $|z|\rightarrow\infty$.  Then there is some $M>0$ such that $|g(z)|<1$ whenever $|z|>M$, and $g$ is continuous and so bounded on the compact set $\{ z\in\mathbb{C}:|z|\leq M\}$.
+
+So $g$ is bounded and entire, and therefore by Liouville's theorem $g$ is constant.  So $f$ is constant as required.$\square$
+\end{document}

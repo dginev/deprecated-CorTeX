@@ -1,0 +1,20 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\renewcommand{\d}{\mathrm{d}}
+\begin{document}
+Let $R$ be a commutative ring. A \emph{derivation} $d$ on an $R$-algebra $A$ into an $A$-module $M$ is an $R$-linear transformation $\d\colon A \to M$ satisfying the properties
+\begin{itemize}
+\item $\d(a\x+b\y) = a\,\d\x + b\,\d\y$
+\item $\d(\x\cdot \y) = \x \cdot \d\y + \d\x \cdot \y$
+\end{itemize}
+for all $a,b \in R$ and $\x,\y \in A$.
+\end{document}

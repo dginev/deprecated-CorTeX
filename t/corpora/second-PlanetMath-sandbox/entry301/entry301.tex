@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\usepackage{pstricks,pst-plot}
+\begin{document}
+An Argand diagram is the graphical representation of complex numbers written in polar coordinates.  For example, if $z\in \mathbb{C}$ is a complex number, then $z$ can be written as $re^{i\theta}$, where $r$ is the length of $z$ considered as a  vector $(x,y)\in \mathbb{R}^2$, with $z=x+yi$, and $\theta$ is the value such that $\tan \theta = \frac{y}{x}$, and can be interpreted as the angle $z$ makes with the $x$-axis.  The Argand diagram of $z$ is thus
+
+\begin{center}
+\begin{pspicture}(-0.5,-0.5)(4.5,2)
+\SpecialCoor
+\psline{->}(0,0)(4.5,0)
+\rput(4,-0.3){$x$}
+\psline{->}(0,0)(3,1.75)
+\rput(3.75,1.5){$z=(r,\theta)$}
+\psarc{->}(0,0){1}{0}{(3,1.75)}
+\rput(1.25,0.3){$\theta$}
+\rput(1.5,1.2){$r$}
+\end{pspicture}
+\end{center}
+
+Argand is the name of Jean-Robert Argand, the Frenchman who is credited with the geometric interpretation of the
+complex numbers \PMlinkexternal{[Biography]}{http://www-groups.dcs.st-and.ac.uk/~history/Mathematicians/Argand.html}
+\end{document}

@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\begin{document}
+A function $f:S\subseteq \mathbb{R}\to \mathbb{R}$ is said to be \emph{nowhere differentiable} if it is not differentiable at any point in the domain $S$ of $f$.
+
+It is easy to produce examples of nowhere differentiable functions.  Indeed, any functions discontinuous at every point in $S$ is nowhere differentiable, as seen in the example $f(x)=x+1$ if $x\in S\cap \mathbb{Q}$ and $f(x)=x-1$ otherwise.  Less trivial examples are those that are everywhere continuous, but nowhere differentiable (hence not an analytic function).  These functions are simply termed \emph{continuous nowhere differentiable functions}.
+
+The prototypical example of a continuous nowhere differentiable function is the Weierstrass function.  The formula for the Weierstrass function is
+
+$$ f(x) = \sum_{n=1}^\infty b^n \cos(a^n \pi x) $$
+
+with $a$ odd, $0 < b < 1$, and $ab > 1 + \frac{3}{2}\pi$.  
+
+In the following series of figures, sequential renderings of the Weierstrass function are shown, each time zoomed in on the origin by a factor of ten. This shows the fractal nature of the function and illustrates how it is continuous, yet doesn't get any ``smoother'' as one looks closer (a prerequisite for differentiability).
+
+\begin{center}
+\includegraphics[scale=0.75]{weier1}\ \smallskip
+
+\includegraphics[scale=0.75]{weier2}\ \smallskip
+
+\includegraphics[scale=0.75]{weier3}\smallskip
+%\includegraphics[angle=-90,width=4in]{weierstrass2}
+%\includegraphics[angle=-90,width=4in]{weierstrass3}                                                  
+%the previous ones weren't rendering for some strange reason so I had to redo the graphics   
+
+\textbf{Figure.} Weierstrass function for $a=9$, $b=0.7$, with successive 10x zooms on the origin.
+\end{center}
+
+\subsubsection*{Notes}
+During eighteenth and early nineteenth centuries it was 
+widely believed that every continuous function has a well defined
+tangent - at least at ``\PMlinkescapetext{almost all}'' points. 
+As the Weierstrass function shows that this is clearly not the case. 
+The function is named after Karl Weierstrass who presented it 
+in a lecture for the Berlin Academy in 1872 \cite{stewart}. 
+
+Alternative examples of continuous and nowhere differentiable functions are given by the sample paths of standard Brownian motion, also known as the Wiener process or white noise. It was to handle such ill behaved processes, which have important applications to both pure and applied mathematics, that the techniques of stochastic calculus were developed.
+
+
+\textbf{Remark}.  It can actually be shown that the Weierstrass function is in fact a fractal (that is, its graph in $\mathbb{R}^2$ has topological dimension $1$ but Hausdorff dimension $>1$).  Indeed, many other examples of continuous nowhere differentiable functions can be found in functions whose graphs are fractals.  An example of a continuous nowhere differentiable function whose graph is not a fractal is the van der Waerden function.  
+
+Nowhere differentiability can be generalized.  For example, a function $f:S\subseteq \mathbb{R}\to \mathbb{R}^n$ is called nowhere differentiable if at each $x\in S$, $f=(f_1,\ldots,f_n)$ is not differentiable.  This means that at least one of the coordinate functions $f_i$ is not differentiable at $x$, for every $x\in S$.  Given any function $f:S\subseteq \mathbb{R}\to \mathbb{R}^n$, for any point $x\in S$, we say that $x$ is of type $(i_1,\ldots,i_n)$ where $i_j=1$ or $0$ according to whether $f_j$ is differentiable or not.  If $f$ is nowhere differentiable, then no points of $S$ can be of type $(1,\ldots,1)$.  Question: 
+\begin{quote}\emph{
+is there a continuous nowhere differentiable function $f:S\subseteq \mathbb{R}\to \mathbb{R}^2$ such that for every pair of type-$(0,1)$ points $x_1<x_2$, there is a type-$(1,0)$ point $y$ such that $x_1<y<x_2$, and every pair of type-$(1,0)$ points $y_1<y_2$, there is a type-$(0,1)$ point $x$ such that $y_1<x<y_2$?}
+\end{quote}
+\textbf{Remark}.  The above generalized definition leads to the definition of a \emph{nowhere differentiable curve}: it is a curve such that it admits a nowhere differentiable parametrization.  With this definition, we see that the graph of the Weierstrass function, as a curve, is nowhere differentiable.  Other fractals, such as the Koch curve, is also nowhere differentiable.
+
+\begin{thebibliography}{9}
+\bibitem{stewart} I. Stewart, \emph{The Problems of Mathematics}, 
+Oxford University Press, 1987. 
+\bibitem{yhk} M. Yamaguti, M. Hata, J. Kigami, \emph{Mathematics of Fractals},
+AMS, 1997
+\end{thebibliography}
+\end{document}

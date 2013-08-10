@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A morphism $f: A \longrightarrow B$ in a category is an \emph{isomorphism} if there exists a morphism $f^{-1}: B \longrightarrow A$ which is its inverse. The objects $A$ and $B$ are \emph{isomorphic} if there is an isomorphism between them.
+
+A morphism which is both an isomorphism and an endomorphism is called an \emph{automorphism}. The set of automorphisms of an object $A$ is denoted $\operatorname{Aut}(A)$.
+
+Examples:
+\begin{itemize}
+\item In the category of sets and functions, a function $f: A \longrightarrow B$ is an isomorphism if and only if it is bijective.
+\item In the category of groups and group homomorphisms (or rings and ring homomorphisms), a homomorphism $\phi: G \longrightarrow H$ is an isomorphism if it has an inverse map $\phi^{-1}: H \longrightarrow G$ which is also a homomorphism.
+\item In the category of vector spaces and linear transformations, a linear transformation is an isomorphism if and only if it is an invertible linear transformation.
+\item In the category of topological spaces and continuous maps, a continuous map is an isomorphism if and only if it is a homeomorphism.
+\end{itemize}
+\end{document}

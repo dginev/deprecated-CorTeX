@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+The \emph{Chebyshev polynomials of first kind} are defined by the simple 
+formula $$T_n(x)=\cos(nt),$$ where $x=\cos t$.
+
+It is an example of a \emph{trigonometric polynomial}.
+
+This can be seen to be a polynomial by expressing $\cos(kt)$ as a polynomial of $\cos(t)$, by using the formula for cosine of angle-sum:
+
+\begin{eqnarray*}
+\cos(1t)&=&\cos(t)\\
+\cos(2t)&=&\cos(t)\cos(t) - \sin(t)\sin(t) = 2(\cos(t))^2-1\\
+\cos(3t)&=&4(\cos(t))^3-3\cos(t)\\
+&\vdots&
+\end{eqnarray*}
+
+So we have
+\begin{eqnarray*}
+T_0(x)&=&1\\
+T_1(x)&=&x\\
+T_2(x)&=&2x^2-1\\
+T_3(x)&=&4x^3-3x\\
+&\vdots&
+\end{eqnarray*}
+
+These polynomials obey the recurrence relation:
+$$T_{n+1}(x) \;=\; 2xT_n(x)-T_{n-1}(x)$$
+for $n = 1,\,2,\,\ldots$
+
+Related are the \emph{Chebyshev polynomials of the second kind} that are
+defined as $$U_{n-1}(\cos t) = \frac{\sin(n t)}{\sin (t)},$$ which
+can similarly be seen to be polynomials through either a similar process as the
+above or by the relation $U_{n-1}(t) = n T_n'(t)$.
+
+The first few are:
+\begin{eqnarray*}
+U_0(x)&=&1\\
+U_1(x)&=&2x\\
+U_2(x)&=&4x^2-1\\
+U_3(x)&=&8x^3-4x\\
+&\vdots&
+\end{eqnarray*}
+
+The same recurrence relation also holds for $U$:
+$$U_{n+1}(x) \;=\; 2xU_n(x)-U_{n-1}(x)$$
+for $n = 1,\,2,\,\ldots$.
+\end{document}

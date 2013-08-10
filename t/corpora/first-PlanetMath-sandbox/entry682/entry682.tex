@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+The homotopy groups are an infinite series of (covariant) functors $\pi_n$ indexed by non-negative integers from based topological spaces to groups for $n>0$ and sets for $n=0$.  $\pi_n(X,x_0)$ as a set is the set of all homotopy classes of maps of pairs $(D^n,\partial D^n)\to (X,x_0)$, that is, maps of the disk into $X$, taking the boundary to the point $x_0$.  Alternatively, these can be thought of as maps from the sphere $S^n$ into $X$, taking a basepoint on the sphere 
+to $x_0$.  These sets are given a group structure by declaring the product of 2 maps $f,g$ to simply attaching two disks $D_1,D_2$ with the right orientation along part of their boundaries to get a new disk $D_1\cup D_2$, and mapping $D_1$ by $f$ and $D_2$ by $g$, to get a map of $D_1\cup D_2$.  This is continuous because we required that the boundary go to a \PMlinkescapetext{fixed point}, and well defined up to homotopy.
+
+If $f:X\to Y$ satisfies $f(x_0)=y_0$, then we get a homomorphism of homotopy groups $f^*:\pi_n(X,x_0)\to\pi_n(Y,y_0)$ by simply composing with $f$.  If $g$ is a map $D^n\to X$,  then $f^*([g])=[f\circ g]$.
+
+More algebraically, we can define homotopy groups inductively by 
+$\pi_n(X,x_0)\cong\pi_{n-1}(\Omega X,y_0)$, where $\Omega X$ is the loop space of $X$, and $y_0$ is the constant path sitting at $x_0$.
+
+If $n>1$, the groups we get are abelian.
+
+Homotopy groups are invariant under homotopy equivalence, and higher homotopy groups ($n>1$) 
+are not changed by the taking of covering spaces.  
+
+Some examples are:
+
+$\pi_n(S^n)=\mathbb{Z}$.
+
+$\pi_m(S^n)=0$ if $m<n$.
+
+$\pi_n(S^1)=0$ if $n>1$.
+
+$\pi_n(M)=0$ for $n>1$ where $M$ is any surface of nonpositive Euler characteristic 
+(not a sphere or projective plane).
+\end{document}

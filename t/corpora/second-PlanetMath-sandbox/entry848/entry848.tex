@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+ \usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\theoremstyle{definition}
+\newtheorem*{thmplain}{Theorem}
+\begin{document}
+\begin{thmplain}
+The equation
+\begin{align}
+                a_0x^n+a_1x^{n-1}+\cdots+a_{n-1}x+a_n = 0
+\end{align}
+with odd degree $n$ and real coefficients $a_i$ ($a_0 \ne 0$) has at least one real root $x$.
+\end{thmplain}
+
+{\em Proof.}\, Denote by $f(x)$ the left hand side of (1).\, We can write
+                      $$f(x) = a_0x^n[1+g(x)]$$
+where\, $\displaystyle g(x) := \frac{a_1}{x}\!+\cdots\!+\!\frac{a_{n-1}}{x^{n-1}}\!+\!\frac{a_n}{x^n}$.\, But we have\, 
+$\displaystyle\lim_{|x|\to\infty}g(x) = 0$\, because
+$$\lim_{|x|\to\infty}\frac{a_i}{x^i} = 0$$
+for all\, $i = 1,\,...,\,n$.\, Thus there exists an\, $M > 0$\, such that 
+$$|g(x)| < 1\,\, \mbox{for}\,\, |x| \geqq M.$$
+Accordingly\, $1+g(\pm M) > 0$\, and
+$$\mbox{sign} f(\pm M) = (\mbox{sign} a_0)(\mbox{sign}(\pm M))^n\cdot 1 = 
+  (\mbox{sign} a_0)(\pm 1)$$
+since $n$ is odd.\, Therefore the real polynomial function $f$ has opposite signs in the end points of the interval\, $[-M,\,M]$.\, Thus the continuity of $f$ guarantees, according to Bolzano's theorem, at least one zero $x$ of $f$ in that interval.\, So (1) has at least one real root $x$.
+\end{document}

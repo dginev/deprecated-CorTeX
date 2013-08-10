@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\newcommand{\figura}[1]{\begin{center}\includegraphics{#1}\end{center}}
+\newcommand{\figuraex}[2]{\begin{center}\includegraphics[#2]{#1}\end{center}}
+\begin{document}
+An \emph{equivalence relation} $\sim$ on a set $S$ is a relation that is:
+\begin{description}
+\item[Reflexive.] $a\sim a$ for all $a\in S$.
+\item[Symmetric.] Whenever $a\sim b$, then $b\sim a$.
+\item[Transitive.] If $a\sim b$ and $b\sim c$ then $a\sim c$.
+\end{description}
+If $a$ and $b$ are related this way we say that they are \emph{equivalent} under $\sim$.
+If $a\in S$, then the set of all elements of $S$ that are equivalent to $a$ is called the \emph{equivalence class} of $a$.  The set of all equivalence classes under $\sim$ is written $S/\sim$.
+
+An equivalence relation on a set induces a partition on it.  Conversely, any partition induces an equivalence relation. Equivalence relations are important, because often the set $S$ can be 'transformed' into another set (quotient space) by considering each equivalence class as a single unit.
+
+Two examples of equivalence relations:
+
+1. Consider the set of integers $\Z$ and take a positive integer $m$. Then $m$ induces an equivalence relation by $a\sim b$ when $m$ divides $b-a$ (that is, $a$ and $b$ leave the same remainder when divided by $m$).
+
+2. Take a group $(G,\cdot)$ and a subgroup $H$. Define $a\sim b$ whenever $ab^{-1}\in H$. That defines an equivalence relation. Here equivalence classes are called cosets.
+\end{document}

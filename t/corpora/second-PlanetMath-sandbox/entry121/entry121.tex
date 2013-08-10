@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+Let $S \subseteq \mathbb{R}$, and let $S'$ be the complement of $S$ with respect to $\mathbb{R}$.  The set $S$ is said to be \emph{Lebesgue measurable} if, for any $A \subseteq \mathbb{R}$,
+
+$$m^{*}(A) = m^{*}(A \cap S) + m^{*}(A \cap S')$$
+
+where $m^{*}(S)$ is the Lebesgue outer measure of $S$.  If $S$ is Lebesgue measurable, then we define the \emph{Lebesgue measure} of $S$ to be $m(S) = m^{*}(S)$. The Lebesgue measurable sets include open sets, closed sets as well all the sets obtained from them by taking countable unions and intersections. However, with aid of the axiom of choice it is possible to construct non-measurable sets.
+
+The Lebesgue measure on $\mathbb{R}^n$ is the \PMlinkname{completion}{CompletionOfAMeasureSpace} of the $n$-fold product measure of the Lebesgue measure on $\mathbb{R}$. 
+
+The Lebesgue measure is a formalization of the intuitive notion of length of a set in $\mathbb{R}$, an area of a set in $\mathbb{R}^2$ and volume in $\mathbb{R}^3$, etc. It obeys many properties one would expect from these intuitive notions, such as invariance under translation and rotation. 
+
+The Lebesgue measure was introduced by Henri Lebesgue in the first decade of the twentieth century. It became the prototypical example of what later became known simply as measure, a concept which unified such diverse objects as area, probability, and function.
+\end{document}

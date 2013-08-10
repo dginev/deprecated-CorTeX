@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+This entry describes the \emph{Householder transformation} $u=Hv$, the most frequently used algorithm for performing QR decomposition.  The key object here is the \emph{Householder matrix} $H$, a symmetric and orthogonal matrix of the form
+
+$$ H = I - 2xx^T, $$
+
+where $I$ is the identity matrix and we have used any normalized vector $x$ with $||x||_2^2 = x^Tx = 1$.
+
+The Householder transformation zeroes the last $m-1$ elements of a column vector below the first element:
+
+$$ \begin{bmatrix}v_1 \\ v_2 \\ \vdots \\ v_m \end{bmatrix} \rightarrow \begin{bmatrix}c \\ 0 \\ \vdots \\ 0 \end{bmatrix} \text{with}\; c = \pm ||v||_2 = \pm \left(\sum_{i=1}^m v_i^2\right)^{1/2} $$
+
+One can verify that
+
+$$ x = f \begin{bmatrix}v_1 - c \\ v_2 \\ \vdots \\ v_m \end{bmatrix} \text{with}\; f=\frac{1}{\sqrt{2c(c-v_1)}} $$
+
+fulfils $x^Tx=1$ and that with $H=I-2xx^T$ one obtains the vector $\begin{bmatrix}c & 0 & \cdots & 0 \end{bmatrix}^T$.
+
+To perform the decomposition of the $m \times n$ matrix $A = QR$ (with $m \ge n$) we construct an $m \times m$ matrix $H^{(1)}$ to change the $m-1$ elements of the first column to zero.  Similarly, an $m-1 \times m-1$ matrix $G^{(2)}$ will change the $m-2$ elements of the second column to zero. With $G^{(2)}$ we produce the $m \times m$ matrix
+
+$$ H^{(2)} = \begin{bmatrix}1 & 0 & \cdots & 0 \\ 0 & \; & \; & \; \\ \vdots & \; & G^{(2)} & \; \\ 0 & \; & \; & \; \end{bmatrix}.$$
+
+After $n$ such orthogonal transformations ($n-1$ times in the case that $m=n$),    we let
+
+$$ R = H^{(n)}\cdots H^{(2)}H^{(1)}A.$$
+
+$R$ is upper triangular and the orthogonal matrix $Q$ becomes
+
+$$ Q = H^{(1)}H^{(2)} \cdots H^{(n)}.$$
+
+In practice the $H^{(i)}$ are never explicitly computed.
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+\end{document}

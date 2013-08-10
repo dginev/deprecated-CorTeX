@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\begin{document}
+\newtheorem{thm}{Theorem}
+\begin{thm}[]
+Let $f:\mathbb{R}^n \to \mathbb{R}$ be a continuous probability
+density function. Let $X_1, \ldots, X_n$ be random variables with density $f$
+and with covariance matrix $\mv{K}$, $K_{ij} = \cov(X_i, X_j)$.  Let $\phi$ be the distribution of the 
+\PMlinkname{multidimensional Gaussian}{JointNormalDistribution}  with mean $\mv{0}$ and covariance matrix $\mv{K}$.  Then the  Gaussian distribution maximizes the differential entropy for a given covariance matrix $\mv{K}$.  That is, $h(\phi) \ge h(f)$.
+\end{thm}
+\end{document}

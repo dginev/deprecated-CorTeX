@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $\mathbb{F}$ be either $\mathbb{R}$ or $\mathbb{C}$, and let $p\in\mathbb{R}$ with $p\geq 1$.  We define $\ell^p$ to be the set of all sequences $(a_i)_{i\geq 0}$ in $\mathbb{F}$ such that $$\sum_{i=0}^{\infty}|a_i|^p$$ converges. 
+
+We also define $\ell^{\infty}$ to be the set of all \PMlinkname{bounded}{BoundedInterval} sequences $(a_i)_{i\geq 0}$ with norm given by $$\Vert (a_i)\Vert_{\infty} = \operatorname{sup}\{ |a_i|:i\geq 0\}.$$
+
+By defining addition and scalar multiplication pointwise, $\ell^p(\mathbb{F})$ and
+$\ell^\infty(\mathbb{F})$ have a natural vector space stucture.
+That the sum of two elements on $\ell^p(\mathbb{F})$ is again an element
+in $\ell^p(\mathbb{F})$ follows from Minkowski inequality
+(see below).
+We can make $\ell^p$ into a normed vector space, by defining the norm as $$\Vert (a_i)\Vert_p = (\sum_{i=0}^{\infty}|a_i|^p)^{1/p}.$$
+
+The normed vector spaces $\ell^{\infty}$ and $\ell^p$ for $p\geq 1$ are complete under these norms, making them into Banach spaces.  Moreover, $\ell^2$ is a Hilbert space under the inner product $$\langle (a_i),(b_i)\rangle = \sum_{i=0}^{\infty}a_i \overline{b_i}$$ where $\overline{x}$ denotes the complex conjugate of $x$.
+
+For $p>1$ the (continuous) dual space of $\ell^p$ is $\ell^q$ where $\frac{1}{p} + \frac{1}{q}=1$, and the dual space of $\ell^1$ is $\ell^{\infty}$.
+
+\subsubsection*{Properties}
+\begin{enumerate}
+\item If $a=(a_0,a_1, \ldots ) \in \ell^p(\mathbb{F})$ for $1\le p< \infty$, then
+$\lim_{k\to \infty} a_k =0$.
+(\PMlinkname{proof.}{ThenA_kto0IfSum_k1inftyA_kConverges})
+\item For $1\le p<\infty$, $\ell^p(\mathbb{F})$ is separable, and $\ell^\infty(\mathbb{F})$
+is not separable.
+\item Minkowski inequality. If $a,b\in \ell^p(\mathbb{F})$ where $p\ge 1$, then
+$$
+\Vert a+b \Vert_p \le \Vert a\Vert_p + \Vert b \Vert_p.
+$$
+\end{enumerate}
+\end{document}

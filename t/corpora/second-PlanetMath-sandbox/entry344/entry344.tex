@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{extension}
+\PMlinkescapeword{onto}
+
+The triple scalar product of three vectors is defined in $\mathbb{R}^3$ as
+$$\det\left[\begin{array}{ccc}a_1&b_1&c_1\\a_2&b_2&c_2\\a_3&b_3&c_3\end{array}\right]=\vec{a}\cdot(\vec{b}\times\vec{c})\\=a_1\det\left[\begin{array}{cc}b_2 & c_2\\ b_3 & c_3\end{array}\right] - a_2\det\left[\begin{array}{cc}b_1 & c_1\\ b_3 & c_3\end{array}\right] + a_3\det\left[\begin{array}{cc}b_1 & c_1\\ b_2 & c_2\end{array}\right]$$
+The determinant above is positive if the three vectors satisfy the right-hand rule and negative otherwise. Recall that the magnitude of the cross product of two vectors is equivalent to the area of the parallelogram they form, and the dot product is equivalent to the product of the projection of one vector onto another with the length of the vector projected upon. Putting these two ideas together, we can see that 
+$$|\vec{a}\cdot(\vec{b}\times\vec{c})|=|\vec{b}\times\vec{c}||\vec{a}|\cos\theta=\text{base}\cdot\text{height}=\text{Volume of parallelepiped}$$
+Thus, the magnitude of the triple scalar product is equivalent to the volume of the parallelepiped formed by the three vectors. It follows that the triple scalar product of three coplanar or collinear vectors is then 0. When we keep the sign of the volume, we preserve orientation.
+\begin{center}
+\includegraphics{TripleScalarProduct.eps}\\
+\PMlinktofile{View SVG}{TripleScalarProduct.svg}
+\end{center}
+Note that there is no rigid motion, barring reflection, that will allow you to move/rotate the left parallelepiped so that the respective vectors coincide. This is the sense of orientation that is used in differential geometry.
+
+\textbf{Identities related to the triple scalar product:}\\
+
+\begin{itemize}
+\item $(\vec{A}\times\vec{B})\cdot\vec{C}=(\vec{B}\times\vec{C})\cdot\vec{A}=(\vec{C}\times\vec{A})\cdot\vec{B}$\\
+\item $\vec{A}\cdot(\vec{B}\times\vec{C})=-\vec{A}\cdot(\vec{C}\times\vec{B})$\\
+\end{itemize}
+The latter is implied by the properties of the cross product.
+
+\textbf{Generalization:}
+
+Given a metrizable manifold $M$, the scalar n-product of an ordered list of n vectors $(\vec{v_1}, \vec{v_2}, \dotsc, \vec{v_n})$ corresponds to the signed n-volume of the n-paralleletope spanned by the vectors and is calculated by:
+$$\ast(\bigvee\limits_{i=1}^n\vec{v_i})$$
+where $\ast$ is the Hodge star operator and $\vee$ is the exterior product. Note that this simply corresponds to the determinant of the list in n-dimensional Euclidean space.
+\end{document}

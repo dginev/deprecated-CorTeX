@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\newtheorem{defn}{Definition}
+
+\theoremstyle{definition}
+\newtheorem{exa}{Example}
+
+\newcommand{\Rats}{\mathbb{Q}}
+\begin{document}
+\begin{defn}
+A field which is a finite extension of $\mathbb{Q}$, the rational numbers, is called a {\bf number field} (sometimes called {\em algebraic number field}). If the degree of the extension $K/\Rats$ is $n$ then we say that $K$ is a number field of degree $n$ (over $\Rats$).\\
+\end{defn}
+
+\begin{exa}
+The field of rational numbers $\Rats$ is a number field.\\
+\end{exa}
+
+\begin{exa}
+Let $K=\Rats(\sqrt{d})$, where $d\neq 1$ is a square-free non-zero integer and $\sqrt{d}$ stands for any of the roots of $x^2-d=0$ (note that if $\sqrt{d}\in K$ then $-\sqrt{d}\in K$ as well). Then $K$ is a number field and $[K:\Rats]=2$. We can explictly describe all elements of $K$ as follows:
+$$K=\{ t+s\sqrt{d} : t,s \in \Rats \}.$$ 
+\end{exa}
+
+\begin{defn}
+A number field $K$ such that the degree of the extension $K/\Rats$ is $2$ is called a {\bf quadratic number field}.
+\end{defn}
+
+In fact, if $K$ is a quadratic number field, then it is easy to show that $K$ is one of the fields described in Example $2$.
+
+\begin{exa}
+Let $K_n=\Rats(\zeta_n)$ be a cyclotomic extension of $\Rats$, where $\zeta_n$ is a primitive $n$th root of unity. Then $K$ is a number field and 
+$$[K:\Rats]=\varphi(n)$$
+where $\varphi(n)$ is the Euler phi function. In particular, $\varphi(3)=2$, therefore $K_3$ is a quadratic number field (in fact $K_3=\Rats(\sqrt{-3})$). We can explicitly describe all elements of $K$ as follows:
+$$K_n=\{ q_0+q_1\zeta_n+q_2\zeta_n^2+\ldots+q_{n-1}\zeta_n^{n-1} : q_i\in \Rats \}.$$
+In fact, one can do better. Every element of $K_n$ can be uniquely expressed as a rational combination of the $\varphi(n)$ elements $\{\zeta_n^a : \gcd(a,n)=1,\ 1\leq a < n\}$.
+\end{exa}
+
+\begin{exa}
+Let $K$ be a number field. Then any subfield $L$ with $\Rats \subseteq L \subseteq K$ is also a number field. For example, let $p$ be a prime number and let $F=\Rats(\zeta_p)$ be a cyclotomic extension of $\Rats$, where $\zeta_p$ is a primitive $p$th root of unity. Let $F^+$ be the maximal real subfield of $F$. $F^{+}$ is a number field and it can be shown that:
+$$F^+=\Rats(\zeta_p+\zeta_p^{-1}).$$
+\end{exa}
+\end{document}

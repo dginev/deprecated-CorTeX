@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\im{\operatorname{im}}
+\def\ker{\operatorname{ker}}
+\begin{document}
+\PMlinkescapeword{adjacent}
+\PMlinkescapeword{complex}
+\PMlinkescapeword{equivalent}
+\PMlinkescapeword{relation}
+\PMlinkescapeword{satisfies}
+
+Let $R$ be a ring.
+A sequence of \PMlinkname{$R$-modules}{Module} and homomorphisms
+\[
+  \cdots \rightarrow
+  A_{n+1} \buildrel {d_{n+1}} \over \longrightarrow
+  A_n \buildrel {d_n} \over \longrightarrow
+  A_{n-1} \rightarrow
+  \cdots
+\]
+is said to be a \emph{chain complex}
+(or \emph{$R$-complex}, or just \emph{complex})
+if each pair of adjacent homomorphisms $(d_{n+1}, d_n)$
+satisfies the relation $d_n\circ d_{n+1} = 0$.
+This is equivalent to saying that 
+$\im d_{n+1} \subseteq \ker d_n$.
+We often denote such a complex by $({\bold A}, d)$, or simply ${\bold A}$.
+
+Compare this to the notion of an exact sequence,
+which requires $\im d_{n+1} = \ker d_n$.
+
+The homomorphisms $d_n$ in the chain complex
+are called \emph{boundary operators}, or \emph{boundary maps}.
+
+\end{document}

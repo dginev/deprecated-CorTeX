@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\renewcommand{\v}{{{\bf v}}}
+\newcommand{\w}{{{\bf w}}}
+\newcommand{\0}{{{\bf 0}}}
+\begin{document}
+An \emph{inner product} on a vector space $V$ over a field $K$ (which must be either the field $\mathbb{R}$ of real numbers or the field $\mathbb{C}$ of complex numbers) is a function $(\ ,\ ): V \times V \longrightarrow K$ such that, for all $k_1,k_2 \in K$ and $\v_1, \v_2, \v, \w \in V$, the following properties hold:
+\begin{enumerate}
+\item $(k_1 \v_1 + k_2 \v_2, \w) = k_1 (\v_1, \w) + k_2 (\v_2, \w)$ (linearity\footnote{A small minority of authors impose linearity on the second coordinate instead of the first coordinate.})
+\item $(\v, \w) = \overline{(\w, \v)}$, where $\overline{\ \ \ \ }$ denotes complex conjugation (conjugate symmetry)
+\item $(\v, \v) \geq 0$, and $(\v, \v) = 0$ if and only if $\v = \0$ (positive definite)
+\end{enumerate}
+
+(Note: Rule 2 guarantees that $(\v,\v) \in \mathbb{R}$, so the inequality $(\v,\v) \geq 0$ in rule 3 makes sense even when $K=\mathbb{C}$.)
+
+The standard example of an inner product is the dot product on $K^n$:
+$$
+((x_1,\dots,x_n), (y_1,\dots,y_n)) := \sum_{i=1}^n x_i \overline{y_i}
+$$
+
+Every inner product space is a normed vector space, with the norm being defined by $||\v|| := \sqrt{(\v,\v)}$.
+\end{document}

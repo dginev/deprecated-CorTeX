@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\borel}{\mathfrak{B}}
+\begin{document}
+\section{Definition}
+
+{\bf Definition -} Let $(X_1, \mathfrak{B}_1, \mu_1)$ and $(X_2, \mathfrak{B}_2, \mu_2)$ be measure spaces, and $T:X_1 \to X_2$ be a measurable transformation.  The transformation $T$ is said to be \emph{measure-preserving} if for all $A \in \mathfrak{B}_2$ we have that
+
+\begin{equation*}
+\mu_1(T^{-1}(A)) = \mu_2(A),
+\end{equation*}
+where $T^{-1}(A)$ is, as usual, the set of points $x\in X_1$ such that $T(x)\in A$.
+
+{\bf Additional Notation:}
+\begin{itemize}
+\item If $T$ is bijective, measure-preserving, and its inverse $T^{-1}$ is also measure-preserving, then $T$ is said to be an \emph{\PMlinkescapetext{invertible}} measure-preserving transformation.
+\end{itemize}
+\begin{itemize}
+\item Measure-preserving transformations between the same measure space are sometimes called \emph{\PMlinkescapetext{endomorphisms}} of the measure space.
+\end{itemize}
+
+{\bf Remarks:}
+\begin{itemize}
+\item The fact that a map $T:X_1 \longrightarrow X_2$ is measure-preserving depends heavily on the sigma-algebras $\mathfrak{B}_i$ and measures $\mu_i$ involved. If other measures or sigma-algebras are also in consideration, one should make clear to which measure space is $T:X_1 \longrightarrow X_2$ measure-preserving.
+\end{itemize}
+\begin{itemize}
+\item Measure-preserving maps are the morphisms on the category whose objects are measure spaces. This should be clear from the next results and examples.
+\end{itemize}
+
+\section{Properties}
+
+\begin{itemize}
+\item The composition of measure-preserving maps is again measure-preserving. Of course, we are supposing that the domains and codomains of the maps are such that the composition is possible.
+\end{itemize}
+
+\begin{itemize}
+\item Let $(X_1, \mathfrak{B}_1, \mu_1)$ and $(X_2, \mathfrak{B}_2, \mu_2)$ be measure spaces and $(X_1, \overline{\mathfrak{B}_1}, \overline{\mu_1})$ and $(X_2, \overline{\mathfrak{B}_2}, \overline{\mu_2})$ their completions. If $T:(X_1, \mathfrak{B}_1, \mu_1) \longrightarrow (X_2, \mathfrak{B}_2, \mu_2)$ is measure-preserving, then so is $T:(X_1, \overline{\mathfrak{B}_1}, \overline{\mu_1}) \longrightarrow (X_2, \overline{\mathfrak{B}_2}, \overline{\mu_2})$. 
+\end{itemize}
+
+\begin{itemize}
+\item Let $(X_1, \mathfrak{B}_1, \mu_1)$ and $(X_2, \mathfrak{B}_2, \mu_2)$ be measure spaces and $T_1:X_1 \longrightarrow X_1$, $T_2:X_2 \longrightarrow X_2$ be measure-preserving maps. Then, the product map $T_1 \times T_2 : X_1 \times X_2 \longrightarrow X_1 \times X_2$, defined by
+\begin{align*}
+T_1 \times T_2 \;(x_1, x_2) := (T_1(x_1), T_2(x_2))
+\end{align*}
+is a measure-preserving transformation of $(T_1 \times T_2, \mathfrak{B}_1 \times \mathfrak{B}_1, \mu_1 \times \mu_2)$.
+\end{itemize}
+
+
+\section{Examples}
+
+\begin{itemize}
+\item The identity map of a measure space $(X, \mathfrak{B}, \mu)$ is always measure-preserving.
+\end{itemize}
+\begin{itemize}
+\item Let $G$ be a locally compact \PMlinkname{group}{TopologicalGroup}. For each $a \in G$, the transformation $T(g):=ag$ is measure-preserving relatively to any left Haar measure. Similarly, any right translation on $G$ \PMlinkescapetext{preserves} any right Haar measure.
+\end{itemize}
+\begin{itemize}
+\item Every continuous surjective homomorphism between compact Hausdorff \PMlinkescapetext{groups} is measure-preserving relatively to the normalized Haar measure (see \PMlinkname{this entry}{ContinuousEpimorphismOfCompactGroupsPreservesHaarMeasure}).
+\end{itemize}
+\end{document}

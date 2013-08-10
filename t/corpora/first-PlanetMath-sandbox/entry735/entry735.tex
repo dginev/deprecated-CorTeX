@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+The {\em trace} $\operatorname{Tr}(A)$ of a square matrix $A$ is defined to be the sum of the diagonal entries of $A$. It satisfies the following formulas:
+\begin{itemize}
+\item $\operatorname{Tr}(A+B) = \operatorname{Tr}(A) + \operatorname{Tr}(B)$
+\item $\operatorname{Tr}(AB) = \operatorname{Tr}(BA)$\quad\quad (\PMlinkescapetext{cyclic property})
+\end{itemize}
+where $A$ and $B$ are square matrices of the same size.
+
+The {\em trace} $\operatorname{Tr}(T)$ of a linear transformation $T\colon V \longrightarrow V$ from any finite dimensional vector space $V$ to itself is defined to be the trace of any matrix representation of $T$ with respect to a basis of $V$. This scalar is independent of the choice of basis of $V$, and in fact is equal to the sum of the eigenvalues of $T$ (over a splitting field of the characteristic polynomial), including multiplicities.
+
+The following link presents some examples for calculating the trace of a matrix.
+
+A {\em trace} on a $C^*$-algebra $A$ is a positive linear functional $\phi\colon A\to\mathbb{C}$ that has the \PMlinkescapetext{cyclic property}.
+\end{document}

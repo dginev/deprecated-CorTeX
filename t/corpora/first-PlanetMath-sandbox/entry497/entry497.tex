@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{column}
+\PMlinkescapeword{columns}
+\PMlinkescapeword{row}
+\PMlinkescapeword{rows}
+
+\section{Permutation Matrix}
+
+Let $n$ be a positive integer.  A \emph{permutation matrix} is any $n\times n$ matrix which can be created by rearranging the rows and/or columns of the $n\times n$ identity matrix.  More formally, given a permutation $\pi$ from the symmetric group $S_n$, one can define an $n\times n$ permutation matrix $P_{\pi}$ by $P_{\pi}=(\delta_{i\, \pi(j)})$, where $\delta$ denotes the Kronecker delta symbol.  
+
+Premultiplying an $n\times n$ matrix $A$ by an $n\times n$ permutation matrix results in a rearrangement of the rows of $A$.  For example, if the matrix $P$ is obtained by swapping rows $i$ and $j$ of the $n \times n$ identity matrix, then rows $i$ and $j$ of $A$ will be swapped in the product $PA$.
+
+Postmultiplying an $n\times n$ matrix $A$ by an $n\times n$ permutation matrix results in a rearrangement of the columns of $A$.  For example, if the matrix $P$ is obtained by swapping rows $i$ and $j$ of the $n \times n$ identity matrix, then columns $i$ and $j$ of $A$ will be swapped in the product $AP$.
+
+\section{Properties}
+
+Permutation matrices have the following properties:
+
+\begin{itemize}
+\item They are \PMlinkname{orthogonal}{OrthogonalMatrices}.
+\item They are invertible.
+\item For a \PMlinkname{fixed}{Fixed3} positive integer $n$, the $n \times n$ permutation matrices form a group under matrix multiplication.
+\item Since they have a single 1 in each row \emph{and} each column, they are doubly stochastic.
+\item They are the extreme points of the convex set of doubly stochastic matrices.
+\end{itemize}
+\end{document}

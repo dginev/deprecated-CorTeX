@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+An \emph{ordered ring} is a commutative ring $R$ with a total ordering $\leq$ such that, for every $a,b,c \in R$:
+\begin{enumerate}
+\item If $a \leq b$, then $a+c \leq b+c$
+\item If $a \leq b$ and $0 \leq c$, then $c \cdot a \leq c \cdot b$
+\end{enumerate}
+
+An \emph{ordered field} is an ordered ring $(R,\leq)$ where $R$ is also a field.
+
+Examples of ordered rings include:
+\begin{itemize}
+\item The integers $\mathbb{Z}$, under the standard ordering $\leq$.
+\item The real numbers $\mathbb{R}$ under the standard ordering.
+\item The polynomial ring $\mathbb{R}[x]$ in one variable over $\mathbb{R}$, under the relation $f \leq g$ if and only if $g-f$ has nonnegative leading coefficient.
+\end{itemize}
+
+Examples of rings which do not admit any ordering relation making them into an ordered ring include:
+\begin{itemize}
+\item The complex numbers $\mathbb{C}$.
+\item The finite field $\mathbb{Z}/p\mathbb{Z}$, where $p$ is any prime.
+\end{itemize}
+\end{document}

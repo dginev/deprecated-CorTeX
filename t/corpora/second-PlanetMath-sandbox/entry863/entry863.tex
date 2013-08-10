@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+The sum of the rank and the nullity of a linear mapping gives
+the dimension of the mapping's domain. More precisely, let
+$T:V\rightarrow W$ be a linear mapping. If $V$ is a
+finite-dimensional, then
+$$\dim V = \dim \mathop{\mathrm{Ker}} T + \dim \mathop{\mathrm{Img}}
+T.$$
+
+The intuitive content of the Rank-Nullity theorem is the principle that
+\begin{quote}\em
+  Every independent linear constraint takes away one degree of freedom.
+\end{quote}
+The rank is just the number of independent linear constraints on $v\in
+V$ imposed
+by the equation
+$$T(v)=0.$$
+The dimension of $V$ is the number of unconstrained degrees of freedom.
+The nullity is the degrees of freedom in the resulting space of
+solutions.
+To put it yet another way:
+\begin{quote} \em
+  The number of variables {\bf minus} the number of independent linear
+  constraints {\bf equals} 
+ the number of linearly independent solutions.
+\end{quote}
+\end{document}

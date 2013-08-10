@@ -1,0 +1,32 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A {\em loop} based at $x_0$ in a topological space $X$ is simply a continuous map $f : [0,1]\to X$ with $f(0) = f(1) = x_0$.
+
+The collection of all such loops, modulo homotopy equivalence, forms a group known as the fundamental group.
+
+More generally, the space of loops in $X$ based at $x_0$ with the compact-open topology, represented by $\Omega_{x_0}$, is known as the loop space of $X$.  And one has the homotopy groups $\pi_n(X,x_0) = \pi_{n-1}(\Omega_{x_0},\iota)$, where $\pi_n$ represents the higher homotopy groups, and $\iota$ is the basepoint in $\Omega_{x_0}$ consisting of the constant loop at $x_0$.
+\end{document}

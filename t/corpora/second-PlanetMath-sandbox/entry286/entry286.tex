@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+
+\def\Ker{\operatorname{Ker}}
+\def\Im{\operatorname{Im}}
+\def\Hom{\operatorname{Hom}}
+\begin{document}
+\PMlinkescapeword{properties}
+
+Let $V$ and $W$ be vector spaces over the same field $F$. A \emph{linear transformation} is a function $T\colon V \to W$ such that:
+\begin{itemize}
+  \item $T(v+w) = T(v)+T(w)$ for all $v,w \in V$
+  \item $T(\lambda v) = \lambda T(v)$ for all $v\in V$, and $\lambda \in F$
+\end{itemize}
+The set of all linear maps $V \to W$ is denoted by $\Hom_F(V,W)$ or $\mathscr{L}(V,W)$.
+
+\textbf{Examples:}
+\begin{itemize}
+\item Let $V=\mathbb{R}^n$ and $W=\mathbb{R}^m$ and $A$ is any $m\times n$ matrix.  Then the function $L_A:V\to W$ defined by $L_A(v)=Av$, the multiplication of matrix $A$ and the vector $v$ (considered as an $n\times 1$ matrix), is a linear transformation.
+\item Let $V$ be the space of all differentiable functions over $\mathbb{R}$ and $W$ the space of all continuous functions over $\mathbb{R}$.  Then $D:V\to W$ defined by $D(f)=f'$, the derivative of $f$, is a linear transformation.
+\end{itemize}
+
+\noindent \textbf{Properties:}
+\begin{itemize}
+  \item $T(0) = 0$.
+  \item If $S$ and $T$ are linear transformations from $V$ to $W$, and $k\in F$, then so are $S+T$ and $kT$.  As a result, $\Hom_F(V,W)$ is a vector space over F.
+  \item If $G\colon W\to U$ is a linear transformations then $G\circ T\colon V\to U$ is also a linear transformation.
+  \item The \PMlinkname{kernel}{KernelOfALinearTransformation}
+$\Ker(T)=\{v\in V \mid T(v) = 0\}$ is a subspace of $V$.
+  \item The \PMlinkname{image}{ImageOfALinearTransformation} $\Im(T) = \{T(v) \mid v\in V\}$ is a subspace of $W$.
+  \item The inverse image $T^{-1}(w)$ is a subspace if and only if $w=0$.
+  \item A linear transformation is injective if and only if $\Ker(T)=\{0\}$.
+  \item If $v \in V$ then $T^{-1}(T(v)) = v + \Ker(T)$.
+  \item If $w\in \Im(T)$ then $T(T^{-1}(w)) = \{w\}$.
+\end{itemize}
+
+\textbf{Remark}.  A linear transformation $T:V\to W$ such that $W=V$ is called a \emph{linear operator}, and a \emph{linear functional} when $W=F$.
+
+\textbf{See also:}
+\begin{itemize}
+\item Wikipedia, \PMlinkexternal{linear transformation}{http://www.wikipedia.org/wiki/Linear_transformation}
+\end{itemize}
+\end{document}

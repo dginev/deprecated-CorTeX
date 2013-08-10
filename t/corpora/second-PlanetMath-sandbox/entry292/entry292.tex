@@ -1,0 +1,199 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{amsthm}
+\usepackage{enumerate}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% define commands here
+\newcommand{\complex}{\mathbb{C}}
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\rat}{\mathbb{Q}}
+\newcommand{\nat}{\mathbb{N}}
+
+\providecommand{\abs}[1]{\lvert#1\rvert}
+\providecommand{\absW}[1]{\left\lvert#1\right\rvert}
+\providecommand{\absB}[1]{\Bigl\lvert#1\Bigr\rvert}
+\providecommand{\norm}[1]{\lVert#1\rVert}
+\providecommand{\normW}[1]{\left\lVert#1\right\rVert}
+\providecommand{\normB}[1]{\Bigl\lVert#1\Bigr\rVert}
+\providecommand{\defnterm}[1]{\emph{#1}}
+
+\DeclareMathOperator{\D}{D}
+\DeclareMathOperator{\linspan}{span}
+\begin{document}
+\tableofcontents
+
+\section{Real Taylor series}
+Let $f\colon I \to \real$  be a function defined on an open interval $I$,
+possessing derivatives of all orders at $a \in I$.
+Then the power series
+\[
+T(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}(a)}{k!}(x-a)^k 
+\]
+is called the \defnterm{Taylor series} for $f$ centered at $a$.
+
+Often the case $a = 0$  is considered, and we have the simpler
+\[
+T(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}(0)}{k!}x^k\,, 
+\]
+called the \defnterm{Maclaurin series} for $f$ by some authors.
+
+If we perform formal term-by-term differentiation of $T(x)$,
+we find that $T^{(k)}(a) = f^{(k)}(a)$, so it is plausible 
+that $T$ is an extrapolation or an approximation to $f$ based 
+on the derivatives of $f$ at a single point $a$.
+
+In general, $T$ may not extrapolate or approximate $f$ in the strictest sense:
+ a Taylor series does not necessarily converge, and even if it does, 
+it \PMlinkname{may not necessarily converge to the original function $f$}{InfinitelyDifferentiableFunctionThatIsNotAnalytic}.  It is also not necessarily true that a Taylor series about $a$ equals the Taylor series of $f$ about some other point $b$,
+when considered as functions.
+
+Those functions whose Taylor series do converge
+to the function are termed 
+\defnterm{\PMlinkname{analytic}{Analytic} functions}.
+
+If we start with a \emph{convergent} power series 
+$f(x) = c_0 + c_1 (x-a) + c_2 (x-a)^2 + \dotsb$ to 
+define a function $f$, then the Taylor series of $f$
+about $a$ will turn out to be the same as our original power series.
+
+\section{Taylor polynomials}
+The $n$th degree \defnterm{Taylor polynomial} for $f$ centered at $a$
+is the polynomial
+\[
+P_{n,a}(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k \,.
+\]
+In general, $P_{n,a}$ has degree $\leq n$;
+it may be $< n$ if some of the terms $f^{(k)}(a)$
+vanish.  Nevertheless, $P_{n,a}$
+is characterized by the following properties:
+it is the unique polynomial of degree $\leq n$
+whose derivatives up to the $n$th order at $a$ agree
+with those of $f$;
+it is also the unique polynomial $p$ of degree $\leq n$
+such that
+\[
+f(x) - p(x)  = o(\abs{x-a}^n)\,,  \quad \textrm{as $x \to a$}.
+\]
+(Landau notation is being used here.)  
+These characterizations are sometimes helpful in
+actually computing Taylor polynomials.
+
+The Taylor polynomial $P_{n,a}$ is applicable even if $f$ is only
+differentiable $n$ times at $a$, or when its Taylor series does 
+not converge to $f$.
+
+The error from the approximation of $f$ by $P_{n,a}$,  
+or \defnterm{remainder term}, $R_{n,a}(x) = f(x) - P_{n,a}(x)$, 
+can be quantified precisely
+using  \PMlinkname{Taylor's theorem}{TaylorsTheorem}.
+In particular, Taylor's Theorem is often used to show
+\[
+ \lim_{n\rightarrow \infty} R_{n,a}(x) = 0 \,,
+\]
+which is equivalent to $T(x) = f(x)$, i.e. the Taylor series
+converges to the original function.
+
+A term that is often heard is that of a ``Taylor expansion'';
+depending on the circumstance, this may mean either the Taylor series
+or the $n$th degree Taylor polynomial.
+Both are useful to linearize or otherwise reduce the analytical complexity of a function.  They are also useful for numerical approximation of functions,
+when the magnitude of the later terms fall off rapidly.  
+
+\section{Examples}
+Using the above definition of a Taylor series about $0$, we have the following important series representations:
+\begin{align*}
+ e^x &= 1 + \frac{x}{1!} + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots \\ 
+  \sin x &= \frac{x}{1!} - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots \\
+  \cos x &= 1-\frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots 
+\end{align*}
+That the series on the right converge to the functions on the left
+can be proven by Taylor's Theorem.
+
+\section{Complex Taylor series}
+If $f\colon U \to \complex$ is a holomorphic function from an open subset $U$ of the complex plane, and $a \in U$, we may also consider its Taylor series about $a$ (defined with the same formulae as before, but with complex numbers).
+
+In contrast with the complex case, it turns out that all holomorphic functions
+are infinitely differentiable and have Taylor series that converge to them.
+(The radius of convergence of the Taylor series at $a$ being the radius of the largest open disk about $a$ on which the domain of $f$ can be extended.)
+
+This of course makes the theory of analytic functions very nice, and
+many questions about real power series and real analytic functions are more easily  
+answered by looking at the complex case.
+For example, we can immediately tell that 
+the Taylor series about the origin for the \PMlinkname{tangent function}{DefinitionsInTrigonometry}
+\[
+\frac{\sin z}{\cos z} = \tan z = z+\frac{1}{3} z^3+\frac{2}{15}z^5+ \frac{17}{315}z^7+ \frac{62}{2835} z^9+ \dotsb
+\]
+has a radius of convergence of $\pi/2$,
+because $\tan$ is holomorphic everywhere except at its poles at
+$z = \pi/2 +k\pi, k \in \mathbb{Z}$, 
+and $\pi/2$ is the distance that the closest of these poles get to the origin.
+
+\section{Taylor series and polynomials in Banach spaces}
+Taylor series and polynomials can be generalized to Banach spaces:
+for details, see Taylor's formula in Banach spaces.
+
+\section{Taylor series and polynomials for functions of several variables}
+The simplest Banach spaces are the spaces $\real^n$,
+and in this case Taylor series and Taylor polynomials for functions
+$f \colon \real^n \to \real$ (``functions of $n$ variables'')
+look like this:
+\begin{align*}
+ T(x) &= \sum_{i_1=0}^\infty \cdots \sum_{i_n=0}^\infty 
+\frac{f^{(i_1,i_2,\ldots,i_n)}(0)}{i_1!i_2!\cdots i_n!}x_1^{i_1}x_2^{i_2} \cdots x_n^{i_n}
+\,,
+\quad
+f^{(i_1,i_2,\ldots,i_n)}(0) = \left.\frac{\partial^{i_1+\dotsb+i_n} f}{\partial x_1^{i_1} \cdots \partial x_n^{i_n}}\right|_{x=0}\,,
+\\
+P_{N,0}(x) &= \sum_{i_1 + \dotsb + i_n  \leq N}
+\frac{f^{(i_1, i_2, \ldots, i_n)}(0)}{i_1!i_2!\cdots i_n!}
+  x_1^{i_1}x_2^{i_2} \cdots x_n^{i_n}  = \sum_{\abs{I} \leq N} \frac{1}{I!} \left.\frac{\partial^{\abs{I}} f}{\partial x^I}\right|_{x=0} \, x^I\,.
+\end{align*}
+(For simplicity, we have put the centre at $a= 0$. 
+The last expression employs a commonly-used multi-index notation.)
+
+For example, the second-degree Taylor polynomial for $f(x,y) = \cos(x+y)$
+centered about $(0,0)$
+is
+\[
+P_{2,0}(x,y) = 1 - \frac{1}{2} x^2  - xy -   \frac{1}{2}y^2\,.
+\]
+Note that $P_{2,0}(x,y)$ can also be obtained by
+taking the one-variable Taylor series $\cos t = 1 - t^2 / 2 + \dotsb $ and substituting
+$t = x+y$, and keeping only the terms of degree $\leq 2$.
+This procedure works because of the uniqueness characterization of Taylor polynomials.
+
+\section{Taylor expansion of formal polynomials}
+If $f$ is a polynomial function, of degree $n$,
+then its Taylor series and its Taylor polynomial of degree $\geq n$
+actually equal $f$.  For this reason, we can consider Taylor series and polynomials
+applied to formal polynomials, without any notion of convergence.
+(The usual derivative is replaced by formal differentiation.)
+In this setting, a ``Taylor expansion'' of a formal polynomial $p(x)$
+about $a$ amounts to nothing more than rewriting $p(x)$
+in the form $c_0 + c_1 (x-a) + \dotsb + c_n (x-a)^n$.
+
+Similar considerations apply to formal power series,
+or to formal polynomials of several variables.
+
+
+
+\begin{thebibliography}{3}
+\bibitem{Ahlfors}
+Lars V. Ahlfors. {\it Complex Analysis}, third edition. McGraw-Hill, 1979.
+\bibitem{Spivak}
+Michael Spivak. {\it Calculus}, third edition. Publish or Perish, 1994.
+\end{thebibliography}
+\end{document}

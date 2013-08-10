@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+The binomial formula gives the power series expansion of the
+$p\supth$ power function. The power $p$ can be an integer,
+rational, real, or even a complex number.  The formula is
+\begin{align*}
+  (1+x)^p &= \sum_{n=0}^\infty  \frac{p^{\underline{n}}}{n!} \, x^n\\
+          &=  \sum_{n=0}^\infty  \binom{p}{n} x^n
+\end{align*}
+where $p^{\underline{n}}= p(p-1)\ldots (p-n+1)$ denotes the falling
+factorial, and where $\binom{p}{n}$ denotes the generalized binomial
+coefficient.  
+
+For $p=0,1,2,\ldots$ the power series reduces to a polynomial, and we
+obtain the usual binomial theorem.  For other values of $p$, the
+radius of convergence of the series is $1$; the right-hand series
+converges pointwise for all complex $|x|<1$ to the value on the left
+side.  Also note that the binomial formula is valid at $x=\pm 1$, but
+for certain values of $p$ only.  Of course, we have convergence if $p$
+is a natural number.  Furthermore, for $x=1$ and real $p$, we have
+absolute convergence if $p>0$, and conditional convergence if
+$-1<p<0$.  For $x=-1$ we have absolute convergence for $p>0$.
+\end{document}

@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\begin{document}
+\PMlinkescapeword{term}
+
+A \emph{Banach space} $(X,\norm{\,\cdot\,})$ is a normed vector space such that $X$ is complete under the metric induced by the norm $\norm{\,\cdot\,}$.
+
+Some authors use the term Banach space only in the case where $X$ is infinite-dimensional, although on Planetmath finite-dimensional spaces are also considered to be Banach spaces.
+
+If $Y$ is a Banach space and $X$ is any normed vector space, then the set of continuous linear maps $f\colon X\to Y$ forms a Banach space, with norm given by the operator norm.  In particular, since $\mathbb{R}$ and $\mathbb{C}$ are complete, the continuous linear functionals on a normed vector space $\mathcal{B}$ form a Banach space, known as the \emph{dual space} of $\mathcal{B}$.
+
+\emph{Examples:}
+\begin{itemize}
+\item \PMlinkname{Finite-dimensional normed vector spaces}{EveryFiniteDimensionalNormedVectorSpaceIsABanachSpace}.
+\item \PMlinkname{$L^p$ spaces}{LpSpace} are by far the most common example of Banach spaces.
+\item \PMlinkname{$\ell^p$ spaces}{Lp} are $L^p$ spaces for the counting measure on $\mathbb{N}$.
+\item Continuous functions on a compact set under the supremum norm.
+\item \PMlinkname{Finite}{FiniteMeasureSpace} signed measures on a \PMlinkname{$\sigma$-algebra}{SigmaAlgebra}.
+\end{itemize}
+\end{document}

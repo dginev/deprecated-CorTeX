@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{graphicx}
+%\usepackage{xypic} 
+%\usepackage{bbm}
+%\newcommand{\Z}{\mathbbmss{Z}}
+%\newcommand{\C}{\mathbbmss{C}}
+%\newcommand{\R}{\mathbbmss{R}}
+%\newcommand{\Q}{\mathbbmss{Q}}
+%\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\begin{document}
+A \emph{regular polyhedron} is a polyhedron such that
+\begin{itemize}
+\item Every face is a regular polygon.
+\item On each vertex, the same number of edges concur.
+\item The dihedral angle between any two faces is always the same.
+\end{itemize}
+
+These polyhedra are also known as Platonic solids, since Plato described them in his work. There are only 5 regular polyhedra, as was first shown by Theaetetus, one of Plato's students. Some sources ascribe to Theaetetus also the discovery of the dodecahedron. 
+
+The five solids are:
+\begin{description}
+\item[Regular Tetrahedron] It has 6 edges and 4 vertices and 4 faces, each one being an equilateral triangle. Its symmetry group is $S_4$.
+\item[Regular Hexahedron] Also known as cube. It has 8 vertices, 12 edges and 6 faces each one being a square. Its symmetry group is $S_4\times C_2$.
+\item[Regular Octahedron] It has 6 vertices, 12 edges and 8 faces, each one being an equilateral triangle Its symmetry group is $S_4\times C_2$.
+\item[Regular Dodecahedron] It has 20 vertices, 30 edges and 12 faces, each one being a regular pentagon. Its symmetry group is $A_5\times C_2$.
+\item[Regular Icosahedron] It has 12 vertices, 30 edges and 20 faces, each one being an equilateral triangle. Its symmetry group is $A_5\times C_2$.
+\end{description}
+\begin{figure}[h]
+\begin{centering}
+\includegraphics[scale=0.7]{platonic.ps}
+\caption{The five Platonic solids -- created in Blender 2.36. (Download the \htmladdnormallink{Blender file}{http://aux.planetmath.org/files/objects/2254/platonic.blend} for this picture.)}
+\end{centering}
+\end{figure}
+
+\small Note: $A_n$ is the alternating group of order $n$, $S_n$ is the symmetric group of order $n$ and $C_n$ is the cyclic group with order $n$.
+\end{document}

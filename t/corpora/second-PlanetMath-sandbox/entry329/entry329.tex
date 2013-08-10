@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+%All images in this document were created using xfig. Source files are included %in the filebox.
+\PMlinkescapeword{onto}
+\PMlinkescapeword{component}
+\PMlinkescapeword{components}
+\PMlinkescapeword{coordinate}
+
+A Euclidean vector is a geometric entity that has the \PMlinkescapetext{properties} of magnitude and direction. For example, a vector in $\mathbb{R}^2$ can be represented by its components like this $(3,4)$ or like this $\left[\begin{array}{c}3\\4\end{array}\right]$. This particular vector can be represented geometrically like this:
+\begin{figure}[htbp]
+\begin{centering}
+\includegraphics[scale=0.6]{vektor1}
+\caption{Geometrical representation of a Euclidean vector}
+\end{centering}
+\end{figure}
+In $\mathbb{R}^n$, a vector can be easily constructed as the line segment between points whose \PMlinkescapetext{difference} in each coordinate are the components of the vector. A vector constructed at the origin (The vector $(3,4)$ drawn from the point $(0,0)$ to $(3,4)$) is called a position vector. Note that a vector that is not a position vector is \PMlinkescapetext{independent} of position. It remains the same vector unless one changes its magnitude or direction.\\
+\textbf{Magnitude:} The magnitude of a vector is the \PMlinkescapetext{distance} from one end of the line segment to the other. The magnitude of the vector comes from the metric of the space it is embedded in. It's magnitude is also referred to as the vector norm. In Euclidean space, this can be gotten using Pythagorean's theorem in $\mathbb{R}^n$ such that for a vector $\vec{v}\in\mathbb{R}^n$, the length $|\vec{v}|$ is such that:
+$$|\vec{v}|=\sqrt{\sum_{i=0}^n x_n^2}$$
+This can also be found by the dot product $\sqrt{\vec{a}\cdot\vec{a}}$.\\
+\textbf{Direction:} A vector basically \emph{is} a direction. However you may want to know the angle it makes with another vector. In this case, one can use the dot product for the simplest computation, since if you have two vectors $\vec{a}\; ,\vec{b}$, $$\vec{a}\cdot\vec{b} = |\vec{a}||\vec{b}|\cos\theta$$
+Since $\theta$ is the angle between the vectors, you just solve for $\theta$. Note that if you want to find the angle the vector makes with one of the axes, you can use trigonometry.
+\begin{figure}[htbp]
+\begin{centering}
+\includegraphics[scale=0.7]{vector2}
+\caption{Angle between a vector and the axis}
+\end{centering}
+\end{figure}
+In this case, the length of the vector is just the hypotenuse of a single right triangle, and the angle $\theta$ is just $\arctan \frac{y}{x}$, the arctangent of it's components.\\
+\textbf{\PMlinkescapetext{Projection}, resolving a vector into its components:} Say all we had was the magnitude and angle of the vector to the x-axis and we needed the components.(Maybe we need to do a cross product or addition). Look at figure a. again. The x component of the vector can be likened to a ``plumb line'' dropped from the arrowhead of the vector to the x-axis so that it is \emph{perpendicular to} the x-axis. Thus, to get the x-component, all we would have to do is multiply the magnitude of the vector by the cosine of $\theta$. This is called resolving the vector into its components.\\
+Now say we had another vector at an angle $\theta_2$ to our vector. We construct a line between the \PMlinkescapetext{arrow} of our vector and intercept the other vector in the same way, perpendicularly. The length from the tail of the vector to our interception is called the \emph{\PMlinkescapetext{projection}} of our vector onto the other. Note that the equation remains the same. The \PMlinkescapeword{projection} is still $d\cos\theta_2$. This \PMlinkescapetext{formula} is valid in all higher dimensions as the angle between two vectors takes place on a plane.
+\begin{figure}[htbp]
+\begin{centering}
+\includegraphics[]{vector3}
+\caption{Projection of one vector onto another}
+\end{centering}
+\end{figure}
+\textbf{Miscellaneous \PMlinkescapetext{Properties}:}\\
+$\cdot$ Two vectors that are parallel to each other are called ``collinear'', as they can be drawn onto the same line. Collinear vectors are scalar multiples of each other.\\
+$\cdot$ Two non-collinear vectors are coplanar.\\
+$\cdot$ There are two main \PMlinkescapetext{types} of products between vectors. The dot product (scalar product), and the cross product (vector product). There is also a commonly used \PMlinkescapetext{combination} called the triple scalar product.
+\end{document}

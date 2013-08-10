@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+
+\begin{document}
+The \emph{definite integral} with respect to $x$ of some function $f(x)$ over the compact interval $[a,b]$ with $a<b$, the \emph{interval of integration}, is
+defined to be the ``area under the graph of $f(x)$ with respect to $x$'' (if $f(x)$ is negative, then you have a negative area). The numbers $a$ and $b$ are called \emph{lower} and \emph{upper limit} respectively. It is written as:
+$$ \int_a^bf(x) \ dx .$$
+One way to find the value of the integral is to take a limit of an approximation technique
+as the precision increases to infinity.
+
+For example, use a Riemann sum which approximates
+the area by dividing it into $n$ intervals of equal widths, and then calculating the area
+of rectangles with the width of the interval and height dependent on the function's value in the interval.
+Let $R_n$ be this approximation, which can be written as
+$$ R_n = \sum_{i=1}^{n} f(x_i^*) \Delta x ,$$
+where $x_i^*$ is some $x$ inside the $i^{\rm th}$ interval. This process is illustrated by figure \ref{fig:bars}.
+\begin{figure}[htbp]
+\begin{centering}
+\includegraphics[angle=270,scale=0.5]{definite_integral.eps}
+\caption{The area under the graph approximated by rectangles}\label{fig:bars}
+\end{centering}
+\end{figure}
+
+Then, the integral would be
+$$ \int_a^bf(x) \ dx = \lim_{n \to \infty} R_n =
+   \lim_{n \to \infty} \sum_{i=1}^{n} f(x_i^*) \Delta x .$$
+This limit does not necessarily exist for every function $f$ and it may depend on the particular choice of the $x_i^*$.  If all those limits coincide and are finite, then the integral exists. This is true in particular for continuous $f$.
+
+Furthermore we define
+$$\int_b^af(x)\ dx=-\int_a^bf(x)\ dx.$$
+
+We can use this definition to arrive at some important properties of definite integrals
+($a$, $b$, $c$ are constant with respect to $x$):
+\begin{eqnarray*}
+\int_a^b(f(x) + g(x)) \ dx & = & \int_a^bf(x)\ dx + \int_a^bg(x)\ dx; \\
+\int_a^b(f(x) - g(x)) \ dx & = & \int_a^bf(x)\ dx - \int_a^bg(x)\ dx ;\\
+\int_a^bf(x) \ dx & = & \int_a^cf(x)\ dx + \int_c^bf(x)\ dx ;\\
+\int_a^bcf(x) \ dx & = & c\int_a^bf(x)\ dx.
+\end{eqnarray*}
+
+There are other generalizations about integrals, but many require the fundamental theorem of calculus.
+
+\end{document}

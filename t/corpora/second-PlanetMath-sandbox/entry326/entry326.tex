@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\usepackage{mathrsfs}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newcommand{\sR}[0]{\mathbb{R}}
+\newcommand{\sC}[0]{\mathbb{C}}
+\newcommand{\sN}[0]{\mathbb{N}}
+\newcommand{\sZ}[0]{\mathbb{Z}}
+
+ \usepackage{bbm}
+ \newcommand{\Z}{\mathbbmss{Z}}
+ \newcommand{\C}{\mathbbmss{C}}
+ \newcommand{\R}{\mathbbmss{R}}
+ \newcommand{\Q}{\mathbbmss{Q}}
+
+
+
+\newcommand*{\norm}[1]{\lVert #1 \rVert}
+\newcommand*{\abs}[1]{| #1 |}
+
+
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\begin{document}
+Let $U$ be an open set in $\R^n$ and $f\colon U\to \C$ is a differentiable
+function. If $u\in U$ and $v\in \sR^n$, then the 
+\emph{directional derivative} of $f$ in the direction of $v$ is
+$$
+  (D_v f)(u) = \frac{d}{ds} f(u+sv) \Big|_{s=0}.
+$$
+In other words, $(D_v f)(u)$ measures how $f$ changes in the direction of $v$
+from $u$. 
+
+Alternatively, 
+\begin{eqnarray*}
+ (D_v f)(u) &=& \lim_{h\to 0} \frac{ f(u+ hv) - f(u)}{h} \\
+   &=& Df(u)\cdot v,
+\end{eqnarray*}
+where $Df$ is the Jacobian matrix of $f$.
+
+\subsubsection*{Properties}
+Let $u\in U$. 
+\begin{enumerate}
+\item $D_v f$ is linear in $v$. If $v, w\in \R^n$ and $\lambda, \mu \in \R$, 
+then 
+$$
+   D_{\lambda v+\mu w}f(u) =    \lambda D_{v}f(u) +\mu D_{w}f(u).
+$$
+In particular, $D_0 f=0$.
+\item If $f$ is twice differentiable and $v,w\in \R^n$, then 
+\begin{eqnarray*}
+   D_v D_w f(u) &=& \frac{\partial^2}{\partial s\partial t} f(u+sv + tw) \Big|_{s=0}, \\
+     &=& v^T\cdot \operatorname{Hess}f(u)\cdot w,
+\end{eqnarray*}
+where $\operatorname{Hess}$ is the Hessian matrix of $f$. 
+\end{enumerate}
+
+\subsubsection*{Example}
+For example, if $f\left(\begin{array}{c}x\\y\\z\end{array}\right) = x^2 + 3y^2z$, and we wanted to find the derivative at the point $\mathbf{a}=\left(\begin{array}{c}1\\2\\3\end{array}\right)$ in the direction $\vec{v}=\left[\begin{array}{c}1\\1\\1\end{array}\right]$, our equation would be
+\begin{eqnarray*}
+\lim_{h\rightarrow 0}\frac{1}{h}\left((1+h)^2 + 3(2+h)^2(3+h) - 37\right)
+&=&\lim_{h\rightarrow 0}\frac{1}{h}(3h^3+37h^2+50h)\\
+&=&\lim_{h\rightarrow 0}3h^2+37h +50 = 50\end{eqnarray*}
+\end{document}

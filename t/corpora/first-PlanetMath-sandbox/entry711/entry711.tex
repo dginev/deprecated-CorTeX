@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\curlies}[1]{\left\{{#1}\right\}}
+\newtheorem{defn}{Definition}
+\begin{document}
+\PMlinkescapeword{order}
+\PMlinkescapeword{satisfy}
+\PMlinkescapeword{onto}
+\PMlinkescapeword{fix}
+\PMlinkescapeword{collections}
+\section*{Definition}
+
+A \emph{site} is a generalization of a topology, designed to address the problem that in the algebraic category, the only reasonable topology is the Zariski topology, in which the open sets are much too large.  In order to obtain a well-behaved cohomology theory (and an algebraic version of the fundamental group) one needs to find open sets that are ``finer'' than the Zariski open sets.  
+
+Using the machinery of sites, one can construct \'etale (or $l$-adic) cohomology, and one can construct crystalline cohomology, both of which can be used to prove the Weil conjectures, and both of which serve as generalizations of the familiar cohomology from topology and complex analysis. 
+
+Fix a universe $\mathcal{U}$.
+
+\begin{defn}
+A \emph{site} is a $\mathcal{U}$-category $\mathcal{C}$ whose objects we call
+``open sets'' and a set $S$ of collections of maps we call
+``coverings''.  A covering of an object $U$ of $\mathcal{C}$ is a \PMlinkname{small}{Small} set of morphisms
+$\curlies{p_\alpha : U_\alpha \to U}$ in $\mathcal{C}$.  These objects
+must satisfy the following:
+\begin{enumerate}
+\item If $p:U'\to U$ is an isomorphism, then $\curlies{U' \overset{p}{\to} U}$ is a covering.
+\item If
+\[
+\curlies{U_\alpha \overset{p_\alpha}{\to} U}
+\]
+is a covering, and for all $\alpha$
+\[
+\curlies{U_{\alpha,\beta} \overset{q_{\alpha,\beta}}{\to} U_\alpha}
+\]
+is also a covering, then 
+\[
+\curlies{U_{\alpha,\beta} \overset{p_\alpha \circ
+q_{\alpha,\beta}}{\longrightarrow} U}
+\]
+is a covering.
+\item If $\curlies{U_\alpha \overset{p_\alpha}{\to} U}$ is a covering,
+and $V\to U$ is a morphism, then the fibred products $U_\alpha \times_U V$ exist for all $\alpha$, and we can produce a covering of
+$V$:
+\[
+\curlies{V\times_U U_\alpha \overset{q_\alpha}{\to} V}
+\]
+where $q_\alpha$ is the projection onto the first factor of the fibre
+product.
+\end{enumerate}
+\end{defn}
+
+Given a site, it is very natural to construct presheaves and sheaves on it; the category of sheaves on a site is called a topos.  This category is (under some technical assumptions) rich enough to allow a cohomology theory.
+
+The reference to universes and small sets in the definition may be safely ignored for most purposes; they exist to deal with set-theoretic difficulties one can encounter when dealing with certain sites (such as the crystalline site or the big \'etale site).
+
+\begin{thebibliography}{9}
+
+\bibitem{sga4}{Grothendieck et al., \emph{S\'eminaires en G\`eometrie Alg\`ebrique 4}, tomes 1, 2, and 3, available on the web at 
+\PMlinkexternal{http://www.math.mcgill.ca/~archibal/SGA/SGA.html}{http://www.math.mcgill.ca/~archibal/SGA/SGA.html}}
+
+\end{thebibliography}
+\end{document}

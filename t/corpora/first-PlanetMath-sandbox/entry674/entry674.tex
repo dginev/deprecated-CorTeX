@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\begin{document}
+Let $I\subset R$ be an interval and let $\gamma:I\to\reals^3$ be a
+parameterized space curve, assumed to be
+\PMlinkname{regular}{SpaceCurve} and free of points of inflection. We
+interpret $\gamma(t)$ as the trajectory of a particle moving through
+3-dimensional space. Let $T(t), N(t), B(t)$ denote the corresponding
+moving trihedron. The speed of this particle is given by $\Vert
+\gamma'(t) \Vert$.
+
+In order for a moving particle to escape the osculating plane, it is
+necessary for the particle to ``roll'' along the axis of its tangent
+vector, thereby lifting the normal acceleration vector out of the
+osculating plane. The ``rate of roll'', that is to say the rate at
+which the osculating plane rotates about the tangent vector, is given
+by $B(t)\cdot N'(t)$; it is a number that depends on the
+speed of the particle. The rate of roll relative to the particle's
+speed is the quantity
+$$\tau(t) = \frac{B(t)\cdot N'(t)}{\Vert \gamma'(t)\Vert}= \frac{(
+\gamma'(t)\times \gamma''(t)) \cdot \gamma'''(t)}{\Vert \gamma'(t)\times
+\gamma''(t)\Vert^2 },$$
+called the torsion of the curve, a quantity
+that is invariant with respect to reparameterization. The torsion
+$\tau(t)$ is, therefore, a measure of an intrinsic property of the
+oriented space curve, another real number that can be covariantly
+assigned to the point $\gamma(t)$.
+\end{document}

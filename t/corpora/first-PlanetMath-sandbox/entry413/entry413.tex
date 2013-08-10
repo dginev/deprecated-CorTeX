@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{between}
+
+A contravariant functor $F \colon C \to {\bf Sets}$ between a category $C$ and the category of sets is {\em representable} if there is an object $X$ of $C$ such that $F$ is isomorphic to the functor ${\rm Hom}(-,X)$.
+
+Similarly, a covariant functor is $F$ called {\em representable} if it is isomorphic to ${\rm Hom}(X,-)$.
+
+We say that the object $X$ {\em represents} $F$.  The object $X$ is then determined uniquely up to unique isomorphism (by the Yoneda lemma).
+
+A vast number of important objects in mathematics are defined as representing functors.  For example, if $F\colon C\to D$ is any functor, then the adjoint $G\colon D\to C$ (if it exists) can be defined as follows.  For $Y$ in $D$, $G(Y)$ is the object of $C$ representing the functor $X\mapsto {\rm Hom}(F(X),Y)$ if $G$ is right adjoint to $F$ or $X\mapsto {\rm Hom}(Y,F(X))$ if $G$ is left adjoint.
+
+Thus, for example, if $R$ is a ring, then $N\otimes M$ represents the functor $L\mapsto {\rm Hom}_R(N,{\rm Hom}_R(M,L))$.
+
+Much of the motivation for this way of thinking about objects comes from a philosophy of A. Grothendieck which says that we \emph{define} certain objects by having the characterizing property that they \emph{represent} certain functors.  In other words, we can take a category in which we're interested (e.g. the category of schemes, to address one of Grothendieck's primary interests) and embed it into a category of functors (as above).  We can then apply abstract theorem about functors and natural transformations to elements of our category. The strongegst possible statement from this approach will result if we can further \emph{characterize} our objects inside this larger category of functors, i.e. decide which functors represent an object in our category.  This should at least in part be viewed as the motivation for determining representability.
+\end{document}

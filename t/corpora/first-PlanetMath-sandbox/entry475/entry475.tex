@@ -1,0 +1,61 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A \emph{geometric series} is a series of the form
+
+\begin{align*}
+\sum_{i=1}^n ar^{i-1}
+\end{align*}
+
+(with $a$ and $r$ real or complex numbers).  The partial sums of a geometric series are given by
+
+\begin{align}
+s_n=\sum_{i=1}^n ar^{i-1} =  \frac{a(1 -r^n)}{1-r}.
+\end{align}
+
+An \emph{infinite geometric series} is a geometric series, as above, with $n \rightarrow \infty$.  It is denoted by
+
+\begin{align*}
+\sum_{i=1}^\infty ar^{i-1}
+\end{align*}
+
+If $|r|\ge 1$, the infinite geometric series diverges.  Otherwise it converges to
+
+\begin{align}
+\sum_{i=1}^\infty ar^{i-1}  =  \frac{a}{1-r}
+\end{align}
+
+Taking the limit of $s_n$ as  $n \rightarrow \infty$, we see that $s_n$ diverges if $|r| \ge 1$.  However, if $|r| < 1$, $s_n$ approaches (2).
+
+One way to prove (1) is to take 
+
+\begin{align*}
+s_n  =  a + ar + ar^2 + \cdots + ar^{n-1}
+\end{align*}
+
+and multiply by $r$, to get
+
+\begin{align*}
+ r s_n  =  ar + ar^2 + ar^3 + \cdots + ar^{n-1} + ar^{n}
+\end{align*}
+
+subtracting the two removes most of the terms:
+
+\begin{align*}
+ s_n - rs_n  =  a - ar^n
+\end{align*}
+
+factoring and dividing gives us
+
+\begin{align*}
+s_n = \frac{a(1 -r^n)}{1-r}
+\end{align*}
+$\square$
+\end{document}

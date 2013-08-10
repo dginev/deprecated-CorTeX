@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Construct an Egyptian fraction equal to 1.
+
+$${1 \over 2} + {1 \over 3} + {1 \over 7} + {1 \over {43}} + {1 \over {1807}} + \cdots$$
+
+The denominators form the sequence 2, 3, 7, 43, 1807, ... This is {\em Sylvester's sequence} (listed in A58 of Sloane's On-Line Encyclopedia of Integer Sequences), after the mathematician James Joseph Sylvester. The sequence can be calculated from the recurrence relation $a_n = 1 + (a_{n - 1})^2 - a_{n - 1}$, with $a_0 = 2$. Knowing the terms up to $n - 1$ one can calculate $a_n$ with the formula
+
+$$a_n = 1 + \prod_{i = 0}^{n - 1} a_i$$
+
+If the sequence was meant to construct an Egyptian fraction equal to 2, then it would be 1, 2, 3, 7, 43, 1807, ... and could still be calculated by multiplying the previous terms and adding 1, but the recurrence relation given above would have to be reformulated.
+
+Whatever the definition, the sequence consists of coprime terms, and thus can be used in Euclid's proof of the infinity of primes. For this reason, these numbers are sometimes called {\em Euclid numbers}.
+
+This sequence is useful in finding solutions to Zn\'am's problem.
+\end{document}

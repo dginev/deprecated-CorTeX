@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Given an integer $n > 0$,
+
+$$M(n) = \sum_{i = 1}^n \mu(i)$$
+
+where $\mu(x)$ is the M\"obius function.
+
+There is no $x$ such that $M(x) > x$. Franz Mertens conjectured that there is no $x$ such that $M(x) > \sqrt{x}$, but this was proven false later.
+
+\begin{thebibliography}{6}
+\bibitem{fm} F. Mertens, ``Ãber eine zahlentheoretische Funktion" {\it Akademie Wissenschaftlicher Wien Mathematik-Naturlich Kleine Sitzungsber}, IIa 106, 761-830 (1897)
+\bibitem{ao} A. M. Odlzyko and te Riele, ``Disproof of the Mertens Conjecture" {\it Journal fÃ¼r die reine und angewandte Mathematik}, 357, 138-160 (1985)
+\end{thebibliography}
+
+\subsection{External link}
+
+\PMlinkexternal{M\"obius and Mertens Values For n = 1 to 2500}{http://primefan.tripod.com/Mertens2500.html}
+\end{document}

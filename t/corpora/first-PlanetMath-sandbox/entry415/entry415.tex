@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+These are axioms introduced by Alexandre Grothendieck for an Abelian category.  The first two are satisfied by definition in an Abelian category, and others may or may not be.
+
+\begin{itemize}
+  \item[(Ab1)] Every morphism has a kernel and a cokernel.
+  \item[(Ab2)] Every monic is the kernel of its cokernel.
+  \item[(Ab3)] Coproducts exist.  (Coproducts are also called direct sums.)  If this axiom is satisfied the category is often just called cocomplete.
+  \item[(Ab3*)] Products exist.  If this axiom is satisfied the category is often just called complete.
+  \item[(Ab4)] Coproducts exist and the coproduct of monics is a monic.
+  \item[(Ab4*)] Products exist and the product of epics is an epic.
+  \item[(Ab5)] Coproducts exist and filtered colimits of exact sequences are exact.
+  \item[(Ab5*)] Products exist and filtered inverse limits of exact sequences are exact.
+\end{itemize}
+
+Grothendieck introduced these in his homological algebra paper \emph{Sur quelques points d'alg\`ebre homologique} in the T\^ohoku Math Journal (number 2, volume 9, 1957).  They can also be found in Weibel's excellent book \emph{An introduction to homological algebra}, Cambridge Studies in Advanced Mathematics (Cambridge University Press, 1994).
+\end{document}

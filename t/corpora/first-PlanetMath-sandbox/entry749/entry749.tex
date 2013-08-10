@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A morphism $f \colon A \to B$ in a category is called a {\em monic} morphism, or \emph{monomorphism}, if it can be cancelled from the left --- for any object $C$ and any morphisms $g_1, g_2 \colon\ C\to A$ we have $f \circ g_1 = f \circ g_2$ if and only if $g_1 = g_2$.
+
+A morphism $f : A \to B$ in a category is called a \emph{split monomorphism}
+if there exists a morphism $g \colon B \to A$ such that $g \circ f = \operatorname{id}_A$.  Note that every split monomorphism is a monomorphism;
+if $f$ is a split monomorphism and $f \circ h = f \circ k$, then one has
+$g \circ (f \circ h) = g \circ (f \circ k)$.  By associativity, $(g \circ f)
+\circ h = (g \circ f) \circ k$; by definition of split monomorphism,
+$\operatorname{id}_a \circ h = \operatorname{id}_a \circ k$; by definition of
+identity, $h = k$, so $f$ is a monomorphism.  Split monomorphisms are also
+known as \emph{sections} and \emph{coretractions}.
+
+The notion of epimorphism is dual to that of monomorphism.  An epimorphism of
+a category is a monomorphism of the dual category and vice versa.
+
+A monomorphism in the category of sets is simply a one-to-one function.
+Moreover, in the category of sets all monomorphisms are split monomorphisms.
+\end{document}

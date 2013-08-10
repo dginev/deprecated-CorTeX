@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\begin{document}
+Let $x$, $y$, $z$ be positive real numbers.
+
+For each positive integer $r$, let
+
+$a_r = (x^r+y^r)/r!$ and $b_r=z^r/r!$.
+
+For $s$ divisible by 4, let
+
+$A_s=a_2-a_4+a_6- \cdots +a_{s-2}-a_s$,
+
+$B_s=b_2-b_4+b_6- \cdots +b_{s-2}-b_s$.
+
+Then Fermat's last theorem is equivalent (by elementary means) to: 
+
+{\bf Theorem} If $a_n=b_n$ for some odd integer $n>2$, then either
+
+(i) $A_N > 0$ for some $N>x,y$,
+
+\hspace{2mm} or
+
+(ii) $B_M>0$ for some $M>z$.
+
+For a proof that these theorems are equivalent see:
+
+proof of equivalence of Fermat's Last Theorem to its analytic form
+\end{document}

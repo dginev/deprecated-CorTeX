@@ -1,0 +1,36 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+From the Euler relation
+
+\begin{equation*}
+e^{i\theta} = \cos \theta + i \sin \theta
+\end{equation*}
+
+it follows that
+
+\begin{align*}
+e^{i\theta \cdot n} &= (e^{i\theta})^n\\
+\cos n \theta + i \sin n \theta &= (\cos \theta + i \sin \theta)^n
+\end{align*}
+where $n\in\mathbb{Z}$.
+This is called \emph{de Moivre's formula}, and besides being generally useful, it's a convenient way to remember double- (and higher-multiple-) angle formulas.  For example,
+
+\begin{equation*}
+\cos 2 \theta + i \sin 2 \theta = (\cos \theta + i \sin \theta)^2 = \cos^2 \theta + 2 i \sin \theta \cos \theta - \sin^2 \theta.
+\end{equation*}
+
+Since the imaginary parts and real parts on each side must be equal, we must have
+\begin{equation*}
+\cos 2 \theta = \cos^2 \theta - \sin^2 \theta
+\end{equation*}
+and
+\begin{equation*}
+\sin 2 \theta = 2 \sin \theta \cos \theta.
+\end{equation*}
+\end{document}

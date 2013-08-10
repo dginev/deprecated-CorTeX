@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+\begin{document}
+Let $K$ be a number field and let $E$ be an elliptic curve over
+$K$. By $E(K)$ we denote the set of points in $E$ with coordinates
+in $K$.
+
+\begin{thm}[Mordell-Weil]$E(K)$ is a finitely generated abelian
+group.
+\end{thm}
+\begin{proof}
+The proof of this theorem is fairly involved. The
+main two ingredients are the so called \PMlinkname{weak Mordell-Weil theorem}{WeakMordellWeilTheorem}, the concept of height function for abelian groups and
+the ``\PMlinkname{descent}{HeightFunction}'' theorem. \\See $\cite{silverman}$, Chapter VIII, page
+189.
+\end{proof}
+
+\begin{thebibliography}{9}
+\bibitem{milne} James Milne, {\em Elliptic Curves}, online course notes. \PMlinkexternal{http://www.jmilne.org/math/CourseNotes/math679.html}{http://www.jmilne.org/math/CourseNotes/math679.html}
+\bibitem{silverman} Joseph H. Silverman, {\em The Arithmetic of Elliptic Curves}. Springer-Verlag, New York, 1986.
+\bibitem{silverman2} Joseph H. Silverman, {\em Advanced Topics in
+the Arithmetic of Elliptic Curves}. Springer-Verlag, New York,
+1994.
+\bibitem{shimura} Goro Shimura, {\em Introduction to the
+Arithmetic Theory of Automorphic Functions}. Princeton University
+Press, Princeton, New Jersey, 1971.
+\end{thebibliography}
+\end{document}

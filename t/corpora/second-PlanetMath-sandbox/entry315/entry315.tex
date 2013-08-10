@@ -1,0 +1,106 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\newcommand{\fvec}{{\mathbf{f}}}
+\newcommand{\xpt}{\mathbf{x}}
+\newcommand{\dfa}{[\mathbf{D}(\mathbf{a_0})]}
+\newcommand{\ao}{\mathbf{a_0}}
+\newcommand{\ovec}{\mathbf{0}}
+\newcommand{\xvec}{\mathbf{x}}
+\newcommand{\bvec}{\mathbf{b}}
+
+Let $\fvec$ be a differentiable function from $\mathbb{R}^n$ to $\mathbb{R}^n$.
+Newton's method consists of starting at an $\ao$ for the equation $\fvec(\xpt)=\ovec$. Then the function is linearized at $\ao$ by replacing the increment $\fvec(\xpt)-\fvec(\ao)$ by a linear function of the increment $\dfa(\xpt-\ao)$.
+
+Now we can solve the linear equation $\fvec(\ao)+\dfa(\xpt-\ao)=\ovec$.
+Since this is a system of \emph{n} linear equations in \emph{n} unknowns, 
+$\dfa(\xpt-\ao) = -\fvec(\ao)$ can be likened to the general linear system  $A\xvec=\bvec$.  
+
+Therefore, if $\dfa$ is invertible, then $\xpt = \ao-\dfa^{-1}\fvec(\ao)$.
+By renaming $\xpt$ to $\mathbf{a_1}$, you can reiterate Newton's method to get an $\mathbf{a_2}$. Thus, Newton's method states
+
+$$\mathbf{a}_{n+1} = \mathbf{a}_n - [\mathbf{D}\fvec(\mathbf{a}_n)]^{-1}\fvec(\mathbf{a}_n)$$
+
+Thus we get a series of $\mathbf{a}$'s that we hope will converge to $\xpt$ such that $\fvec(\xpt)=\ovec$.  When we solve an equation of the form $\fvec(\xpt) = \ovec$, we call the solution a \emph{root} of the equation. Thus, Newton's method is used to find roots of nonlinear equations.
+
+Unfortunately, Newton's method does not always converge. There are tests for 
+neighborhoods of $\ao$'s where Newton's method will converge however. One such test is Kantorovitch's theorem, which combines what is needed into a concise mathematical equation.
+
+\textbf{Corollary 1: Newton's Method in one dimension} - The above equation is simplified in one dimension to the well-used 
+
+$$a_1 = a_0 - \frac{f(a_0)}{f'(a_0)}$$ 
+
+This intuitively cute equation is pretty much \textbf{the} equation of first year calculus. :)
+
+\textbf{Corollary 2: Finding a square root} - So now that you know the equation, 
+you need to know how to \emph{use} it, as it is an algorithm. The construction of the primary equation, of course is the important part. Let's see how you do it if you want to find a square root of a number \emph{b}.
+
+We want to find a number \emph{x} (\emph{x} for unknown), such that $x^2=b$. You might think ``why not find 
+a number such that  $x=\sqrt{b}$ ?'' Well, the problem with that approach is that we don't have a value for $\sqrt{b}$, so we'd be right back where we started. However, squaring both sides of the equation to get $x^2 = b$ lets us work with the number we \emph{do} know, $b$.)  Back to $x^2=b$.  With some manipulation, we see this means that $x^2-b=0$ ! Thus we have our $f(x)=0$ scenario.
+
+We can see that $f'(x)=2x$ thus, $f'(a_0)=2a_0$ and $f(a_0)=a_0^2-b$. Now we have all we need to carry out Newton's method. By renaming $x$ to be $a_1$, we have 
+
+$$a_1 = a_0 - \frac{1}{2a_0}(a_0^2-b) = \frac{1}{2}\left(a_0+\frac{b}{a_0}\right)$$.
+
+The equation on the far right is also known as the \emph{divide and average} method, for those who have not learned the full Newton's method, and just want a fast way to find square roots. Let's see how this works out to find the square root of a number like 2:
+
+Let $x^2=2$
+
+$$x^2-2=0=f(x)$$
+
+Thus, by Newton's method,...
+
+$$a_1 = a_0 - \frac{a_0^2-2}{2a_0}$$
+
+All we did was plug in the expressions $f(a_0)$ and $f'(a_0)$ where Newton's method asks for them. Now we have to pick an $a_0$. Hmm, since
+
+$$\sqrt{1}<\sqrt{2}<\sqrt{4}$$
+$$1<\sqrt{2}<2$$ 
+
+let's pick a reasonable number between 1 and 2 like 1.5
+
+$$a_1 = 1.5 - \frac{1.5^2-2}{2(1.5)}$$
+$$a_1 = 1.41\bar{6}$$ 
+
+Looks like our guess was too high. Let's see what the next iteration says
+
+$$a_2 = 1.41\bar{6} - \frac{1.41\bar{6}^2-2}{2(1.41\bar{6})}$$
+$$a_2 = 1.414215686\dots$$ 
+
+getting better =) You can use your calculator to find that
+
+$$\sqrt{2} = 1.414213562\dots$$
+
+Not bad for only two iterations! Of course, the more you iterate, the more decimal places your $a_n$ will be accurate to. By the way, this is also how your calculator/computer finds square roots!
+
+\textbf{Geometric Interpretation:} Consider an arbitrary function $f\colon\mathbb{R}\rightarrow\mathbb{R}$ such as $f(x)=x^2-b$. Say you wanted to find a root of this function. You know that in the neighborhood of $x=a_0$, there is a root (Maybe you used Kantorovitch's theorem or tested and saw that the function changed signs in this neighborhood). We want to use our knowledge $a_0$ to find an $a_1$ that is a better approximation to $x_0$ (in this case, closer to it on the x-axis).
+
+\begin{center}
+\input{fig1.pstex_t}
+\end{center}
+
+
+So we know that $x_0\leq a_1\leq a_0$ or in another case $a_0\leq a_1\leq x_0$. What is an efficient algorithm to bridge the gap between $a_0$ and $x_0$ ? Let's look at a tangent line to the graph.
+
+\begin{center}
+\input{fig2.pstex_t}
+\end{center}
+
+
+Note that the line intercepts the x-axis between $a_0$ and $x_0$, which is exactly what we want. The slope of this tangent line is $f'(a_0)$ by definition of the derivative at $a_0$, and we know one point on the line is $(a_1,0)$, since that is the x-intercept. That is all we need to find the formula of the line, and solve for $a_1$.
+
+\begin{align*}
+y-y_1 &= m ( x - x_1 ) &\\
+f(a_0)-0 &= f'(a_0)(a_0-a_1)& \text{Substituting}\\
+\frac{f(a_0)}{f'(a_0)}&=a_0-a_1 &\\
+-a_1 &= -a_0 + \frac{f(a_0)}{f'(a_0)} & \text{Aesthetic change. Flipped the equation around.}\\
+a_1 &= a_0 - \frac{f(a_0)}{f'(a_0)} & \text{Newton's method!}
+\end{align*}
+\end{document}

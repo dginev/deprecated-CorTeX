@@ -1,0 +1,90 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\SL}{\operatorname{SL}}
+\newcommand{\Z}{{\mathbb{Z}}}
+\renewcommand{\H}{{\mathbb{H}}}
+\newcommand{\C}{{\mathbb{C}}}
+\newcommand{\Q}{{\mathbb{Q}}}
+\begin{document}
+For any natural number $N \geq 1$, define the {\em modular group}
+$\Gamma_0(N)$ to be the following subgroup of the group $\SL(2,\Z)$ of
+integer coefficient matrices of determinant 1:
+$$
+\Gamma_0(N) := \left\{ \left. \begin{pmatrix} a & b \\ c & d
+\end{pmatrix} \in \SL(2,\Z)\ \right|\ c \equiv 0 \pmod{N} \right\}.
+$$
+Let $\H^*$ be the subset of the Riemann sphere consisting of all
+points in the upper half plane (i.e., complex numbers with strictly
+positive imaginary part), together with the rational numbers and the
+point at infinity. Then $\Gamma_0(N)$ acts on $\H^*$, with group
+action given by the operation
+$$
+\begin{pmatrix} a & b \\ c & d \end{pmatrix} \cdot z := \frac{az+b}{cz+d}.
+$$
+Define $X_0(N)$ to be the quotient of $\H^*$ by the action of
+$\Gamma_0(N)$. The quotient space $X_0(N)$ inherits a quotient
+topology and holomorphic structure from $\C$ making it into a compact
+Riemann surface. (Note: $\H^*$ itself is not a Riemann surface; only
+the quotient $X_0(N)$ is.) By a general theorem in complex algebraic
+geometry, every compact Riemann surface admits a unique realization as
+a complex nonsingular projective curve; in particular, $X_0(N)$ has
+such a realization, which by abuse of notation we will also denote
+$X_0(N)$. This curve is defined over $\Q$, although the proof of this
+fact is beyond the scope of this entry\footnote{Explicitly, the curve
+$X_0(N)$ is the unique nonsingular projective curve which has function
+field equal to $\C(j(z), j(Nz))$, where $j$ denotes the elliptic
+modular $j$--function. The curve $X_0(N)$ is essentially the algebraic
+curve defined by the polynomial equation $\Phi_N(X,Y) = 0$ where
+$\Phi_N$ is the modular polynomial, with the caveat that this
+procedure yields singularities which must be resolved manually. The
+fact that $\Phi_N$ has integer coefficients provides one proof that
+$X_0(N)$ is defined over $\Q$.}.
+
+{\bf Taniyama-Shimura Theorem (weak form):} For any elliptic curve $E$ defined
+over $\mathbb{Q}$, there exists a positive integer $N$ and a
+surjective algebraic morphism $\phi: X_0(N) \to E$ defined over
+$\mathbb{Q}$.
+
+This theorem was first conjectured (in a much more precise, but equivalent formulation) by Taniyama, Shimura, and Weil in
+the 1970's. It attracted considerable interest in the 1980's when
+Frey~\cite{frey} proposed that the Taniyama-Shimura conjecture implies
+Fermat's Last Theorem. In 1995, Andrew Wiles~\cite{wiles} proved a
+special case of the Taniyama-Shimura theorem which was strong enough
+to yield a proof of Fermat's Last Theorem. The full Taniyama-Shimura
+theorem was finally proved in 1997 by a team of a half-dozen
+mathematicians who, building on Wiles's work, incrementally chipped
+away at the remaining cases until the full result was proved. As of this writing, the proof of the full theorem can still be found on \PMlinkexternal{Richard Taylor's preprints page}{http://abel.math.harvard.edu/~rtaylor/}.
+
+\pagebreak
+
+\begin{thebibliography}{9}
+\bibitem{bc}{Breuil, Christophe; Conrad, Brian; Diamond, Fred; Taylor, Richard; {\em On the modularity of elliptic curves over $\mathbf{Q}$: wild 3-adic exercises}.  J. Amer. Math. Soc. {\bf 14}  (2001),  no. 4, 843--939}
+\bibitem{frey}{Frey, G. {\em Links between stable elliptic curves and
+certain Diophantine equations.} Ann. Univ. Sarav. {\bf 1} (1986), 1--40.}
+\bibitem{wiles}{Wiles, A. {\em Modular elliptic curves and Fermat's Last
+Theorem.} Annals of Math. {\bf 141} (1995), 443--551.}
+\end{thebibliography}
+\end{document}

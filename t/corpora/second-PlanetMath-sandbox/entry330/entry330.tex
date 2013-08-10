@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\bu}{\mathbf{u}}
+\newcommand{\bv}{\mathbf{v}}
+\begin{document}
+A \emph{unit vector} is a unit-length element of Euclidean space.
+Equivalently, one may say that the norm of a unit vector is equal
+to $1$, and write $\Vert \bu\Vert=1$, where $\bu$ is the vector in
+question.
+
+Let $\bv$ be a non-zero vector.  To \emph{normalize} $\bv$ is to find
+the unique unit vector with the same direction as $\bv$. This is done
+by multiplying $\bv$ by the reciprocal of its length; the
+corresponding unit vector is given by $\bu=\frac{\bv}{\Vert
+  \bv\Vert}$.
+
+\paragraph{Note:} The concept of a unit vector and normalization makes
+sense in any vector space equipped with a real or complex norm.
+Thus, in quantum mechanics one  represents states as unit vectors
+belonging to a (possibly) infinite-dimensional Hilbert space.  To
+obtain an expression for such states one  normalizes
+the results of a calculation. 
+
+\paragraph{Example:} Consider $\mathbb{R}^3$ and the vector
+$\bv=(1,2,3)$. The norm (length) is $\sqrt{14}$.  Normalizing, we obtain
+the unit vector $\bu$ pointing in the same direction, namely
+$\bu=\left(\frac{1}{\sqrt{14}},\frac{2}{\sqrt{14}},\frac{3}{\sqrt{14}}\right)$.
+\end{document}

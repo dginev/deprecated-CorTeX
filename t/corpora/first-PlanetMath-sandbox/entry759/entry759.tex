@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\def\Iso{\operatorname{Iso}}
+\def\Isom{\operatorname{Isom}}
+\begin{document}
+\PMlinkescapeword{isometries}
+\PMlinkescapeword{isometry}
+\PMlinkescapeword{term}
+
+Let $(X_1,d_1)$ and $(X_2,d_2)$ be metric spaces.
+A function $f\colon X_1\to X_2$ is said to be an \emph{isometric mapping}
+(or \emph{isometric embedding}) if
+\[
+  d_1(x,y)=d_2(f(x),f(y))
+\]
+for all $x,y\in X_1$.
+
+Every isometric mapping is injective,
+for if $x,y\in X_1$ with $x\neq y$ then $d_1(x,y)>0$,
+and so $d_2(f(x),f(y))>0$, and then $f(x)\neq f(y)$.
+One can also easily show that every isometric mapping is continuous.
+
+An isometric mapping that is surjective (and therefore bijective)
+is called an \emph{isometry}. 
+(Readers are warned, however,
+that some authors do not require isometries to be surjective;
+that is, they use the term {\it isometry}
+for what we have called an isometric mapping.)
+Every isometry is a homeomorphism.
+
+If there is an isometry between the metric spaces $(X_1,d_1)$ and $(X_2,d_2)$,
+then they are said to be \emph{isometric}.
+Isometric spaces are essentially identical as metric spaces,
+and in particular they are homeomorphic.
+
+Given any metric space $(X,d)$,
+the set of all isometries $X\to X$ forms a group under composition.
+This group is called the \emph{isometry group}
+(or \emph{group of isometries}) of $X$,
+and may be denoted by $\Iso(X)$ or $\Isom(X)$.
+In general, {\it an} (as opposed to {\it the}) isometry group 
+(or group of isometries) of $X$ is any subgroup of $\Iso(X)$.
+\end{document}

@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\md}{d}
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mderiv}[1]{\frac{\md}{\md {#1}}} %d/dx
+\newcommand{\mnthderiv}[2]{\frac{\md^{#2}}{\md {#1}^{#2}}} %d^n/dx
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}} %partial d^n/dx
+\newcommand{\mnthpderiv}[2]{\frac{\partial^{#2}}{\partial {#1}^{#2}}} %partial d^n/dx
+\newcommand{\borel}{\mathfrak{B}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\rationals}{\mathbb{Q}}
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\complexes}{\mathbb{C}}
+\newcommand{\naturals}{\mathbb{N}}
+\newcommand{\defined}{:=}
+\newcommand{\var}{\mathrm{var}}
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\corr}{\mathrm{corr}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+\newcommand{\bra}[1]{\langle#1 \vert}
+\newcommand{\ket}[1]{\vert \hspace{1pt}#1\rangle}
+\newcommand{\braket}[2]{\langle #1 \ket{#2}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left|\left|#1\right|\right|}
+\newcommand{\esssup}{\mathrm{ess\ sup}}
+\newcommand{\Lspace}[1]{L^{#1}}
+\newcommand{\Lone}{\Lspace{1}}
+\newcommand{\Ltwo}{\Lspace{2}}
+\newcommand{\Lp}{\Lspace{p}}
+\newcommand{\Lq}{\Lspace{q}}
+\newcommand{\Linf}{\Lspace{\infty}}
+\begin{document}
+Let $q(t)$ be a twice differentiable function from $\reals$ to $\reals$ and let $L$ be a twice differentiable function from $\reals^3$ to $\reals$.  Let
+$\dot{q}$ denote $\mderiv{t}{q}$.
+
+Define the functional $I$ as follows:
+ $$I(q) = \int_a^b L (t, q(t), \dot{q}(t)) \, dt$$
+Suppose we regard the function $L$ and the limits of integratiuon $a$ and $b$
+as fixed and allow $q$ to vary.  Then we could ask for which functions $q$ (if any) this integral attains an extremal (minimum or maximum) value.  (Note: especially in Physics literature, the function $L$ is known as the \emph{Lagrangian}.)
+
+Suppose that a differentiable function \,$q_0\!: [a,b] \to \reals$\, is an extremum of $I$.  Then, for every differentiable function \,$f \colon [-1,+1] \times [a,b] \to \reals$\, such that\, $f(0,x) = q_0 (x)$, the function 
+\,$g \colon [-1, +1] \to \reals$,\, defined as
+ $$g (\lambda) = \int_a^b L \left( t, f(\lambda, t), {\partial f \over \partial t} (\lambda, t) \right) \, dt$$
+will have an extremum at $\lambda = 0$.  If this function is differentiable, then\, $dg/d\lambda = 0$\, when \,$\lambda = 0$. 
+
+By studying the condition $dg/d\lambda = 0$ (see the addendum to this entry for details), one sees that, if a function $q$ is to be an extremum of the integral $I$, then $q$ must satisfy the following equation:
+\begin{equation}
+\mpderiv{q} L - \mderiv{t} \left( \mpderiv{\dot{q}} L \right) = 0.
+\end{equation}
+This equation is known as the \emph{Euler--Lagrange differential equation} or  the Euler-Lagrange condition.  A few comments on notation might be in \PMlinkescapetext{order}.  The notations $\mpderiv{q} L$ and $\mpderiv{\dot{q}} L$ denote the partial derivatives of the function $L$ with respect to its second and third arguments, respectively.  The notation $\mderiv{t}$ means that one is to first make the argument a function of $t$ by replacing the second argument with $q(t)$ and the third argument with $\dot{q}(t)$ and secondly, differentiate the resulting function with respect to $t$.  Using the chain rule, the Euler-Lagrange equation can be written as follows:
+\begin{equation}
+\mpderiv{q} L - {\partial^2 \over \partial t \partial \dot{q}} L - \dot{q} {\partial^2 \over \partial q \partial \dot{q}} L - \ddot{q} {\partial^2 \over  \partial \dot{q}^2} L = 0
+\end{equation}
+
+This equation plays an important role in the calculus of variations.  In using this equation, it must be remembered that it is only a necessary condition and, hence, given a solution of this equation, one cannot \PMlinkescapetext{jump} to the conclusion that this solution is a local extremum of the functional $F$.  More work is needed to determine whether the solution of the Euler-Lagrange equation is an extremum of the integral $I$ or not.
+
+In the special case $\mpderiv{t} L = 0$, the Euler-Lagrange equation can be replaced by the Beltrami identity.
+\end{document}

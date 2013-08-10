@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+\newcommand{\eqref}[1]{\textrm{(\ref{#1})}}
+\begin{document}
+Let $(X,d)$ be a metric space. The \emph{triangle inequality} states
+that for any three points $x,y,z\in X$ we have
+\[
+  d(x,y) \le d(x,z) + d(z,y).
+\]
+
+The name comes from the special case of $\R^n$ with the standard
+topology, and geometrically meaning that in any triangle, the sum of
+the lengths of two sides is greater (or equal) than the third.
+
+Actually, the triangle inequality is one of the properties that define
+a metric, so it holds in any metric space. Two important cases are
+$\R$ with $d(x,y)=|x-y|$ and $\C$ with $d(x,y)=\Vert x-y\Vert$ (here
+we are using complex modulus, not absolute value).
+
+There is a second triangle inequality, sometimes called the
+\emph{reverse triangle inequality}, which also holds in any metric
+space and is derived from the definition of metric:
+\[
+  d(x,y) \ge |d(x,z) - d(z,y)|.
+\]
+
+In Euclidean geometry, this inequality is expressed by saying that each
+side of a triangle is greater than the difference of the other two.
+
+The reverse triangle inequality can be proved from the first triangle 
+inequality, as we now show.
+
+Let $x, y, z \in X$ be given. For any $a,b,c \in X$, from the first
+triangle inequality we have:
+\[
+  d(a,b) \le d(a,c) + d(c,b)
+\]
+and thus (using $d(b,c) = d(c,b)$ for any $b, c \in X$):
+\begin{equation}\label{eq:ste1}
+d(a,c) \ge d(a,b) - d(b,c)
+\end{equation}
+and writing (\ref{eq:ste1}) with $a=x, b=z, c=y$:
+\begin{equation}\label{eq:ste2}
+d(x,y) \ge d(x,z) - d(z,y)
+\end{equation}
+while writing (\ref{eq:ste1}) with $a=y, b=z, c=x$ we get:
+\[
+  d(y,x) \ge d(y,z) - d(z,x)
+\]
+or
+\begin{equation}\label{eq:ste3}
+d(x,y) \ge d(z,y) - d(x,z);
+\end{equation}
+from (\ref{eq:ste2}) and (\ref{eq:ste3}), using the properties of the
+absolute value, it follows finally:
+\[
+  d(x,y) \ge \left|d(x,z) - d(z,y)\right|
+\]
+which is the second triangle inequality.
+\end{document}

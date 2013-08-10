@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+ \usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\theoremstyle{definition}
+\newtheorem*{thmplain}{Theorem}
+\begin{document}
+The regular elements of a finite commutative ring $R$ are the units of the ring (see the \PMlinkname{parent}{NonZeroDivisorsOfFiniteRing} of this entry). \,Generally, the largest overring of $R$, the total ring of fractions $T$, is obtained by forming $S^{-1}R$, the extension by localization, using as the multiplicative set $S$ the set of all regular elements, which in this case is the unit group of $R$. \,The ring $R$ may be considered as a subring of $T$, which consists formally of the fractions \,$\frac{a}{s} = as^{-1}$\, with \,$a\in R$\, and \,$s\in S$. \,Since every $s$ has its own group inverse $s^{-1}$ in $S$ and so in $R$, it's evident that $T$ \PMlinkescapetext{contains} no other elements than the elements of $R$. \,Consequently, \,$T = R$,\, and therefore also any overring of $R$ coincides with $R$.
+
+Accordingly, one can not extend a finite commutative ring by using a localization. \,Possible extensions must be made via some kind of \PMlinkname{adjunction}{RingAdjunction}. \,A more known special case is a \PMlinkname{finite integral domain}{AFiniteIntegralDomainIsAField} --- it is always a field and thus closed under the divisions.
+\end{document}

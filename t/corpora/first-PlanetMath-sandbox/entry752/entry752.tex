@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\begin{document}
+Let $(X, \mathfrak{B}, \mu)$ be a probability space, and let $f \in L^p(X, \mathfrak{B}, \mu)$, $||f||_{p} = 1$ be a function.  The \emph{differential entropy} $h(f)$ is defined as
+
+\begin{equation}
+h(f) \equiv -\int_{X} |f|^p \log |f|^p\ d\mu
+\end{equation}
+
+Differential entropy is the continuous version of the Shannon entropy, $H[\mv{p}] = -\sum_{i} p_i \log p_i$.  Consider first $u_a$, the uniform 1-dimensional distribution on $(0,a)$.  The differential entropy is
+
+\begin{equation}
+h(u_a) = -\int_{0}^{a} \frac{1}{a} \log \frac{1}{a}\ d\mu = \log a.
+\end{equation}
+
+Next consider probability distributions such as the function
+\begin{equation}
+g = \frac{1}{2 \pi \sigma}e^{-\frac{(t-\mu)^2}{2 \sigma^2}},
+\end{equation}
+the 1-dimensional Gaussian.  This pdf has differential entropy
+
+\begin{equation}
+h(g) = -\int_{\mathbb{R}} g \log g\ dt = \frac{1}{2} \log 2 \pi e \sigma^2.
+\end{equation}
+
+For a general $n$-dimensional \PMlinkname{Gaussian}{JointNormalDistribution}    $\mathcal{N}_{n}(\mv{\mu},\mv{K})$ with mean vector $\mv{\mu}$ and covariance matrix $\mv{K}$, $K_{ij} = \cov(x_i, x_j)$, we have
+
+\begin{equation}
+h(\mathcal{N}_{n}(\mv{\mu},\mv{K})) = \frac{1}{2} \log (2 \pi e)^n |\mv{K}|
+\end{equation}
+where $|\mv{K}| = \det{\mv{K}}$.
+\end{document}

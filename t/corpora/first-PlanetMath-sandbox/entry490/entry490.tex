@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\section{Orthogonal Polynomials}
+
+Polynomials of degree $n$ are analytic functions that can be written in the form
+
+$$ p_n(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n $$
+
+They can be differentiated and integrated for any value of $x$, and are fully determined by the $n+1$ coefficients $a_0 \ldots a_n$ . For this simplicity they are frequently used to approximate more complicated or unknown functions. In approximations, the necessary degree $n$ of the polynomial is not normally defined by criteria other than the quality of the approximation.
+
+Using polynomials as defined above tends to lead into numerical difficulties when determining the $a_i$, even for small values of $n$. It is therefore customary to stabilize results numerically by using orthogonal polynomials over an interval $[a,b]$, defined with respect to a positive weighting function $W(x) > 0$ by
+
+$$ \int_a^b p_n(x)p_m(x) W(x) dx = 0 \; \text{for} \; n \ne m $$
+
+Orthogonal polynomials are obtained in the following way: define the scalar product.
+
+$$ (f,g) = \int_a^b f(x)g(x)W(x) dx $$
+
+between the functions $f$ and $g$, where $W(x)$ is a weight factor. Starting with the polynomials $p_0(x)=1$, $p_1(x)=x$, $p_2(x)=x^2$, etc., from the Gram-Schmidt decomposition one obtains a sequence of orthogonal polynomials $q_0(x),q_1(x),\ldots$, such that $(q_m,q_n)=N_n \delta_{mn}$. The normalization factors $N_n$ are arbitrary. When all $N_i$ are equal to one, the polynomials are called orthonormal.
+
+Some important orthogonal polynomials are:
+
+\begin{center}
+\begin{tabular}{cccl}
+$a$ & $b$ & $W(x)$ & name \\
+\hline
+-1  & 1   &  1     & Legendre polynomials \\
+-1  & 1   &  $(1-x^2)^{-1/2}$ & Chebyshev polynomials \\
+$-\infty$ & $\infty$ & $e^{-x^2}$ & Hermite polynomials
+\end{tabular}
+\end{center}
+
+Orthogonal polynomials of successive orders can be expressed by a recurrence relation 
+
+$$ p_n = (A_n + B_n x) p_{n-1} + C_n p_{n-2} $$
+
+This relation can be used to compute a finite series
+
+$$ a_0 p_0 + a_1 p_1 + \cdots + a_np_n $$
+
+with arbitrary coefficients $a_i$, without computing explicitly every polynomial $p_j$ (Horner's Rule).
+
+Chebyshev polynomials $T_n(x)$ are also orthogonal with respect to discrete values $x_i$:
+
+$$ \sum_i T_n(x_i)T_m(x_i) = 0 \; \text{for} \; n < m \le M $$
+
+where the $x_i$ depend on $M$.
+
+For more information, see \cite{Abramowitz74, Press95}.
+
+\begin{thebibliography}{3}
+
+\bibitem{DAB} Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+
+\bibitem{Abramowitz74} M. Abramowitz and I.A. Stegun (Eds.), Handbook of Mathematical Functions, National Bureau of Standards, Dover, New York, 1974.
+
+\bibitem{Press95}  W.H. Press, S.A. Teukolsky, W.T. Vetterling, and B.P. Flannery, Numerical Recipes in C, Second edition, Cambridge University Press, 1995. (The same book exists for the Fortran language). There is also an Internet version which you can work from.
+
+\end{thebibliography}
+\end{document}

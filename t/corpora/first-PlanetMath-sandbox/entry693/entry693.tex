@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Green's theorem provides a connection between path integrals over a well-connected region in the plane and the area of the region bounded in the plane. Given a closed path $P$ bounding a region $R$ with area $A$, and a vector-valued function $\vec{F}=(f(x,y),g(x,y))$ over the plane,
+$$\oint_P\vec{F}\cdot d\vec{x} = \int\!\!\!\int_{\!\!R} [g_1(x,y) - f_2(x,y)] dA$$
+where $a_n$ is the derivative of $a$ with respect to the $n$th variable.
+\begin{center}
+\includegraphics[width=2.694444in]{greensthm}
+\end{center}
+
+\paragraph{Corollary:}
+
+The closed path integral over a gradient of a function with continuous partial derivatives is always zero. Thus, gradients are conservative vector fields. The smooth function is called the potential of the vector field.
+
+\paragraph{Proof:}
+
+The corollary states that
+
+$$\oint_P\vec{\nabla}_h\cdot d\vec{x} = 0$$
+
+We can easily prove this using Green's theorem.
+
+$$\oint_P\vec{\nabla}_h\cdot d\vec{x} = \int\!\!\!\int_{\!\!R} [g_1(x,y) - f_2(x,y)] dA$$
+
+But since this is a gradient...
+
+$$\int\!\!\!\int_{\!\!R} [g_1(x,y) - f_2(x,y)] dA = \int\!\!\!\int_{\!\!R} [h_{21}(x,y) - h_{12}(x,y)] dA$$
+
+Since $h_{12}=h_{21}$ for any function with continuous partials, the corollary is proven.
+\end{document}

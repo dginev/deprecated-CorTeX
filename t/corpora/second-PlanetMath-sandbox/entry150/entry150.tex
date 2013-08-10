@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A {\em topological space} is a set $X$ together with a set $\mathcal{T}$ whose elements are subsets of $X$, such that
+\begin{itemize}
+\item $\emptyset \in \mathcal{T}$
+\item $X \in \mathcal{T}$
+\item If $U_j \in \mathcal{T}$ for all $j \in J$, then $\bigcup_{j \in J} U_j \in \mathcal{T}$
+\item If $U \in \mathcal{T}$ and $V \in \mathcal{T}$, then $U \cap V \in \mathcal{T}$
+\end{itemize}
+
+Elements of $\mathcal{T}$ are called {\em open sets} of $X$. The set $\mathcal{T}$ is called a {\em topology} on $X$. A subset $C \subset X$ is called a {\em closed set} if the complement $X \setminus C$ is an open set.
+
+A topology $\mathcal{T}'$ is said to be {\em finer} (respectively, {\em coarser}) than $\mathcal{T}$ if $\mathcal{T}' \supset \mathcal{T}$ (respectively, $\mathcal{T}' \subset \mathcal{T}$).
+
+\paragraph{Examples}
+
+\begin{itemize}
+\item The {\em discrete topology} is the topology $\mathcal{T} = \mathcal{P}(X)$ on $X$, where $\mathcal{P}(X)$ denotes the power set of $X$.  This is the largest, or finest, possible topology on $X$.
+\item The {\em indiscrete topology} is the topology $\mathcal{T} = \{\emptyset, X\}$.  It is the smallest or coarsest possible topology on $X$.
+\item Subspace topology
+\item Product topology
+\item Metric topology
+\end{itemize}
+
+
+\begin{thebibliography}{9}
+\bibitem{kelley} J.L. Kelley, \emph{General Topology},
+ D. van Nostrand Company, Inc., 1955.
+\bibitem{munkres} J. Munkres, \emph{Topology} (2nd edition), Prentice Hall, 1999.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $F,G: \mathcal{C}\to \mathcal{D}$ be a pair of functors from the category $\mathcal{C}$ to the category $\mathcal{D}$.  A natural transformation between functors $\tau : F\to G$ is called a {\em natural equivalence} (or a {\em natural isomorphism}) if there is a natural transformation $\sigma : G\to F$ such that $\tau\bullet \sigma = {\rm id}_G$ and $\sigma\bullet \tau = {\rm id}_F$ where ${\rm id}_F$ is the identity natural transformation on $F$, and composition $\bullet$ is the usual (vertical) composition on natural transformations.
+
+Equivalently, one can define a natural equivalence from functors $F$ to $G$ to be a natural transformation $\tau$ such that for each object $A$ in $\mathcal{C}$, the morphism $\tau_A : F(A)\to G(A)$ is an isomorphism in $\mathcal{D}$.
+\end{document}

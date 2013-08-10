@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%\usepackage{psfrag}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+\subsubsection*{Characteristic Polynomial of a Matrix}
+
+Let $A$ be a $n \times n$ matrix over some field $k$.  The \emph{characteristic polynomial} $p_A(x)$ of $A$ in an indeterminate $x$ is defined by the determinant:
+
+$$ p_A(x):=\det(A-x I) =
+\left|\begin{matrix}
+a_{11}-x & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22}-x & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn}-x
+\end{matrix} \right|$$
+
+\textbf{Remarks}
+\begin{itemize}
+\item
+The polynomial $p_A(x)$ is an $n$th-degree polynomial over $k$.
+\item
+If $A$ and $B$ are similar matrices, then $p_A(x)=p_B(x)$, because 
+\begin{eqnarray*}
+p_A(x) &=& \det(A-xI) = \det(P^{-1}BP-xI) \\ &=& \det(P^{-1}BP-P^{-1}xIP) = \det(P^{-1})\det(B-xI)\det(P) \\ &=& \det(P)^{-1}\det(B-xI)\det(P)=\det(B-xI) = p_B(x)
+\end{eqnarray*}
+for some invertible matrix $P$.
+\item
+The \emph{characteristic equation} of $A$ is the equation $p_A(x)=0$, and the solutions to which are the eigenvalues of $A$.
+\end{itemize}
+
+\subsubsection*{Characteristic Polynomial of a Linear Operator}
+
+Now, let $T$ be a linear operator on a vector space $V$ of dimension $n<\infty$.  Let $\alpha$ and $\beta$ be any two ordered bases for $V$.  Then we may form the matrices $[T]_{\alpha}$ and $[T]_{\beta}$.  The two matrix representations of $T$ are similar matrices, related by a change of bases matrix.  Therefore, by the second remark above, we define the \emph{characteristic polynomial} of $T$, denoted by $p_T(x)$, in the indeterminate $x$, by $$p_T(x):=p_{[T]_{\alpha}}(x).$$  The characteristic equation of $T$ is defined accordingly.
+
+\end{document}

@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\textbf{Definition} \\
+Let $A=(a_{i,j})$ be a square matrix of
+order $n$. 
+The trace of the matrix is the sum of the main diagonal:
+\begin{center} $\operatorname{trace}(A)= \sum\limits _{i=1} ^{n}
+ a_{i,i}$
+\end{center}
+
+\textbf{Notation:}\\
+The trace of a matrix $A$ is also commonly denoted as $\operatorname{Tr}(A)$ 
+or $\operatorname{Tr}A$.
+ 
+\textbf{Properties:}
+ \begin{enumerate}
+\item  The trace is a linear transformation from the space of square matrices to
+ the real numbers. In other words, if $A$ and $B$ are square matrices with real (or complex) entries, 
+of same order and $c$ is a scalar, then 
+\begin{eqnarray*}
+  \operatorname{trace}(A+B) &=& \operatorname{trace}(A)+ \operatorname{trace}(B), \\
+  \operatorname{trace}(cA) &=& c\cdot \operatorname{trace}(A).
+\end{eqnarray*}
+\item For  the transpose and conjugate transpose, we have for any 
+square matrix $A$ with real (or complex) entries, 
+\begin{eqnarray*} 
+\operatorname{trace} (A^t) &=& \operatorname{trace} (A), \\
+\operatorname{trace} (A^\ast) &=& \overline{\operatorname{trace} (A)}.
+\end{eqnarray*}
+\item If $A$ and $B$ are matrices such that $AB$ is a square matrix, then 
+$$ \operatorname{trace} (AB) = \operatorname{trace} (BA).$$
+
+For this reason it is possible to define the trace of a linear transformation, as the choice of basis does not affect the trace.
+Thus, if $A,B,C$ are matrices such that $ABC$ is a square matrix, then
+$$ \operatorname{trace} (ABC) = \operatorname{trace} (CAB) = \operatorname{trace} (BCA).$$
+\item If $B$ is in invertible square matrix of same order as $A$, then 
+$$ \operatorname{trace} (A) = \operatorname{trace} (B^{-1}A B).$$
+In other words, the trace of similar matrices are equal. 
+\item Let $A$ be a square matrix of order $n$ with real (or complex)
+entries $a_{ij}$. Then
+\begin{eqnarray*}
+\operatorname{trace} A^\ast A &=& \operatorname{trace} A A^\ast \\
+                &=& \sum_{i,j=1}^n |a_{ij}|^2.
+\end{eqnarray*}
+Here $^\ast$ is the complex conjugate, and $|\cdot|$ is the complex modulus.
+In particular, $\operatorname{trace} A^\ast A\ge 0$ with equality if and only if $A=0$.
+(See the Frobenius matrix norm.)
+\item Various inequalities for $\operatorname{trace}$ are given in 
+\cite{yang}.
+\end{enumerate}
+ 
+See the proof of properties of trace of a matrix.
+
+\begin{thebibliography}{9}
+\bibitem{ehrlich}
+The Trace of a Square Matrix. Paul Ehrlich, [online] 
+\PMlinkexternal{http://www.math.ufl.edu/~ehrlich/trace.html}{http://www.math.ufl.edu/~ehrlich/trace.html}
+\bibitem{yang}
+Z.P. Yang,  X.X. Feng, \emph{A note on the trace inequality for 
+products of Hermitian matrix power},
+Journal of Inequalities in Pure and Applied Mathematics,
+Volume 3,  Issue 5, 2002, Article 78, 
+\PMlinkexternal{online}{http://www.emis.de/journals/JIPAM/v3n5/082_02.html}.
+\end{thebibliography}
+\end{document}

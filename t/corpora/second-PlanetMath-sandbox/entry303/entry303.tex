@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{states}
+A \emph{measurable space} is a set $E$ together with a collection $\mathcal{B}$ of subsets of $E$ which is a sigma algebra.
+
+The elements of $\mathcal{B}$ are called \emph{measurable sets}.
+
+A measurable space is the correct object on which to define a measure; $\mathcal{B}$ will be the collection of sets which actually have a measure.  We normally want to ensure that $\mathcal{B}$ contains all the sets we will ever want to use.  We usually cannot take $\mathcal{B}$ to be the collection of all subsets of $E$ because the axiom of choice often allows one to construct sets that would lead to a contradiction if we gave them a measure (even zero).  For the real numbers, Vitali's theorem states that $\mathcal{B}$ cannot be the collection of all subsets if we hope to have a measure that returns the length of an open interval.
+\end{document}

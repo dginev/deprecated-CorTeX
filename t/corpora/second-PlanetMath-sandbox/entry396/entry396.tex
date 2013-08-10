@@ -1,0 +1,54 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\PMlinkescapeword{basis}
+\PMlinkescapeword{bases}
+
+A (Hamel) basis of a vector space is a linearly independent spanning set.
+
+It can be proved that any two bases of the same vector space must have the same cardinality. This introduces the notion of dimension of a vector space, which is precisely the cardinality of the basis, and is denoted by $\operatorname{dim}(V)$, where $V$ is the vector space.
+
+The fact that \PMlinkname{every vector space has a Hamel basis}{EveryVectorSpaceHasABasis} is an important consequence of the axiom of choice (in fact, that proposition is equivalent to the axiom of choice.)
+
+{\bf Examples.}
+
+\begin{itemize}
+
+\item $\beta = \{e_i\}$, $1\le i \le n$, is a basis for $\mathbb{R}^n$ (the $n$-dimensional vector space over the reals).  For $n=4$, 
+
+$$ \beta = \left\{ \begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix} ,
+\begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix} ,
+\begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \end{pmatrix} ,
+\begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix} \right\}   $$
+
+\item $ \beta = \{ 1, x , x^2 \} $ is a basis for the vector space of polynomials with degree at most 2, over a division ring.
+
+\item The set
+
+$$ \beta =   
+\left\{ \begin{bmatrix}1 & 0 \\ 0 & 0 \end{bmatrix} ,
+\begin{bmatrix}0 & 1 \\ 0 & 0 \end{bmatrix} ,
+\begin{bmatrix}0 & 0 \\ 0 & 1 \end{bmatrix} ,
+\begin{bmatrix}0 & 0 \\ 1 & 0 \end{bmatrix} \right\} $$ 
+
+is a basis for the vector space of $2 \times 2$ matrices over a division ring, and assuming that the characteristic of the ring is not 2, then so is
+
+$$ \beta' =   
+\left\{ \begin{bmatrix}2 & 0 \\ 0 & 0 \end{bmatrix} ,
+\begin{bmatrix}0 & 1 \\ 0 & 0 \end{bmatrix} ,
+\begin{bmatrix}0 & 0 \\ 0 & 4 \end{bmatrix} ,
+\begin{bmatrix}0 & 0 \\ \frac{1}{2} & 0 \end{bmatrix} \right\}. $$
+
+\item The empty set is a basis for the trivial vector space which consists of the unique element $0$. 
+
+\end{itemize}
+
+\textbf{Remark}.  More generally, for any (left) right module $M$ over a ring $R$, one may define a (left) right basis for $M$ as a subset $B$ of $M$ such that $B$ spans $M$ and is linearly independent.  However, unlike bases for a vector space, bases for a module may not have the same cardinality.
+\end{document}

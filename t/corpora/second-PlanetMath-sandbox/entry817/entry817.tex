@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+Let $S\subset\reals$ be a set of real numbers.  Recall that a limit
+point of $S$ is a real number $x\in\reals$ such that for all
+$\epsilon>0$ there exist infinitely many $y\in S$ such that
+$$\vert x-y\vert <\epsilon.$$
+We define $\liminf S$, pronounced the
+{\em limit inferior} of $S$, to be the infimum of all the limit
+points of $S$.  If there are no limit points, we define the limit
+inferior to be $+\infty$.
+
+The two most common notations for the limit inferior are 
+$$\liminf S$$ and
+$$\underline{\lim}\, S\,.$$
+
+An alternative, but equivalent, definition is available in the case of
+an infinite sequence of real numbers $x_0, x_1, x_2, ,\ldots$.  For
+each $k\in\natnums$, let $y_k$ be the infimum of the $k\supth$ tail,
+$$y_k = \inf_{j\geq k} x_j .$$
+This construction produces a
+non-decreasing sequence
+$$y_0 \leq y_1 \leq y_2 \leq \ldots,$$
+which either converges to its supremum, or diverges to $+\infty$.
+We define the limit inferior of the original sequence to be this limit;
+$$\liminf_{k} x_k = \lim_k y_k.$$
+\end{document}

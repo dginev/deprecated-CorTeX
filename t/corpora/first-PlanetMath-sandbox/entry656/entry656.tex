@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A matrix is said to be in row echelon form if each non-zero row has more leading zeros than the previous row.   Row-echelon form is the key idea underlying the Gaussian elimination algorithm and LU factorization.
+
+Let us give the precise definition.  Let $(M_{ij})$ be an $n\times m$
+matrix. For each row $i=1,\ldots,n$ define the pivot position $P_i$ to
+be either the minimum value of $j=1,\ldots, m$ for which $M_{ij}\neq
+0$, or $\infty$ if the row consists entirely of zeros.  A matrix is in
+echelon form if for all $i>1$, either $P_i=\infty$ or $P_{i-1}<P_i$.
+
+Examples of matrices in row echelon form include,
+
+\begin{displaymath}
+\left( \begin{array}{ccc}
+ 0 & 2 & 1 \\
+ 0 & 0 & 1 \\
+ 0 & 0 & 0 \\
+\end{array}
+\right)
+,\left( \begin{array}{ccccc}
+ 5 & 0 & 1 & 3 & 2 \\
+ 0 & 0 & 4 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 7 \\
+\end{array} \right)
+\end{displaymath}
+
+Note that if a matrix is an echelon form, then necessarily rows which
+are composed completely of zeros will be grouped at the bottom of the
+matrix.  Also note that if several rows have the same number of
+leading zeros then the matrix is not in row echelon form unless the
+rows in question are composed entirely of zeros.
+\end{document}

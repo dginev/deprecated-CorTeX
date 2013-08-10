@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\begin{document}
+Let $f(x)\colon\R\rightarrow \R$ be a function in a real variable $x$. Then, a \emph{root} of $f$ is a real number $a$ that $f(a)=0$.
+
+Example. If $f(x)=x^2-4$, then $x=2$ is a root, since $f(2)=2^2-4=0$. 
+
+Graphically, a root of $f$ is a value where the graph of the function intersects the $x$-axis.
+
+Of course the definition can be generalized to functions on other sets. In particular, neither the domain nor the codomain need be the set of real numbers.  All that is required is that the codomain have a well-defined $0$ element.   A root of the function will then be an element of the domain belonging to the preimage of the $0$.
+
+Note that, for example, the function $f\colon\R\to\R$ given by $f(x)=x^2+1$ has no roots, but the function $f\colon\C\to\C$ given by $f(x)=x^2+1$ has $i$ as a root.
+
+In the special case of polynomials, there are general formulas for finding roots of polynomials with degree up to 4: the quadratic formula, the cubic formula and the quartic formula.
+
+If we have a root $a$ for a polynomial $f(x)$, we divide $f(x)$ by $x-a$ (either by polynomial long division or synthetic division) and we are left with a polynomial with smaller degrees whose roots are the other roots of $f$. We can use that result together with the rational root theorem to find a rational root if exists, and then get a polynomial with smaller degree which possibly we can find easily the other roots.
+
+Considering the general case of functions $y=f(x)$ (not necessarily polynomials) there are several numerical methods (like Newton's method) to approximate roots. This could be handy too for polynomials whose roots are not rational numbers.
+\end{document}

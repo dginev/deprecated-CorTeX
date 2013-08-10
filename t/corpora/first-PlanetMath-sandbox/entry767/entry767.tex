@@ -1,0 +1,59 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\newcommand{\mv}[1]{\mathbf{#1}}	% matrix or vector
+\newcommand{\cov}{\mathrm{cov}}
+\newcommand{\mvt}[1]{\mv{#1}^{\mathrm{T}}}
+\newcommand{\mvi}[1]{\mv{#1}^{-1}}
+\newcommand{\mpderiv}[1]{\frac{\partial}{\partial {#1}}}
+\begin{document}
+Let $f, K, \phi$ be as in the \PMlinkname{parent}{GaussianMaximizesEntropyForGivenCovariance} entry.
+
+The proof uses the nonnegativity of relative entropy $D(f||\phi)$, and an interesting  property of quadratic forms.  If $A$ is a quadratic form and $p,q$ are probability distributions each with mean $\mv{0}$ and covariance matrix $\mv{K}$, we have
+
+\begin{equation}
+\int p\ x_i x_j\ dx_i dx_j = K_{ij} = \int q\ x_i x_j\ dx_i dx_j
+\end{equation}
+and thus
+\begin{equation}
+\int A p = \int A q
+\end{equation}
+
+Now note that since
+\begin{equation}
+\phi(\mv{x}) = \left((2\pi)^n |\mv{K}| \right)^{-\frac{1}{2}} \exp{(- \frac{1}{2} \mvt{x} \mv{K}^{-1} \mv{x})},
+\end{equation}
+we see that $\log \phi$ is a quadratic form plus a constant.
+
+\begin{eqnarray*}
+\textbf{0} &\le D(f||\phi)\\
+&= \int f \log \frac{f}{\phi}\\
+&= \int f \log f - \int f \log \phi\\
+&= -h(f) - \int f \log \phi\\
+&= -h(f) - \int \phi \log \phi \qquad \text{by the quadratic form property above}\\
+&= -h(f) + h(\phi)
+\end{eqnarray*}
+and thus $h(\phi) \ge h(f)$.
+\end{document}

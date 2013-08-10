@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+%\usepackage{graphicx}
+%\usepackage{xypic} 
+\usepackage{bbm}
+\newcommand{\Z}{\mathbbmss{Z}}
+\newcommand{\C}{\mathbbmss{C}}
+\newcommand{\R}{\mathbbmss{R}}
+\newcommand{\Q}{\mathbbmss{Q}}
+\newcommand{\mathbb}[1]{\mathbbmss{#1}}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+   \usepackage{amsthm}
+   \newtheorem{thm}{Theorem}
+   \newtheorem{defn}{Definition}
+   \newtheorem{prop}{Proposition}
+   \newtheorem{lemma}{Lemma}
+   \newtheorem{cor}{Corollary}
+\begin{document}
+\begin{thm} \cite{kelley}
+  Every second countable space is separable.
+\end{thm}
+
+
+\begin{proof}
+Let $X$ be a second countable space and let $\cal B$ be a countable base.
+For every non-empty set $B$ in $\cal B$, choose a point $x_B\in B$. The set $A$ 
+of all such points $x_B$ is clearly countable and it's also dense 
+since any open set intersects it and thus the whole space is the closure of $A$.
+That is, $A$ is a countably dense subset of $X$. Therefore, $X$ is separable.
+\end{proof}
+
+\begin{thebibliography}{9}
+\bibitem{kelley}
+J.L. Kelley, \emph{General Topology}, D. van Nostrand Company, Inc., 1955.
+\end{thebibliography}
+\end{document}

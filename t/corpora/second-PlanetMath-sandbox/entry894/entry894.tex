@@ -1,0 +1,172 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand*{\abs}[1]{\lvert #1\rvert}
+\begin{document}
+\PMlinkescapeword{connection}
+\PMlinkescapeword{complete}
+\PMlinkescapeword{pointwise}
+\PMlinkescapeword{terms}
+\PMlinkescapeword{endomorphism}
+\PMlinkescapeword{index} \PMlinkescapeword{simple}
+\PMlinkescapeword{component} \PMlinkescapeword{components}
+\PMlinkescapeword{row} \PMlinkescapeword{rows}
+\PMlinkescapeword{column} \PMlinkescapeword{columns}
+
+A matrix is simply a mapping $M\colon A\times B\to C$ of the product of two
+sets into some third set.
+As a rule, though, the word matrix and the notation associated with it
+are used only in connection with linear mappings.
+In such cases $C$ is the ring or field of scalars.
+
+\textbf{Matrix of a linear mapping}
+
+\textbf{Definition: }Let $V$ and $W$ be finite-dimensional vector
+spaces over the same field $k$, with bases $A$ and $B$ respectively,
+and let $f\colon V\to W$ be a linear mapping.
+For each $a\in A$ let $(k_{ab})_{b\in B}$ be the unique family of scalars
+(elements of $k$) such that
+$$f(a)=\sum_{b\in B}k_{ab}b\;.$$
+Then the family $(M_{ab})$ (or equivalently the mapping $(a,b)\mapsto M_{ab}$
+of $A\times B\to k$)
+is called the matrix of $f$ with respect to the given bases $A$ and $B$.
+The scalars $M_{ab}$ are called the \emph{components} of the matrix. The matrix $M$ is said to be of \emph{size} $\abs{A}$-by-$\abs{B}$ or simply $\abs{A}$x$\abs{B}$ matrix.
+
+The matrix describes the function $f$ completely; for any element
+$$x=\sum_{a\in A}x_aa$$
+of $V$, we have
+$$f(x)=\sum_{a\in A}M_{ab}b$$
+as is readily verified.
+
+Any two linear mappings $V\to W$ have a sum, defined pointwise; it
+is easy to verify that the matrix of the sum is the sum, componentwise,
+of the two given matrices.
+
+The formalism of matrices extends somewhat to linear mappings between
+\emph{modules}, i.e. extends to a ring $k$, not necessarily commutative,
+rather than just a field.
+
+\textbf{Rows and columns; product of two matrices}
+
+Suppose we are given three modules $V,W,X$, with bases $A,B,C$ respectively,
+and two linear mappings $f\colon V\to W$ and $g\colon W\to X$.
+$f$ and $g$ have some matrices $(M_{ab})$ and $(N_{bc})$ with respect to
+those bases. The \emph{product} matrix $NM$ is defined as the matrix
+$(P_{ac})$ of the function
+$$x\mapsto g(f(x))$$
+$$V\to W$$
+with respect to the bases $A$ and $C$. Straight from the definitions
+of a linear mapping and a basis, one verifies that
+\begin{equation} \label{eq:prodcomp}
+P_{ac}=\sum_{b\in B}M_{ab}N_{bc}
+\end{equation}
+for all $a\in A$ and $c\in C$.
+
+To illustrate the notation of matrices in terms of rows and columns,
+suppose the spaces $V,W,X$
+have dimensions 2, 3, and 2 respectively, and bases
+$$A=\{a_1,a_2\}\qquad B=\{b_1,b_2,b_3\}\qquad C=\{c_1,c_2\}\;.$$
+We write
+$$
+\begin{pmatrix}
+M_{11} & M_{12} & M_{13} \\
+M_{21} & M_{22} & M_{23}
+\end{pmatrix}
+\begin{pmatrix}
+N_{11} & N_{12} \\
+N_{21} & N_{22} \\
+N_{31} & N_{32}
+\end{pmatrix}
+=
+\begin{pmatrix}
+P_{11} & P_{12} \\
+P_{21} & P_{22}
+\end{pmatrix}\;.
+$$
+(Notice that we have taken a liberty with the notation,
+by writing e.g. $M_{12}$ instead of $M_{a_1a_2}$.)
+The equation \eqref{eq:prodcomp} shows that the multiplication
+of two matrices proceeds ``rows by columns''. Also, in an expression such
+as $N_{23}$, the first index refers to the row, and the second to the
+column, in which that component appears.
+
+Similar notation can describe the calculation of $f(x)$ whenever $f$
+is a linear mapping. For example, if $f\colon V\to W$ is linear,
+and $x=\sum_ix_ia_i$ and $f(x)=\sum_iy_ib_i$, we write
+$$
+\begin{pmatrix}
+x_1 & x_2
+\end{pmatrix}
+\begin{pmatrix}
+M_{11} & M_{12} & M_{13} \\
+M_{21} & M_{22} & M_{23}
+\end{pmatrix}
+=
+\begin{pmatrix}
+y_1 & y_2 & y_3 \\
+\end{pmatrix}\;.
+$$
+When, as above, a ``row vector'' denotes an element of a space,
+a ``column vector'' denotes an element of the dual space.
+If, say, $\overline{f}\colon W^*\to V^*$ is the transpose of $f$,
+then, with respect to the bases dual to $A$ and $B$,
+an equation $\overline{f}(\sum_j\nu_j\beta_j)=\sum_i\mu_i\alpha_i$
+may be written
+$$
+\begin{pmatrix} \mu_1 \\ \mu_2 \end{pmatrix}
+=
+\begin{pmatrix}
+M_{11} & M_{12} & M_{13} \\
+M_{21} & M_{22} & M_{23}
+\end{pmatrix}
+\begin{pmatrix} \nu_1 \\ \nu_2 \\ \nu_3 \end{pmatrix}\;,
+$$
+One more illustration: Given a bilinear form $L\colon V\times W\to k$,
+we can denote $L(v,w)$ by
+$$
+\begin{pmatrix} v_1 & v_2 \end{pmatrix}
+\begin{pmatrix}
+L_{11} & L_{12} & L_{13} \\
+L_{21} & L_{22} & L_{23}
+\end{pmatrix}
+\begin{pmatrix} w_1 \\ w_2 \\ w_3 \end{pmatrix}\;.
+$$
+
+\textbf{Square matrix}
+
+A matrix $M\colon A\times B\to C$ is called square if $A=B$, or if some
+bijection $A\to B$ is implicit in the context.
+(It is not enough for $A$ and $B$ to be equipotent.)
+Square matrices naturally arise in connection with a linear mapping of
+a space into \emph{itself} (called an endomorphism), and in the related
+case of a change of basis (from one basis of some space, to another
+basis of the same space).  When $A$ is finite of cardinality $n$ (and thus, so is $B$), then $n$ is often called the \emph{order} of the matrix $M$. Unfortunately, equally often order of $M$ means the \PMlinkname{order}{OrderGroup} of $M$ as an element of the \PMlinkname{group $GL_n(C)$}{GeneralLinearGroup}.
+
+\textbf{Miscelleous usages of ``matrix''}
+
+The word matrix has come into use in some areas where linear mappings
+are not at issue. An example would be a combinatorical statement,
+such as Hall's marriage theorem, phrased in terms of ``0-1 matrices''
+instead of subsets of $A\times B$.
+
+\textbf{Remark}
+
+Matrices are heavily used in the physical sciences, engineering,
+statistics, and computer programming. But for purely mathematical purposes,
+they are less important than one might expect, and indeed are frequently
+irrelevant in linear algebra. Linear mappings, determinants, traces,
+transposes, and a number of other simple notions can and should be
+defined without matrices, simply because they have a meaning independent
+of any basis or bases.
+Many little theorems in linear algebra can be proved in a simpler
+and more enlightening way without matrices than with them.
+One more illustration: The derivative (at a point)
+of a mapping from one surface to another is a linear mapping; it is not a
+matrix of partial derivatives, because the matrix depends on a choice
+of basis but the derivative does not.
+\end{document}

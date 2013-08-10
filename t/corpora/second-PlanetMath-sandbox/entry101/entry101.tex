@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+For integers $n\ge r \ge 0$ we define 
+$$ 
+{n\choose r} = \frac{n!}{(n-r)!r!}
+$$ 
+and call such numbers \emph{binomial coefficients}.
+
+\subsubsection*{Properties.}
+\begin{enumerate}
+\item \label{isinteger}
+   $n\choose r$ is an integer (\PMlinkname{proof.}{NchooseRIsAnInteger}). 
+\item \label{reverse}
+   ${n\choose r}={n\choose n-r}$.
+\item \label{pascal}
+   ${n\choose r-1}+{n\choose r}={n+1\choose r}$ (Pascal's rule).
+\item \label{boundaryterms}
+   ${n\choose 0}=1={n\choose n}$ for all $n$.
+\item \label{sum2n}
+   ${n\choose 0}+{n\choose 1}+{n\choose 2}+\cdots+{n\choose n}=2^n$.
+\item \label{sum0}
+   ${n\choose 0}-{n\choose 1}+{n\choose 2}-\cdots+(-1)^n{n\choose n}=0$ for $n>0$.
+\item \label{sump1}
+   $\sum_{t=k}^n {t\choose k }={n+1\choose k+1}$.
+\end{enumerate}
+
+Properties \ref{sum2n} and \ref{sum0} are the binomial theorem
+applied to $(1+1)^n$ and $(1-1)^n$, respectively, although they also have purely combinatorial meaning.
+
+\subsubsection*{Motivation}
+Suppose $n\ge r$ are integers. 
+The below list shows some examples where the binomial coefficients
+appear. 
+\begin{itemize}
+\item $n\choose r$ constitute the coefficients when expanding the
+binomial $(x+y)^n$ -- hence the name binomial coefficients.
+See Binomial Theorem. 
+\item $n\choose r$ is the number of ways to choose $r$ objects from a set with $n$ elements.
+\item On the context of computer science, it also helps to see ${n\choose r}$ as the number 
+of strings consisting of ones and zeros with $r$ ones and $n-r$ zeros.
+This equivalency comes from the fact that
+if $S$ be a finite set with $n$ elements, ${n\choose r}$ is the number of distinct 
+subsets of $S$ with $r$ elements.  For each subset $T$ of $S$, consider the function
+$$
+  X_T\colon S \rightarrow \{0,1\}
+$$
+where $X_T(x) = 1$ whenever $x \in T$ and $0$ otherwise (so $X_T$ is the characteristic function 
+for $T$).  For each $T \in \mathcal{P}(S)$, $X_T$ can be used to produce a unique bit 
+string of length $n$ with exactly $r$ ones.
+\end{itemize}
+
+
+\subsubsection*{Notes} 
+The ${n\choose r}$ notation was first introduced by 
+von Ettinghausen \cite{Higham} in 1826, altough
+these numbers have been used long before that. See 
+\PMlinkname{this page}{PascalsTriangle} for some notes on their history. 
+Although the standard mathematical notation for the binomial coefficients is $n\choose r$, there
+are also several variants. Especially in high school environments one encounters also 
+${C}(n,r)$ or ${C}^n_r$ for ${n\choose r}$.
+
+\textbf{Remark}.  It is sometimes convenient to set ${n \choose r}:=0$ when $r>n$.  For example, property 7 above can be restated: $\sum_{t=1}^n {t\choose k }={n+1\choose k+1}$.  It can be shown that ${n \choose r}$ is elementary recursive.
+  
+\begin{thebibliography}{9}
+\bibitem{Higham} N. Higham, \emph{Handbook of writing for the mathematical sciences},
+Society for Industrial and Applied Mathematics, 1998. 
+\end{thebibliography}
+\end{document}

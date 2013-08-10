@@ -1,0 +1,65 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\usepackage{amsthm}
+\theoremstyle{remark}
+\newtheorem*{remark}{remark}
+
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\ip}[2]{\langle #1 , #2 \rangle}
+\begin{document}
+Let $\mathbb{F}$ be a field which is either $\mathbb{R}$ or $\mathbb{C}$.  A \emph{\PMlinkescapetext{normed vector space}} over $\mathbb{F}$ is a pair $(V,\norm{\cdot})$ where $V$ is a vector space over $\mathbb{F}$ and $\norm{\cdot}\colon V\to\mathbb{R}$ is a function such that
+\begin{enumerate}
+\item $\norm{v}\geq 0$ for all $v\in V$ and $\norm{v}=0$ if and only if $v=0$ in $V$ (\emph{positive definiteness})
+\item $\norm{\lambda v} = \abs{\lambda}\norm{v}$ for all $v\in V$ and all $\lambda\in\mathbb{F}$
+\item $\norm{v+w}\leq\norm{v}+\norm{w}$ for all $v,w\in V$ (the \emph{triangle inequality})
+\end{enumerate}
+
+The function $\norm{\cdot}$ is called a \emph{norm} on $V$.
+
+Some properties of norms:
+
+\begin{enumerate}
+\item
+If $W$ is a subspace of $V$ then $W$ can be made into a normed space by simply restricting the norm on $V$ to $W$.  This is called the induced norm on $W$.
+
+\item
+Any normed vector space $(V,\norm{\cdot})$ is a metric space under the metric $d\colon V \times V \to \mathbb{R}$ given by $d(u,v)=\norm{u-v}$.  This is called the \emph{metric induced by the norm $\norm{\cdot}$}.
+
+\item
+It follows that any normed space is a locally convex topological vector space, in the topology induced by the metric defined above.
+
+\item
+In this metric, the norm defines a continuous map from $V$ to $\mathbb{R}$ - this is an easy consequence of the triangle inequality.
+
+\item
+If $(V, \ip{}{})$ is an inner product space, then there is a natural induced norm given by $\norm{v} = \sqrt{\ip{v}{v}}$ for all $v \in V$.
+
+\item
+The norm is a convex function of its argument.
+\end{enumerate}
+\end{document}

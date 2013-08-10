@@ -1,0 +1,27 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[all]{xypic}
+\begin{document}
+We say that a field $K$ is an \emph{extension} of $F$ if $F$ is a subfield of $K$.
+
+We usually denote $K$ being an extension of $F$ by \,$F\subset K$, \,$F\le K$, \,$K/F$\, or
+$$
+\xymatrix{
+K \ar@{-}[d] \\
+F
+}
+$$
+One may speak of the {\em field extension} $K/F$ and call $F$ the {\em base field}.
+
+If $K$ is an extension of $F$, we can regard $K$ as a vector space over $F$. The dimension of this space (which could possibly be infinite) is denoted $[K:F]$, and called the {\em degree} of the extension.\footnote{The term ``degree'' reflects the fact that, in the more general setting of Dedekind domains and scheme-theoretic algebraic curves, the degree of an extension of function fields equals the algebraic degree of the polynomial defining the projection map of the underlying curves.}
+
+One of the classic theorems on extensions states that if \,$F\subset K\subset L$, \,then
+$$[L:F]=[L:K][K:F]$$
+(in other words, degrees are multiplicative in towers).
+\end{document}

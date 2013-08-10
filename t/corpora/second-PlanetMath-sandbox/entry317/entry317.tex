@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A sequence $x_0,x_1,\dots$ \emph{superconverges to 0} if, when the $x_i$ are written in base 2, then each number $x_i$ starts with $2^i-1\approx 2^i$ zeroes.
+For example, the following sequence is superconverging to 0.
+$$\begin{array}{clcl}
+x_{n+1}&=x_n^2 & (x_n)_{10} & (x_n)_2\\[1.5pt]
+x_0 &= & \frac{1}{2} & .1\\[1.5pt]
+x_1 &= & \frac{1}{4} & .01\\[1.5pt]
+x_2 &= & \frac{1}{16} & .0001\\[1.5pt]
+x_3 &= & \frac{1}{256} & .00000001\\[1.5pt]
+x_4 &= & \frac{1}{65536} & .0000000000000001
+\end{array}$$
+In this case it is easy to see that the number of binary 0's doubles each $x_n$.
+
+A sequence $\{x_i\}$ \emph{superconverges to $x$} if $\{x_i-x\}$ superconverges  to 0, and a sequence $\{y_i\}$ is said to be \emph{superconvergent} if there exists a $y$ to which the sequence superconverges.
+\end{document}

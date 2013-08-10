@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $X$ be a topological space, and let $A\subseteq X$.  An element $x\in X$ is said to be a \emph{limit point} of $A$ if every open set containing $x$ also contains at least one point of $A$ distinct from $x$.  Note that we can often take a nested sequence of open such sets, and can thereby construct a sequence of points which converge to $x$, partially motivating the terminology "limit'' in this case.
+
+Equivalently:
+\begin{itemize}
+\item $x$ is a limit point of $A$ if and only if there is a net in $A$ converging to $x$ which is not residually constant.
+\item $x$ is a limit point of $A$ if and only if there is a filter on $A$ \PMlinkname{converging}{filter} to $x$.
+\item If $X$ is a metric (or first countable) space, $x$ is a limit point of $A$ if and only if there is a sequence of points in $A\setminus\{x\}$ converging to $x$.
+\end{itemize}
+\end{document}

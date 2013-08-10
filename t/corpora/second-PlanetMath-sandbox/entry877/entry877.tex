@@ -1,0 +1,33 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+
+\def\R{\mathbb{R}}
+
+\begin{document}
+A series $\sum a_n$ is said to be \emph{convergent}
+if the sequence of partial sums $\sum_{i=1}^n a_i$ is convergent.
+A series that is not convergent is said to be \emph{divergent}.
+
+A series $\sum a_n$ is said to be \emph{absolutely convergent}
+if $\sum |a_n|$ is convergent.
+
+When the terms of the series live in $\R^n$,
+an equivalent condition for absolute convergence of the series
+is that all possible series obtained by rearrangements
+of the terms are also convergent.
+(This is not true in arbitrary metric spaces.)
+
+It can be shown that absolute convergence implies convergence.
+A series that converges, but is not absolutely convergent,
+is called conditionally convergent.
+
+Let $\sum a_n$ be an absolutely convergent series,
+and $\sum b_n$ be a conditionally convergent series.
+Then any rearrangement of $\sum a_n$ is convergent to the same sum.
+It is a result due to Riemann that $\sum b_n$
+can be rearranged to converge to any sum, or not converge at all.
+
+\end{document}

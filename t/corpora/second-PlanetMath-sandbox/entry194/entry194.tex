@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $R$ be an ordered ring and let $a \in R$. The \emph{absolute value} of $a$ is defined to be the function $|\ |\colon R \to R$ given by
+$$
+|a| :=
+\begin{cases}
+a & \text{\ \ if } a \geq 0, \\
+-a & \text{\ \ otherwise.}
+\end{cases}
+$$
+In particular, the usual absolute value $|\ |$ on the field $\mathbb{R}$ of real numbers is defined in this manner. An equivalent definition over the real numbers is $|a| := \max\{a, -a\}$.
+
+Absolute value has a different meaning in the case of complex numbers: for a complex number $z \in \mathbb{C}$, the absolute value $|z|$ of $z$ is defined to be $\sqrt{x^2+y^2}$, where $z = x+yi$ and $x,y \in \mathbb{R}$ are real.
+
+All absolute value functions satisfy the defining properties of a valuation, including:
+\begin{itemize}
+\item $|a| \ge 0$ for all $a \in R$, with equality if and only if $a = 0$
+\item $|ab| = |a| \cdot |b|$ for all $a,b \in R$
+\item $|a+b| \le |a| + |b|$ for all $a, b \in R$ (triangle inequality)
+\end{itemize}
+
+However, in general they are not literally valuations, because valuations are required to be real valued.  In the case of $\mathbb{R}$ and $\mathbb{C}$, the absolute value is a valuation, and it induces a metric in the usual way, with distance function defined by $d(x,y) := |x-y|$.
+\end{document}

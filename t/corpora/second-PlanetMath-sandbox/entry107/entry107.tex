@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\newcommand{\binomial}[2]{{{#1}\choose{#2}}}
+\begin{document}
+We will show $$a^{p} \equiv a \pmod{p}$$ with $p$ prime. The equivalent statement $$a^{p-1}\equiv 1 \pmod{p}$$ when $p$ does not divide $a$ follows by cancelling $a$ both sides (which can be done since then $a,p$ are coprime).
+
+When $a=1$, we have $$ 1^{p} \equiv 1 \pmod{p}$$  
+
+Now assume the theorem holds for some positive $a$ and we want to prove the statement for $a+1$. We will have as a direct consequence that 
+$$a^p \equiv a \pmod{p}$$
+
+Let's examine $a+1$.  By the binomial theorem, we have
+\begin{eqnarray*}
+(a+1)^{p} & \equiv & \binomial{p}{0}a^p + \binomial{p}{1}a^{p-1} + \cdots + \binomial{p}{p-1} a + 1  \\
+& \equiv & a + pa^{p-1} + p\frac{(p-1)}{2}a^{p-2} + \cdots + p a + 1 \\
+& \equiv & (a + 1) + [ pa^{p-1} + p \frac{(p-1)}{2}a^{p-2} + \cdots + p a ] 
+\end{eqnarray*}
+
+However, note that the entire bracketed term is divisible by $p$, since each element of it is divsible by $p$.  Hence
+$$(a+1)^p \equiv (a+1) \pmod{p}$$
+
+Therefore by induction it follows that
+\[a^p\equiv a \pmod{p}\]
+for all positive integers $a$.
+
+It is easy to show that it also holds for $-a$ whenever it holds for $a$, so the statement works for all integers $a$.
+\end{document}

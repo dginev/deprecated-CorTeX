@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+For any $x\in X$, let $D_x=\{z\in\mathbb{C}: |z|\leq \|x\|\}$ and $D=\Pi_{x\in X} D_x$. Since $D_x$ is a compact subset of $\mathbb{C}$, $D$ is compact in product topology by Tychonoff theorem.
+
+We prove the theorem by finding a homeomorphism that maps the closed unit ball 
+$B_{X^*}$ of $X^*$ onto a closed subset of $D$. Define $\Phi_x:B_{X^*}\to D_x$ by 
+$\Phi_x(f)=f(x)$ and $\Phi:B_{X^*}\to D$ by $\Phi=\Pi_{x\in X}\Phi_x$, so that
+$\Phi(f)=(f(x))_{x\in X}$. Obviously, $\Phi$ is one-to-one, and a net $(f_\alpha)$ in $B_{X^*}$ converges to $f$ in weak-* topology of $X^*$ iff $\Phi(f_\alpha)$ converges to $\Phi(f)$ in product topology, therefore $\Phi$ is continuous and so is its inverse $\Phi^{-1}:\Phi(B_{X^*})\to B_{X^*}$.
+
+It remains to show that $\Phi(B_{X^*})$ is closed. If $(\Phi(f_\alpha))$ is a net
+in $\Phi(B_{X^*})$, converging to a point $d=(d_x)_{x\in X}\in D$, we can define a function
+$f:X\to \mathbb{C}$ by $f(x)=d_x$. As $\lim_\alpha \Phi(f_\alpha(x))=d_x$ for all $x\in X$ by definition of weak-* convergence, one can easily see that $f$ is a linear functional in $B_{X^*}$ and that $\Phi(f)=d$. This shows that $d$ is actually in $\Phi(B_{X^*})$ and finishes the proof.
+\end{document}

@@ -1,0 +1,26 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\PMlinkescapeword{normal}
+\PMlinkescapeword{continuous}
+A topological space $X$ is said to be \emph{paracompact} if every open cover of $X$ has a locally finite open refinement.
+
+In more detail, if $(U_i)_{i\in I}$ is any family of open subsets of $X$ such that $$\cup_{i\in I}U_i = X\;,$$
+then there exists another family $(V_i)_{i\in I}$ of open sets such that
+$$\cup_{i\in I}V_i = X$$
+$$V_i\subset U_i\text{ for all }i\in I$$
+and any specific $x\in X$ is in $V_i$ for only finitely many $i$.
+
+Some properties:
+\begin{itemize}
+\item Any metric or metrizable space is paracompact (A. H. Stone). 
+\item Given an open cover of a paracompact space $X$, there exists a (continuous) partition of unity on $X$ subordinate to that cover.
+\item A paracompact , Hausdorff space is regular.
+\item A compact or pseudometric space is paracompact.
+\end{itemize}
+\end{document}

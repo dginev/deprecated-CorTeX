@@ -1,0 +1,80 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+ \usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+\usepackage{pstricks}
+\usepackage{pst-plot}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\theoremstyle{definition}
+\newtheorem*{thmplain}{Theorem}
+
+\begin{document}
+The \emph{floor} of a real number is the greatest integer less than or equal to the number. The floor of $x$ is usually denoted by $\lfloor x\rfloor$.
+
+\begin{center}
+\begin{pspicture}(-5.5,-4.5)(5.5,4.3)
+\psaxes[Dx=1,Dy=1]{->}(0,0)(-4.5,-3.5)(4.5,3.5)
+\rput(0.3,3.55){$y$}
+\rput(4.6,0.3){$x$}
+\psdots[linecolor=blue](-3,-3)(-2,-2)(-1,-1)(1,1)(2,2)(3,3)
+\psdot[linecolor=blue,linewidth=0.03](0,0)
+\psline[linecolor=blue,linewidth=0.06](-3,-3)(-2,-3)
+\psline[linecolor=blue,linewidth=0.06](-2,-2)(-1,-2)
+\psline[linecolor=blue,linewidth=0.06](-1,-1)(0,-1)
+\psline[linecolor=blue,linewidth=0.07](0,0)(1,0)
+\psline[linecolor=blue,linewidth=0.06](1,1)(2,1)
+\psline[linecolor=blue,linewidth=0.06](2,2)(3,2)
+\psline[linecolor=blue,linewidth=0.06](3,3)(4,3)
+\rput(-2.5,2.5){$\mbox{Graph\; } y = \lfloor{x}\rfloor$}
+\end{pspicture}
+\end{center}
+
+The real function \,$x \mapsto \lfloor{x}\rfloor$\, is monotonically nondecreasing and satisfies
+$$x-1 < \lfloor{x}\rfloor \leqq x$$
+for all $x$.\, The function is continuous everywhere except in the integer points \,$0,\,\pm1,\,\pm2,\,\ldots$\, where it is only continuous from the right.\, One has
+$$\lfloor\lfloor{x}\rfloor\rfloor \;=\; \lfloor{x}\rfloor,$$
+i.e. the function is idempotent.\\
+
+
+\textbf{Some examples}:
+\begin{itemize}
+\item $\lfloor 6.2\rfloor=6$,
+\item $\lfloor 0.4\rfloor=0$,
+\item $\lfloor 7\rfloor=7$,
+\item $\lfloor -5.1\rfloor=-6$,
+\item $\lfloor \pi\rfloor=3$,
+\item $\lfloor -4\rfloor=-4$.
+\end{itemize}
+
+Note that this function is not the integer part ($[x]$), since 
+$\lfloor -3.5\rfloor = -4$ and $[ -3.5]=-3$.
+However, both functions agree for non-negative numbers.
+
+The notation for floor and ceiling was introduced by Iverson in 1962\cite{Higham}.
+In some texts however, the bracket notation is used to denote the floor function (although they actually work with integer part) so it is sometimes also called the \emph{bracket function}.
+ 
+\begin{thebibliography}{9}
+\bibitem{Higham} N. Higham, Handbook of writing for the mathematical sciences, Society for Industrial and Applied Mathematics, 1998.
+\end{thebibliography}
+\end{document}

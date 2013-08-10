@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+A {\em countable basis} $\beta$ of a vector space $V$ over a field $F$ is a countable subset $\beta \subset V$ with the property that every element $v \in V$ can be written as an infinite series
+$$
+v = \sum_{x \in \beta} a_x x
+$$
+in exactly one way (where $a_x \in F$). We are implicitly assuming, without further comment, that the vector space $V$ has been given a topological structure or normed structure in which the above infinite sum is absolutely convergent (so that it converges to $v$ regardless of the order in which the terms are summed).
+
+The archetypical example of a countable basis is the Fourier series of a function: every continuous real-valued periodic function $f$ on the unit circle $S^1 = \mathbb{R}/2\pi$ can be written as a Fourier series
+$$
+f(x) = \sum_{n=0}^\infty a_n \cos(n x) + \sum_{n=1}^\infty b_n \sin(n x)
+$$
+in exactly one way.
+
+Note: A countable basis is a countable set, but it is not usually a basis.
+\end{document}

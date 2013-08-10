@@ -1,0 +1,29 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\renewcommand{\u}{\mathbf{u}}
+\renewcommand{\v}{\mathbf{v}}
+\newcommand{\w}{\mathbf{w}}
+\newcommand{\0}{\mathbf{0}}
+\begin{document}
+Let $R$ be a ring with identity. A {\em left module} $M$ over $R$ is a set with two binary operations, $+: M\times M \longrightarrow M$ and $\cdot: R \times M \longrightarrow M$, such that
+\begin{enumerate}
+\item $(\u+\v)+\w = \u+(\v+\w)$ for all $\u,\v,\w \in M$
+\item $\u+\v=\v+\u$ for all $\u,\v\in M$
+\item There exists an element $\0 \in M$ such that $\u+\0=\u$ for all $\u \in M$
+\item For any $\u \in M$, there exists an element $\v \in M$ such that $\u+\v=\0$
+\item $a \cdot (b \cdot \u) = (a \cdot b) \cdot \u$ for all $a,b \in R$ and $\u \in M$
+\item $a \cdot (\u+\v) = (a \cdot \u) + (a \cdot \v)$ for all $a \in R$ and $\u,\v \in M$
+\item $(a + b) \cdot \u = (a \cdot \u) + (b \cdot \u)$ for all $a,b \in R$ and $\u \in M$
+\end{enumerate}
+
+A left module $M$ over $R$ is called \emph{unitary} or \emph{unital} if $1_R \cdot \u = \u$ for all $\u \in M$.
+
+A (unitary or unital) \emph{right module} is defined analogously, except that the function $\cdot$ goes from $M \times R$ to $M$ and the scalar multiplication operations act on the right. If $R$ is commutative, there is an equivalence of categories between the category of left $R$--modules and the category of right $R$--modules.
+\end{document}

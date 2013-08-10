@@ -1,0 +1,35 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+The \emph{partial derivative} of a multivariable function $f$ is simply its derivative with respect to only one variable, keeping all other variables constant (which are not functions of the variable in question). The formal definition is
+$$D_if(\mathbf{a})=\frac{\partial f}{\partial a_i} = \lim_{h\rightarrow 0}\frac{1}{h}\left(f\left(\begin{array}{c}a_1\\ \vdots\\a_i+h\\ \vdots\\a_n\end{array}\right) - f\left(\mathbf{a}\right)\right)
+= \lim_{h\rightarrow 0}\frac{f(\mathbf{a}+h\vec{e}_i)-f(\mathbf{a})}{h}$$ where $\vec{e}_i$ is the standard basis vector of the $i$th variable. Since this only affects the $i$th variable, one can derive the function using common rules and tables, treating all other variables (which are not functions of $a_i$) as constants. For example, if $f(\mathbf{x})=x^2 + 2xy + y^2 + y^3z$, then\\
+$$\begin{array}{lll}
+(1)\;\; & \frac{\partial f}{\partial x} = & 2x + 2y\\
+&&\\
+(2)\;\; & \frac{\partial f}{\partial y} = & 2x + 2y + 3y^2z\\
+&&\\
+(3)\;\; & \frac{\partial f}{\partial z} = & y^3
+\end{array}$$
+Note that in equation $(1)$, we treated $y$ as a constant, since we were differentiating with respect to $x$. $\left(\frac{d(c*x)}{dx} = c\right)$ The partial derivative of a vector-valued function $\vec{f}(\mathbf{x})$ with respect to variable $a_i$ is a vector $\overrightarrow{D_i\mathbf{f}}=\frac{\partial\vec{f}}{\partial a_i}$.\\
+\textbf{Multiple Partials}:\\
+Multiple partial derivatives can be treated just like multiple derivatives. There is an additional degree of freedom though, as you can compound derivatives with respect to different variables. For example, using the above function,
+$$\begin{array}{llll}
+(4)\;\; & \frac{\partial^2 f}{\partial x^2} & = \frac{\partial}{\partial x}(2x + 2y) & = 2\\
+&&&\\
+(5)\;\; & \frac{\partial^2 f}{\partial z \partial y} & = \frac{\partial}{\partial z}(2x + 2y + 3y^2z) & = 3y^2\\
+&&&\\
+(6)\;\; & \frac{\partial^2 f}{\partial y \partial z} & = \frac{\partial}{\partial y}(y^3) & = 3y^2
+\end{array}$$
+$D_{12}$ is another way of writing $\frac{\partial}{\partial x_1 \partial x_2}$. If $f(\mathbf{x})$ is continuous in the neighborhood of $\mathbf{x}$,
+and $D_{ij}f$ and $D_{ji}f$ are continuous in an open set $V$,  it can be shown 
+(see \PMlinkname{Clairaut's theorem}{ClairautsTheorem}) that $D_{ij}f(\mathbf{x}) = D_{ji}f(\mathbf{x})$ in $V$, where $i,j$ are the ith and jth variables. In fact, as long as an equal number of partials are taken with respect to each variable, changing the order of differentiation will produce the same results in the above condition.\\
+Another form of notation is $f^{(a,b,c,...)}(\mathbf{x})$ where $a$ is the partial derivative with respect to the first variable $a$ times, $b$ is the partial with respect to the second variable $b$ times, etc.
+\end{document}

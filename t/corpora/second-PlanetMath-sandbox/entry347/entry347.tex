@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+ \usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\theoremstyle{definition}
+\newtheorem*{thmplain}{Theorem}
+\begin{document}
+As an application of the \PMlinkname{vector product}{CrossProduct} we derive the expression of the \PMlinkescapetext{distance} $d$ between two non-parallel \PMlinkescapetext{straight} lines in $\mathbb{R}^3$.
+
+Suppose that the position vectors of the points of the two non-parallel lines are expressed in parametric forms
+           $$\vec{r} = \vec{a}\!+\!s\vec{u}$$
+and
+           $$\vec{r} = \vec{b}\!+\!t\vec{v},$$
+where $s$ and $t$ are parameters.\, A common \PMlinkescapetext{normal} vector of the lines is the cross product $\vec{u}\times\vec{v}$ of the direction vectors of the lines, and it may be normed to a unit vector
+      $$\vec{n} := \frac{\vec{u}\!\times\!\vec{v}}{|\vec{u}\!\times\!\vec{v}|}$$
+by dividing it by its \PMlinkescapetext{length}, which is distinct from 0 because of the non-parallelity.\, The vectors $\vec{a}$ and $\vec{b}$ are the position vectors of certain points $A$ and $B$ on the lines, and thus their difference $\vec{a}\!-\!\vec{b}$ is the vector from $B$ to $A$.\, If we project $\vec{a}\!-\!\vec{b}$ on the unit normal $\vec{n}$, the obtained vector
+       $$\vec{d} := [(\vec{a}\!-\!\vec{b})\!\cdot\!\vec{n}]\,\vec{n}$$
+has the sought \PMlinkescapetext{length}\, 
+$d = |(\vec{a}\!-\!\vec{b})\!\cdot\!\vec{n}|$,\, i.e.
+$$d = \frac{|(\vec{a}\!-\!\vec{b})\cdot(\vec{u}\!\times\!\vec{v})|}{|\vec{u}\!\times\!\vec{v}|}.
+$$
+For illustrating that $d$ is the minimal distance between points of the two lines we underline, that the construction of $d$ guarantees that it connects two points on the lines and is perpendicular to both lines --- thus any displacement of its end point makes it longer.
+
+\textbf{Notes.}\; The numerator is the absolute value of a triple scalar product.\, If the lines intersect each other, then the connecting vector $\vec{a}\!-\!\vec{b}$ is at right angles to the common normal vector $\vec{n}$ of their plane and thus the dot product of these vectors vanishes, i.e. also\, $d = 0$.\, If the lines do not intersect, they are called {\em agonic lines} or {\em skew lines};\, then\, $d > 0$.
+\end{document}

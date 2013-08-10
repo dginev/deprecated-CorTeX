@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newcommand{\reals}{\mathbb{R}}
+\newcommand{\natnums}{\mathbb{N}}
+\newcommand{\cnums}{\mathbb{C}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}
+\newcommand{\lb}{\left[}
+\newcommand{\rb}{\right]}
+
+\newcommand{\supth}{^{\text{th}}}
+
+
+\newtheorem{proposition}{Proposition}
+\begin{document}
+\paragraph{Definition.}
+Three real numbers $x, y, p$, with $x,y>0$ and $x \neq 1$, are said to obey the
+logarithmic relation
+$$\log_x(y)= p$$
+if they obey the corresponding exponential relation:
+$$x^p=y.$$
+Note that by the monotonicity and continuity property of the
+exponential operation, for given $x$ and $y$ there exists a unique $p$
+satisfying the above relation.  We are therefore able to says that
+{\em $p$ is the logarithm of $y$ relative to the base $x$.}
+
+\paragraph{Properties.}
+There are a number of basic algebraic identities involving logarithms.
+\begin{align*}
+\log_x(yz) &= \log_x(y) + \log_x(z)\\ 
+\log_x \left( \frac{y}{z} \right) &= \log_x(y) - \log_x(z)\\
+\log_x(y^z) &= z \log_x(y) \\
+\log_x(1) &= 0 \\
+\log_x(x) &= 1 \\
+\log_x(y) \log_y(x) &= 1\\
+\log_y(z) &= \frac{\log_x(z)}{\log_x(y)}
+\end{align*}
+
+By the very first identity, any logarithm \PMlinkname{restricted}{RestrictionOfAFunction} to the set of positive integers is an additive function.
+
+{\bf Notes.} In essence, logarithms convert multiplication to
+addition, and exponentiation to multiplication. Historically, these
+properties of the logarithm made it a useful tool for doing numerical
+calculations. Before the advent of electronic calculators and
+computers, tables of logarithms and the logarithmic slide rule were
+essential computational aids.
+
+Scientific applications predominantly make use of
+logarithms whose base is the Eulerian number $e = 2.71828\ldots$.
+Such logarithms are called {\em natural logarithms} and are commonly
+denoted by the symbol $\ln$, e.g.
+$$\ln(e) = 1.$$
+Natural logarithms naturally give rise to the natural logarithm function.
+
+A frequent convention, seen in elementary mathematics texts and on
+calculators, is that logarithms that do not give a base explicitly are
+assumed to be base $10$, e.g.
+$$\log(100) = 2.$$
+This is far from \PMlinkescapetext{universal}.  In Rudin's ``Real and
+Complex analysis'', for example, we see a baseless $\log$ used to
+refer to the natural logarithm.  By contrast, computer science and
+information theory texts often assume 2 as the default logarithm base.
+This is motivated by the fact that $\log_2(N)$ is the approximate
+number of bits required to encode $N$ different messages.
+
+
+The invention of logarithms is commonly credited to John Napier [
+\PMlinkexternal{Biography}{http://www-groups.dcs.st-and.ac.uk/~history/Mathematicians/Napier.html}]
+\end{document}

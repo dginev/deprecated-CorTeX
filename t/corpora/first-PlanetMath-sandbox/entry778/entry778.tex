@@ -1,0 +1,70 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newcommand{\sR}[0]{\mathbb{R}}
+\newcommand{\sC}[0]{\mathbb{C}}
+\newcommand{\sN}[0]{\mathbb{N}}
+\newcommand{\sZ}[0]{\mathbb{Z}}
+\begin{document}
+\subsubsection*{Introduction}
+The definiteness of a matrix is an important
+property that has use in many areas of mathematics and \PMlinkescapetext{even} physics. 
+Below are some examples:
+
+\begin{enumerate}
+\item In optimizing problems, the definiteness of the 
+Hessian matrix determines the quality of an extremal value. 
+The full details can be found on 
+\PMlinkname{this page}{RelationsBetweenHessianMatrixAndLocalExtrema}.
+\end{enumerate}
+
+
+{\bf Definition} \cite{pease}
+Suppose $A$ is an $n\times n$ square Hermitian matrix. 
+If, for any non-zero vector $x$, we have that
+ $$x^\ast Ax>0,$$
+then $A$ a \emph{positive definite} matrix. (Here $x^\ast=\overline{x}^t$,
+where $\overline{x}$ is the complex conjugate of $x$, and $x^t$ is
+the transpose of $x$.)
+
+One can show that  a Hermitian matrix is positive definite if 
+and only if all its eigenvalues are positive \cite{pease}. 
+Thus the determinant of a positive definite matrix
+is positive, and 
+ a positive definite matrix is always invertible.
+The Cholesky decomposition provides an economical method for
+solving linear equations involving a positive definite matrix. 
+Further conditions and properties for positive definite matrices
+are given in \cite{johnson:pdm}.
+ 
+\begin{thebibliography}{9}
+\bibitem {pease} M. C. Pease,
+ \emph{Methods of Matrix Algebra},
+ Academic Press, 1965
+\bibitem{johnson:pdm} C.R. Johnson, \emph{Positive definite matrices},
+  American Mathematical Monthly, Vol. 77, Issue 3 (March 1970) 259-264.
+\end{thebibliography}
+\end{document}

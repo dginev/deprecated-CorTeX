@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Bstar}{\mathcal{B}^\ast}
+\newcommand{\Vstar}{V^{\ast}}
+\newcommand{\Vstarstar}{V^{\ast\ast}}
+\PMlinkescapeword{simple}
+\PMlinkescapeword{pointwise}
+\PMlinkescapeword{representation}
+
+\textbf{Dual of a vector space; dual bases}
+
+Let $V$ be a vector space over a field $k$. The \emph{dual} of $V$,
+denoted by $\Vstar$, is the vector space of linear forms on $V$, i.e.
+linear mappings $V\to k$.
+The operations in $\Vstar$ are defined pointwise:
+$$(\varphi + \psi )(v) = \varphi (v) + \psi (v) $$
+$$(\lambda\varphi )(v) = \lambda\varphi (v)$$
+for $\lambda\in K$, $v\in V$ and $\varphi,\psi\in\Vstar$.
+
+$V$ is isomorphic to $\Vstar$ if and only if the dimension of
+$V$ is finite. If not, then $\Vstar$ has a larger (infinite)
+dimension than $V$; in other words, the cardinal of any basis
+of $\Vstar$ is strictly greater than the cardinal of any basis of $V$.
+
+Even when $V$ is finite-dimensional, there is no canonical or natural
+isomorphism $V\to\Vstar$. But on the other hand, a basis
+$\B$ of $V$ does define a basis $\Bstar$ of $\Vstar$, and moreover a
+bijection $\B\to\Bstar$. For suppose
+$\B=\{b_1,\dots,b_n\}$. For each $i$ from $1$ to $n$, define a mapping
+$$\beta_i:V\to k$$
+by
+$$\beta_i(\sum_k x_k b_k)=x_i\;.$$
+It is easy to see that the $\beta_i$ are nonzero elements of $\Vstar$
+and are independent. Thus $\{\beta_1,\dots,\beta_n\}$ is a basis of
+$\Vstar$, called the dual basis of $\B$.
+
+The dual of $\Vstar$ is called the \emph{second dual} or \emph{bidual} of $V$.
+There \emph{is} a very simple canonical injection $V\to\Vstarstar$,
+and it is an isomorphism if the dimension of $V$ is finite.
+To see it, let $x$ be any element of $V$ and define a mapping $x':\Vstar\to k$
+simply by
+$$x'(\phi)=\phi(x)\;.$$
+$x'$ is linear by definition, and it is readily verified that the mapping
+$x\mapsto x'$ from $V$ to $\Vstarstar$ is linear and injective.
+
+\textbf{Dual of a topological vector space}
+
+If $V$ is a topological vector space, the \emph{continuous dual}
+$V^{\prime}$ of $V$ is the subspace of $\Vstar$ consisting of
+the \emph{continuous} linear forms.
+
+A \emph{normed} vector space $V$ is said to be \emph{reflexive} if the natural
+embedding $V\to V^{\prime\prime}$ is an isomorphism. For example,
+any finite dimensional space is reflexive, and any Hilbert space is
+reflexive by the Riesz representation theorem.
+
+\textbf{Remarks}
+
+Linear forms are also known as linear functionals. 
+
+Another way in which a linear mapping $V\to\Vstar$ can arise is via
+a bilinear form $$V \times V \to k\;.$$
+The notions of duality extend, in part, from vector spaces to modules,
+especially free modules over commutative rings. A related notion is
+the duality in projective spaces.
+\end{document}

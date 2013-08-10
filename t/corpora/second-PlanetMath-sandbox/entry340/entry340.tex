@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+A Diophantine equation is an equation between polynomials in finitely many variables over the integers. Usually one is interested in integral solutions.
+
+Generally, solving a Diophantine equation is not as straightforward as solving a similar equation in the real numbers.  For example, consider this equation:
+
+$$x^4+ y^4 = z^4$$
+
+It is easy to find real numbers $x, y, z$ that satisfy this equation: pick any arbitrary $x$ and $y$, and you can compute a $z$ from them.  But if we require that $x, y, z$ all be integers, it is no longer obvious at all how to find solutions.  Even though raising an integer to an integer power yields another integer, the reverse is not true in general.
+
+As it turns out, of course, there are no solutions to the above Diophantine equation: it is a case of Fermat's last theorem.
+
+At the Second International Congress of Mathematicians in 1900, David Hilbert presented several unsolved problems in mathematics that he believed held special importance.  Hilbert's tenth problem was to find a general procedure for determining if Diophantine equations have solutions:
+
+``Given a Diophantine equation with any number of unknowns and with rational integer coefficients: devise a process, which could determine by a finite number of operations whether the equation is solvable in rational integers.''
+
+Note that this preceded the formal study of computing and G\"odel's incompleteness theorem, and it is unlikely that Hilbert had anticipated a negative solution --- that is, a proof that no such algorithm is possible --- but that turned out the be the case. Exponential Diophantine equations are similar to Diophantine equations, except that polynomials as well as integers are permitted as exponents. In the 1950s and 60s, Martin Davis, Julia Robinson, and Hilary Putnam showed that an algorithm to determine the solubility of all exponential Diophantine equations is impossible. Yuri Matiyasevich extended that work in 1970 by showing that there is no algorithm for determining whether an arbitrary Diophantine equation has integral solutions.
+
+{\em References:}
+
+Matiyasevich, Yuri V., {\em Hilbert's Tenth Problem}, MIT, 1993.
+\end{document}

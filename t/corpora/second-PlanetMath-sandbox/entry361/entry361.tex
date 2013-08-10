@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Let $I=[0,1] \subset \mathbb{R}$ and let $X$ be a topological space.
+
+A continuous map $f:I\rightarrow X$ such that $f(0)=x$ and $f(1)=y$ is called a \emph{path} in $X$.  The point $x$ is called the {\bf initial point} of the path and $y$ is called its {\bf terminal point}.  If, in addition, the map is one-to-one, then it is known as an {\bf arc}.
+
+Sometimes, it is convenient to regard two paths or arcs as equivalent if they differ by a reparameterization.  That is to say, we regard $f \colon I \to X$ and $g \colon I \to X$ as equivalent if there exists a homeomorphism $h \colon I \to I$ such that $h(0) = 0$ and $h(1) = 1$ and $f = g \circ h$.
+
+If the space $X$ has extra structure, one may choose to restrict the classes of paths and reparameterizations.  For example, if $X$ has a differentiable structure, one may consider the class of differentiable paths.  Likewise, one can speak of piecewise linear paths, rectifiable paths, and analytic paths in suitable contexts.
+
+The space $X$ is said to be {\bf pathwise connected} if, for every two points $x, y \in X$, there exists a path having $x$ as initial point and $y$ as terminal point.  Likewise, the space $X$ is said to be {\bf arcwise connected} if, for every two distinct points $x, y \in X$, there exists an \emph{arc} having $x$ as initial point and $y$ as terminal point.  
+
+A pathwise connected space is always a connected space, but a connected space need not be path connected.  An arcwise connected space is always a pathwise connected space, but a pathwise connected space need not be arcwise connected.
+As it turns out, for Hausdorff spaces these two notions coincide --- a Hausdorff space is pathwise connected iff it is arcwise connected.
+\end{document}

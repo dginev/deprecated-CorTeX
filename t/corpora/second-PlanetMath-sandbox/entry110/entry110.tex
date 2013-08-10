@@ -1,0 +1,24 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+Numbers of the form
+\[
+M_n = 2^n - 1, (n \geq 1)
+\]
+are called \emph{Mersenne numbers} after Father Marin Mersenne (1588 - 1648), a French monk who studied which of these numbers are actually prime. It can be easily shown that if $M_n$ is prime then $n$ is prime. Indeed, $2^{a\cdot b}-1$ with $a,\ b >1$ factors:
+$$2^{a\cdot b}-1=(2^a-1)(2^{a(b-1)}+2^{a(b-2)}+\ldots+2^a+1).$$
+If $M_n$ is prime then we call it a \emph{Mersenne prime}. Mersenne primes have a strong connection with perfect numbers.
+
+The currently known Mersenne primes correspond to $n$ = 2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941, 11213, 19937, 21701, 23209, 44497, 86243, 110503, 132049, 216091, 756839, 859433, 1257787, 1398269, 2976221, 3021377, 6972593, 13,466,917 and the newly discovered $40^{\operatorname{th}}$ number $n=20996011$, and even newer $41^{\operatorname{st}}$ number $n=24036583$. The latest Mersenne primes (as of $2/5/2006$) are the $42$nd Mersenne number which corresponds to $n=25964951$ (and which has more than $7.8$ million digits) and the $43$rd Mersenne prime for $n=30402457$ (the new prime is $9,152,052$ digits long). For an updated list and a lot more information on how these numbers were discovered, you can check: \PMlinkexternal{www.mersenne.org}{http://www.mersenne.org}.
+
+It is conjectured that the density of Mersenne primes with exponent $p<x$ is of order
+$$ \frac{e^{\gamma}}{\log 2} \log \log x $$
+where $\gamma$ is Euler's constant.
+\end{document}

@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\newcommand{\sR}[0]{\mathbb{R}}
+\newcommand{\sC}[0]{\mathbb{C}}
+\newcommand{\sN}[0]{\mathbb{N}}
+\newcommand{\sZ}[0]{\mathbb{Z}}
+
+% The below lines should work as the command
+% \renewcommand{\bibname}{References}
+% without creating havoc when rendering an entry in 
+% the page-image mode.
+\makeatletter
+\@ifundefined{bibname}{}{\renewcommand{\bibname}{References}}
+\makeatother
+
+\newcommand*{\norm}[1]{\lVert #1 \rVert}
+\newcommand*{\abs}[1]{| #1 |}
+\begin{document}
+\PMlinkescapeword{collection}
+{\bf Definition} (\cite{kelley}, pp. 49)
+Let $Y$ be a subset of a set $X$. A \textbf{cover} for $Y$ is a collection
+of sets $\mathcal{U}=\{U_i\}_{i\in I}$ such that each $U_i$ 
+is a subset of $X$, and 
+$$ Y \subset \bigcup_{i\in I} U_i.$$
+The collection of sets can be arbitrary, that is, $I$ can be 
+finite, countable, or uncountable. The cover is  correspondingly called a 
+\textbf{finite cover}, \textbf{countable cover}, or \textbf{uncountable cover}.
+
+%Let $X$ be a set and let $\mathbb{P}(X)$ denote the power set of $X$.  A %collection $\mathcal{U}=\{ U_i\in\mathbb{P}(X) \colon i\in I\}$ of subsets of $X$ %is said to be a \emph{cover} of X if $$X\subseteq\bigcup_{i\in I}U_i$$
+
+A \textbf{subcover} of $\mathcal{U}$ is a subset $\mathcal{U}'\subset\mathcal{U}$ such that $\mathcal{U}'$ is also a cover of $X$.
+
+A \textbf{refinement} $\mathcal{V}$ of $\mathcal{U}$ is a cover of $X$ such that for every $V\in\mathcal{V}$ there is some $U\in\mathcal{U}$ such that $V\subset U$.  When $\mathcal{V}$ refines $\mathcal{U}$, it is usually written $\mathcal{V}\preceq \mathcal{U}$.  $\preceq$ is a preorder on the set of covers of any topological space $X$.
+
+If $X$ is a topological space and the members of $\mathcal{U}$ are open sets,
+then $\mathcal{U}$ is said to be an \emph{open cover}.
+Open subcovers and open refinements are defined similarly.
+
+{\bf Examples}
+\begin{enumerate}
+\item If $X$ is a set, then $\{X\}$ is a cover of $X$. 
+\item The power set of a set $X$ is a cover of $X$.
+\item A topology for a set is a cover of that set.
+\end{enumerate}
+
+
+\begin{thebibliography}{9}
+ \bibitem{kelley} J.L. Kelley, \emph{General Topology},
+ D. van Nostrand Company, Inc., 1955.
+ \end{thebibliography}
+\end{document}

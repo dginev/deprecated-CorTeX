@@ -1,0 +1,45 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+
+\begin{document}
+Let $A$ be an $m \times n$ matrix with $m \ge n$  and $b$ an $m \times 1$ matrix. We want to consider the problem
+
+$$ Ax \approx b $$
+
+where $\approx$ stands for the best approximate solution in the least squares sense, i.e. we want to minimize the Euclidean norm of the residual $r = Ax - b$
+
+$$ ||Ax-b||_2 = ||r||_2 = \left[\sum_{i=1}^m r_i^2 \right]^{1/2} $$
+
+We want to find the vector $x$ which is closest to $b$ in the column space of $A$.
+
+Among the different methods to solve this problem, we mention Normal Equations, sometimes ill-conditioned, QR Decomposition, and, most generally, Singular Value Decomposition. For further reading, [Golub89], [Branham90], [Wong92], [Press95].
+
+Example: Let us consider the problem of finding the closest point (vertex) to measurements on straight lines (e.g. trajectories emanating from a particle collision). This problem can be described by $Ax = b$ with
+
+$$ A = \begin{bmatrix}a_{11} & a_{12} \\ \vdots & \vdots \\ a_{m1} & a_{m2} \end{bmatrix} ; x = \begin{bmatrix}u \\ v \end{bmatrix} ;b = \begin{bmatrix} b_1 \\ \vdots \\ b_m \end{bmatrix} $$
+
+This is clearly an inconsistent system of linear equations, with more equations than unknowns, a frequently occurring problem in experimental data analysis. The system is, however, not very inconsistent and there is a point that lies ``nearly'' on all straight lines. The solution can be found with the linear least squares method, e.g. by QR decomposition for solving $Ax = b$:
+
+$$ QRx = b \rightarrow x = R^{-1}Q^Tb $$ 
+
+{\bf References}
+
+\begin{itemize}
+\item Originally from The Data Analysis Briefbook
+(\PMlinkexternal{http://rkb.home.cern.ch/rkb/titleA.html}{http://rkb.home.cern.ch/rkb/titleA.html})
+\end{itemize}
+
+\begin{itemize} 
+\item[Wong92] S.S.M. Wong, Computational Methods in Physics and Engineering, Prentice Hall, 1992.
+\item[Golub89] Gene H. Golub and Charles F. van Loan: Matrix Computations, 2nd edn., The John Hopkins University Press, 1989.
+\item[Branham90] R.L. Branham, Scientific Data Analysis, An Introduction to Overdetermined Systems, Springer, Berlin, Heidelberg, 1990.
+\item[Press95] W.H. Press, S.A. Teukolsky, W.T. Vetterling, and B.P. Flannery, Numerical Recipes in C, Second edition, Cambridge University Press, 1995. (The same book exists for the Fortran language). There is also an Internet version which you can work from.
+\end{itemize}
+\end{document}

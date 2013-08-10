@@ -1,0 +1,16 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+\emph{Sierpinski space} is the topological space $X=\lbrace x,y\rbrace$ with the topology given by $\lbrace X, \{ x\} ,\emptyset \rbrace$.
+
+Sierpinski space is \PMlinkname{$T_0$}{T0} but not \PMlinkname{$T_1$}{T1}.  It is $T_0$ because $\lbrace x\rbrace$ is the open set containing $x$ but not $y$.  It is not $T_1$ because every open set $U$ containing $y$ (namely $X$) contains $x$ (in other words, there is no open set containing $y$ but not containing $x$).
+
+\textbf{Remark}.  From the Sierpinski space, one can construct many non-$T_1$ $T_0$ spaces, simply by taking any set $X$ with at least two elements, and take any non-empty proper subset $U\subset X$, and set the topology $\mathcal{T}$ on $X$ by $\mathcal{T}=P(U)\cup \lbrace X\rbrace$.
+\end{document}

@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\begin{document}
+\PMlinkescapeword{corollary}
+
+A \emph{normal space} is a topological space $X$
+such that whenever $A$ and $B$ are disjoint closed subsets of $X$,
+then there are disjoint open subsets $U$ and $V$ of $X$
+such that $A\subseteq U$ and $B\subseteq V$.
+
+(Note that some authors include $\mathrm{T}_1$ in the definition,
+which is equivalent to requiring the space to be Hausdorff.)
+
+\emph{Urysohn's Lemma} states that $X$ is normal
+if and only if
+whenever $A$ and $B$ are disjoint closed subsets of $X$,
+then there is a continuous function $f\colon X\to[0,1]$
+such that $f(A)\subseteq\{0\}$ and $f(B)\subseteq\{1\}$.
+(Any such function is called an \emph{Urysohn function}.)
+
+A corollary of Urysohn's Lemma
+is that normal \PMlinkname{$\mathrm{T}_1$}{T1Space} spaces are completely regular.
+\end{document}

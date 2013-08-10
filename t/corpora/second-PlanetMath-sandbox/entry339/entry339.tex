@@ -1,0 +1,69 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{xypic}
+\begin{document}
+We first prove the following lemma: if
+\[a \equiv b \pmod{p}\]
+\[a \equiv b \pmod{q}\]
+\[\gcd(p,q)=1\]
+then
+\[a \equiv b \pmod{pq}\]
+
+We know that for some $k \in \mathbb{Z}$, $a-b = kp$; likewise, for some $j \in \mathbb{Z}$, $a-b = jq$, so $kp = jq$.  Therefore $kp - jq = 0$.
+
+It is a well-known theorem that, given $a,b,c,x_0,y_0 \in \mathbb{Z}$ such that $x_0a + y_0b = c$ and $d = \gcd(a,b)$, any solutions to the diophantine equation $ax + by = c$ are given by
+$$x=x_0 + \frac{b}{d}n$$
+$$y=y_0 + \frac{a}{d}n$$
+where $n \in \mathbb{Z}$.
+
+We apply this theorem to the diophantine equation $kp - jq = 0$.  Clearly one solution of this diophantine equation is $k = 0, j = 0$.  Since $\gcd(q,p)=1$, all solutions of this equation are given by $k=nq$ and $j=np$ for any $n \in \mathbb{Z}$.  So we have $a - b = npq$; therefore $pq$ divides $a - b$, so $a \equiv b \pmod{pq}$, thus completing the lemma.
+
+Now, to prove the Chinese remainder theorem, we first show that $y_i$ must exist for any natural $i$ where $1 \leq i \leq n$.  If
+$$y_i\frac{P}{p_i} \equiv 1 \pmod{p_i}$$
+then by definition there exists some $k \in \mathbb{Z}$ such that
+$$y_i\frac{P}{p_i} -1 = k p_i$$
+which in turn implies that
+$$y_i\frac{P}{p_i} - k p_i = 1$$
+This is a diophantine equation with $y_i$ and $k$ being the unknown integers.  It is a well-known theorem that a diophantine equation of the form
+$$ax + by = c$$
+has solutions for $x$ and $y$ if and only if $\gcd(a,b)$ divides $c$.  Since $\frac{P}{p_i}$ is the product of each $p_j$ ($j \in \mathbb{N}$, $1 \leq j \leq n$) except $p_i$, and every $p_j$ is relatively prime to $p_i$, $\frac{P}{p_i}$ and $p_i$ are relatively prime.  Therefore, by definition, $\gcd(\frac{P}{p_i},p_i) = 1$; since $1$ divides $1$, there are integers $k$ and $y_i$ that satisfy the above equation.
+
+Consider some $j \in \mathbb{N}$, $1 \leq j \leq n$.  For any $i \in \mathbb{N}$, $1 \leq i \leq n$, either $i\neq j$ or $i=j$.  If $i\neq j$, then
+$$a_i y_i \frac{P}{p_i} = \left ( a_i y_i \frac{P}{p_i p_j} \right ) p_j$$
+so $p_j$ divides $a_i y_i \frac{P}{p_i}$, and we know
+$$a_i y_i \frac{P}{p_i} \equiv 0 \pmod{p_j}$$
+
+Now consider the case that $i=j$.  $y_j$ was selected so that
+$$y_j\frac{P}{p_j} \equiv 1 \pmod{p_j}$$
+so we know
+$$a_j y_j\frac{P}{p_j} \equiv a_i \pmod{p_j}$$
+
+So we have a set of $n$ congruences $\bmod\ p_j$; summing them shows that
+$$\sum_{i=1}^n a_i y_i \frac{P}{p_i} \equiv a_i \pmod{p_j}$$
+Therefore $x_0$ satisfies all the congruences.
+
+Suppose we have some
+$$x \equiv x_0 \pmod{P}$$
+This implies that for some $k \in \mathbb{Z}$,
+$$x - x_0 = kP$$
+So, for any $p_i$, we know that
+$$x - x_0 = \left ( k\frac{P}{p_i} \right ) p_i$$
+so $x \equiv x_0 \pmod{p_i}$.  Since congruence is transitive, $x$ must in turn satisfy all the original congruences.
+
+Likewise, suppose we have some $x$ that satisfies all the original congruences.  Then, for any $p_i$, we know that
+$$x \equiv a_i \pmod{p_i}$$
+and since
+$$x_0 \equiv a_i \pmod{p_i}$$
+the transitive and symmetric properties of congruence imply that
+$$x \equiv x_0 \pmod{p_i}$$
+for all $p_i$.  So, by our lemma, we know that
+$$x \equiv x_0 \pmod{p_1 p_2 \dots p_n}$$
+or
+$$x \equiv x_0 \pmod{P}$$
+\end{document}

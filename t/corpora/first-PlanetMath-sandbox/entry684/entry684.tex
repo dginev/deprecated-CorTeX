@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $X$ be a topological space.  A {\em universal covering space} is a covering space $\tilde{X}$ of $X$ which is connected and simply connected. 
+
+If $X$ is based, with basepoint $x$, then a {\em based cover} of $X$ is cover of $X$ which is also a based space with a basepoint $x'$ such that the covering is a map of based spaces. Note that any cover can be made into a based cover by choosing a basepoint from the pre-images of $x$.
+
+The universal covering space has the following universal property: If $\pi:(\tilde X,x_0)\to(X,x)$ is a based universal cover, then for any connected based cover $\pi':(X',x')\to (X,x)$, there is a unique covering map $\pi'':(\tilde X,x_0)\to(X',x')$ such that $\pi=\pi'\circ\pi''$.
+
+Clearly, if a universal covering exists, it is unique up to unique isomorphism.  But not every topological space has a universal cover.  In fact $X$ has a universal cover if and only if it is semi-locally simply connected (for example, if it is a locally finite CW-complex or a manifold).
+\end{document}

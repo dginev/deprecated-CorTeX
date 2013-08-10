@@ -1,0 +1,17 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+%\usepackage{graphicx}
+%\usepackage{xypic}
+\begin{document}
+Let $I=[a,b]$ be an interval of $\mathbb R$ and let $f\colon I\to \mathbb{R}$ be a bounded function. For any finite set of points $\{x_0, x_1, x_2, \dotsc, x_n\}$ such that $a = x_0 < x_1 < x_2 \dotsb < x_n = b$, there is a corresponding partition $P = \{[x_0, x_1), [x_1, x_2), \dotsc, [x_{n-1}, x_n]\}$ of $I$. 
+
+Let $C(\epsilon)$ be the set of all partitions of $I$ with $\max (x_{i+1}-x_i)<\epsilon$.  Then let $S^{*}(\epsilon)$ be the infimum of the set of upper Riemann sums with each partition in $C(\epsilon)$, and let $S_{*}(\epsilon)$ be the supremum of the set of lower Riemann sums with each partition in $C(\epsilon)$. If $\epsilon_1<\epsilon_2$, then $C(\epsilon_1)\subset C(\epsilon_2)$, so $S^{*}(\epsilon)$ is \PMlinkname{decreasing}{IncreasingdecreasingmonotoneFunction} and $S_{*}(\epsilon)$ is \PMlinkname{increasing}{IncreasingdecreasingmonotoneFunction}. Moreover, $\lvert S^{*}(\epsilon)\rvert$ and $\lvert S_{*}(\epsilon)\rvert$ are bounded by $(b-a)\sup_x \lvert f(x)\rvert$. Therefore, the limits $S^{*}=\lim_{\epsilon\to 0} S^{*}(\epsilon)$ and $S_{*}=\lim_{\epsilon\to 0} S_{*}(\epsilon)$ exist and are finite.  If $S^{*} = S_{*}$, then $f$ is Riemann-integrable over $I$, and the Riemann integral of $f$ over $I$ is defined by
+\begin{equation*}
+\int_{a}^{b} f(x)dx = S^{*} = S_{*}.
+\end{equation*}
+\end{document}

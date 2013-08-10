@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic} 
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+\begin{document}
+Let $K/F$ be a Galois extension, and let $x \in K$. The {\em trace} $\operatorname{Tr}_F^K(x)$ of $x$ is defined to be the sum of all the elements of the orbit of $x$ under the group action of the Galois group $\operatorname{Gal}(K/F)$ on $K$; taken with multiplicities if $K/F$ is a finite extension.
+
+In the case where $K/F$ is a finite extension,
+$$
+\operatorname{Tr}_F^K(x) := \sum_{\sigma \in \operatorname{Gal}(K/F)} \sigma(x)
+$$
+
+The trace of $x$ is always an element of $F$, since any element of $\operatorname{Gal}(K/F)$ permutes the orbit of $x$ and thus fixes $\operatorname{Tr}_F^K(x)$.
+
+The name ``trace'' derives from the fact that, when $K/F$ is finite, the trace of $x$ is simply the trace of the linear transformation $T: K \longrightarrow K$ of vector spaces over $F$ defined by $T(v) := xv$.
+\end{document}

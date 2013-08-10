@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{ids}
+\usepackage{planetmath-specials}
+\usepackage{pmath}
+% this is the default PlanetMath preamble.  as your knowledge
+% of TeX increases, you will probably want to edit this, but
+% it should be fine as is for beginners.
+
+% almost certainly you want these
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+% used for TeXing text within eps files
+%\usepackage{psfrag}
+% need this for including graphics (\includegraphics)
+%\usepackage{graphicx}
+% for neatly defining theorems and propositions
+%\usepackage{amsthm}
+% making logically defined graphics
+%\usepackage{xypic}
+
+% there are many more packages, add them here as you need them
+
+% define commands here
+
+\begin{document}
+Let $I$ be an open interval of $\mathbb{R}$ and\, $f:I \longrightarrow \mathbb{R}$\, a real function.
+
+A function \,$F:I \longrightarrow \mathbb{R}$\, is called an \emph{antiderivative} or a \emph{primitive} of $f$ if $F$ is differentiable and its derivative is equal to $f$, i.e.
+\begin{displaymath}
+ F'(x) = f(x) \quad \text{for all}\; x \in I.
+\end{displaymath}
+
+Note that there are an infinite number of antiderivatives for any function $f$ since any constant can be added or subtracted from any valid antiderivative to yield another equally valid antiderivative.
+
+To account for this, we express the \emph{general antiderivative}, or \emph{indefinite integral}, as follows:
+$$ \int f(x)\ dx = F+C$$
+where $C$ is an arbitrary constant called the \emph{constant of integration}.  The $dx$ portion means ``with respect to $x$'', because after all, our functions $F$ and $f$ are functions of $x$.\\
+
+There is no loss in generality with this notation since in fact \emph{all} antiderivatives of $f$ take this form as the following theorem demonstrates:\\
+
+{\bf Theorem.}  \emph{Let $F, G$ be two antiderivatives of a given function $f$ defined on an open interval $I$. Then $F-G = \textrm{const}$.}
+
+\emph{Proof.}  Since\, $F'(x) = f(x)$\, and\, $G'(x) = f(x)$,\, we have\, $F'(x)-G'(x) = 0$\, on the whole $I$.\, Thus, by the fundamental theorem of integral calculus,\, $F(x)-G(x) = \textrm{const}$.\, $\square$\\
+
+This is no longer true if the domain of the function $f$ is not an open interval (is not connected).  For that scenario, the following more general result holds:\\
+
+{\bf Theorem.}  \emph{Let $U \subset \mathbb{R}$ be an open set (not necessarily an interval).  Suppose $F, G$ are antiderivatives of a given function $f:U \longrightarrow \mathbb{R}$.  Then $F-G$ is constant in each connected component of $U$ (each interval in $U$).}\\
+
+For example, consider the function \,$f:\mathbb{R}\!\smallsetminus\!\{0\} \longrightarrow \mathbb{R}$\, given by $f(x) = \frac{1}{x}$. Notice that the domain of $f$ is not an interval, but the union of the disjoint intervals \,$(-\infty,\, 0)$\, and \,$(0,\,+\infty)$.  Then, all the antiderivatives of $f$ take the form
+\begin{displaymath}
+\begin{cases}
+\log(-x) + C_1, & $if$\;\; x < 0\\
+\log(x) + C_2, & $if$\;\; x > 0
+\end{cases}
+\end{displaymath}
+
+\subsection{Remarks}
+\begin{itemize}
+\item For complex functions, the definition of antiderivative is exactly the same and the above results also hold (one just needs to consider ``connected open subsets'' instead of ``open intervals'').
+\end{itemize}
+\end{document}
