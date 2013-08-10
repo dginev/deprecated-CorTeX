@@ -17,17 +17,27 @@ use feature 'switch';
 # Analysis, Converter and Aggregator services
 
 sub new {
-	my ($class, %options) = @_;
-	bless {%options}, $class; }
+  my ($class, %options) = @_;
+  bless {%options}, $class; }
 
 sub process {
-	my ($self,%options)=@_;	
-	given (lc($self->type())) {
-		when ('analysis') {return $self->analyze(%options)}
-		when ('aggregation') {return $self->aggregate(%options)}
-		when ('conversion') {return $self->convert(%options)}
-		default {return;}
-	}}
+  my ($self,%options)=@_; 
+  my $response = {};
+  local $@ = undef;
+  my $eval_return = eval {
+    given (lc($self->type())) {
+      when ('analysis') {$response = $self->analyze(%options)}
+      when ('aggregation') {$response = $self->aggregate(%options)}
+      when ('conversion') {$response = $self->convert(%options)}
+      default {}
+    };
+    1;};
+  if (!$eval_return || $@) {
+    $response = {
+      status=>-4,
+      log=>"Fatal:Blueprint:process $@"
+    };}
+  return $response; }
 
 # Blueprint API
 sub type {return;}
