@@ -56,7 +56,7 @@ sub complete_documents {
   my @conversion_results = grep {$_->{document}} @$results;
   my @aggregation_results = grep {$_->{resource}} @$results;
   foreach my $result(@conversion_results) {
-    print STDERR Dumper($result);
+    #print STDERR Dumper($result);
     my $document = $result->{document};
     # Conversion results - add a new document
     my $entry_dir = $result->{entry};
