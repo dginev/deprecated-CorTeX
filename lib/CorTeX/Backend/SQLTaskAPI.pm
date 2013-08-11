@@ -182,6 +182,13 @@ sub update_service {
     $service{$key} //= '';}
 
   my $old_service = $db->service_description($service{oldname});
+  my $major_change = 0;
+  if (($old_service->{name} ne $service{name}) || 
+      ($old_service->{version} ne $service{version}) ||
+      ($old_service->{inputformat} ne $service{inputformat}) ||
+      ($old_service->{outputformat} ne $service{outputformat})
+    ) {
+    $major_change = 1; }
   # Register the Service
   # TODO: Check the name, version and iid are unique!
   my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=? ,url=?, inputformat=?, outputformat=?, resource=?
@@ -226,9 +233,10 @@ sub update_service {
   my $delete_tasks_query = $db->prepare("DELETE from tasks where corpusid=? and serviceid=?");
   foreach my $corpusid(@$delete) {
     $delete_tasks_query->execute($corpusid,$serviceid); }
-  # Takes care of rerunning all currently queued entries
-  my $update_query = $db->prepare("UPDATE tasks SET status=? where serviceid=?");
-  $update_query->execute($status,$serviceid);
+  # Takes care of rerunning all currently queued entries IFF there was a change apart from the corpus change
+  if ($major_change) {
+    my $update_query = $db->prepare("UPDATE tasks SET status=? where serviceid=?");
+    $update_query->execute($status,$serviceid); }
   # Add new corpora
   my $entry_query = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=1 and status=-1");
   my $insert_query = $db->prepare("INSERT into tasks (corpusid,serviceid,entry,status) values(?,?,?,?)");
