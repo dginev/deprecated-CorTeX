@@ -6,21 +6,25 @@ Admin interface monitors/controls the system:
 
 == Initialization
  1. Register a corpus/resource
- 2. Register services("blackboard modules") per corpus!
+ 2. Register services ("blackboard modules") per corpus!
+
+== Job Queue
 
 We have an M x N x C job landscape, for M services and N corpus entries in C corpora.
 Job status Codes:
-0 ready for processing
--1 done
--2 missing dependencies
-JOBID > 0  incomplete/processing
+-n or less: Blocked by (n-5) prerequisite services 
+-5 ready for processing
+-4 Done with Fatal errors
+-3 Done with Errors
+-2 Done with Warnings
+-1 Done OK
+JOBID > 0 incomplete/processing
 
-== Cron processing
- 1. If we have space in our cron queue 
-  1.1. Grab next non-completed job or sleep.
-  1.2. Pass job on to Gearman for work, record job ID in queue.
- 2. Check if job is completed, register in DB.
-
+== Daemonized processing
+ 1. If we have space in our job queue 
+  1.1. Grab next bundle of ready to process jobs or sleep.
+  1.2. Pass jobs on to Gearman for work aynchronously
+ 2. Once job bundle is completed, register results in TaskDB, DocDB and MetaDB.
 
 Gearman could in fact take charge of most of the cron problems -- just hit it with jobs.
 
