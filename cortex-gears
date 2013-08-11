@@ -53,7 +53,8 @@ my $check_interval = 10;
   my $db_handle = db_file_connect;
   my $backend = CorTeX::Backend->new(%$db_handle);
   db_file_disconnect($db_handle);
-
+  # Register default services
+  $Cache->{default_service_ids} = register_defaults();
   # Start cron loop managing the client and worker children
 
   while (1) { # Every minute, check:
@@ -62,7 +63,6 @@ my $check_interval = 10;
       # Halt what we're doing
       stop_children();
       # Add/update all default services (if necessary)
-      # $Cache->{default_service_ids} = register_defaults();
       # Grab a backend with the updated info
       $db_handle = db_file_connect;
       $backend = CorTeX::Backend->new(%$db_handle);
@@ -153,7 +153,7 @@ my $check_interval = 10;
 
   sub register_defaults {
     our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
-    my $services_dir = $INSTALLDIR."/Service";
+    my $services_dir = $INSTALLDIR."/Default";
     opendir(my $dh, $services_dir)
      || die "can't opendir $services_dir: $!";
     my @default_service_descriptions = grep { /\.json$/ && -f "$services_dir/$_" }
