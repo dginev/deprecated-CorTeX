@@ -1,6 +1,6 @@
 # /=====================================================================\ #
 # |  CorTeX Framework                                                   | #
-# | Backend Bridge Moduile                                              | #
+# | DocDB API for using the File System                                 | #
 # |=====================================================================| #
 # | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
 # |  Research software, produced as part of work done by:               | #

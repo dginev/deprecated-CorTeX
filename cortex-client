@@ -24,7 +24,7 @@ BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
   $RealBin_safe = $1;
   die 'Fatal:IO:tainted RealBin was tainted! Failing...'
-   unless ($RealBin_safe && (-e $RealBin_safe.'/cortex-worker')); 
+   unless ($RealBin_safe && (-e $RealBin_safe.'/cortex-client')); 
   $libdir = $RealBin_safe."/lib"; }
 
 if (-d $libdir) {

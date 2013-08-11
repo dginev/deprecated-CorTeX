@@ -1,6 +1,6 @@
 # /=====================================================================\ #
 # |  CorTeX Framework                                                   | #
-# | eXist XML Database Backend Connector                                | #
+# | MetaDB API for SQL Backends                                         | #
 # |=====================================================================| #
 # | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
 # |  Research software, produced as part of work done by:               | #
