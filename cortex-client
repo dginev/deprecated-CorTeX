@@ -56,7 +56,7 @@ my $results = [];
 
 while (1) {
   my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
-  $queue_size = @$tasks;
+  $queue_size = scalar(@$tasks);
   if (! ($queue_size)) {
     # Try again in a minute if queue is empty
     sleep 60; next; }
@@ -85,7 +85,7 @@ while (1) {
           $response->{formats} = $task->{formats};
           push @$results, $response;
           # New queue if we're done here
-          if (@$results == $queue_size) {
+          if (scalar(@$results) == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
             # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
@@ -97,7 +97,7 @@ while (1) {
               status=>-4,messages=>parse_log("Fatal:Gearman:client Job failed (generic)")};
           push @$results, $response;
           # New queue if we're done here
-          if (@$results == $queue_size) {
+          if (scalar(@$results) == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
             # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise

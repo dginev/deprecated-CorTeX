@@ -48,7 +48,7 @@ my $check_interval = 10;
   local $SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
 
   my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
-  my $Cache={ workers=> [], clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
+  my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
   $Cache->{processor_multiplier} = Unix::Processors->new->max_online;
   my $db_handle = db_file_connect;
   my $backend = CorTeX::Backend->new(%$db_handle);
@@ -69,38 +69,15 @@ my $check_interval = 10;
       # Make sure we clean up after we halted
       $backend->taskdb->mark_limbo_entries_queued;
       db_file_disconnect($db_handle);
-      # Start workers
-      # spawn_workers();
       # Start clients
       spawn_clients(); }
 
     my $taskdb = $backend->taskdb;
     # In case things just died away, respawn them:
-    # spawn_workers() unless (@{$Cache->{workers}} > 0);
     spawn_clients() unless (@{$Cache->{clients}} > 0);
     # Check again in a minute...
     sleep $check_interval; }
   
-  sub spawn_workers {
-    my @services = @{$Cache->{default_service_ids}};
-    my @servers = @{$Cache->{servers}};
-    #    # workers = 5 x ( # cpus ) x (# local services)
-    return unless (@servers);
-    my $pid = 0;
-    while (@services) {
-      my $s = shift @services;
-      for my $num(1..$Cache->{processor_multiplier}) {
-        # Fork a job for each one!
-        $pid = fork();
-        if ($pid == 0) {
-          exec("$RealBin_safe/cortex-worker",$s,@servers);
-        } else {
-          print STDERR "Started Worker #$num for $s : process $pid\n";
-          push @{$Cache->{workers}}, $pid;
-        }
-      }
-    }}
-
   sub spawn_clients {
     my @servers = @{$Cache->{servers}};
     # Servers x processors = # clients
@@ -119,14 +96,10 @@ my $check_interval = 10;
     stop_children();
     exit 0; }
   sub stop_children {
-    stop_clients();
-    stop_workers(); }
+    stop_clients(); }
   sub stop_clients {
     stop_child($_) foreach @{$Cache->{clients}};
     $Cache->{clients} = []; }
-  sub stop_workers {
-    stop_child($_) foreach @{$Cache->{workers}};
-    $Cache->{workers} = []; }
   sub stop_child {
     my ($pid) = @_;
     # Send a SIGINT to the child job
@@ -178,7 +151,7 @@ my $check_interval = 10;
         }
       }
     }
-    return \@default_service_ids; # We want to boot workers for these
+    return \@default_service_ids;
   }
 }
 

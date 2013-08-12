@@ -441,7 +441,7 @@ sub corpus_report {
   while ($sth->fetch) {
     # Representing an HTML table row:
     $report{$serviceid}{status_decode($status)} += $count;
-    $alive = 1 if (!($alive || $status)); }
+    $alive = 1 if (!($alive || ($status == -5) || ($status > 0))); }
   # Decode the keys
   my $readable_report = {};
   foreach my $id(keys %report) {
@@ -718,8 +718,8 @@ sub fetch_tasks {
   my ($db,%options) = @_;
   my $size = $options{size};
   my $mark = int(1+rand(10000));
-  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 ");# TODO: LIMIT ".$size);
-  $sth->execute($mark);
+  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?");
+  $sth->execute($mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
   my (%row,@tasks);
