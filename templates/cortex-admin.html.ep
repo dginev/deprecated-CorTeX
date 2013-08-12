@@ -9,6 +9,7 @@ $(document).ready(function() {
     $("#accordion").accordion("resize");
   });
 
+  var dialog_timer;
   $("form").each(function(c, obj) {
     $(obj).attr("action", '');
     $(obj).submit(function(event) {
@@ -18,8 +19,42 @@ $(document).ready(function() {
         type: "POST",
         dataType: "json",
         data: $(this).serialize(),
+        beforeSend: function(){
+          dialog_handle = $("#loading").dialog({
+            modal: true,
+            width: 400,
+            resizable: false,
+            draggable: false,
+            title: "",
+            position: "center",
+            show:"",
+            hide:"",
+            autoOpen: false,
+            open: function() {
+              var content = $(".ui-dialog-content");
+              dialog_timer = setInterval(function() {
+                content.html(content.html()+". ");
+              }, 2000);
+            },
+            close: function() {
+              clearInterval(dialog_timer);
+            }
+          });
+
+          var action = $(obj).find("input[name='action']").val();
+          var loading_message;
+          if (action == "add-corpus") {
+            var name = $(obj).find("input[name='path']").val();
+            loading_message = "Please be patient, this may take a while.\n<br></br>Adding Corpus from "+name;
+          } else {
+            loading_message = "Configuring, please wait"; }
+          dialog_handle.dialog('open').html(loading_message+"\n<br></br>");
+        },
         success: function(response) {
-          $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
+          //alert("SUCCESS");
+          $("#loading").dialog('close'); 
+          $("#loading").dialog('destroy');
+          $("#message").html("<p><br></br><b>"+response.message+"</b><br></br></p>");
         }
       });
       return false;
@@ -129,5 +164,4 @@ $(document).ready(function() {
 <li>TODO: Think of Worker processes and DB overviews</li>
 
 </div>
-
 </div>

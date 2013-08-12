@@ -160,11 +160,13 @@
         display: inline-block;
         width:210px;
       }
+      .ui-dialog-titlebar { display:none; }
+      .ui-dialog-content {
+        text-align: center;}
     </style>
     <link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
     <%= javascript 'js/external/jquery.min.js' %>
     <%= javascript 'js/external/jquery-ui.min.js' %>
-   
   </head>
   
   <body id="index" class="home">
@@ -186,5 +188,6 @@
       <p style="float:right; text-align:right;">logged in as <b><%= $name %></b><br/> <a href="/logout">Logout</a></p>
       <% } %>
     </div>
+    <div id="loading"></div>
   </body>
 </html>

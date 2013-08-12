@@ -78,8 +78,8 @@ push @{app->static->paths},   catdir($FILE_BASE, 'public');
 $ENV{MOJO_HOME} = $FILE_BASE;
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 10485760; # 10 MB file upload limit
 $ENV{MOJO_REQUEST_TIMEOUT} = 60;# 1 minute;
-$ENV{MOJO_CONNECT_TIMEOUT} = 6; # 0.1 minute
-$ENV{MOJO_INACTIVITY_TIMEOUT} = 60; # 1 minute;  
+$ENV{MOJO_CONNECT_TIMEOUT} = 60; # 1 minute
+$ENV{MOJO_INACTIVITY_TIMEOUT} = 60; # 1 minutes;  
 
 # Make signed cookies secure
 app->secret('TiX TeX');
@@ -325,6 +325,8 @@ helper register_workers => sub {
 
 helper add_corpus => sub {
   my ($self) = @_;
+  # Increase inactivity timeout for connection a bit
+  Mojo::IOLoop->stream($self->tx->connection)->timeout(3600); # 1 hour for import
   # Import a new corpus from the $path
   my $path = $self->param('path');
   my $overwrite = $self->param('overwrite');
@@ -347,7 +349,6 @@ helper add_corpus => sub {
     %$dbfile);
   db_file_disconnect($dbfile);
   while ($importer->process_next) {}
-
   my $message="Successfully Imported $path";
   $message .= ", capped at $upper_bound entries" if ($upper_bound && ($upper_bound>0));
   $self->render(json => {message => $message});

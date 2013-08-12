@@ -58,4 +58,7 @@ II.1. Tomcat memory
     JAVA_OPTS="$JAVA_OPTS -Xms3072m -Xmx3072m -XX:NewSize=512m -XX:MaxNewSize=512m
      -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+DisableExplicitGC"
 
-  
+III. Deploying a Frontend
+
+NOTE: If you're using morbo for development, disable the watch mechanism as the SQLite database will keep changing. Run with:
+morbo -w /dev/null cortex-frontend
