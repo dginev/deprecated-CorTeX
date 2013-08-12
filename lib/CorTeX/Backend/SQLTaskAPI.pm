@@ -437,11 +437,9 @@ sub corpus_report {
   my %report=();
   my ($serviceid,$count,$status);
   $sth->bind_columns(\($serviceid,$count,$status));
-  my $alive = 0; 
   while ($sth->fetch) {
     # Representing an HTML table row:
-    $report{$serviceid}{status_decode($status)} += $count;
-    $alive = 1 if (!($alive || ($status == -5) || ($status > 0))); }
+    $report{$serviceid}{status_decode($status)} += $count; }
   # Decode the keys
   my $readable_report = {};
   foreach my $id(keys %report) {
@@ -449,7 +447,7 @@ sub corpus_report {
     my $service_report = $report{$id};
     $readable_report->{$service} = $service_report; }
 
-  return ($readable_report,$alive); }
+  return $readable_report; }
 
 sub service_report {
   my ($db,$service_name)=@_;
@@ -463,11 +461,9 @@ sub service_report {
   my %report=();
   my ($corpusid,$count,$status);
   $sth->bind_columns(\($corpusid,$count,$status));
-  my $alive = 0; 
   while ($sth->fetch) {
     # Representing an HTML table row:
-    $report{$corpusid}{status_decode($status)} += $count;
-    $alive = 1 if (!($alive || $status)); }
+    $report{$corpusid}{status_decode($status)} += $count; }
   # Decode the keys
   my $readable_report = {};
   foreach my $id(keys %report) {
@@ -475,7 +471,7 @@ sub service_report {
     my $corpus_report = $report{$id};
     $readable_report->{$corpus} = $corpus_report; }
 
-  return ($readable_report,$alive); }
+  return ($readable_report); }
 
 sub classic_report { # Report in detail on a <corpus,service> pair 
   my ($db,$corpus_name,$service_name) = @_;

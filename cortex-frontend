@@ -414,12 +414,12 @@ helper service_report => sub {
   my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
-  my ($service_db_report,$alive) = $backend->taskdb->service_report($service_name);
+  my $service_db_report = $backend->taskdb->service_report($service_name);
   my @rows;
   foreach my $corpus(keys %$service_db_report) {
     my $countstable = $service_db_report->{$corpus};
     my $total_count = $backend->taskdb->count_entries(corpus=>$corpus,select=>'all');
-    my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal queued blocked/;
+    my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal processing queued blocked/;
     my $corpus_link = "<a class='quietlink' href='/report?service=$service_name&corpus=$corpus'>$corpus</a>";
     my $row_content = '<td>'.join("</td><td>",($corpus_link,@counts)).'</td>';
     push @rows, $row_content; 
@@ -427,12 +427,13 @@ helper service_report => sub {
   my $report_message;
   $report_message = '<table class="summary-table overview-table"><thead>
   <th>Corpus</th>
-  <th colspan="6" style="text-align:center">%</th>
+  <th colspan="7" style="text-align:center">%</th>
   </thead><tbody><tr><td></td>
   <td>OK</td>
   <td>Warnings</td>
   <td>Errors</td>
   <td>Fatal</td>
+  <td>Processing</td>
   <td>Queued</td>
   <td>Blocked</td></tr>';
   $report_message .= '<tr class="hover-row ">'
@@ -440,7 +441,7 @@ helper service_report => sub {
     . '</tr>';
   $report_message .="</tbody></table>";
   $report_message .="<br></br>";
-  $self->render(json => {alive=>$alive,report=>$report_message});
+  $self->render(json => {report=>$report_message});
 };
 
 helper corpus_report => sub {
@@ -451,12 +452,12 @@ helper corpus_report => sub {
   my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
-  my ($corpus_db_report,$alive) = $backend->taskdb->corpus_report($corpus_name);
+  my ($corpus_db_report) = $backend->taskdb->corpus_report($corpus_name);
   my $total_count = $backend->taskdb->count_entries(corpus=>$corpus_name,select=>'all');
   my @rows;
   foreach my $service(keys %$corpus_db_report) {
     my $countstable = $corpus_db_report->{$service};
-    my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal queued blocked/;
+    my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal processing queued blocked/;
     my $service_link = "<a class='quietlink' href='/report?service=$service&corpus=$corpus_name'>$service</a>";
     my $row_content = '<td>'.join("</td><td>",($service_link,@counts)).'</td>';
     push @rows, $row_content; 
@@ -464,12 +465,13 @@ helper corpus_report => sub {
   my $report_message;
   $report_message = '<table class="summary-table overview-table"><thead>
   <th>Service</th>
-  <th colspan="6" style="text-align:center">%</th>
+  <th colspan="7" style="text-align:center">%</th>
   </thead><tbody><tr><td></td>
   <td>OK</td>
   <td>Warnings</td>
   <td>Errors</td>
   <td>Fatal</td>
+  <td>Processing</td>
   <td>Queued</td>
   <td>Blocked</td></tr>';
   $report_message .= '<tr class="hover-row ">'
@@ -478,7 +480,7 @@ helper corpus_report => sub {
   $report_message .="</tbody></table>";
   $report_message .="<br></br>";
 
-  $self->render(json => {alive=>$alive,report=>$report_message});
+  $self->render(json => {report=>$report_message});
 };
 
 helper classic_report => sub {

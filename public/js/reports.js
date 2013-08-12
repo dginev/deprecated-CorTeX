@@ -15,13 +15,6 @@ function fetch_report(type,name) {
       $('body').css('cursor', 'auto');
       $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
       $("#"+report_type).html(response.report);
-      if (response.alive > 0) {
-       $("body").removeClass("no-background");
-       $("body").addClass("cogs-background");
-      } else {
-       $("body").removeClass("cogs-background");
-       $("body").addClass("no-background");
-      }
       clearInterval(countdown);
       //clearTimeout(alarm_t);
       //alarm_t = setTimeout(function() { fetch_corpus_report(name); }, interval);

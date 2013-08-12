@@ -103,6 +103,8 @@ sub process_next {
   }
   my $added = $self->backend->docdb->already_added($directory,$self->{walker}->get_root);
   if (! $added) {
+    #IMPORTANT TODO: Speed this up, make batch inserts once every 200 or so jobs, not this insert-per-job processing
+    
     # 2. Import into eXist
     my $collection = $self->backend->docdb->insert_directory($directory,$self->{walker}->get_root);
     # OLD3. Mark priority as 1 in Sesame:

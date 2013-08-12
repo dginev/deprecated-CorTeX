@@ -1,31 +1,32 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Corpus Reports';
-<h3>Corpus Statistics: 
-<% if (@$current_corpora > 0) { %>
-    <%= select_field 'corpus-name' => ["",@$current_corpora], id=>"corpus-name-select" %>
-    </td></tr>
-  <% } else { %>
-    None registered
-  <% } %>
-</h3>
 <%= javascript 'js/reports.js' %>
 <%= javascript begin %>
-//var alarm_t;
 var countdown;
 var interval = 60000;   //number of mili seconds between each call
-var component = "general";
- $(document).ready(function() {
+$(document).ready(function() {
+  // Check if already a name has been requested:
+  var corpus_name = getURLParameter("name");
+  if (corpus_name != "null") {
+    $("option[value='"+corpus_name+"']").prop('selected', 'selected');
+    fetch_corpus_report(corpus_name);
+  }
 
-
-  // New code:
   $("#corpus-name-select").change(function() {
     var option = $(this).find("option:selected");
     var corpus_name = option.val();
-    fetch_corpus_report(corpus_name);
+    window.location.href = "/corpus-report?name="+corpus_name;
   });
 });
 <% end %>
 
+<h3>Corpus Statistics: 
+<% if (@$current_corpora > 0) { %>
+    <%= select_field 'corpus-name' => ["",@$current_corpora], id=>"corpus-name-select" %>
+  <% } else { %>
+    None registered
+  <% } %>
+</h3>
 
 <div id="corpus-report"></div>
 <div id="countdown"></div>

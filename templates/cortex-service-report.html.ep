@@ -1,29 +1,32 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Service Reports';
-<h3>Service Statistics: 
-<% if (@$current_services > 0) { %>
-    <%= select_field 'service-name' => ["",@$current_services], id=>"service-name-select" %>
-    </td></tr>
-  <% } else { %>
-    None registered
-  <% } %>
-</h3>
 <%= javascript 'js/reports.js' %>
 <%= javascript begin %>
-//var alarm_t;
 var countdown;
 var interval = 60000;   //number of mili seconds between each call
-var component = "general";
  $(document).ready(function() {
-  // New code:
+  // Check if already a name has been requested:
+  var service_name = getURLParameter("name");
+  if (service_name != "null") {
+    $("option[value='"+service_name+"']").prop('selected', 'selected');
+    fetch_service_report(service_name);
+  }
+
   $("#service-name-select").change(function() {
     var option = $(this).find("option:selected");
     var service_name = option.val();
-    fetch_service_report(service_name);
+    window.location.href = "/service-report?name="+service_name;
   });
 });
 <% end %>
 
+<h3>Service Statistics: 
+<% if (@$current_services > 0) { %>
+    <%= select_field 'service-name' => ["",@$current_services], id=>"service-name-select" %>
+  <% } else { %>
+    None registered
+  <% } %>
+</h3>
 
 <div id="service-report"></div>
 <div id="countdown"></div>
