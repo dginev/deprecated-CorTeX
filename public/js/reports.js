@@ -15,7 +15,7 @@ function fetch_report(type,name) {
       $('body').css('cursor', 'auto');
       $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
       $("#"+report_type).html(response.report);
-      if (response.alive) {
+      if (response.alive > 0) {
        $("body").removeClass("no-background");
        $("body").addClass("cogs-background");
       } else {
@@ -58,7 +58,7 @@ function fetch_classic_report(corpus_name,service_name,component,countby) {
       success: function(response) {
           $('body').css('cursor', 'auto');
           $("#report").html(response.report);
-          if (response.alive) {
+          if (response.alive > 0) {
            $("body").removeClass("no-background");
            $("body").addClass("cogs-background");
           } else {

@@ -106,7 +106,9 @@
       {
         background-color:white;
         background-image:url('img/gear000_02db.gif');
-        background-position:right;
+        background-size: 220px 180px;
+        background-position:right top;
+        background-attachment:fixed;
         background-repeat:no-repeat;
       } 
       .no-background {

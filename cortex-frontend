@@ -47,8 +47,8 @@ $SIG{'KILL'} = \&stop_cron; # Just good-old KILL handler
 my $dbhandle = db_file_connect;
 my $saved_pid = $dbhandle->{gears_workhorse_pid};
 db_file_disconnect($dbhandle);
-my $alive = ($saved_pid && (kill 0, $saved_pid));
-if (!$alive) { # Non booted, start a new one:
+my $gears_alive = ($saved_pid && (kill 0, $saved_pid));
+if (!$gears_alive) { # Non booted, start a new one:
   $gears_workhorse_pid = fork();
   if ($gears_workhorse_pid == 0) {
     exec($cortexgears);
@@ -439,7 +439,6 @@ helper service_report => sub {
     . '</tr>';
   $report_message .="</tbody></table>";
   $report_message .="<br></br>";
-
   $self->render(json => {alive=>$alive,report=>$report_message});
 };
 
@@ -499,7 +498,6 @@ helper classic_report => sub {
   $entries_report->{completed} = $completed_count;
   foreach (qw/ok warning error fatal queued blocked processing/) {
     $entries_report->{$_} //= '0'; }
-  my ($db_report,$alive) = $backend->taskdb->classic_report($corpus_name,$service_name);
   # 2. Prepare report:
   # 2.1 General report:
   my $component = [ split(/:/, $self->param('component')) ];
@@ -510,84 +508,86 @@ helper classic_report => sub {
   my $category = $component->[2];
   my $what = $component->[3];
   my $report_message=q{};
+  my $alive = 0;
   if ($component->[0] eq 'general') {
-  my $General_Report = [];
-  push @$General_Report, ["Corpus", "<b>".$corpus_name."</b>"];
-  push @$General_Report, ["Service", "<b>".$service_name."</b>"];
-  push @$General_Report, [ "State", $alive ? ('<span class="ok">running</span>') :
-                                     ('<span class="fatal">stopped</span>') ];
-  push @$General_Report, [ "Total entries", $entries_report->{all} ];
-  push @$General_Report, [ "Queued", $entries_report->{queued} ];
-  push @$General_Report, [ "In progress...", $entries_report->{processing} ];
-  push @$General_Report, [ "Pending dependencies", $entries_report->{blocked} ];
-  #  push @$General_Report, [ "Concurrent jobs", $job_count ];
-  $report_message = '<table class="summary-table"><thead><th>General</th><th>Status</th></thead><tbody><tr class="hover-row ">';
-  $report_message .= join ("</tr><tr class='hover-row'>", map {"<td>".join("</td><td>", @$_)."</td>"} @$General_Report );
-  $report_message .="</tr></tbody></table>";
-  # 2.2 Results report:
-  my $detailed_report;
-  my $all_details=0;
-  if ($countby eq 'message') {
-    $detailed_report = $backend->taskdb->count_messages(corpus=>$corpus_name,service=>$service_name);
-    foreach (keys %$detailed_report) {
-      $all_details += $detailed_report->{$_}; }
-    $detailed_report->{all} = $all_details;
-    foreach (qw/ok warning error fatal queued blocked processing/) {
-      $detailed_report->{$_} //= '0'; }}
-  else {
-    $all_details = $all_count;
-    $detailed_report = $entries_report; }
-  my $Results_Report = {};
-  if ($completed_count && $all_details) {
-    $Results_Report->{ok}->{count} = $detailed_report->{ok};
-    $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$detailed_report->{ok}.'</span>',
-      '<span class="ok severity">'.sprintf("%.2f",(100*$detailed_report->{ok} / $all_details)).'</span>'];
-    $Results_Report->{warning}->{count} = $detailed_report->{warning};
-    $Results_Report->{warning}->{main} = ['<span class="warning severity">Warning</span>','<span class="warning severity">'.$detailed_report->{warning}.'</span>',
-      '<span class="warning severity">'.sprintf("%.2f",(100*$detailed_report->{warning} / $all_details)).'</span>'];
-    $Results_Report->{error}->{count} = $detailed_report->{error};
-    $Results_Report->{error}->{main} = ['<span class="error severity">Error</span>','<span class="error severity">'.$detailed_report->{error}.'</span>',
-      '<span class="error severity">'.sprintf("%.2f",(100*$detailed_report->{error} / $all_details)).'</span>'];
-    $Results_Report->{fatal}->{count} = $detailed_report->{fatal};
-    $Results_Report->{fatal}->{main} = ['<span class="fatal severity">Fatal</span>','<span class="fatal severity">'. $detailed_report->{fatal}.'</span>',
-      '<span class="fatal severity">'.sprintf("%.2f",(100*$detailed_report->{fatal} / $all_details)).'</span>'];
+    my $General_Report = [];
+    $alive = $entries_report->{queued} || $entries_report->{processing};
+    push @$General_Report, ["Corpus", "<b>".$corpus_name."</b>"];
+    push @$General_Report, ["Service", "<b>".$service_name."</b>"];
+    push @$General_Report, [ "State", $alive ? ('<span class="ok">running</span>') :
+                                       ('<span class="fatal">stopped</span>') ];
+    push @$General_Report, [ "Total entries", $entries_report->{all} ];
+    push @$General_Report, [ "Queued", $entries_report->{queued} ];
+    push @$General_Report, [ "In progress...", $entries_report->{processing} ];
+    push @$General_Report, [ "Pending dependencies", $entries_report->{blocked} ];
+    #  push @$General_Report, [ "Concurrent jobs", $job_count ];
+    $report_message = '<table class="summary-table"><thead><th>General</th><th>Status</th></thead><tbody><tr class="hover-row ">';
+    $report_message .= join ("</tr><tr class='hover-row'>", map {"<td>".join("</td><td>", @$_)."</td>"} @$General_Report );
+    $report_message .="</tr></tbody></table>";
+    # 2.2 Results report:
+    my $detailed_report;
+    my $all_details=0;
+    if ($countby eq 'message') {
+      $detailed_report = $backend->taskdb->count_messages(corpus=>$corpus_name,service=>$service_name);
+      foreach (keys %$detailed_report) {
+        $all_details += $detailed_report->{$_}; }
+      $detailed_report->{all} = $all_details;
+      foreach (qw/ok warning error fatal queued blocked processing/) {
+        $detailed_report->{$_} //= '0'; }}
+    else {
+      $all_details = $all_count;
+      $detailed_report = $entries_report; }
+    my $Results_Report = {};
+    if ($completed_count && $all_details) {
+      $Results_Report->{ok}->{count} = $detailed_report->{ok};
+      $Results_Report->{ok}->{main} = ['<span class="ok severity">No Problems</span>','<span class="ok severity">'.$detailed_report->{ok}.'</span>',
+        '<span class="ok severity">'.sprintf("%.2f",(100*$detailed_report->{ok} / $all_details)).'</span>'];
+      $Results_Report->{warning}->{count} = $detailed_report->{warning};
+      $Results_Report->{warning}->{main} = ['<span class="warning severity">Warning</span>','<span class="warning severity">'.$detailed_report->{warning}.'</span>',
+        '<span class="warning severity">'.sprintf("%.2f",(100*$detailed_report->{warning} / $all_details)).'</span>'];
+      $Results_Report->{error}->{count} = $detailed_report->{error};
+      $Results_Report->{error}->{main} = ['<span class="error severity">Error</span>','<span class="error severity">'.$detailed_report->{error}.'</span>',
+        '<span class="error severity">'.sprintf("%.2f",(100*$detailed_report->{error} / $all_details)).'</span>'];
+      $Results_Report->{fatal}->{count} = $detailed_report->{fatal};
+      $Results_Report->{fatal}->{main} = ['<span class="fatal severity">Fatal</span>','<span class="fatal severity">'. $detailed_report->{fatal}.'</span>',
+        '<span class="fatal severity">'.sprintf("%.2f",(100*$detailed_report->{fatal} / $all_details)).'</span>'];
 
-    if ($severity) {
-      my $categories = $backend->taskdb->get_result_summary(
-        corpus=>$corpus_name,
-        service=>$service_name,
-        countby=>$countby,
-        severity=>$severity);
-      $categories = { map {encode_entities($_)=>$categories->{$_}} (keys %$categories) };
-      foreach (keys %$categories) {
-        $Results_Report->{$severity}->{inner}->{$_}->{count} = $categories->{$_};
-        $Results_Report->{$severity}->{inner}->{$_}->{main} =  ['<span class="'.$_.' category">'.$_.'</span>','<span class="'.$_.' category">'.$categories->{$_}.'</span>',
-        '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $all_details)).'</span>'];
-      }
-      if ($category) {
-        my $whats = $backend->taskdb->get_result_summary(
+      if ($severity) {
+        my $categories = $backend->taskdb->get_result_summary(
           corpus=>$corpus_name,
           service=>$service_name,
           countby=>$countby,
-          severity=>$severity,
-          category=>$category);
-        $whats = { map {encode_entities($_)=>$whats->{$_}} (keys %$whats) };
-        foreach (keys %$whats) {
-          $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{count} = $whats->{$_};
-          $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{main} =  ['<span class="'.$_.' what">'.$_.'</span>','<span class="'.$_.' what">'.$whats->{$_}.'</span>',
-          '<span class="'.$_.' what">'.sprintf("%.2f",(100*$whats->{$_} / $all_details)).'</span>'];
+          severity=>$severity);
+        $categories = { map {encode_entities($_)=>$categories->{$_}} (keys %$categories) };
+        foreach (keys %$categories) {
+          $Results_Report->{$severity}->{inner}->{$_}->{count} = $categories->{$_};
+          $Results_Report->{$severity}->{inner}->{$_}->{main} =  ['<span class="'.$_.' category">'.$_.'</span>','<span class="'.$_.' category">'.$categories->{$_}.'</span>',
+          '<span class="'.$_.' category">'.sprintf("%.2f",(100*$categories->{$_} / $all_details)).'</span>'];
+        }
+        if ($category) {
+          my $whats = $backend->taskdb->get_result_summary(
+            corpus=>$corpus_name,
+            service=>$service_name,
+            countby=>$countby,
+            severity=>$severity,
+            category=>$category);
+          $whats = { map {encode_entities($_)=>$whats->{$_}} (keys %$whats) };
+          foreach (keys %$whats) {
+            $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{count} = $whats->{$_};
+            $Results_Report->{$severity}->{inner}->{$category}->{inner}->{$_}->{main} =  ['<span class="'.$_.' what">'.$_.'</span>','<span class="'.$_.' what">'.$whats->{$_}.'</span>',
+            '<span class="'.$_.' what">'.sprintf("%.2f",(100*$whats->{$_} / $all_details)).'</span>'];
+          }
         }
       }
     }
-  }
-  $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>'.
-  (($countby eq 'document') ? 
-  '<select name="countby" class="selectcountby"><option selected="selected" value="document">Documents</option><option value="message">Messages</option></select>' :
-  '<select name="countby" class="selectcountby"><option value="document">Documents</option><option selected="selected" value="message">Messages</option></select>' )
-  .'</th><th>%</th></thead><tbody>';
-  $report_message .= $self->inner_report_message($Results_Report);
-  $report_message .="</tbody></table>";
-  $report_message .="<br></br>";
+    $report_message .= '<table class="summary-table stats-table"><thead><th>Results</th><th>'.
+    (($countby eq 'document') ? 
+    '<select name="countby" class="selectcountby"><option selected="selected" value="document">Documents</option><option value="message">Messages</option></select>' :
+    '<select name="countby" class="selectcountby"><option value="document">Documents</option><option selected="selected" value="message">Messages</option></select>' )
+    .'</th><th>%</th></thead><tbody>';
+    $report_message .= $self->inner_report_message($Results_Report);
+    $report_message .="</tbody></table>";
+    $report_message .="<br></br>";
   }
   $self->render(json => {alive=>$alive,report=>$report_message});
 };
