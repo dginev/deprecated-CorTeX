@@ -62,14 +62,21 @@ while (1) {
     sleep 60; next; }
   my $next_iteration = AnyEvent->condvar;
   foreach my $task(@$tasks) {
-    # Obtain the actual workload:
-    $task->{workload} = $docdb->fetch_entry(entry=>$task->{entry});
-    # TODO: Obtain prerequisite annotations/resources
-    # Dispatch to Gearman
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
     my $service = $task->{iid};
     $task->{formats} = $taskdb->serviceiid_to_formats($service);
+    # Obtain the actual workload:
+    my $inputconverter = $task->{formats}->[2];
+    $inputconverter = $taskdb->serviceid_to_iid(
+                      $taskdb->service_to_id($inputconverter))
+      if $inputconverter;
+    $task->{workload} = $docdb->fetch_entry(
+      entry=>$task->{entry},
+      inputformat=>$task->{formats}->[0],
+      inputconverter=>$inputconverter);
+    # TODO: Obtain prerequisite annotations/resources
+    # Dispatch to Gearman
     $client->add_task(
       $service => encode_json($task),
       on_complete => sub {

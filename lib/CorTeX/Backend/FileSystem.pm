@@ -80,11 +80,16 @@ sub fetch_entry {
   my ($self,%options) = @_;
   my $entry = $options{entry};
   $entry =~ /\/([^\/]+)$/;
-  my $name = "/$1.tex";
-  $entry .= $name;
+  my $name = $1;
+  my $converter = $options{inputconverter};
+  my $inputformat = $options{inputformat};
+  $converter = '' if ($converter =~ /^import_v/);
+  $converter .= '/' if $converter;
+  my $path = "$entry/$converter$name.$inputformat";
+  print STDERR "Slurping $path\n\n";
   # Slurp the file and return:  
-  if (-f $entry ) {
-    my $text = read_file( $entry ) ;
+  if (-f $path ) {
+    my $text = read_file( $path ) ;
     return $text; }
   else { return ; } }
 

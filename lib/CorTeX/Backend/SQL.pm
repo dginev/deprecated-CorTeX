@@ -183,6 +183,7 @@ sub reset_db {
       type integer NOT NULL
     );");
     $self->do("create index servicenameidx on services(name);"); 
+    $self->do("create index serviceiididx on services(iid);");
     $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat) values("import",0.1,"import_v0_1",2,"tex","tex")');
 
   # Dependency Tables
@@ -254,6 +255,7 @@ sub reset_db {
       UNIQUE(iid,name)
     );");
     $self->do("create index servicenameidx on services(name);");
+    $self->do("create index serviceiididx on services(iid);");
     $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat)
                values("import",0.1,"import_v0_1",2,"tex","tex")');
     # Dependency Tables

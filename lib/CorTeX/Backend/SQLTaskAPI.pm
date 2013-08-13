@@ -23,7 +23,8 @@ use CorTeX::Util::Data qw(parse_log);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service serviceiid_to_formats
+  service_to_id serviceid_to_iid serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
+  serviceiid_to_formats serviceiid_to_id serviceid_enables
   count_entries count_messages
   current_corpora current_services current_inputformats current_outputformats
   service_report classic_report get_custom_entries
@@ -33,8 +34,8 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
 
-our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats);
-our (%IIDs);
+our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats,%ServiceIDEnables);
+our (%IIDs,%IID_to_ID);
 sub corpus_to_id {
   my ($db, $corpus) = @_;
   my $corpusid = $CorpusIDs{$corpus};
@@ -62,6 +63,21 @@ sub serviceiid_to_formats {
     $service_formats = [ $sth->fetchrow_array() ];
     $ServiceFormats{$serviceiid} = $service_formats; }
   return $service_formats; }
+sub serviceid_enables {
+  my ($db,$serviceid) = @_;
+  my $enabled_services = $ServiceIDEnables{$serviceid};
+  if (! defined $enabled_services) {
+    $enabled_services = [];
+    my $sth = $db->prepare("SELECT master from dependencies where foundation=?");
+    $sth->execute($serviceid);
+    my $master_service;
+    $sth->bind_columns(\$master_service);
+    while ($sth->fetch) {
+      push @$enabled_services, $master_service;
+    }
+    $ServiceIDEnables{$serviceid} = $enabled_services;
+  }
+  return @$enabled_services; }
 sub id_to_corpus {
   my ($db, $corpusid) = @_;
   my $corpus = $IDCorpora{$corpusid};
@@ -88,6 +104,15 @@ sub serviceid_to_iid {
     ($iid) = $sth->fetchrow_array();
     $IIDs{$serviceid} = $iid; }
   return $iid; }
+sub serviceiid_to_id {
+  my ($db, $serviceiid) = @_;
+  my $id = $IID_to_ID{$serviceiid};
+  if (! defined $id) {
+    my $sth=$db->prepare("SELECT serviceid from services where iid=?");
+    $sth->execute($serviceiid);
+    ($id) = $sth->fetchrow_array();
+    $IID_to_ID{$serviceiid} = $id; }
+  return $id; }
 
 sub delete_corpus {
   my ($db,$corpus) = @_;
@@ -183,7 +208,6 @@ sub update_service {
     return (0,"Failed: Missing $key!") unless $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
-
   my $old_service = $db->service_description($service{oldname});
   my $major_change = 0;
   if (($old_service->{name} ne $service{name}) || 
@@ -205,14 +229,16 @@ sub update_service {
   $ServiceIDs{$service{name}} = $serviceid;
   $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
   # TODO: Update Dependencies
-  $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
+  my $clean_dependencies = $db->prepare("DELETE FROM dependencies where master=?");
+  my $insert_dependencies = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
   my @dependencies = ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
+  $ clean_dependencies->execute($serviceid);
   foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
     $dependency_weight++;
     my $foundation_id = $db->service_to_id($foundation);
-    $sth->execute($serviceid,$foundation_id); }
+    $insert_dependencies->execute($serviceid,$foundation_id); }
   my $status = -5 - $dependency_weight;
 
   # Update URL
@@ -742,12 +768,19 @@ sub complete_tasks {
   my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
   my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
   my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");
-  # TODO: Decrease the requirements on any blocked jobs by this service, for this entry.
-
+  # Decrease the requirements on any blocked jobs by this service, for this entry.
+  my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
   # Insert in TaskDB
   $db->do('BEGIN TRANSACTION');
   foreach my $result(@$results) {
+    my $entry = $result->{entry};
     my $taskid = $result->{taskid};
+    my $iid = $result->{service};
+    my $serviceid = $db->serviceiid_to_id($iid);
+    my @enables = $db->serviceid_enables($serviceid);
+    foreach my $enabled_service(@enables) {
+      $enable_tasks->execute($entry,$enabled_service);
+    }
     $delete_messages->execute($taskid);
     $mark_complete->execute($result->{status},$taskid);
     foreach my $message (@{$result->{messages}||[]}) {
