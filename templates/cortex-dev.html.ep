@@ -45,7 +45,17 @@ $(document).ready(function() {
 	  });
   });
 
-  $("#service-name-select").change(function() {
+  $("#converter-name-select").change(function() {
+    var option = $(this).find("option:selected");
+    var service_name = option.val();
+    fetch_service_description(service_name);
+  });
+  $("#analyzer-name-select").change(function() {
+    var option = $(this).find("option:selected");
+    var service_name = option.val();
+    fetch_service_description(service_name);
+  });
+  $("#aggregator-name-select").change(function() {
     var option = $(this).find("option:selected");
     var service_name = option.val();
     fetch_service_description(service_name);
@@ -137,25 +147,7 @@ $(document).ready(function() {
       <tr><td class="required">Version</td>
         <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>40,id=>'service-version') %></td></tr>
       <tr><td><td class="input">(internal ID: <span id="service-id-label">foo</span>)<%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
-      <% if (@$current_services) { %>
-        <tr><td>Depends on</td><td class="input">
-        <% foreach my $service(@$current_services) { %>
-          <% if ($service eq 'import') { %>
-            <%= hidden_field "requires[]" => "import" %>
-            <%= check_box 'requires[]' => 'import', checked=>1, disabled=>1 %><span>import&nbsp;&nbsp;</span>
-          <% } else { %>  
-            <%= check_box 'requires[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
-        <% }} %>
-        </td></tr>
-      <% } %>
-      <% if (@$current_corpora) { %>
-        <tr><td>Corpora</td><td class="input">
-        <% for my $corpus(@$current_corpora) { %>
-            <%= check_box 'corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
-        <% } %>
-      </td></tr>
-      <% } %>
-      </td></tr>
+
       <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>40) %></td></tr>
       <tr><td class="required">Type</td>
         <td class="input"><%= select_field 'service-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'service-type' %></td>
@@ -186,6 +178,32 @@ $(document).ready(function() {
         </td>
       </tr>
 
+      <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td colspan="2"><b><u>Dependencies</u></b></td></tr>
+      <tr><td class="required">Conversion</td><td class="input">
+        <%= select_field 'requires-converter' => [@{$current_services->{2}}], id=>"requires-converter" %></td></tr>
+      <tr><td>Analyses<td class="input">
+        <% foreach my $service(@{$current_services->{1}}) { %>
+          <%= check_box 'requires-analyses[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
+        <% } %>
+        </td></tr>
+      <tr><td>Resources<td class="input">
+        <% foreach my $service(@{$current_services->{3}}) { %>
+          <%= check_box 'requires-aggregation[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
+        <% } %>
+      </td></tr>
+
+      <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+      <tr><td colspan="2"><b><u>Enable on</u></b></td></tr>
+      <% if (@$current_corpora) { %>
+        <tr><td>Corpora</td><td class="input">
+        <% for my $corpus(@$current_corpora) { %>
+            <%= check_box 'corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
+        <% } %>
+      </td></tr>
+      <% } %>
+      </td></tr>
+
       <tr><td></td><td><%= submit_button 'Add Service' %></td></tr>
     </table>
     <%= hidden_field action => 'add-service' %>
@@ -194,37 +212,27 @@ $(document).ready(function() {
 
   <h3><a href="#">Update Service</a></h3>
   <div class="itemcontent"><%= form_for '' => begin %>
-  <% if (@$current_services > 0) { %>
-      <%= select_field 'service-name' => ["",@$current_services], id=>"service-name-select" %>
-  <% } else { %>
-    None registered
-  <% } %>
+  <%
+    my @current_converters = @{$current_services->{2}};
+    if (@current_converters) { unshift @current_converters, "Converters"; }
+    else { @current_converters = ("No Converters Registered"); }
+    my @current_analyzers = @{$current_services->{1}};
+    if (@current_analyzers) { unshift @current_analyzers, "Analyzers"; }
+    else { @current_analyzers = ("No Analyzers Registered"); }
+    my @current_aggregators = @{$current_services->{3}};
+    if (@current_aggregators) { unshift @current_aggregators, "Aggregators"; }
+    else { @current_aggregators = ("No Aggregators Registered"); }
+  %>
+  <%= select_field 'converter-name' => [grep {$_ ne 'import'} @current_converters], id=>"converter-name-select" %>
+  <%= select_field 'analyzer-name' => [@current_analyzers], id=>"analyzer-name-select" %>
+  <%= select_field 'aggregator-name' => [@current_aggregators], id=>"aggregator-name-select" %>
   <table class="form-table" style="display:none;" id="update-description">
     <tr><td class="required">Name</td>
       <td class="input"><%= text_field 'update-name' => (value=>'Example Service',size=>40,id=>'update-name') %></td></tr>
     <tr><td class="required">Version</td>
       <td class="input"><%= text_field 'update-version' => (value=>'0.1',size=>40,id=>'update-version') %></td></tr>
     <tr><td><td class="input">(internal ID: <span id="update-id-label">foo</span>)<%= hidden_field "update-id" => "foo", id=>"update-id" %></td></tr>
-    <% if (@$current_services) { %>
-      <tr><td>Depends on</td><td class="input">
-      <% foreach my $service(@$current_services) { %>
-        <% if ($service eq 'import') { %>
-          <%= hidden_field "update-requires[]" => "import" %>
-          <%= check_box 'update-requires[]' => 'import', checked=>1, disabled=>1 %>
-          <span>import&nbsp;&nbsp;</span>          
-        <% } else { %>  
-          <%= check_box 'update-requires[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
-      <% }} %>
-      </td></tr>
-    <% } %>
-    <% if (@$current_corpora) { %>
-      <tr><td>Corpora</td><td class="input">
-      <% for my $corpus(@$current_corpora) { %>
-          <%= check_box 'update-corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
-      <% } %>
-    </td></tr>
-    <% } %>
-    </td></tr>
+
     <tr><td>URL</td><td class="input"><%= text_field 'update-url' => (value=>'',size=>40,id=>'update-url') %></td></tr>
     <tr><td class="required">Type</td>
       <td class="input"><%= select_field 'update-type' => [['Select type'=>''],['Analysis'=>1],['Conversion'=>2],['Aggregation'=>3]], id=>'update-type' %></td></tr>
@@ -254,6 +262,33 @@ $(document).ready(function() {
           id=>"update-newresource") %>
       </td>
     </tr>
+    
+    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td colspan="2"><b><u>Dependencies</u></b></td></tr>
+    <tr><td class="required">Conversion</td><td class="input">
+      <%= select_field 'update-requires-converter' => [@{$current_services->{2}}], 
+      id=>"update-requires-converter" %></td></tr>
+    <tr><td>Analyses<td class="input">
+      <% foreach my $service(@{$current_services->{1}}) { %>
+        <%= check_box 'update-requires-analyses[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
+      <% } %>
+      </td></tr>
+    <tr><td>Resources<td class="input">
+      <% foreach my $service(@{$current_services->{3}}) { %>
+        <%= check_box 'update-requires-aggregation[]' => $service %><span><%= $service %>&nbsp;&nbsp;</span>
+      <% } %>
+      </td></tr>
+
+    <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td colspan="2"><b><u>Enable on</u></b></td></tr>
+    <% if (@$current_corpora) { %>
+      <tr><td>Corpora</td><td class="input">
+      <% for my $corpus(@$current_corpora) { %>
+          <%= check_box 'update-corpora[]' => $corpus %><span><%= $corpus %>&nbsp;&nbsp;</span>
+      <% } %>
+      </td></tr>
+    <% } %>
+    </td></tr>
 
     <tr><td></td><td><%= submit_button 'Update Service' %></td></tr>
 

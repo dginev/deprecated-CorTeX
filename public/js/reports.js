@@ -238,7 +238,8 @@ function getURLParameter(name) {
 function fetch_description(type,name) {
   // delete any traces of previous reports
   var description_type = type+"-description";
-  if (!name) { // No name, no functionality
+  if ((!name) || name == "Analyzers" || name == "Converters" || name == "Aggregators")
+  { // No name, no functionality
     $("#update-description").css('display', 'none');
    return;}
   $('body').css('cursor', 'progress');
@@ -265,10 +266,14 @@ function fetch_description(type,name) {
       $('#update-outputformat').val(response.outputformat);
       $('#update-resource').val(response.resource);
       $("#update-type option").filter(function() {
-        //may want to use $.trim in here
         return $(this).val() == response.type; 
       }).prop('selected', true);
       $("#update-type").change();
+      $("#update-requires-converter option").filter(function() {
+        return $(this).text() == response.inputconverter; 
+      }).prop('selected', true);
+      $("#update-requires-converter").change();
+
       // Corpora:
       // First unmark all
       var all_corpora_checks = $('input:checkbox[name="update-corpora\\[\\]"]');

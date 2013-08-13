@@ -179,6 +179,7 @@ sub reset_db {
       outputformat varchar(20) NOT NULL,
       xpath varchar(2000),
       resource varchar(50),
+      inputconverter varchar(200),
       type integer NOT NULL
     );");
     $self->do("create index servicenameidx on services(name);"); 
@@ -248,6 +249,7 @@ sub reset_db {
       outputformat varchar(20) NOT NULL,
       xpath varchar(2000),
       resource varchar(50),
+      inputconverter varchar(200),
       type integer NOT NULL,
       UNIQUE(iid,name)
     );");

@@ -136,17 +136,20 @@ sub register_service {
   # TODO: Check the name, version and iid are unique!
   $service{inputformat} = lc($service{inputformat});
   $service{outputformat} = lc($service{outputformat});
+  $service{requires_analyses} //= [];
+  $service{requires_aggregation} //= [];
   my $sth = $db->prepare("INSERT INTO services 
-      (name,version,iid,type,xpath,url,inputformat,outputformat,resource) 
-      values(?,?,?,?,?,?,?,?,?)");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource/);
+      (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource) 
+      values(?,?,?,?,?,?,?,?,?,?)");
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputconverter inputformat outputformat resource/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
   $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
   # Register Dependencies
   $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
-  foreach my $foundation(@{$service{dependencies}}) {
+  my @dependencies = grep {defined} ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
+  foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
     $dependency_weight++;
     my $foundation_id = $db->service_to_id($foundation);
@@ -185,23 +188,27 @@ sub update_service {
   my $major_change = 0;
   if (($old_service->{name} ne $service{name}) || 
       ($old_service->{version} ne $service{version}) ||
+      ($old_service->{inputconverter} ne $service{inputconverter}) ||
       ($old_service->{inputformat} ne $service{inputformat}) ||
       ($old_service->{outputformat} ne $service{outputformat})
     ) {
     $major_change = 1; }
   # Register the Service
   # TODO: Check the name, version and iid are unique!
-  my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=? ,url=?, inputformat=?, outputformat=?, resource=?
-    WHERE iid=?");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputformat outputformat resource oldid/);
+  my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=?,
+                          url=?, inputconverter=?, inputformat=?, outputformat=?, resource=?
+                          WHERE iid=?");
+  $message = $sth->execute(map {$service{$_}} 
+    qw/name version id type xpath url inputconverter inputformat outputformat resource oldid/);
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;
   $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
   # TODO: Update Dependencies
-  #$sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
+  $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
-  foreach my $foundation(@{$service{dependencies}}) {
+  my @dependencies = ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
+  foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
     $dependency_weight++;
     my $foundation_id = $db->service_to_id($foundation);
@@ -263,11 +270,13 @@ sub current_corpora {
 
 sub current_services {
   my ($db) = @_;
-  my $services = [];
-  my $sth = $db->prepare("select name from services");
+  my $services = {1=>[],2=>[],3=>[]};
+  my $sth = $db->prepare("select name,type from services");
   $sth->execute;
-  while (my @row = $sth->fetchrow_array()) {
-    push @$services, @row; }
+  my ($name,$type);
+  $sth->bind_columns(\($name,$type));
+  while ($sth->fetch) {
+    push @{$services->{$type}}, $name; }
   $sth->finish();
   return $services; }
 

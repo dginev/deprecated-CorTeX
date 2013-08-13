@@ -95,6 +95,11 @@
         border-style: solid;
         border: 2px solid black;
       }
+      tr.border-top
+      {
+        border-style: solid;
+        border: 2px solid black;
+      }
 
       .ui-button .ui-button-text
       {

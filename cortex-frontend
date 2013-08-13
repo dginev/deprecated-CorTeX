@@ -365,8 +365,11 @@ helper add_service => sub {
       $self->render(json=>{
         message=>"Please enter a valid $key of the service!"});
       return; }}
-  my @dependencies = $self->param('requires[]') ;
-  $service{dependencies} = \@dependencies;
+  $service{inputconverter} = $self->param("requires-converter");
+  my @requires_analyses = $self->param('requires-analyses[]');
+  $service{requires_analyses} = \@requires_analyses;
+  my @requires_aggregation = $self->param('requires-aggregation[]');
+  $service{requires_aggregation} = \@requires_aggregation;
   my @corpora = $self->param('corpora[]');
   $service{corpora} = \@corpora;
   my $backend = $self->backend;
@@ -387,8 +390,12 @@ helper update_service => sub {
       $self->render(json=>{
         message=>"Please enter a valid $key of the service!"});
       return; }}
-  my @dependencies = $self->param('update-requires[]');
-  $service{dependencies} = \@dependencies;
+  $service{inputconverter} = $self->param('update-requires-converter');
+  my @requires_analyses = $self->param('update-requires-analyses[]');
+  $service{requires_analyses} = \@requires_analyses;
+  my @requires_aggregation = $self->param('update-requires-aggregation[]');
+  $service{requires_aggregation} = \@requires_aggregation;
+
   my @corpora = $self->param('update-corpora[]');
   $service{corpora} = \@corpora;
   my $backend = $self->backend;

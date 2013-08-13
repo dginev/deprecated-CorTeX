@@ -5,16 +5,17 @@ Brace yourselves, a lot of work to come...
 For now, assuming you're running a Debian-based OS
 
 0. Debian packages
-sudo apt-get install tomcat6 \
-  gearman mod-gearman-tools \
-  libgearman-client-perl \
-  gearman-server libgearman-client-async-perl \
+sudo apt-get install gearman mod-gearman-tools \
+  gearman-server libfile-slurp-perl\
   mysql-server libdbd-mysql-perl libdbd-sqlite-perl \
   libanyevent-perl librdf-linkeddata-perl
 
-  cpan AnyEvent::Gearman Unix::Processors
+  cpanm Mojolicious AnyEvent::Gearman Unix::Processors
 
 I. Backends
+  I.0. You would need Tomcat6 installed for OWLIM and eXist.
+   (sudo apt-get install tomcat6) 
+
   I.1. OWLIM -- Triple store (if you're not from Jacobs University, please use Sesame or request your own OWLIM access link)
     http://download.ontotext.com/owlim/3e4dc2e0-d66c-11e1-b81b-dba586cc0cc6/owlim-lite-5.2.5331.zip
 

@@ -1,7 +1,9 @@
 {
   "name": "TeX to TEI XHTML",
   "version":"0.1",
-  "dependencies": ["import"],
+  "inputconverter": "import",
+  "requires_analyses":[],
+  "requires_aggregation":[],
   "url":"127.0.0.1",
   "type":"2",
   "inputformat":"tex",

@@ -49,7 +49,7 @@ my $check_interval = 10;
 
   my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
   my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
-  $Cache->{processor_multiplier} = Unix::Processors->new->max_online;
+  $Cache->{processor_multiplier} = 2 * Unix::Processors->new->max_online;
   my $db_handle = db_file_connect;
   my $backend = CorTeX::Backend->new(%$db_handle);
   db_file_disconnect($db_handle);
@@ -146,7 +146,8 @@ my $check_interval = 10;
         push @default_service_ids, $id;
         my $name = $service_description->{name};
         $service_description->{id} = $id;
-        unless (grep {$name eq $_} @$current_services) {
+        my @all_services = (@{$current_services->{1}},@{$current_services->{2}},@{$current_services->{3}});
+        unless (grep {$name eq $_} @all_services) {
           $backend->taskdb->register_service(%$service_description);
         }
       }
