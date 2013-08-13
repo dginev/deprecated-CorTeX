@@ -33,3 +33,25 @@ Gearman could in fact take charge of most of the cron problems -- just hit it wi
  - have a mandatory testbed sandbox - one article from each corpus? total 5?
   the developer can only deploy on an entire corpus once the test bed has finished with non-error results (5 out of 5)
   and the developer manually confirms they are happy with the annotations.
+
+== Dependency workflows
+ Addition workflow
+ - When adding a new task S1
+ - set generic status = -5 - #foundations
+ - For each entry, each foundation, if status = -1 or -2, +1 on S1 status. (already completed foundations can be directly used)
+
+Deletion workflow - will not implement, inconsistent states will be hard to manage.
+ (the straightforward solution would be deletion propagation to all dependent services)
+# - When deleting a task S1
+# - For every master having S1 as foundation, on every entry which is currently blocked, # or queued, -1 on the status (block until S1 completes successfully).
+
+ Completion workflow
+ - on task completion with status OK or Warning, enable +1 on status of master service 
+ for the same entry (if currently blocked).
+ 
+ Rerun workflow  = one can only rerun COMPLETED tasks
+ - When rerunning service S1
+ - Set generic status = -5 - #foundations
+ - For each entry, each foundation, if status = -1 or -2, +1 on S1 status. (already completed foundations can be directly used)
+ - Conversely, for every master having S1 as foundation, on every entry which is currently blocked, or queued, -1 on the status (block until S1 completes successfully).
+  ALTERNATIVELY : Propagate rerun to all master services
