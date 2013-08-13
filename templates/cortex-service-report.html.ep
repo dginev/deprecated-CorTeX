@@ -21,8 +21,10 @@ var interval = 60000;   //number of mili seconds between each call
 <% end %>
 
 <h3>Service Statistics: 
-<% if (@$current_services > 0) { %>
-    <%= select_field 'service-name' => ["",@$current_services], id=>"service-name-select" %>
+<% my @all_services = (@{$current_services->{1}},@{$current_services->{2}},
+  @{$current_services->{3}});
+<% if (@all_services > 0) { %>
+    <%= select_field 'service-name' => ["",@all_services], id=>"service-name-select" %>
   <% } else { %>
     None registered
   <% } %>
