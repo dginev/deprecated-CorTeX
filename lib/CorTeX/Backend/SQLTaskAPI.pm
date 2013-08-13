@@ -57,7 +57,7 @@ sub serviceiid_to_formats {
   my ($db,$serviceiid) = @_;
   my $service_formats = $ServiceFormats{$serviceiid};
   if (! defined $service_formats) {
-    my $sth = $db->prepare("SELECT inputformat, outputformat from services where iid=?");
+    my $sth = $db->prepare("SELECT inputformat, outputformat, inputconverter from services where iid=?");
     $sth->execute($serviceiid);
     $service_formats = [ $sth->fetchrow_array() ];
     $ServiceFormats{$serviceiid} = $service_formats; }
