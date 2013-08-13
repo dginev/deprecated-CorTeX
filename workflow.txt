@@ -50,8 +50,8 @@ Deletion workflow - will not implement, inconsistent states will be hard to mana
  for the same entry (if currently blocked).
  
  Rerun workflow  = one can only rerun COMPLETED tasks
+ (this is also the Service Update workflow)
  - When rerunning service S1
  - Set generic status = -5 - #foundations
  - For each entry, each foundation, if status = -1 or -2, +1 on S1 status. (already completed foundations can be directly used)
- - Conversely, for every master having S1 as foundation, on every entry which is currently blocked, or queued, -1 on the status (block until S1 completes successfully).
-  ALTERNATIVELY : Propagate rerun to all master services
+ - Conversely, for every master having S1 as foundation, recursively propagate a rerun request
