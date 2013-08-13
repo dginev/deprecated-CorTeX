@@ -197,7 +197,7 @@ post '/ajax' => sub {
     when ('delete-corpus') {} #TODO
     when ('add-service') { $self->add_service; }
     when ('update-service') { $self->update_service; }
-    when ('delete-service') { $self->delete_service; }
+    #when ('delete-service') { $self->delete_service; }
     when ('service-description') {$self->service_description;}
     
     when ('register-proxy') { $self->register_proxy; }

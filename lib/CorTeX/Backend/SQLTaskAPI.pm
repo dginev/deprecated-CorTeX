@@ -24,7 +24,7 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id serviceid_to_iid serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
-  serviceiid_to_formats serviceiid_to_id serviceid_enables
+  serviceiid_to_formats serviceiid_to_id serviceid_enables serviceid_requires
   count_entries count_messages
   current_corpora current_services current_inputformats current_outputformats
   service_report classic_report get_custom_entries
@@ -34,8 +34,10 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
 
-our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats,%ServiceIDEnables);
-our (%IIDs,%IID_to_ID);
+our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats); # Maps between internal and external names
+our (%IIDs,%IID_to_ID); # More maps
+our (%ServiceIDEnables,%ServiceIDRequires); # Dependencies
+
 sub corpus_to_id {
   my ($db, $corpus) = @_;
   my $corpusid = $CorpusIDs{$corpus};
@@ -78,6 +80,21 @@ sub serviceid_enables {
     $ServiceIDEnables{$serviceid} = $enabled_services;
   }
   return @$enabled_services; }
+sub serviceid_requires {
+  my ($db,$serviceid) = @_;
+  my $required_services = $ServiceIDRequires{$serviceid};
+  if (! defined $required_services) {
+    $required_services = [];
+    my $sth = $db->prepare("SELECT foundation from dependencies where master=?");
+    $sth->execute($serviceid);
+    my $foundation_service;
+    $sth->bind_columns(\$foundation_service);
+    while ($sth->fetch) {
+      push @$required_services, $foundation_service;
+    }
+    $ServiceIDRequires{$serviceid} = $required_services;
+  }
+  return @$required_services; }
 sub id_to_corpus {
   my ($db, $corpusid) = @_;
   my $corpus = $IDCorpora{$corpusid};
@@ -123,13 +140,14 @@ sub delete_corpus {
   $sth->execute($corpusid);
   return $db->purge(corpusid=>$corpusid); }
 
-sub delete_service {
-  my ($db,$service) = @_;
-  return unless ($service && (length($service)>0));
-  my $serviceid = $db->service_to_id($service);
-  my $sth = $db->prepare("delete from services where serviceid=?");
-  $sth->execute($serviceid);
-  return $db->purge(serviceid=>$service); }
+# TODO: We don't have a good deleting workflow for now
+# sub delete_service {
+#   my ($db,$service) = @_;
+#   return unless ($service && (length($service)>0));
+#   my $serviceid = $db->service_to_id($service);
+#   my $sth = $db->prepare("delete from services where serviceid=?");
+#   $sth->execute($serviceid);
+#   return $db->purge(serviceid=>$service); }
 
 sub register_corpus {
   my ($db,$corpus) = @_;
@@ -163,6 +181,7 @@ sub register_service {
   $service{outputformat} = lc($service{outputformat});
   $service{requires_analyses} //= [];
   $service{requires_aggregation} //= [];
+  $db->do('BEGIN TRANSACTION');
   my $sth = $db->prepare("INSERT INTO services 
       (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource) 
       values(?,?,?,?,?,?,?,?,?,?)");
@@ -174,30 +193,37 @@ sub register_service {
   $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
   my @dependencies = grep {defined} ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
+  my @foundations = ();
   foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
     $dependency_weight++;
     my $foundation_id = $db->service_to_id($foundation);
+    push @foundations, $foundation_id;
     $sth->execute($id,$foundation_id); }
   # Register Tasks on each corpus
   my $status = -5 - $dependency_weight;
-  # For every import task, queue a task with the service $id
-  # TODO: The list of tasks is proportional to the size of the corpus, so a big corpus will have millions of tasks
-  #       how do we register them quickly? Maybe a single transaction will do the trick for the insert...
-  #       but what about the enormous select? Do 3 million entries fit in memory?
+  # For every import task, queue a task with the new serviceid
   my $entry_query = $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=1 and status=-1");
   my $insert_query = $db->prepare("INSERT into tasks (corpusid,serviceid,entry,status) values(?,?,?,?)");
+  my $complete_foundations_query =
+   $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=? and (status=-1 or status=-2)");
+  my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
   foreach my $corpus(@{$service{corpora}}) {
     my $corpusid = $db->corpus_to_id($corpus);
     $entry_query->execute($corpusid);
-    my ($entry,@entries);
+    my $entry;
     $entry_query->bind_columns(\$entry);
-    while ($entry_query->fetch) { push @entries, $entry; } 
-    $db->do('BEGIN TRANSACTION');
-    foreach my $e(@entries) {
-      $insert_query->execute($corpusid,$id,$e,$status); }
-    $db->do('COMMIT');
+    while ($entry_query->fetch) {
+      $insert_query->execute($corpusid,$id,$entry,$status); }
+    # Once the generic tasks are inserted, observe already completed successful tasks
+    foreach my $foundation_id(@foundations) {
+      $complete_foundations_query->execute($corpusid,$foundation_id);
+      $complete_foundations_query->bind_columns(\$entry);
+      while ($complete_foundations_query->fetch) { 
+        $enable_tasks->execute($entry,$id);}
+    }
   }
+  $db->do('COMMIT');
   return $id; }
 
 sub update_service {
@@ -347,17 +373,38 @@ sub service_description {
 
 sub mark_entry_queued {
   my ($db,$data) = @_;
-  return unless ($data->{corpus} && $data->{service} && $data->{entry});
-  my $corpusid = $db->corpus_to_id($data->{corpus});
-  my $serviceid = $db->service_to_id($data->{service});
-  my $queue_entry_query = $db->prepare("UPDATE tasks SET status=-5 
+  $data->{serviceid} //= $db->service_to_id($data->{service});
+  $data->{corpusid} //= $db->corpus_to_id($data->{corpus});
+  return unless ($data->{corpusid} && $data->{serviceid} && $data->{entry});
+  my $corpusid = $data->{corpusid};
+  my $serviceid = $data->{serviceid};
+  my @required_services = $db->serviceid_requires($serviceid);
+  my $count_complete_foundations =
+    $db->prepare("SELECT count(serviceid) from tasks where corpusid=? and entry=? and serviceid=? and (status=-1 or status=-2)");
+  my $count=0;
+  foreach my $foundation(@required_services) {
+    $count_complete_foundations->execute($corpusid,$data->{entry},$foundation);
+    $count += $count_complete_foundations->fetchrow_array();
+  }
+  my $status = -5 - scalar(@required_services) + $count;
+  print STDERR "Required: ",scalar(@required_services),"\n";
+  print STDERR "Ready foundations: $count\n";
+  print STDERR "Set new status: $status\n";
+  my $queue_entry_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=? and entry=?");
+
   my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
      (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-      WHERE tasks.status=-5)");
-  $queue_entry_query->execute($corpusid,$serviceid,$data->{entry});
+      WHERE tasks.status < -4)"); # All currently processed
+  $queue_entry_query->execute($status,$corpusid,$serviceid,$data->{entry});
+  # Vote up for completed foundations
+
   $delete_messages_query->execute();
-  # TODO: Also handle dependencies: +1 on any service depending on serviceid, for this entry
+  my @enabled_services = $db->serviceid_enables($serviceid);
+  foreach my $enabled_service (@enabled_services) {
+    $db->mark_entry_queued({corpus=>$data->{corpus}, serviceid=>$enabled_service, entry=>$data->{entry} });
+  }
+
   return 1;
 }
 
@@ -378,45 +425,65 @@ sub mark_custom_entries_queued {
       if ($data->{what}) {
         $what = $data->{what};
       }}}
-
+      
   my $rerun_query;
+  my @required_services = $db->serviceid_requires($serviceid);
+  my $status = -5 - scalar(@required_services);
   # Start a transaction
   $db->do("BEGIN TRANSACTION");
   if ($what) { # We have severity, category and what
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
-    # Mark for rerun = SET the status to all affected tasks to -5
-    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+    # Mark for rerun = SET the status to all affected tasks to -5-foundations
+    $rerun_query = $db->prepare("UPDATE tasks SET status=? 
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=? and logs.what=?)");
-    $rerun_query->execute($corpusid,$serviceid,$category,$what); }
+    $rerun_query->execute($status,$corpusid,$serviceid,$category,$what); }
   elsif ($category) { # We have severity and category
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
-    # Mark for rerun = SET the status to all affected tasks to -5
-    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+    # Mark for rerun = SET the status to all affected tasks to -5-foundations
+    $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=?)");
-    $rerun_query->execute($corpusid,$serviceid,$category); }
+    $rerun_query->execute($status,$corpusid,$serviceid,$category); }
   elsif ($severity) { # We have severity
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
-    # Mark for rerun = SET the status to all affected tasks to -5
-    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+    # Mark for rerun = SET the status to all affected tasks to -5-foundations
+    $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=? AND status$severity");
-    $rerun_query->execute($corpusid,$serviceid); }
+    $rerun_query->execute($status,$corpusid,$serviceid); }
   else { #Simplest case, rerun an entire (corpus,service) pair.
-    #Mark for rerun = SET the status to all affected tasks to -5
-    $rerun_query = $db->prepare("UPDATE tasks SET status=-5 
+    #Mark for rerun = SET the status to all affected tasks to -5-foundations
+    $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=?");
-    $rerun_query->execute($corpusid,$serviceid);    
+    $rerun_query->execute($status,$corpusid,$serviceid);    
     # TODO: Propagate blocks to all (service,entry) pairs depending on this task
   }
   #Delete all existing messages for tasks that are marked for rerun (status=-5)
-
   my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
      (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-      WHERE tasks.status=-5)");
+      WHERE tasks.status<-4)");
   $delete_messages_query->execute();
+
+  # +1 for each foundation that has already completed
+  my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
+  my $complete_foundation_entries =
+    $db->prepare("SELECT entry from tasks where corpusid=? and serviceid=? and (status=-1 or status=-2)");
+  my $count=0;
+  foreach my $foundation(@required_services) {
+    $complete_foundation_entries->execute($corpusid,$foundation);
+    my $entry;
+    $complete_foundation_entries->bind_columns(\$entry);
+    while ($complete_foundation_entries->fetch) {
+      $enable_tasks->execute($entry,$serviceid);
+    }
+  }
+
+  # Recursively rerun all enabled services
+
+
+
   $db->do("COMMIT");
 }
 
@@ -776,17 +843,22 @@ sub complete_tasks {
     my $entry = $result->{entry};
     my $taskid = $result->{taskid};
     my $iid = $result->{service};
+    my $status = $result->{status};
     my $serviceid = $db->serviceiid_to_id($iid);
-    my @enables = $db->serviceid_enables($serviceid);
-    foreach my $enabled_service(@enables) {
-      $enable_tasks->execute($entry,$enabled_service);
-    }
+    # Delete old messages
     $delete_messages->execute($taskid);
+    # Mark task as completed
     $mark_complete->execute($result->{status},$taskid);
+    # Insert new messages
     foreach my $message (@{$result->{messages}||[]}) {
       $message->{severity} = status_code($message->{severity});
       $add_message->execute($taskid,map {$message->{$_}} qw/severity category what details/);
     }
+    # Propagate in dependencies
+    if (($status == -1) || ($status == -2)) { # If warning or OK job
+      my @enables = $db->serviceid_enables($serviceid);
+      foreach my $enabled_service(@enables) { # Enable follow-up services
+        $enable_tasks->execute($entry,$enabled_service); }}
   }
   $db->do('COMMIT');
 }
