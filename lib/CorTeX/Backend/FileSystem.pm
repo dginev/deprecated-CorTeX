@@ -86,7 +86,6 @@ sub fetch_entry {
   $converter = '' if ($converter =~ /^import_v/);
   $converter .= '/' if $converter;
   my $path = "$entry/$converter$name.$inputformat";
-  print STDERR "Slurping $path\n\n";
   # Slurp the file and return:  
   if (-f $path ) {
     my $text = read_file( $path ) ;
