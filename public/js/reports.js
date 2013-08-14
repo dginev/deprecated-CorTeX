@@ -285,13 +285,24 @@ function fetch_description(type,name) {
         corpus_check.prop('checked', true);
       }
       // TODO: Dependencies
-      var checkbox = $('input:checkbox[name="update-requires\\[\\]"]');
+      var checkbox = $('input:checkbox[name="update-requires-analyses\\[\\]"]');
       var label = checkbox.next('span');
       checkbox.show(); label.show();
 
-      checkbox = $('input:checkbox[name="update-requires\\[\\]"][value="'+name+'"]');
+      checkbox = $('input:checkbox[name="update-requires-analyses\\[\\]"][value="'+name+'"]');
       label = checkbox.next('span');
       checkbox.hide(); label.hide();
+
+      var checkbox = $('input:checkbox[name="update-requires-aggregation\\[\\]"]');
+      var label = checkbox.next('span');
+      checkbox.show(); label.show();
+
+      checkbox = $('input:checkbox[name="update-requires-aggregation\\[\\]"][value="'+name+'"]');
+      label = checkbox.next('span');
+      checkbox.hide(); label.hide();
+
+      $("select[name='update-requires-converter'] option").show();
+      $("select[name='update-requires-converter'] option[value='" + name + "']").hide();
 
       table.css('display', '');
       $("#accordion").accordion("refresh");
