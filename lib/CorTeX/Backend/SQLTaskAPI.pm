@@ -815,8 +815,10 @@ sub get_entry_type {
 sub fetch_tasks {
   my ($db,%options) = @_;
   my $size = $options{size};
+  return if $size=~/\D/; # Only numbers!
   my $mark = int(1+rand(10000));
-  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?");
+  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
+   SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");
   $sth->execute($mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
