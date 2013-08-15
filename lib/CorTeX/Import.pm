@@ -37,8 +37,10 @@ sub new {
   my $job_url = $build_system_url.'/corpora/'.$corpus_name;
 
   my $backend = CorTeX::Backend->new(%opts);
-  # Wipe away any existing collection if overwrite is enabled
-  if ($opts{overwrite}) {
+  # Reinit any existing collection if overwrite is enabled
+  # OR normal init if the collection doesn't exist
+  my $corpus_exists = $backend->taskdb->corpus_to_id($corpus_name);
+  if ($opts{overwrite} || (!$corpus_exists)) {
     $backend->taskdb->delete_corpus($corpus_name);
     $backend->taskdb->register_corpus($corpus_name);
 
