@@ -261,6 +261,8 @@ get '/retval_detail' => sub {
   $self->stash(count=>$count||0);
   $self->stash(limit=>$limit);
   $self->stash(from=>$from);
+  $self->stash(corpus_name=>$corpus_name);
+  $self->stash(service_name=>$service_name);
   $self->stash(component=>$self->param('component'));
   $self->render;
 } => 'cortex-retval-detail';

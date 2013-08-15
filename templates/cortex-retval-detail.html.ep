@@ -130,7 +130,7 @@ $(document).ready(function() {
 %  if ($start == $from) {
 [<%= $start %>]
 %  } else {
-<a href='/retval_detail?from=<%= $start %>&amp;limit=<%= $limit %>&amp;component=<%= $component %>'>[<%= $start %>]</a>
+<a href='/retval_detail?corpus=<%= $corpus_name%>&amp;service=<%= $service_name %>&amp;from=<%= $start %>&amp;limit=<%= $limit %>&amp;component=<%= $component %>'>[<%= $start %>]</a>
 %  }
 % $start+=$limit;
 %}
