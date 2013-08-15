@@ -48,7 +48,7 @@ db_file_disconnect();
 # Event loop between DB Polling and Gearman dispatching
 
 my (@servers) = @ARGV;
-my $max_queue_size = 200;
+my $max_queue_size = 20;
 my $queue_size;
 my $client = gearman_client(@servers);
 
