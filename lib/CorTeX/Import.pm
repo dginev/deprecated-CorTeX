@@ -27,14 +27,14 @@ sub new {
   my ($class,%opts) = @_;
   $opts{verbosity}=0 unless defined $opts{verbosity};
   $opts{upper_bound}=9999999999 unless $opts{upper_bound};
-  my $main_repos = $opts{main_repos} || 'buildsys';
-  my $meta_graph = $opts{meta_graph} || 'meta';
-  my $build_system_url = $opts{build_system_url} || 'http://lamapun.mathweb.org';
+  # my $main_repos = $opts{main_repos} || 'buildsys';
+  # my $meta_graph = $opts{meta_graph} || 'meta';
+  # my $build_system_url = $opts{build_system_url} || 'http://lamapun.mathweb.org';
 
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
     if $opts{root};
   my $corpus_name = $walker->job_name;
-  my $job_url = $build_system_url.'/corpora/'.$corpus_name;
+  #my $job_url = $build_system_url.'/corpora/'.$corpus_name;
 
   my $backend = CorTeX::Backend->new(%opts);
   # Reinit any existing collection if overwrite is enabled
@@ -44,7 +44,7 @@ sub new {
     $backend->taskdb->delete_corpus($corpus_name);
     $backend->taskdb->register_corpus($corpus_name);
 
-    set_db_file_field('import_checkpoint',undef);
+    #set_db_file_field('import_checkpoint',undef);
     $backend->docdb->delete_directory($opts{root},$opts{root});
     # # Initialize a Build System repository in the triple store
     # $backend->metadb->new_repository($main_repos,$opts{overwrite});
@@ -56,23 +56,23 @@ sub new {
     # if defined $opts{entry_setup};
   }
 
-  my $checkpoint = get_db_file_field('import_checkpoint');
+  #my $checkpoint = get_db_file_field('import_checkpoint');
   my $directory;
   #Fast-forward until checkpoint is reached:
-  if ($checkpoint) {
-    do {
-      $directory = $walker->next_entry;
-    } while (defined $directory && ($directory ne $checkpoint));
-  }
+  # if ($checkpoint) {
+  #   do {
+  #     $directory = $walker->next_entry;
+  #   } while (defined $directory && ($directory ne $checkpoint));
+  # }
 
   bless {walker=>$walker,verbosity=>$opts{verbosity},
         upper_bound=>$opts{upper_bound},
-	      backend=>$backend, job_url=>$job_url, processed_entries=>0,
-	      main_repos=>$main_repos,meta_graph=>$meta_graph,
+	      backend=>$backend, processed_entries=>0,
+	      #main_repos=>$main_repos,meta_graph=>$meta_graph, job_url=>$job_url,
         entry_setup=>$opts{entry_setup},
         triple_queue=>[],
-        corpus_name=>$corpus_name,
-        build_system_url=>$build_system_url}, $class;
+        #build_system_url=>$build_system_url,
+        corpus_name=>$corpus_name}, $class;
 }
 
 sub set_directory {
@@ -101,7 +101,7 @@ sub process_next {
   # 1.1. Increase processed counter
   $self->{processed_entries}++;
   if (! ($self->{processed_entries} % 100)) {
-    set_db_file_field('import_checkpoint',$directory);
+    #set_db_file_field('import_checkpoint',$directory);
   }
   my $added = $self->backend->docdb->already_added($directory,$self->{walker}->get_root);
   if (! $added) {
@@ -130,7 +130,7 @@ sub process_all {
   # TODO: Consider opening a transaction and keeping count,
   # so that we only commit e.g. on every 100 entries
   while ($self->process_next) {}
-  set_db_file_field('import_checkpoint',undef);
+  #set_db_file_field('import_checkpoint',undef);
 }
 
 sub get_processed_count {
