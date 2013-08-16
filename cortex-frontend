@@ -272,6 +272,40 @@ get '/retval_detail' => sub {
   $self->render;
 } => 'cortex-retval-detail';
 
+get '/browse' => sub {
+  my $self = shift;
+  my $dbfile = db_file_connect();
+  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
+  db_file_disconnect($dbfile);
+  my $taskdb = $backend->taskdb;
+  my $corpus_name = $self->param("corpus");
+  my $service_name = $self->param("service");
+  my $inputconverter = $self->param("inputconverter");
+  my $extension = $self->param("extension");
+  my $entry = $self->param("entry");
+  my $type = $self->param("type");
+  # Three type cases, each consults a different backend:
+  my $file_content;
+  given ($type) {
+    when('input') {
+      # The input is in the DocDB
+      $file_content="input";
+    }
+    when('output') {
+      # The output depends on the service type
+      $file_content="output";
+    }
+    when ('log') {
+      # The log is in the TaskDB (needs to be aggregated however)
+      $file_content = " Log summary for $entry\n<br>Processed by $service_name\n<br>========\n<br>";
+      $file_content .= $taskdb->task_report(
+        service_name=>$service_name,corpus_name=>$corpus_name,entry=>$entry);
+    }
+    default {$file_content="Unrecognized request type.";}
+  }
+  $self->render(text=>$file_content);
+};
+
 # CONVENTION: !!!
 # Parameters use dashes, any Perl-based variables use underscores !!!
 # otherwise, all kinds of confusion + headaches come in

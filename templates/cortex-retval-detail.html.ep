@@ -67,13 +67,24 @@ $(document).ready(function() {
         }).click(function() {
         	var entry = $(this).parent().parent().find('td:nth-child(2)').text();
         	var extension = $(this).text();
-        	var type = $(this).attr("class");
-        	alert(type);
+        	var type;
+        	var index = $(this).parent().index();
+        	switch (index){
+        	 case 3: type="input"; break;
+        	 case 4: type="output"; break;
+        	 case 5: type="log"; break;
+        	}
 			extension = extension.slice( 1 );
         	var inputconverter = "<%= $inputconverter %>";
-        	var redirect_link = "/browse?entry="+entry+"&extension="+extension+"&inputconverter="+inputconverter+"&service=<%= $service_name%>";
-        	alert(redirect_link);
-        	window.location.href = redirect_link; 
+        	var redirect_link = "/browse?";
+        	var parameters =  $.param({
+        		"entry": entry,
+     			"extension": extension,
+     			"inputconverter": inputconverter,
+     			"type": type,
+        		"service": "<%= $service_name%>",
+        		"corpus": "<%= $corpus_name%>"});
+        	window.location.href = redirect_link+parameters; 
         });
 	$('.entry-row').hover(function() {
 		var td = $(this).find('td').first();

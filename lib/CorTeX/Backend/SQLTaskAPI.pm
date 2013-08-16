@@ -30,7 +30,7 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
   mark_entry_queued mark_rerun_blocked
-
+  task_report
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
 
@@ -590,6 +590,24 @@ sub service_report {
     $readable_report->{$corpus} = $corpus_report; }
 
   return ($readable_report); }
+
+sub task_report {
+  my ($db,%options) = @_;
+  my ($service_name,$corpus_name,$entry) = map {$options{$_}} qw(service_name corpus_name entry);
+  my $serviceid = $db->service_to_id($service_name);
+  my $corpusid = $db->corpus_to_id($corpus_name);
+  my $task_report='';
+  my $logs_query = $db->prepare(
+    "SELECT severity,category,what,details from logs 
+     WHERE taskid IN (SELECT taskid FROM tasks 
+        where serviceid=? and entry=? and corpusid=?)");
+  $logs_query->execute($serviceid,$entry,$corpusid);
+  my ($severity,$category,$what,$details);
+  $logs_query->bind_columns(\($severity,$category,$entry,$details));
+  while ($logs_query->fetch) {
+    $task_report.="$severity:$category:$entry $details\n";
+  }
+  return $task_report;}
 
 sub classic_report { # Report in detail on a <corpus,service> pair 
   my ($db,$corpus_name,$service_name) = @_;
