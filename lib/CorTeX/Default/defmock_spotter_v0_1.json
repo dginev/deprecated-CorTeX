@@ -1,0 +1,13 @@
+{
+  "name": "DefMock Spotter",
+  "version":"0.1",
+  "inputconverter": "TeX to TEI XHTML",
+  "requires_analyses":[],
+  "requires_aggregation":[],
+  "url":"127.0.0.1",
+  "type":"1",
+  "inputformat":"xhtml",
+  "outputformat":"RDFXML",
+  "xpath":"/",
+  "parameters":{}
+}
