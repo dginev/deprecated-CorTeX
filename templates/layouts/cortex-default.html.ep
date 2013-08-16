@@ -40,6 +40,16 @@
         text-align: left;
         border-collapse: collapse;
       }
+      table.top-summary-table
+      {
+        font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+        font-size: 14px;
+        margin-bottom: 45px;
+        width: 600px;
+        text-align: left;
+        border-collapse: collapse;
+      }
+
       table.inner-table
       {
         font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
@@ -66,6 +76,27 @@
         background: #e8edff; 
         border-bottom: 1px solid #fff;
         width: 200px;
+        vertical-align: middle;
+        border-top: 1px solid transparent;
+        color: #669;
+      }
+      table.top-summary-table th
+      {
+        font-size: 15px;
+        font-weight: normal;
+        padding: 8px;
+        width: 10px;
+        background: #b9c9fe;
+        border-top: 4px solid #aabcfe;
+        border-bottom: 1px solid #fff;
+        color: #039;
+      }
+      table.top-summary-table td
+      {
+        padding: 8px;
+        background: #e8edff; 
+        border-bottom: 1px solid #fff;
+        width: 10px;
         vertical-align: middle;
         border-top: 1px solid transparent;
         color: #669;

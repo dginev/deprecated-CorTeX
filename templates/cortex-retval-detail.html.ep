@@ -67,6 +67,8 @@ $(document).ready(function() {
         }).click(function() {
         	var entry = $(this).parent().parent().find('td:nth-child(2)').text();
         	var extension = $(this).text();
+        	var type = $(this).attr("class");
+        	alert(type);
 			extension = extension.slice( 1 );
         	var inputconverter = "<%= $inputconverter %>";
         	var redirect_link = "/browse?entry="+entry+"&extension="+extension+"&inputconverter="+inputconverter+"&service=<%= $service_name%>";
@@ -113,7 +115,7 @@ $(document).ready(function() {
 <% end %>
 <div>
 <h3>Detailed report</h3>
-<table class="summary-table"><thead><th>Selected Entries</th><th><button class="back-to-status-button">Back to Status</button><button class="rerun-button">Rerun Selection</button></th></thead><tbody>
+<table class="top-summary-table"><thead><th>Selected Entries</th><th><button class="back-to-status-button">Back to Status</button><button class="rerun-button">Rerun Selection</button></th></thead><tbody>
 <tr class="hover-row "><td>Corpus</td><td><b><%= $corpus_name %></b></td></tr>
 <tr class="hover-row "><td>Service</td><td><b><%= $service_name %></b></td></tr>
 % if ($severity) {
@@ -127,15 +129,16 @@ $(document).ready(function() {
 % }
 </tbody></table>
 <table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th>Report Details</th>
-<th>Files</th></thead><tbody><tr class="hover-row entry-row">
+<th style='width:20px;'>Input</th>
+<th style='width:20px;'>Output</th>
+<th style='width:20px;'>Log</th></thead><tbody><tr class="hover-row entry-row">
 % my $i = 0;
 % for my $entry (@$entries) {
  <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td><td><%= $entry->[0] %></a></td><td><%= $entry->[1] %></td>
- <td>
- 	<button class="view-button">.log</button>
- 	<button class="view-button">.<%= $inputformat %></button>
- 	<button class="view-button">.<%= $outputformat %></button>
- </td></tr>
+ <td style='width:20px;'><button class="view-button">.<%= $inputformat %></button></td>
+ <td style='width:20px;'><button class="view-button">.<%= $outputformat %></button></td>
+ <td style='width:20px;'><button class="view-button">.log</button></td>
+ </tr>
 % }
 </tbody><table>
 % my $start = 0;
