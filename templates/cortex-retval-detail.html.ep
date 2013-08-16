@@ -62,7 +62,8 @@ $(document).ready(function() {
 	});
 	$('.view-button').button().css({
         	'cursor': 'pointer',
-            'float' : 'center',                        
+            'float' : 'center',
+            //'width' : 30px
         }).click(function() {
         	var entry = $(this).parent().parent().find('td:nth-child(2)').text();
         	var extension = $(this).text();
@@ -73,7 +74,10 @@ $(document).ready(function() {
         	window.location.href = redirect_link; 
         });
 	$('.entry-row').hover(function() {
-		$(this).find('td').last().append('<button class="entry-rerun-button">Rerun Entry</button>');
+		var td = $(this).find('td').first();
+		var number = td.text();
+		td.attr("class",number);
+		td.html('<button class="entry-rerun-button">Rerun Entry</button>');
 		$('.entry-rerun-button').button({
             icons: { primary: "ui-icon-refresh" },
             text: false
@@ -100,7 +104,10 @@ $(document).ready(function() {
 		});
 	},
 	function(){
+		var td = $(this).find('td').first();
+		var number = td.attr('class');
 		$('.entry-rerun-button').remove();
+		td.html(number);
 	});
 });
 <% end %>
