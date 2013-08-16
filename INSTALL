@@ -5,9 +5,8 @@ Brace yourselves, a lot of work to come...
 For now, assuming you're running a Debian-based OS
 
 0. Debian packages
-sudo apt-get install gearman mod-gearman-tools \
-  gearman-server libfile-slurp-perl\
-  mysql-server libdbd-mysql-perl libdbd-sqlite-perl \
+sudo apt-get install gearman libfile-slurp-perl\
+  mysql-server cpanminus \
   libanyevent-perl librdf-linkeddata-perl
 
   cpanm Mojolicious AnyEvent::Gearman Unix::Processors
@@ -61,5 +60,45 @@ II.1. Tomcat memory
 
 III. Deploying a Frontend
 
-NOTE: If you're using morbo for development, disable the watch mechanism as the SQLite database will keep changing. Run with:
+NOTE: If you're using morbo for development, disable the watch mechanism as the SQLite database will keep changing and the server will constantly restart.
+Instead, run morbo as follows:
+
 morbo -w /dev/null cortex-frontend
+
+III.1. Apache + Mod_Perl and Plack
+
+ 1. Install Apache as usual
+  $ sudo apt-get install apache2
+ 2. Install Mod_perl 
+  $ sudo apt-get install libapache2-mod-perl2
+ 3. Install Plack
+  $ sudo apt-get install libplack-perl
+
+ 4. Grant permissiosn to www-data for the webapp folder:
+  $ sudo chgrp -R www-data /path/to/CorTeX
+  $ sudo chmod -R g+w /path/to/CorTeX
+
+ 5. Create a "cortex" file in /etc/apache2/sites-available and /etc/apache2/sites-enabled
+
+<VirtualHost *:80>
+    ServerName cortex.example.com 
+    DocumentRoot /path/to/CorTeX
+    Header set Access-Control-Allow-Origin *                                    
+
+    PerlOptions +Parent
+                                                              
+    <Perl>
+      $ENV{PLACK_ENV} = 'production';
+      $ENV{MOJO_HOME} = '/path/to/CorTeX';
+    </Perl>
+
+    <Location />
+      SetHandler perl-script
+      PerlHandler Plack::Handler::Apache2
+      PerlSetVar psgi_app /path/to/CorTeX/cortex-frontend
+    </Location>
+
+    ErrorLog /var/log/apache2/cortex.error.log
+    LogLevel warn
+    CustomLog /var/log/apache2/cortex.access.log combined
+</VirtualHost>
