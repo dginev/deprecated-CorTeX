@@ -48,7 +48,7 @@ sub complete_annotations {
   my ($db,$results) = @_;
   my @analysis_results = grep {defined $_->{annotations}} @$results;
   return unless @analysis_results;
-  print STDERR " Annotation results: \n",Dumper(\@analysis_results);
+  my $graph; # TODO : Delete this, the graph declaration should be inside the loop
   my $parsers = $db->{rdf_parsers};
   my $model = $db->model;
   $model->begin_bulk_ops;
@@ -56,14 +56,22 @@ sub complete_annotations {
     my $data = $result->{annotations};
     next unless $data;
     my $rdf_format = $result->{formats}->[1];
+    # Grab an RDF graph from our model
+    $graph = $model->dataset_model(default=>[$result->{service}]);
     my $parser = $parsers->{$rdf_format};
     if (! defined $parser) {
        $parser = RDF::Trine::Parser->new( $rdf_format );
        $parsers->{$rdf_format} = $parser;
     }
-    $parser->parse_into_model( $base_uri, $data, $model );
+    # What's in this graph currently ? We want to replace all annotations for this entry
+    # print STDERR "Initial graph size: ",$graph->size,"\n\n";
+    # open OUT, ">", "/tmp/graph.txt";
+    # print OUT Dumper($graph->as_hashref);
+    # close OUT;
+    $parser->parse_into_model( $base_uri, $data, $graph );
   }
   $model->end_bulk_ops;
+  # print STDERR "After complete, graph size: ",$graph->size,"\n\n";
 }
 
 1;
