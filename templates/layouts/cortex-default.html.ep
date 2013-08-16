@@ -36,7 +36,7 @@
         font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
         font-size: 14px;
         margin-bottom: 45px;
-        width: 600px;
+        width: 800px;
         text-align: left;
         border-collapse: collapse;
       }
@@ -45,7 +45,7 @@
         font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
         font-size: 14px;
         margin: 2px;
-        width: 600px;
+        width: 800px;
         text-align: left;
         border-collapse: collapse;
       }

@@ -216,8 +216,10 @@ get '/retval_detail' => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
+  my $taskdb = $backend->taskdb;
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");
+  my $formats = $taskdb->serviceiid_to_formats($taskdb->serviceid_to_iid($taskdb->service_to_id($service_name)));
   my $countby = $self->param("countby");
   my $component = [ split(/:/, $self->param('component')) ];
   # 3 items max, slurp anything that follows:
@@ -225,7 +227,7 @@ get '/retval_detail' => sub {
   $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
   my $from = $self->param('from') || 0;
   my $limit = $self->param('limit') || 100;
-  my $entries = $backend->taskdb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
+  my $entries = $taskdb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
                                                       what=>$component->[3],from=>$from,limit=>$limit,
                                                       corpus=>$corpus_name,service=>$service_name,
                                                       repository=>$MAIN_REPOS, graph=>$META_GRAPH});
@@ -237,6 +239,9 @@ get '/retval_detail' => sub {
   $self->stash(entries=>$entries);
   $self->stash(corpus_name=>$corpus_name);
   $self->stash(service_name=>$service_name);
+  $self->stash(inputformat=>$formats->[0]);
+  $self->stash(outputformat=>$formats->[1]);
+  $self->stash(inputconverter=>$formats->[2]);
 
   # Prepare exploration links:
   my $count=0;

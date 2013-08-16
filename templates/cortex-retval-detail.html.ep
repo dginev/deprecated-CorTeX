@@ -60,16 +60,17 @@ $(document).ready(function() {
 	        });
 	    }
 	});
-	$('.entry-row').find('td:first').next().prepend('<button class="view-button">View Entry</button>');
-	$('.view-button').button({
-            icons: { primary: "ui-icon-circle-zoomin" },
-            text: false
-        }).css({
+	$('.view-button').button().css({
         	'cursor': 'pointer',
             'float' : 'center',                        
-            'width': '25px'
         }).click(function() {
-        	window.open($(this).parent().parent().find('td > a').attr('href'),'_exist');
+        	var entry = $(this).parent().parent().find('td:nth-child(2)').text();
+        	var extension = $(this).text();
+			extension = extension.slice( 1 );
+        	var inputconverter = "<%= $inputconverter %>";
+        	var redirect_link = "/browse?entry="+entry+"&extension="+extension+"&inputconverter="+inputconverter+"&service=<%= $service_name%>";
+        	alert(redirect_link);
+        	window.location.href = redirect_link; 
         });
 	$('.entry-row').hover(function() {
 		$(this).find('td').last().append('<button class="entry-rerun-button">Rerun Entry</button>');
@@ -100,7 +101,6 @@ $(document).ready(function() {
 	},
 	function(){
 		$('.entry-rerun-button').remove();
-		//$('.view-button').remove();
 	});
 });
 <% end %>
@@ -119,10 +119,16 @@ $(document).ready(function() {
 <tr class="hover-row "><td>What</td><td><b><%= $what %></b></td></tr>
 % }
 </tbody></table>
-<table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th>Report Details</th></thead><tbody><tr class="hover-row entry-row">
+<table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th>Report Details</th>
+<th>Files</th></thead><tbody><tr class="hover-row entry-row">
 % my $i = 0;
 % for my $entry (@$entries) {
- <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td><td><a href="<%= $entry->[2] %>" target="_exist"><%= $entry->[0] %></a></td><td><%= $entry->[1] %></td></tr>
+ <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td><td><%= $entry->[0] %></a></td><td><%= $entry->[1] %></td>
+ <td>
+ 	<button class="view-button">.log</button>
+ 	<button class="view-button">.<%= $inputformat %></button>
+ 	<button class="view-button">.<%= $outputformat %></button>
+ </td></tr>
 % }
 </tbody><table>
 % my $start = 0;
