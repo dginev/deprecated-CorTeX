@@ -101,7 +101,7 @@ while (1) {
             $next_iteration->send(); }},
       on_fail => sub {
           my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
-              status=>-4,messages=>parse_log("Fatal:Gearman:client Job failed (generic)")};
+              messages=>parse_log("Fatal:Gearman:client Job failed (generic)"),status=>-4};
           push @$results, $response;
           # New queue if we're done here
           if (scalar(@$results) == $queue_size) {
