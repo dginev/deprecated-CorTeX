@@ -29,7 +29,7 @@ our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus regist
   current_corpora current_services current_inputformats current_outputformats
   service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
-  mark_entry_queued
+  mark_entry_queued mark_rerun_blocked
 
   repository_size mark_limbo_entries_queued get_entry_type
   fetch_tasks complete_tasks);
@@ -432,7 +432,6 @@ sub mark_custom_entries_queued {
   # Start a transaction
   $db->do("BEGIN TRANSACTION");
   if ($what) { # We have severity, category and what
-    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     $rerun_query = $db->prepare("UPDATE tasks SET status=? 
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
@@ -440,7 +439,6 @@ sub mark_custom_entries_queued {
       AND logs.category=? and logs.what=?)");
     $rerun_query->execute($status,$corpusid,$serviceid,$category,$what); }
   elsif ($category) { # We have severity and category
-    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
@@ -448,7 +446,6 @@ sub mark_custom_entries_queued {
       AND logs.category=?)");
     $rerun_query->execute($status,$corpusid,$serviceid,$category); }
   elsif ($severity) { # We have severity
-    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=? AND status$severity");
@@ -458,7 +455,6 @@ sub mark_custom_entries_queued {
     $rerun_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=?");
     $rerun_query->execute($status,$corpusid,$serviceid);    
-    # TODO: Propagate blocks to all (service,entry) pairs depending on this task
   }
   #Delete all existing messages for tasks that are marked for rerun (status=-5)
   my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
@@ -479,12 +475,32 @@ sub mark_custom_entries_queued {
       $enable_tasks->execute($entry,$serviceid);
     }
   }
-
-  # Recursively rerun all enabled services
-
-
-
+  # TODO: Recursively rerun all enabled services where the prereq is blocked
+  $db->mark_rerun_blocked($serviceid,$corpusid);
   $db->do("COMMIT");
+}
+
+# Mark blocked an entire dependency subtree
+sub mark_rerun_blocked {
+  my ($db,$serviceid,$corpusid) = @_;
+  my @enabled_services = $db->serviceid_enables($serviceid);
+  my $mark_blocked_query = $db->prepare("UPDATE tasks SET status=? WHERE corpusid=? and serviceid=? and entry IN 
+    (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0))");
+  my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE serviceid=? and entry in 
+    (SELECT entry from tasks where corpusid=? and serviceid=? and (status=-1 or status=-2)
+      and entry IN (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0)))");
+
+  foreach my $enabled_service (@enabled_services) {
+    my @required_services = $db->serviceid_requires($enabled_service);
+    my $status = -5 - scalar(@required_services);
+    # First, block fully 
+    $mark_blocked_query->execute($status,$corpusid,$enabled_service,$corpusid,$serviceid);
+    # Then, for each successful foundation, +1 on the block 
+    foreach my $required_service(@required_services) {
+      $enable_tasks->execute($enabled_service,$corpusid,$required_service,$corpusid,$serviceid); }
+    # Having figured out the right level of blocking, recurse into blocking the further masters
+    $db->mark_rerun_blocked($enabled_service,$corpusid);
+  }
 }
 
 sub queue {
