@@ -57,21 +57,30 @@ sub complete_annotations {
     next unless $data;
     my $rdf_format = $result->{formats}->[1];
     # Grab an RDF graph from our model
-    $graph = $model->dataset_model(default=>[$result->{service}]);
     my $parser = $parsers->{$rdf_format};
     if (! defined $parser) {
        $parser = RDF::Trine::Parser->new( $rdf_format );
        $parsers->{$rdf_format} = $parser;
     }
-    # What's in this graph currently ? We want to replace all annotations for this entry
-    # print STDERR "Initial graph size: ",$graph->size,"\n\n";
-    # open OUT, ">", "/tmp/graph.txt";
-    # print OUT Dumper($graph->as_hashref);
-    # close OUT;
-    $parser->parse_into_model( $base_uri, $data, $graph );
+    # First delete all existing annotations in the context/entry pair
+    my $context = RDF::Trine::Node::Resource->new($result->{service});
+    my $entry_subject = RDF::Trine::Node::Resource->new("file://".$result->{entry});
+    $model->remove_statements($entry_subject,undef,undef,$context);
+    # Then parse in the new annotations
+    $parser->parse_into_model( $base_uri, $data, $model, (context=>$context));
   }
   $model->end_bulk_ops;
-  # print STDERR "After complete, graph size: ",$graph->size,"\n\n";
+  ## Old Debug prints:
+  # my $iterator = $model->get_contexts;
+  # open OUT, ">", "/tmp/model.txt";
+  # while (my $row = $iterator->next) {
+  #   print OUT Dumper($row);
+  #   my $statements = $model->get_statements(undef,undef,undef,$row);
+  #   while (my $st = $statements->next) {
+  #    print OUT $st->as_string,"\n"; }
+  #   print OUT "\n----------------------\n---------------\n";
+  # }
+  # close OUT;
 }
 
 1;
