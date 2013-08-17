@@ -297,10 +297,25 @@ get '/browse' => sub {
     when('output') {
       # The output depends on the service type
       my $taskdb = $backend->taskdb;
+      # TODO: Refactor the service-id-iid API to achieve some sanity and code cleanliness
+      #       quite dirty at the moment... apologies to anyone reading this!
+      my $service = $backend->taskdb->service_to_id($service_name);
+      $service = $backend->taskdb->serviceid_to_iid($service);
+
       my $description = $taskdb->service_description($service_name);
       given ($description->{type}) {
         when (1) {# Analysis
-          $file_content = "Analysis browser not yet implemented.";
+          my $graph_report = $backend->metadb->graph_report(entry=>$entry,
+            service=>$service,format=>$extension);
+          $file_content = "<html><body>"
+          . "<h1>Analysis summary</h1>"
+          . "<table style=''><tr><td>Entry</td><td>$entry</td></tr>"
+          .  "<tr><td>Service</td><td>$service_name</td></tr>"
+          .  "<tr><td>Corpus</td><td>$corpus_name</td></tr></table><br><br>";
+          $file_content .= "<h2>Annotations</h1>";
+          $graph_report=['No Annotations.'] unless @$graph_report;
+          $file_content.=join("\n<br>",@$graph_report);
+          $file_content.="</body></html>"; # TODO: Errr, this is a horrible way to generate HTML
         }
         when (2) {# Converter
           my $service_iid = $taskdb->service_to_id($service_name);

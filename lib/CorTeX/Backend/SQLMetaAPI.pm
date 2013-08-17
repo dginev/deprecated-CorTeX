@@ -19,7 +19,7 @@ use Scalar::Util qw(blessed);
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(new_repository add_triple complete_annotations model);
+our @EXPORT = qw(new_repository add_triple complete_annotations model graph_report);
 
 our $base_uri = 'http://cortex.kwarc.info';
 use RDF::Trine::Parser;
@@ -81,6 +81,20 @@ sub complete_annotations {
   #   print OUT "\n----------------------\n---------------\n";
   # }
   # close OUT;
+}
+
+sub graph_report {
+  my ($db,%options) = @_;
+  my ($entry, $service, $format) = map {$options{$_}} qw/entry service format/;
+  my $model = $db->model;
+  my $context = RDF::Trine::Node::Resource->new($service);
+  my $entry_subject = RDF::Trine::Node::Resource->new("file://".$entry);
+  my $statements = $model->get_statements($entry_subject,undef,undef,$context);
+  my $report = [];
+  foreach (my $st = $statements->next) {
+    push @$report, $st->as_string;
+  }
+  return $report;
 }
 
 1;
