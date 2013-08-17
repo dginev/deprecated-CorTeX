@@ -277,7 +277,6 @@ get '/browse' => sub {
   my $dbfile = db_file_connect();
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
-  my $taskdb = $backend->taskdb;
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");
   my $inputconverter = $self->param("inputconverter");
@@ -289,17 +288,45 @@ get '/browse' => sub {
   given ($type) {
     when('input') {
       # The input is in the DocDB
-      $file_content="input";
+      $inputconverter = $backend->taskdb->service_to_id($inputconverter);
+      $inputconverter = $backend->taskdb->serviceid_to_iid($inputconverter);
+      $file_content = $backend->docdb->fetch_entry(
+        entry=>$entry,inputconverter=>$inputconverter,inputformat=>$extension);
+      $file_content = "Missing input file?" unless $file_content;
     }
     when('output') {
       # The output depends on the service type
-      $file_content="output";
+      my $taskdb = $backend->taskdb;
+      my $description = $taskdb->service_description($service_name);
+      given ($description->{type}) {
+        when (1) {# Analysis
+          $file_content = "Analysis browser not yet implemented.";
+        }
+        when (2) {# Converter
+          my $service_iid = $taskdb->service_to_id($service_name);
+          $service_iid = $taskdb->serviceid_to_iid($service_iid);
+          $file_content = $backend->docdb->fetch_entry(
+            entry=>$entry,inputconverter=>$service_iid,inputformat=>$extension);
+        }
+        when (3) {# Aggregator
+          $file_content="Aggretaion browser not yet implemented";
+        }
+      }
+      $file_content = "Missing result file?" unless $file_content;
     }
     when ('log') {
       # The log is in the TaskDB (needs to be aggregated however)
-      $file_content = " Log summary for $entry\n<br>Processed by $service_name\n<br>========\n<br>";
-      $file_content .= $taskdb->task_report(
+      $file_content = "<html><body>"
+      . "<h1>Log summary</h1>"
+      . "<table style=''><tr><td>Entry</td><td>$entry</td></tr>
+         <tr><td>Service</td><td>$service_name</td></tr>
+         <tr><td>Corpus</td><td>$corpus_name</td></tr></table><br><br>";
+      my $task_report = $backend->taskdb->task_report(
         service_name=>$service_name,corpus_name=>$corpus_name,entry=>$entry);
+      $file_content .= "<h2>Messages</h1>";
+      $task_report=['No messages.'] unless @$task_report;
+      $file_content.=join("\n<br>",@$task_report);
+      $file_content.="</body></html>"; # TODO: Errr, this is a horrible way to generate HTML
     }
     default {$file_content="Unrecognized request type.";}
   }

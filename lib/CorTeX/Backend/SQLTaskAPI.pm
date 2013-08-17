@@ -596,7 +596,7 @@ sub task_report {
   my ($service_name,$corpus_name,$entry) = map {$options{$_}} qw(service_name corpus_name entry);
   my $serviceid = $db->service_to_id($service_name);
   my $corpusid = $db->corpus_to_id($corpus_name);
-  my $task_report='';
+  my $task_report=[];
   my $logs_query = $db->prepare(
     "SELECT severity,category,what,details from logs 
      WHERE taskid IN (SELECT taskid FROM tasks 
@@ -605,7 +605,8 @@ sub task_report {
   my ($severity,$category,$what,$details);
   $logs_query->bind_columns(\($severity,$category,$entry,$details));
   while ($logs_query->fetch) {
-    $task_report.="$severity:$category:$entry $details\n";
+    my $decoded = status_decode($severity);
+    push @$task_report, "$decoded:$category:$entry $details";
   }
   return $task_report;}
 
