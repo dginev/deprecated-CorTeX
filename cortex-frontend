@@ -68,6 +68,7 @@ sub stop_cron {
 
 # 2. Now start the web server
 use Mojolicious::Lite;
+use Mojo::Util qw/xml_escape/;
 use CorTeX::Import;
 use CorTeX::Backend;
 
@@ -314,7 +315,7 @@ get '/browse' => sub {
           .  "<tr><td>Corpus</td><td>$corpus_name</td></tr></table><br><br>";
           $file_content .= "<h2>Annotations</h1>";
           $graph_report=['No Annotations.'] unless @$graph_report;
-          $file_content.=join("\n<br>",@$graph_report);
+          $file_content.=join("\n<br>",map {xml_escape($_)} @$graph_report);
           $file_content.="</body></html>"; # TODO: Errr, this is a horrible way to generate HTML
         }
         when (2) {# Converter
@@ -340,12 +341,12 @@ get '/browse' => sub {
         service_name=>$service_name,corpus_name=>$corpus_name,entry=>$entry);
       $file_content .= "<h2>Messages</h1>";
       $task_report=['No messages.'] unless @$task_report;
-      $file_content.=join("\n<br>",@$task_report);
+      $file_content.=join("\n<br>",map {xml_escape($_)} @$task_report);
       $file_content.="</body></html>"; # TODO: Errr, this is a horrible way to generate HTML
     }
     default {$file_content="Unrecognized request type.";}
   }
-  $self->render(text=>$file_content);
+  $self->render(text=>$file_content,format=>$extension);
 };
 
 # CONVENTION: !!!
@@ -723,6 +724,14 @@ helper queue_rerun => sub {
   }
 };
 
+#app->types->type(rdf => 'application/rdf+xml');
+#app->types->type(rdfxml => 'application/rdf+xml');
+app->types->type(rdfxml => 'text/html');
+app->types->type(tex => 'application/x-latex');
+app->types->type(log => 'text/html');
+app->types->type(html => 'text/html');
+app->types->type(xhtml => 'application/xhtml+xml');
+app->types->type(xml => 'application/xml');
 app->start;
 
 __END__

@@ -71,16 +71,16 @@ sub complete_annotations {
   }
   $model->end_bulk_ops;
   ## Old Debug prints:
-  # my $iterator = $model->get_contexts;
-  # open OUT, ">", "/tmp/model.txt";
-  # while (my $row = $iterator->next) {
-  #   print OUT Dumper($row);
-  #   my $statements = $model->get_statements(undef,undef,undef,$row);
-  #   while (my $st = $statements->next) {
-  #    print OUT $st->as_string,"\n"; }
-  #   print OUT "\n----------------------\n---------------\n";
-  # }
-  # close OUT;
+#   my $iterator = $model->get_contexts;
+#   open OUT, ">", "/tmp/model.txt";
+#   while (my $row = $iterator->next) {
+#     print OUT Dumper($row);
+#     my $statements = $model->get_statements(undef,undef,undef,$row);
+#     while (my $st = $statements->next) {
+#      print OUT $st->as_string,"\n"; }
+#     print OUT "\n----------------------\n---------------\n";
+#   }
+#   close OUT;
 }
 
 sub graph_report {
@@ -91,11 +91,11 @@ sub graph_report {
   my $entry_subject = RDF::Trine::Node::Resource->new("file://".$entry);
   my $statements = $model->get_statements($entry_subject,undef,undef,$context);
   my $report = [];
-  foreach (my $st = $statements->next) {
-    push @$report, $st->as_string;
+  while (my $st = $statements->next) {
+    my ($s,$p,$o) = map {$_->as_string} $st->nodes;
+    push @$report, "$s $p $o";
   }
-  return $report;
-}
+  return $report; }
 
 1;
 
