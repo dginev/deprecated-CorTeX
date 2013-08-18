@@ -93,7 +93,7 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
    ```json
    {
       "status":"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
-      "log":"Severity:category:what details\n ...", // one message per line
+      "log":"Severity:category:what details\n ...",
       "document":"Document content in representation R2"
    }
    ```
@@ -103,7 +103,7 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
    ```json
    {
       "status":"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
-      "log":"Severity:category:what details\n ...", // one message per line
+      "log":"Severity:category:what details\n ...",
       "annotations":"Annotation triples in RDF representation R2"
    }
    ```
@@ -115,10 +115,12 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
    ```json
    {
       "status":"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
-      "log":"Severity:category:what details\n ...", // one message per line
+      "log":"Severity:category:what details\n ...",
       "annotations":"Annotation triples in RDF representation R2"
    }
    ```
+
+The "log" field is essential for leveraging the automated reports of CorTeX. The "log" string should contain a single message per line in the above form, which are automatically parsed and catalogued by the server. Making use of the log field will allow you to recognise the most prominent **bugs** of your service, as well as to conveniently mark the relevant entries for **rerun**, once a problem has been patched.
 
 As an example, consider one [analysis service](https://github.com/dginev/CorTeX-Peripheral/blob/master/lib/CorTeX/Service/mock_spotter_v0_1.pm) for counting words and sentences and its [JSON signature](https://github.com/dginev/CorTeX/blob/master/lib/CorTeX/Default/mock_spotter_v0_1.json). The JSON signature is only required for services registered in CorTeX by default, while the regular workflow goes through the developer interface, which we will cover next.
 
