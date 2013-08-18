@@ -76,6 +76,8 @@ I can't emphasize this enough -- developing a CorTeX service is **simple** and *
  * Each service is a **self-contained black box** that takes an input payload and returns an output payload, both of which are **JSON encoded**.
  * A CorTeX service can be written in **any** programming language with a Gearman Worker library, deployed on **any** machine connected to the internet, with **no** further requirements.
 
+If you decide to author your service in Perl, consider forking and building on top of the [CorTeX-Peripheral](https://github.com/dginev/CorTeX-Peripheral) repository. It provides a **CorTeX::Service** template class that abstracts away the nitty-gritty details of the Gearman network communication. Combined with the **cortex-spawner** service, deploying a custom service on a new machine becomes completely automatic.
+
 The Input-Output syntax is exhaustively specified by the following example (**JSON**):
 
  * Input:
@@ -125,6 +127,22 @@ The "log" field is essential for leveraging the automated reports of CorTeX. The
 As an example, consider one [analysis service](https://github.com/dginev/CorTeX-Peripheral/blob/master/lib/CorTeX/Service/mock_spotter_v0_1.pm) for counting words and sentences and its [JSON signature](https://github.com/dginev/CorTeX/blob/master/lib/CorTeX/Default/mock_spotter_v0_1.json). The JSON signature is only required for services registered in CorTeX by default, while the regular workflow goes through the developer interface, which we will cover next.
 
 ### Deploying your first Service
+
+Now that you have your Gearman worker compliant with the CorTeX API, you're ready to get cracking.
+
+The developer interface, under '/dev', allows you to first register and later update your service:
+ 
+  * The **name** and **version** fields are used to create a unique identifier for your service within CorTeX
+  * In case you prefer to use your own Gearman server, you can specify it in the **URL** field
+  * You must always specify the **type** of your service - conversion, analysis or aggregation.
+  * [Dependency management](#dependency-management) deserves more detailed attention and we will cover it separately.
+  * You can choose which **corpora** your service is to be enabled on before finally registering it.
+
+Don't worry about getting some of the fields wrong at first, you are always free to come back and update the service signature later on.
+
+Once you've hit "Add Service" and a confirmation message is displayed, CorTeX will start queueing jobs in Gearman addressed to your service, so whenever you start your Gearman worker it will get served jobs for each corpus document it has been enabled on.
+
+Congratulations, you have registered your first CorTeX service! 
 
 ### Dependency Management
 
