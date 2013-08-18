@@ -10,6 +10,7 @@ Features:
  * Automatic dependency management of registered Services
  * Powerful workflow management and development support through the CorTeX web interface
  * Supports multi-corpora multi-service installations
+ * Centralized storage, with distributed computing, motivated to enable collaborations accross institutional and national borders.
 
 History:
  * Builds on the expertise developed during the [arXMLiv project](http://trac.kwarc.info/arXMLiv) at Jacobs University. 
