@@ -3,30 +3,30 @@
 
 A general purpose processing framework for **Cor**pora of **TeX** documents
 
-= Administrative Workflow =
+## Administrative Workflow 
 
-== Installation ==
+### Installation
 
 The installation process is described in detail at the [INSTALL](./INSTALL.md) documentation.
 
-== Configuring the system components ==
+### Configuring the system components
 
-== Registering a Corpus ==
+### Registering a Corpus
 
-== Corpus reports ==
+### Corpus reports
 
 
 
-= Developer Workflow =
+## Developer Workflow
 
-== Deploying your first Service ==
+### Deploying your first Service
 
-== Dependency Management ==
+### Dependency Management
 
-== Reruns and Updates ==
+### Reruns and Updates
 
-== Service reports ==
+### Service reports
 
-== Examining the data ==
+### Examining the data
 
 
