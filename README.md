@@ -17,4 +17,4 @@ History:
  * In particular, CorTeX is a successor to the [build system](http://arxmliv.kwarc.info) developed by Heinrich Stamerjohanns.
  * The architecture tiered towards generic processing of conversion, analysis and aggregation services was motivated by the [LLaMaPUn](http://trac.kwarc.info/LaMaPUn)
    project at Jacobs University.
- * The messaging conventions are motivated by work on [LaTeXML](http://dlmf.nist.gov/LaTeXML)'s log reports with Bruce Miller.
+ * The messaging conventions are motivated by work on standardizing [LaTeXML](http://dlmf.nist.gov/LaTeXML)'s log reports with Bruce Miller.
