@@ -17,7 +17,39 @@ The installation process is described in detail at the [INSTALL](./INSTALL.md) d
 
 ### Configuring the system components
 
+1. Under the administrative interface at /admin, "Configure Databases" tab:
+
+ * Document backend - FileSystem OR eXist XML DB 
+ * Task backend - SQLite or MySQL
+ * Meta backend - Sesame-based triple stores, SQLite or MySQL
+
+Discussion: Currently, the safe choice is to stick with the FileSystem for a Document backend and SQLite for Task and Annotation/Meta backend.
+There is support for using the eXist XML Database as a document backend and Sesame-compatible triple stores for storing annotations. However, they're not yet fully functional.
+
+2. Under the administrative interface at /admin, "Configure Workers" tab:
+
+Register all Gearman servers that will be used for the job distribution.
+
 ### Registering a Corpus
+
+Under the administrative interface at /admin, "Add Corpus" tab:
+
+ * Select an existing path at the File System where the frontend is running.
+ * The corpus needs to follow the following naming convention:
+ ```
+  /corpus
+         /foo
+             /foo.tex
+         /bar
+             /bar.tex
+         ...
+         /baz
+             /foobar
+                    /foobar.tex
+ ```
+   i.e. each corpus entry ```foo.tex``` needs to be in a subdirectory ```foo``` named after the main TeX source.
+ * "Entry setup" - working with a corpus of single TeX files is much more efficient than one of complex TeX bundles
+ * Overwrite - in case the import is interrupted, not specifying the overwrite option would continue from the last imported document. If specified, the import would start from scratch.
 
 ### Corpus reports
 
