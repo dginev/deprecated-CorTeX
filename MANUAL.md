@@ -82,19 +82,19 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
 
    ```json
    {
-      workload=>'Document content in representation R1',
-      entry=>'Internal entry ID',
-      service_foo_v0_1=>'RDF annotations for prerequisite service foo',
-      service_bar_v0_1=>'RDF annotations for prerequisite service bar'
+      workload:"Document content in representation R1",
+      entry:"Internal entry ID",
+      service_foo_v0_1:"RDF annotations for prerequisite service foo",
+      service_bar_v0_1:"RDF annotations for prerequisite service bar"
    }
    ```
  * Converter Output/Response:
 
    ```json
    {
-      status=>'One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)',
-      log=>"Severity:category:what details\n ...", // one message per line
-      document=>'Document content in representation R2'
+      status:"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
+      log:"Severity:category:what details\n ...", // one message per line
+      document:"Document content in representation R2"
    }
    ```
 
@@ -102,9 +102,9 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
 
    ```json
    {
-      status=>'One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)',
-      log=>"Severity:category:what details\n ...", // one message per line
-      annotations=>'Annotation triples in RDF representation R2'
+      status:"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
+      log:"Severity:category:what details\n ...", // one message per line
+      annotations:"Annotation triples in RDF representation R2"
    }
    ```
 
@@ -114,9 +114,9 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
 
    ```json
    {
-      status=>'One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)',
-      log=>"Severity:category:what details\n ...", // one message per line
-      annotations=>'Annotation triples in RDF representation R2'
+      status:"One of: -1 (OK) -2 (Warning), -3 (Error), -4 (Fatal)",
+      log:"Severity:category:what details\n ...", // one message per line
+      annotations:"Annotation triples in RDF representation R2"
    }
    ```
 
