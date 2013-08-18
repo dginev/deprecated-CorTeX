@@ -33,8 +33,9 @@ There is support for using the eXist XML Database as a document backend and Sesa
 
 Under the administrative interface at /admin, "Add Corpus" tab:
 
- * Select an existing path at the File System where the frontend is running.
- * The corpus needs to follow the following naming convention:
+ * Select an existing path at the machine running the frontend.
+ * Make sure the path is read+writeable by www-data, or the user running cortex-frontend
+ * The corpus needs to obey the following naming convention:
 
  ```
   /corpus
@@ -47,8 +48,9 @@ Under the administrative interface at /admin, "Add Corpus" tab:
              /foobar
                     /foobar.tex
  ```
-   i.e. each corpus entry ```foo.tex``` needs to be in a subdirectory ```foo``` named after the main TeX source.
- * "Entry setup" - working with a corpus of single TeX files is much more efficient than one of complex TeX bundles
+   i.e. each corpus entry ```foo.tex``` needs to be in a subdirectory ```foo``` named after the main TeX source. The nesting of subdirectories could go arbitrarily deep. Larger corpora would need a deeper directory structure in order not to bog down the file system. As a rule of thumb, keeping directory contents at 2000 or less files/subdirectories is a good treshold.
+
+ * "Entry setup" - working with a corpus of single TeX files is much more efficient than one of complex TeX bundles, in terms of communication overhead. Complex setups require compression/extraction steps.
  * Overwrite - in case the import is interrupted, not specifying the overwrite option would continue from the last imported document. If specified, the import would start from scratch, completely erasing all current data, services and results associated with the corpus.
 
 ### Corpus reports
@@ -72,7 +74,7 @@ I can't emphasize this enough -- developing a CorTeX service is **simple** and *
 
  * A CorTeX service is, from the distribution perspective, a **[Gearman worker](http://gearman.org/manual:workers)**
  * Each service is a **self-contained black box** that takes an input payload and returns an output payload, both of which are **JSON encoded**.
- * A CorTeX service can be written in **any** programming language, deployed on **any** machine with a Gearman worker library, with **no** further requirements.
+ * A CorTeX service can be written in **any** programming language with a Gearman Worker library, deployed on **any** machine connected to the internet, with **no** further requirements.
 
 The Input-Output syntax is exhaustively specified by the following example (**JSON**):
 
