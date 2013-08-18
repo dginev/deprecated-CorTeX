@@ -70,7 +70,7 @@ Each type of service can optionally request additional prerequisite annotations 
 
 ### Creating your first service 
 
-I can't emphasize this enough -- developing a CorTeX service is **simple** and **seamless** once you grock the API. There are three aspects to keep in mind:
+Developing a CorTeX service is **simple** and **seamless** once you grock the API. There are three aspects to keep in mind:
 
  * A CorTeX service is, from the distribution perspective, a **[Gearman worker](http://gearman.org/manual:workers)**
  * Each service is a **self-contained black box** that takes an input payload and returns an output payload, both of which are **JSON encoded**.
