@@ -9,6 +9,7 @@ $(document).ready(function() {
     var name = $("#service-name").val();
     var version = $("#service-version").val();
     var id = name+" v"+version;
+    id = id.toLowerCase();
     id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
     id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
     $("#service-id-label").text(id);
