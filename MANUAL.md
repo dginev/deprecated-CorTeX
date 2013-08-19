@@ -9,7 +9,31 @@ Based on your intended use of the CorTeX framework, you would find yourself in o
  * **[Reviewer workflow](#reviewer-workflow)** - overseeing the current processing runs and performing quality management
  * **[Annotation workflow](#annotation-workflow)** - performing the human component of various supervised and semi-supervised tasks.
 
-[TOC]
+## Table of Contents
+<ul>
+  <li><a href="#administrative-workflow">Administrative Workflow</a>
+  <ul>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#configuring-the-system-components">Configuring the system components</a></li>
+    <li><a href="#registering-a-corpus">Registering a Corpus</a></li>
+    <li><a href="#corpus-reports">Corpus reports</a></li>
+  </ul></li>
+  <li><a href="#developer-workflow">Developer Workflow</a>
+  <ul>
+    <li><a href="#creating-your-first-service">Creating your first service</a></li>
+    <li><a href="#deploying-your-first-service">Deploying your first Service</a></li>
+    <li><a href="#dependency-management">Dependency Management</a>
+    <ul>
+      <li><a href="#why-do-we-need-dependencies">Why do we need Dependencies?</a></li>
+      <li><a href="#adding-dependencies-to-your-service">Adding dependencies to your service</a></li>
+    </ul></li>
+    <li><a href="#reruns-and-updates">Reruns and Updates</a></li>
+    <li><a href="#service-reports">Service reports</a></li>
+    <li><a href="#examining-the-data">Examining the data</a></li>
+  </ul></li>
+  <li><a href="#reviewer-workflow">Reviewer workflow</a></li>
+  <li><a href="#annotation-workflow">Annotation workflow</a></li>
+</ul>
 
 ## Administrative Workflow 
 
