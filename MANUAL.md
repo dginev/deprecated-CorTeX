@@ -135,16 +135,43 @@ The developer interface, under '/dev', allows you to first register and later up
   * The **name** and **version** fields are used to create a unique identifier for your service within CorTeX
   * In case you prefer to use your own Gearman server, you can specify it in the **URL** field
   * You must always specify the **type** of your service - conversion, analysis or aggregation.
+  * Once you have chosen the type, you would need to specify the **formats** expected on input and output. The input format must be already known to the system as produced by one of the registered converters.
+  * For analyses and aggregation services, you can optionally specify an XPath expression that will send only relevant document fragments, rather than entire documents.
+  * For aggregation services, a name is needed for the resource created by the service (e.g. 2-Grams.xml)
   * [Dependency management](#dependency-management) deserves more detailed attention and we will cover it separately.
   * You can choose which **corpora** your service is to be enabled on before finally registering it.
 
 Don't worry about getting some of the fields wrong at first, you are always free to come back and update the service signature later on.
 
-Once you've hit "Add Service" and a confirmation message is displayed, CorTeX will start queueing jobs in Gearman addressed to your service, so whenever you start your Gearman worker it will get served jobs for each corpus document it has been enabled on.
+Once you've hit "Add Service" and a confirmation message is displayed, CorTeX will start queueing jobs in Gearman addressed to your service, so whenever you start your Gearman worker it will get served one job per document (fragment) for each corpus that it has been enabled on.
 
 Congratulations, you have registered your first CorTeX service! 
 
 ### Dependency Management
+
+#### Why do we need Dependencies?
+
+All initially imported corpora into the framework are collections of TeX documents. However, TeX is notoriously hard to process and parse and is not suited for automated analysis or rendering inside the browser. We find that different representations are good in serving different purposes, e.g. XHTML for parseability and native browser rendering, OMDoc for exposing the structural semantics of a document, Daisy to make documents accessible, etc. This briefly motivates the need for different conversion services. Sometimes, the conversion would not take the TeX source as input but the result of a previous conversion service, e.g. an ePub service could directly build on top of XHTML.
+
+The need for building on top of previous results is even more dramatic when it comes to analysis services. In traditional NLP there is a well-established sequence of ever increasing semanticization of a document, first exposing the syntax (e.g. tokenization, parts of speech), then shallow semantics (e.g. named entities, sentiment annotations) and finally deep semantics (e.g. logical forms of sentences, anaphora resolution, textual entailment).
+
+Certainly, a **dynamic programming** intuition is the most efficient one in such a setup - each step of such a pipeline would save its own results (final for some applications, intermediate for others), and a subsequent service could start where the previous step stopped. For example, a named-entity recognition service would depend on the document being converted to a parseable representation (e.g. XHTML), and then tokenized (words and sentence boundaries). More exotically, a converter that targets the OMDoc format, would depend on an array of analysis services (e.g. annotations for definitions, axioms, proofs), the stand-off results of which would be aggregated together into a semantic XML representation.
+
+#### Adding dependencies to your service
+
+Adding/removing dependencies for your application is easy to realize with the developer interface under '/dev'.
+
+The one mandatory dependency is the previous conversion service on which the current service is based. If you want to process the original TeX, choose the "import" service, otherwise select the service that generates your representation of choice. For most linguistic analysis purposes the official default recommendation is using the "TeX to TEI XHTML" as your conversion basis. As the name suggests, your input would then consist of a word- and sentence-tokenized XHTML document.
+
+The document created by the "Conversion" dependency will be available on input in the "workload" field of the JSON payload.
+
+Selecting prerequisite "Analyses" and "Resources" is optional, but when selected the data will be available on input in a field named after the unique identifier of the prerequisite service, as shown in [the API example](#creating-your-first-service).
+
+Details to keep in mind:
+ * You need to manually enable all prerequisites to be active on the corpus/corpora your service is enabled on, if they aren't enabled already. You can achieve that from the "Update Service" tab in the '/dev' interface.
+ * Upon updating the dependencies, all completed jobs will be queued for reconversion and the results will be lost.
+ * If a prerequisite service is not yet completed, or has completed with regular or fatal errors, the document it was processing will remain blocked for your service, until all prerequisites pass cleanly or only with warnings.
+ * Queueing any selection of documents for rerun will trigger a rerun for all services that depend on your service.
 
 ### Reruns and Updates
 
