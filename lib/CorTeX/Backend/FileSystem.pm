@@ -16,6 +16,7 @@ package CorTeX::Backend::FileSystem;
 
 use warnings;
 use strict;
+use Encode;
 
 use File::Slurp;
 use File::Path qw(make_path remove_tree);
@@ -89,7 +90,7 @@ sub fetch_entry {
   # Slurp the file and return:  
   if (-f $path ) {
     my $text = read_file( $path ) ;
-    return $text; }
+    return decode('UTF-8',$text); }
   else { return ; } }
 
 sub entry_to_url {
