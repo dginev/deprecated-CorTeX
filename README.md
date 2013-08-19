@@ -19,4 +19,4 @@ A general purpose processing framework for **Cor**pora of **TeX** documents
    project at Jacobs University.
  * The messaging conventions are motivated by work on standardizing [LaTeXML](http://dlmf.nist.gov/LaTeXML)'s log reports with Bruce Miller.
 
-For more details, consult the [Installation](INSTALL) instructions and the [Manual](MANUAL.md).
+For more details, consult the [Installation](INSTALL.md) instructions and the [Manual](MANUAL.md).
