@@ -27,9 +27,7 @@ Based on your intended use of the CorTeX framework, you would find yourself in o
       <li><a href="#why-do-we-need-dependencies">Why do we need Dependencies?</a></li>
       <li><a href="#adding-dependencies-to-your-service">Adding dependencies to your service</a></li>
     </ul></li>
-    <li><a href="#reruns-and-updates">Reruns and Updates</a></li>
-    <li><a href="#service-reports">Service reports</a></li>
-    <li><a href="#examining-the-data">Examining the data</a></li>
+    <li><a href="#reports-and-reruns">Reports and Reruns</a></li>
   </ul></li>
   <li><a href="#reviewer-workflow">Reviewer workflow</a></li>
   <li><a href="#annotation-workflow">Annotation workflow</a></li>
@@ -199,11 +197,16 @@ Details to keep in mind:
  * If a prerequisite service is not yet completed, or has completed with regular or fatal errors, the document it was processing will remain blocked for your service, until all prerequisites pass cleanly or only with warnings.
  * Queueing any selection of documents for rerun will trigger a rerun for all services that depend on your service.
 
-### Reruns and Updates
+### Reports and Reruns
 
-### Service reports
+The development of an analysis service only really starts after the service has been deployed and meets the real-world data of large-scale TeX corpora. There are several tools designed to help you spot prominent problems with your service, as long as you use the messaging conventions.
 
-### Examining the data
+ * Under '/service-report' you can select your service and get a high-level overview of all enabled corpora.
+ * Clicking on a corpus name of interest, you get a detailed report for the chosen corpus-server pair.
+ * In the detailed report, each message class is expandable and provides frequency statistics on severity, message category and message component.
+ * Zooming in the message component level redirects to a file browser, that allows you to inspect individual jobs - their **input** documents, **output** documents, annotations or resources, as well as the entire **log** of the job.
+
+At each level of magnification in the detailed report screen and the file browser, you have the opportunity to mark a selection of the documents as **queued for rerun**, providing a *diagnose-patch-test* workflow for debugging and development.
 
 ## Reviewer workflow
 
