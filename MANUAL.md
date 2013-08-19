@@ -9,6 +9,8 @@ Based on your intended use of the CorTeX framework, you would find yourself in o
  * **[Reviewer workflow](#reviewer-workflow)** - overseeing the current processing runs and performing quality management
  * **[Annotation workflow](#annotation-workflow)** - performing the human component of various supervised and semi-supervised tasks.
 
+[TOC]
+
 ## Administrative Workflow 
 
 ### Installation
