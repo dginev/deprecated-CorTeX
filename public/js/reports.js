@@ -160,8 +160,13 @@ function fetch_classic_report(corpus_name,service_name,component,countby) {
               }
               var level = component.split(":").length - 1;
               if ((level >= 3) || thisclass == 'ok severity') {
-                  window.location.href = 'retval_detail?corpus='+corpus_name+'&service='+service_name+
-                  '&component='+component+'&countby='+countby;
+                  window.location.href = "/retval_detail?"+
+                  $.param({
+                    "corpus":corpus_name,
+                    "service":service_name,
+                    "component":component,
+                    "countby":countby
+                  });
               }
               fetch_classic_report(corpus_name,service_name,component,countby);
           });
@@ -232,7 +237,7 @@ function fetch_classic_report(corpus_name,service_name,component,countby) {
 function getURLParameter(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
-    );
+    ).replace(/\+/g,' ');
 }
 
 function fetch_description(type,name) {

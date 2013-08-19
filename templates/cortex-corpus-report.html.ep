@@ -15,7 +15,8 @@ $(document).ready(function() {
   $("#corpus-name-select").change(function() {
     var option = $(this).find("option:selected");
     var corpus_name = option.val();
-    window.location.href = "/corpus-report?name="+corpus_name;
+    window.location.href = "/corpus-report?"+
+      $.param({"name":corpus_name});
   });
 });
 <% end %>

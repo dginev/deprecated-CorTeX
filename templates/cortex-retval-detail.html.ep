@@ -3,125 +3,131 @@
 <%= javascript 'js/reports.js' %>
 <%= javascript begin %>
 $(document).ready(function() {
-	var corpus_name = getURLParameter('corpus');
-	var service_name = getURLParameter('service');
-	var component = getURLParameter('component');
-	var countby = getURLParameter('countby');
-	$('.back-to-status-button').button({
-            icons: { primary: "ui-icon-circle-arrow-w" },
-            text: false
-        }).css({
-        	'cursor': 'pointer',
-            'float' : 'center',                        
-            'width': '25px'
-        }).click(function() {
-        	window.location.href = '/report?corpus='+corpus_name+'&service='+service_name+'&component='+component+'&countby='+countby;
-        });
-	$('.rerun-button').button({
-            icons: { primary: "ui-icon-refresh" },
-            text: false
-        }).css({
-        	'cursor': 'pointer',
-            'float' : 'center',                        
-            'width': '25px'
-        }).click(function() {
-		var prmstr = window.location.search.substr(1);
-		var prmarr = prmstr.split ("&");
-		var params = {};
+  var corpus_name = getURLParameter('corpus');
+  var service_name = getURLParameter('service');
+  var component = getURLParameter('component');
+  var countby = getURLParameter('countby');
+  $('.back-to-status-button').button({
+    icons: { primary: "ui-icon-circle-arrow-w" },
+    text: false
+  }).css({
+    'cursor': 'pointer',
+    'float' : 'center',                        
+    'width': '25px'
+  }).click(function() {
+    window.location.href = "/report?"+
+      $.param({               
+        "corpus":corpus_name,
+        "service":service_name,
+        "component":component,
+        "countby":countby
+      });
+  });
+  $('.rerun-button').button({
+          icons: { primary: "ui-icon-refresh" },
+          text: false
+      }).css({
+          'cursor': 'pointer',
+          'float' : 'center',                        
+          'width': '25px'
+      }).click(function() {
+      var prmstr = window.location.search.substr(1);
+      var prmarr = prmstr.split ("&");
+      var params = {};
 
-		for ( var i = 0; i < prmarr.length; i++) {
-    		var tmparr = prmarr[i].split("=");
-    		params[tmparr[0]] = tmparr[1];
-		}
+      for ( var i = 0; i < prmarr.length; i++) {
+          var tmparr = prmarr[i].split("=");
+          params[tmparr[0]] = tmparr[1];
+      }
 
-		var component = decodeURIComponent(params['component']);
-		var parts = component.split(':');
-		parts.shift();
-		var description='';
-		for (var part in parts) {
-		    var pair = parts[part].split(' ');
-		    if (pair.length>1) {
-		        description = description+"\n"+pair[1]+": "+pair[0]+"\n";
-		    }
-		}
+      var component = decodeURIComponent(params['component']);
+      var parts = component.split(':');
+      parts.shift();
+      var description='';
+      for (var part in parts) {
+          var pair = parts[part].split(' ');
+          if (pair.length>1) {
+              description = description+"\n"+pair[1]+": "+pair[0]+"\n";
+          }
+      }
 
-	    var confirmed = confirm("Mark for Rerun\n"+description);
-	    if (confirmed) {
-	        $.ajax({
-	            url: "/ajax",
-	            type: "POST",
-	            dataType: "json",
-	            data : {"action":"queue-rerun","corpus":corpus_name,"service":service_name,"component":component},
-	            cache: false,
-	            success: function(response) { 
-	                alert(response.message);
-	                window.location.reload(true);
-                }
-	        });
-	    }
-	});
-	$('.view-button').button().css({
-        	'cursor': 'pointer',
-            'float' : 'center',
-            //'width' : 30px
-        }).click(function() {
-        	var entry = $(this).parent().parent().find('td:nth-child(2)').text();
-        	var extension = $(this).text();
-        	var type;
-        	var index = $(this).parent().index();
-        	switch (index){
-        	 case 3: type="input"; break;
-        	 case 4: type="output"; break;
-        	 case 5: type="log"; break;
-        	}
-			extension = extension.slice( 1 );
-        	var inputconverter = "<%= $inputconverter %>";
-        	var redirect_link = "/browse?";
-        	var parameters =  $.param({
-        		"entry": entry,
-     			"extension": extension,
-     			"inputconverter": inputconverter,
-     			"type": type,
-        		"service": "<%= $service_name%>",
-        		"corpus": "<%= $corpus_name%>"});
-        	window.location.href = redirect_link+parameters; 
-        });
-	$('.entry-row').hover(function() {
-		var td = $(this).find('td').first();
-		var number = td.text();
-		td.attr("class",number);
-		td.html('<button class="entry-rerun-button">Rerun Entry</button>');
-		$('.entry-rerun-button').button({
-            icons: { primary: "ui-icon-refresh" },
-            text: false
-        }).css({
-        	'cursor': 'pointer',
-            'float' : 'center',                        
-            'width': '25px'
-        }).click(function() {
-		   var description='';
-		   var thisentry = $(this).parent().parent().find('td > a').text();
-		   var confirmed = confirm("Mark for Rerun\n"+thisentry);
-		   if (confirmed) {
-		      	$.ajax({
-		        	url: "/ajax",
-		        	type: "POST",
-		        	dataType: "json",
-		        	data : {"action":"queue-rerun","entry":thisentry,"corpus":corpus_name,"service":service_name},
-		        	cache: false,
-		        	success: function(response) { 
-		                alert (response.message);
-		                window.location.reload(true); }
-		    	});
-			}
-		});
-	},
-	function(){
-		var td = $(this).find('td').first();
-		var number = td.attr('class');
-		$('.entry-rerun-button').remove();
-		td.html(number);
-	});
+      var confirmed = confirm("Mark for Rerun\n"+description);
+      if (confirmed) {
+          $.ajax({
+              url: "/ajax",
+              type: "POST",
+              dataType: "json",
+              data : {"action":"queue-rerun","corpus":corpus_name,"service":service_name,"component":component},
+              cache: false,
+              success: function(response) { 
+                  alert(response.message);
+                  window.location.reload(true);
+              }
+          });
+      }
+  });
+  $('.view-button').button().css({
+          'cursor': 'pointer',
+          'float' : 'center',
+          //'width' : 30px
+      }).click(function() {
+          var entry = $(this).parent().parent().find('td:nth-child(2)').text();
+          var extension = $(this).text();
+          var type;
+          var index = $(this).parent().index();
+          switch (index){
+           case 3: type="input"; break;
+           case 4: type="output"; break;
+           case 5: type="log"; break;
+          }
+          extension = extension.slice( 1 );
+          var inputconverter = "<%= $inputconverter %>";
+          var redirect_link = "/browse?";
+          var parameters =  $.param({
+              "entry": entry,
+              "extension": extension,
+              "inputconverter": inputconverter,
+              "type": type,
+              "service": "<%= $service_name%>",
+              "corpus": "<%= $corpus_name%>"});
+          window.location.href = redirect_link+parameters; 
+      });
+  $('.entry-row').hover(function() {
+      var td = $(this).find('td').first();
+      var number = td.text();
+      td.attr("class",number);
+      td.html('<button class="entry-rerun-button">Rerun Entry</button>');
+      $('.entry-rerun-button').button({
+          icons: { primary: "ui-icon-refresh" },
+          text: false
+      }).css({
+          'cursor': 'pointer',
+          'float' : 'center',                        
+          'width': '25px'
+      }).click(function() {
+         var description='';
+         var thisentry = $(this).parent().parent().find('td > a').text();
+         var confirmed = confirm("Mark for Rerun\n"+thisentry);
+         if (confirmed) {
+              $.ajax({
+                  url: "/ajax",
+                  type: "POST",
+                  dataType: "json",
+                  data : {"action":"queue-rerun","entry":thisentry,"corpus":corpus_name,"service":service_name},
+                  cache: false,
+                  success: function(response) { 
+                      alert (response.message);
+                      window.location.reload(true); }
+              });
+          }
+      });
+  },
+  function(){
+      var td = $(this).find('td').first();
+      var number = td.attr('class');
+      $('.entry-rerun-button').remove();
+      td.html(number);
+  });
 });
 <% end %>
 <div>

@@ -726,12 +726,12 @@ helper queue_rerun => sub {
 
 #app->types->type(rdf => 'application/rdf+xml');
 #app->types->type(rdfxml => 'application/rdf+xml');
-app->types->type(rdfxml => 'text/html');
-app->types->type(tex => 'application/x-latex');
-app->types->type(log => 'text/html');
-app->types->type(html => 'text/html');
-app->types->type(xhtml => 'application/xhtml+xml');
-app->types->type(xml => 'application/xml');
+app->types->type(rdfxml => 'text/html; charset=utf-8');
+app->types->type(tex => 'application/x-latex; charset=utf-8');
+app->types->type(log => 'text/html; charset=utf-8');
+app->types->type(html => 'text/html; charset=utf-8');
+app->types->type(xhtml => 'application/xhtml+xml; charset=utf-8');
+app->types->type(xml => 'application/xml; charset=utf-8');
 app->start;
 
 __END__
