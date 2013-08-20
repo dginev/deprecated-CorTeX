@@ -21,7 +21,8 @@ use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(db_file_connect db_file_disconnect get_db_file_field set_db_file_field); # symbols to export on request
 
-our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+our $INSTALLDIR = $ENV{CORTEX_DB_DIR};
+($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
 
 
 sub db_file_connect {

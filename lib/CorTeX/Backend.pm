@@ -18,7 +18,8 @@ use strict;
 use File::Basename;
 use feature qw(switch);
 use Data::Dumper;
-our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+our ($INSTALLDIR) = $ENV{CORTEX_DB_DIR};
+($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $INSTALLDIR;
 
 sub new {
   my ($class,%opts)=@_;

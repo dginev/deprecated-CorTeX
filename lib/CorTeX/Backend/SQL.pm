@@ -21,7 +21,8 @@ use DBI;
 use Mojo::ByteStream qw(b);
 use CorTeX::Backend::SQLMetaAPI;
 use CorTeX::Backend::SQLTaskAPI;
-our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+my $INSTALLDIR = $ENV{CORTEX_DB_DIR};
+($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $INSTALLDIR;
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
