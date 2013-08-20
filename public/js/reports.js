@@ -237,7 +237,7 @@ function fetch_classic_report(corpus_name,service_name,component,countby) {
 function getURLParameter(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
-    ).replace(/\+/g,' ');
+    ).replace(/\+/g,' ').replace(/%3A/g,':');
 }
 
 function fetch_description(type,name) {
