@@ -20,6 +20,7 @@ use Data::Dumper;
 
 use FindBin;
 use File::Spec::Functions qw/catdir catfile/;
+use File::Slurp;
 my ($RealBin_safe,$libdir);
 BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
@@ -103,6 +104,7 @@ sub stop_child {
   # Send a SIGTERM to the child job
   kill 15, $pid;
   waitpid($pid,0); }
+sub stop_immediate {exit 0;}
 
 sub setup_changed {
   my $reinitialize_needed = 0;
@@ -131,25 +133,49 @@ sub register_defaults {
   readdir($dh);
   closedir $dh;
   my @default_service_ids = ();
+  my @descriptions = ();
+  # First, lookup all registered services (don't register anything twice)
+  my $dbhandle = db_file_connect($dbfile_path); 
+  require CorTeX::Backend;
+  my $backend = CorTeX::Backend->new(%$dbhandle);
+  my $taskdb = $backend->taskdb;
+  my $current_services = $taskdb->current_services;
+  db_file_disconnect($dbhandle);
+  my @all_services = (@{$current_services->{1}},@{$current_services->{2}},@{$current_services->{3}});
+
+  # Second, read all files in
   if (@default_service_descriptions) {
-    use File::Slurp;
-    my $dbhandle = db_file_connect($dbfile_path); 
-    require CorTeX::Backend;
-    my $backend = CorTeX::Backend->new(%$dbhandle);
-    my $current_services = $backend->taskdb->current_services;
-    db_file_disconnect($dbhandle);
     foreach my $service_file(@default_service_descriptions) {
       my $service_description = decode_json(read_file( "$services_dir/$service_file" ));
       my ($id) =  split(/.json/,$service_file);
       push @default_service_ids, $id;
       my $name = $service_description->{name};
       $service_description->{id} = $id;
-      my @all_services = (@{$current_services->{1}},@{$current_services->{2}},@{$current_services->{3}});
       unless (grep {$name eq $_} @all_services) {
-        $backend->taskdb->register_service(%$service_description);
+        push @descriptions, $service_description;
       }
     }
   }
+  # Order descriptions so that least dependencies go first
+  my @ordered_descriptions = ();
+  while (@descriptions) {
+    my $service = shift @descriptions;
+    my @foundations = ($service->{inputconverter},@{$service->{requires_analyses}},@{$service->{requires_aggregation}});
+    my $satisfied = 1;
+    foreach my $name(@foundations) {
+      $satisfied = 0 unless grep {$name eq $_} @all_services;
+      last unless $satisfied;  }
+    if ($satisfied) {
+      push @all_services, $service->{name};
+      push @ordered_descriptions, $service;
+    } else {
+      push @descriptions, $service;
+    }
+  }
+  foreach my $service_description(@ordered_descriptions) {
+    $taskdb->register_service(%$service_description);
+  }
+
   return \@default_service_ids;
 }
 
