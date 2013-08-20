@@ -1,0 +1,196 @@
+#!/usr/bin/perl
+# /=====================================================================\ #
+# |  CorTeX Framework                                                   | #
+# | Gears - Scheduler and Gearman Client Manager                        | #
+# |=====================================================================| #
+# | Part of the LaMaPUn project: https://trac.kwarc.info/lamapun/       | #
+# |  Research software, produced as part of work done by:               | #
+# |  the KWARC group at Jacobs University                               | #
+# | Copyright (c) 2012                                                  | #
+# | Released under the GNU Public License                               | #
+# |---------------------------------------------------------------------| #
+# | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
+# | http://kwarc.info/people/dginev                            (o o)    | #
+# \=========================================================ooo==U==ooo=/ #
+use strict;
+use warnings;
+use Encode;
+use JSON::XS qw(encode_json decode_json);
+use Data::Dumper;
+
+use FindBin;
+use File::Spec::Functions qw/catdir catfile/;
+my ($RealBin_safe,$libdir);
+BEGIN {
+  $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
+  $RealBin_safe = $1;
+  die 'Fatal:IO:tainted RealBin was tainted! Failing...'
+   unless ($RealBin_safe && (-e catfile($RealBin_safe,'cortex-client')));
+  $libdir = catdir($RealBin_safe,"..","lib"); }
+if (-d $libdir) { # If started locally, consult ../lib
+  use lib $libdir; }
+
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use CorTeX::Util::Compare qw(same_set);
+use CorTeX::Backend;
+use Unix::Processors;
+
+my $check_interval = 10;
+
+# Make sure we're terminating when requested to:
+$SIG{'INT'} = \&stop_all; # Interrupt handler
+$SIG{'HUP'} = \&stop_all; # Apache Hangup handler
+$SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
+$SIG{'TERM'} = \&stop_all; # TERM handler
+
+# Set up global state
+my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
+my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
+$Cache->{processor_multiplier} = 2 * Unix::Processors->new->max_online;
+my $db_handle = db_file_connect;
+my $backend = CorTeX::Backend->new(%$db_handle);
+db_file_disconnect($db_handle);
+# Register default services
+$Cache->{default_service_ids} = register_defaults();
+# Start cron loop managing the client and worker children
+
+while (1) { # Every minute, check:
+  # Reinit, When servers or backends change
+  if (setup_changed()) {
+    # Halt what we're doing
+    stop_children();
+    # Add/update all default services (if necessary)
+    # Grab a backend with the updated info
+    $db_handle = db_file_connect;
+    $backend = CorTeX::Backend->new(%$db_handle);
+    # Make sure we clean up after we halted
+    $backend->taskdb->mark_limbo_entries_queued;
+    db_file_disconnect($db_handle);
+    # Start clients
+    spawn_clients(); }
+
+  my $taskdb = $backend->taskdb;
+  # In case things just died away, respawn them:
+  spawn_clients() unless (@{$Cache->{clients}} > 0);
+  # Check again in a minute...
+  sleep $check_interval; }
+
+sub spawn_clients {
+  my @servers = @{$Cache->{servers}};
+  # Servers x processors = # clients
+  for my $num(1..($Cache->{processor_multiplier}*scalar(@servers))) {
+    # Fork a job for each one!
+    my $pid = fork();
+    if ($pid == 0) {
+      exec(catfile($RealBin_safe,"cortex-client"),@servers);
+    } else {
+      print STDERR "Started Client #$num : process $pid\n";
+      push @{$Cache->{clients}}, $pid;
+    }
+  }}
+
+sub stop_all {
+  stop_children();
+  stop_immediate(); }
+sub stop_children {
+  stop_clients(); }
+sub stop_clients {
+  stop_child($_) foreach @{$Cache->{clients}};
+  $Cache->{clients} = []; }
+sub stop_child {
+  my ($pid) = @_;
+  # Send a SIGTERM to the child job
+  kill 15, $pid;
+  waitpid($pid,0); }
+
+sub setup_changed {
+  my $reinitialize_needed = 0;
+  $db_handle = db_file_connect;
+  my $sesame_url = $db_handle->{sesame_url}||'';
+  my $exist_url = $db_handle->{exist_url}||'';
+  my @servers = split("\n",$db_handle->{gearman_urls}||'');
+  db_file_disconnect($db_handle);
+  if ($Cache->{exist_url} ne $exist_url) {
+    $reinitialize_needed = 1;
+    $Cache->{exist_url} = $exist_url; }
+  if ($Cache->{sesame_url} ne $sesame_url) {
+    $reinitialize_needed = 1;
+    $Cache->{sesame_url} = $sesame_url; }
+  if (! same_set($Cache->{servers},\@servers)) {
+    $reinitialize_needed = 1;
+    @{$Cache->{servers}} = @servers; }
+  return $reinitialize_needed; }
+
+sub register_defaults {
+  our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+  my $services_dir = $INSTALLDIR."/Default";
+  opendir(my $dh, $services_dir)
+   || die "can't opendir $services_dir: $!";
+  my @default_service_descriptions = grep { /\.json$/ && -f "$services_dir/$_" }
+  readdir($dh);
+  closedir $dh;
+  my @default_service_ids = ();
+  if (@default_service_descriptions) {
+    use File::Slurp;
+    my $dbhandle = db_file_connect; 
+    require CorTeX::Backend;
+    my $backend = CorTeX::Backend->new(%$dbhandle);
+    my $current_services = $backend->taskdb->current_services;
+    db_file_disconnect($dbhandle);
+    foreach my $service_file(@default_service_descriptions) {
+      my $service_description = decode_json(read_file( "$services_dir/$service_file" ));
+      my ($id) =  split(/.json/,$service_file);
+      push @default_service_ids, $id;
+      my $name = $service_description->{name};
+      $service_description->{id} = $id;
+      my @all_services = (@{$current_services->{1}},@{$current_services->{2}},@{$current_services->{3}});
+      unless (grep {$name eq $_} @all_services) {
+        $backend->taskdb->register_service(%$service_description);
+      }
+    }
+  }
+  return \@default_service_ids;
+}
+
+__END__
+
+=pod 
+
+=head1 NAME
+
+C<cortex-gears> - Scheduler of the CorTeX framework
+
+=head1 SYNOPSIS
+
+TODO
+
+=head1 DESCRIPTION
+
+TODO
+
+=head1 Gearman Installation
+
+Under Debian-based systems:
+ sudo apt-get install
+   gearman
+   gearman-job-server
+   gearman-tools
+   gearman-server
+   mod-gearman-tools
+   libgearman-client-async-perl
+   libmodule-install-xsutil-perl
+   libgearman-dev
+
+   cpan Gearman::XS::Client
+   cpan Gearman::XS::Worker
+=head1 AUTHOR
+
+Deyan Ginev <d.ginev@jacobs-university.de>
+
+=head1 COPYRIGHT
+
+ Research software, produced as part of work done by 
+ the KWARC group at Jacobs University Bremen.
+ Released under the GNU Public License
+
+=cut

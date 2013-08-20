@@ -83,11 +83,19 @@ sudo apt-get install gearman libfile-slurp-perl\
      -XX:PermSize=512m -XX:MaxPermSize=512m -XX:+DisableExplicitGC"
     ```
 
-3. Deploying a Frontend
+3. Installing CorTeX 
+
+  ```$ perl Makefile.PL ; make ; make test ; sudo make install```
+
+4. Deploying a Job Server
+
+  ```$ sudo service cortex-job-server start```
+
+5. Deploying a Frontend
 
   **NOTE:** If you're using morbo for development, disable the watch mechanism as the SQLite database will keep changing and the server will constantly restart. Instead, run ```morbo``` as follows:
 
-  ``` morbo -w /dev/null cortex-frontend ```
+  ``` morbo -w /dev/null bin/cortex-frontend ```
 
   3.1. Apache + Mod_Perl and Plack
 
@@ -130,7 +138,7 @@ sudo apt-get install gearman libfile-slurp-perl\
     <Location />
       SetHandler perl-script
       PerlHandler Plack::Handler::Apache2
-      PerlSetVar psgi_app /path/to/CorTeX/cortex-frontend
+      PerlSetVar psgi_app /path/to/CorTeX/bin/cortex-frontend
     </Location>
 
     ErrorLog /var/log/apache2/cortex.error.log

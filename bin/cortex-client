@@ -20,12 +20,14 @@ use JSON::XS qw(decode_json encode_json);
 
 use FindBin;
 my ($RealBin_safe,$libdir);
+use File::Basename 'dirname';
+use File::Spec::Functions qw/catdir catfile/;
 BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
   $RealBin_safe = $1;
   die 'Fatal:IO:tainted RealBin was tainted! Failing...'
-   unless ($RealBin_safe && (-e $RealBin_safe.'/cortex-client')); 
-  $libdir = $RealBin_safe."/lib"; }
+   unless ($RealBin_safe && (-e catfile($RealBin_safe,'cortex-client'))); 
+  $libdir = catdir($RealBin_safe,"..","lib"); }
 
 if (-d $libdir) {
   use lib $libdir;}
@@ -35,6 +37,13 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Data qw(parse_log);
 use AnyEvent::Gearman;
 
+# Make sure we're terminating when requested to:
+$SIG{'INT'} = \&stop_immediate; # Interrupt handler
+$SIG{'HUP'} = \&stop_immediate; # Apache Hangup handler
+$SIG{'KILL'} = \&stop_immediate; # Just good-old KILL handler
+$SIG{'TERM'} = \&stop_immediate; # TERM handler
+sub stop_immediate { exit 0; }
+
 # Grab a TaskDB
 my $db_handle = db_file_connect;
 my $backend = CorTeX::Backend->new(%$db_handle);
@@ -42,7 +51,6 @@ my $taskdb = $backend->taskdb;
 my $docdb = $backend->docdb;
 my $metadb = $backend->metadb;
 db_file_disconnect();
-
 
 ### MAIN ###
 # Event loop between DB Polling and Gearman dispatching

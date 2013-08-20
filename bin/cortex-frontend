@@ -20,63 +20,36 @@ use Encode;
 use HTML::Entities;
 use File::Basename 'dirname';
 use File::Spec::Functions 'catdir';
-my ($libdir, $cortexgears);
+my ($libdir,$template_dir,$public_dir);
 my $FILE_BASE;
 BEGIN {
     $FILE_BASE = dirname(__FILE__);
-    $cortexgears = $FILE_BASE.'/cortex-gears';
-    $libdir = catdir($FILE_BASE,"lib");
+    $libdir = catdir($FILE_BASE,"..","lib");
+    $template_dir = catdir($FILE_BASE,"..","templates");
+    $public_dir = catdir($FILE_BASE,"..","public");
 }
-if (-d $libdir) {
+if (-d $libdir) { # If started locally, consult local lib.
   use lib $libdir;
 }
+unless ((-d $template_dir) && (-d $public_dir)) {
+  die "Can't locate the templates/ and public/ web application directories!";
+}
+
 use feature qw(switch);
 use Data::Dumper;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
-# TODO: Make this customizable from the interface (if that makes sense?)
-our $MAIN_REPOS = 'buildsys';
-our $META_GRAPH = 'meta';
-our $BUILD_SYSTEM_URL = 'http://buildsys.mathweb.org';
-our $gears_workhorse_pid;
 
-# TODO: Rethink where the Cron Builder / Gears Client belongs
-# 1. First Fork a CorTeX Gears Builder
-$SIG{CHLD} = 'IGNORE'; # Let them die!
-$SIG{'INT'} = \&stop_cron; # Interrupt handler
-$SIG{'HUP'} = \&stop_cron; # Apache Hangup handler
-$SIG{'KILL'} = \&stop_cron; # Just good-old KILL handler
-my $dbhandle = db_file_connect;
-my $saved_pid = $dbhandle->{gears_workhorse_pid};
-db_file_disconnect($dbhandle);
-my $gears_alive = ($saved_pid && (kill 0, $saved_pid));
-if (!$gears_alive) { # Non booted, start a new one:
-  $gears_workhorse_pid = fork();
-  if ($gears_workhorse_pid == 0) {
-    exec($cortexgears);
-  }
-  $dbhandle = db_file_connect;
-  $dbhandle->{gears_workhorse_pid} = $gears_workhorse_pid;
-  db_file_disconnect($dbhandle);
-}
-sub stop_cron {
-   if ($gears_workhorse_pid) {
-     kill 2, $gears_workhorse_pid;
-     waitpid($gears_workhorse_pid,0);
-   }
-   exit 0;
-}
-
-
-# 2. Now start the web server
+# Prepare the web service
 use Mojolicious::Lite;
 use Mojo::Util qw/xml_escape/;
 use CorTeX::Import;
 use CorTeX::Backend;
 
-our $version = '0.1';
+use vars qw($VERSION);
+$VERSION  = "0.1";
 
-push @{app->renderer->paths}, catdir($FILE_BASE, 'templates');
-push @{app->static->paths},   catdir($FILE_BASE, 'public');
+push @{app->renderer->paths}, $template_dir;
+push @{app->static->paths},   $public_dir;
 $ENV{MOJO_HOME} = $FILE_BASE;
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 10485760; # 10 MB file upload limit
 $ENV{MOJO_REQUEST_TIMEOUT} = 600;# 10 minutes;
@@ -231,8 +204,8 @@ get '/retval_detail' => sub {
   my $limit = $self->param('limit') || 100;
   my $entries = $taskdb->get_custom_entries({severity=>$component->[1],category=>$component->[2],
                                                       what=>$component->[3],from=>$from,limit=>$limit,
-                                                      corpus=>$corpus_name,service=>$service_name,
-                                                      repository=>$MAIN_REPOS, graph=>$META_GRAPH});
+                                                      corpus=>$corpus_name,service=>$service_name});
+                                                      #repository=>$MAIN_REPOS, graph=>$META_GRAPH});
   foreach my $entry(@$entries) {
     $entry->[2] = $backend->docdb->entry_to_url($entry->[0]); }
   $self->stash(severity=>$component->[1]);
@@ -249,7 +222,7 @@ get '/retval_detail' => sub {
   my $count=0;
   if ($component->[1] ne 'ok') {
     my $whats = $backend->taskdb->get_result_summary(
-      repository=>$MAIN_REPOS,
+      #repository=>$MAIN_REPOS,
       corpus=>$corpus_name,
       service=>$service_name,
       countby=>$countby,
@@ -259,7 +232,7 @@ get '/retval_detail' => sub {
     $count = $whats->{$component->[3] ? $component->[3] : $component->[2]};
   } else {
     my $whats = $backend->taskdb->get_result_summary(
-      repository=>$MAIN_REPOS,
+      #repository=>$MAIN_REPOS,
       countby=>$countby,
       corpus=>$corpus_name,
       service=>$service_name);
@@ -426,9 +399,9 @@ helper add_corpus => sub {
     root=>$path,
     upper_bound=>$upper_bound,
     overwrite=>$overwrite,
-		main_repos=>$MAIN_REPOS,
-		meta_graph=>$META_GRAPH,
-		build_system_url=>$BUILD_SYSTEM_URL,
+		#main_repos=>$MAIN_REPOS,
+		#meta_graph=>$META_GRAPH,
+		#build_system_url=>$BUILD_SYSTEM_URL,
     entry_setup=>$entry_setup,
     verbosity=>1, 
     %$dbfile);
@@ -709,8 +682,8 @@ helper queue_rerun => sub {
     # We only want a single entry here;
     my $queued_success = $backend->taskdb->mark_entry_queued(
       {entry=>$self->param('entry'),
-      corpus=>$corpus_name,service=>$service_name,
-      graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+      corpus=>$corpus_name,service=>$service_name});
+      #graph=>$META_GRAPH,repository=>$MAIN_REPOS});
     $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
   } else {
     my $component = [ split(/:/, $self->param('component')) ];
@@ -719,8 +692,8 @@ helper queue_rerun => sub {
     $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
     my $queued_success = $backend->taskdb->mark_custom_entries_queued(
       {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
-        corpus=>$corpus_name,service=>$service_name,
-        graph=>$META_GRAPH,repository=>$MAIN_REPOS});
+        corpus=>$corpus_name,service=>$service_name});
+        #graph=>$META_GRAPH,repository=>$MAIN_REPOS});
     $self->render(json=>{message=>$queued_success ? "Successfully queued!" : "Failed. Please contact your sysadmin."});
   }
 };
