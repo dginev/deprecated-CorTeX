@@ -106,8 +106,8 @@ $(document).ready(function() {
           'width': '25px'
       }).click(function() {
          var description='';
-         var thisentry = $(this).parent().parent().find('td > a').text();
-         var confirmed = confirm("Mark for Rerun\n"+thisentry);
+         var thisentry = $(this).parent().next().text();
+         var confirmed = confirm("Mark entry for Rerun:\n"+thisentry);
          if (confirmed) {
               $.ajax({
                   url: "/ajax",

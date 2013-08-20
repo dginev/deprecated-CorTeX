@@ -387,9 +387,10 @@ sub mark_entry_queued {
     $count += $count_complete_foundations->fetchrow_array();
   }
   my $status = -5 - scalar(@required_services) + $count;
-  print STDERR "Required: ",scalar(@required_services),"\n";
-  print STDERR "Ready foundations: $count\n";
-  print STDERR "Set new status: $status\n";
+  # print STDERR "Required: ",scalar(@required_services),"\n";
+  # print STDERR "Ready foundations: $count\n";
+  # print STDERR "Set new status: $status\n";
+  # print STDERR "Queuing with data: \n",Dumper($data);
   my $queue_entry_query = $db->prepare("UPDATE tasks SET status=?
       WHERE corpusid=? AND serviceid=? and entry=?");
 
@@ -429,6 +430,7 @@ sub mark_custom_entries_queued {
   my $rerun_query;
   my @required_services = $db->serviceid_requires($serviceid);
   my $status = -5 - scalar(@required_services);
+
   # Start a transaction
   $db->do("BEGIN TRANSACTION");
   if ($what) { # We have severity, category and what
