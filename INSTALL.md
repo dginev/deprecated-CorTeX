@@ -133,6 +133,7 @@ sudo apt-get install gearman libfile-slurp-perl\
     <Perl>
       $ENV{PLACK_ENV} = 'production';
       $ENV{MOJO_HOME} = '/path/to/CorTeX';
+      $ENV{CORTEX_DB_DIR} = '/path/to/CorTeX/lib/CorTeX';
     </Perl>
 
     <Location />

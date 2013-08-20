@@ -48,6 +48,8 @@ use CorTeX::Backend;
 use vars qw($VERSION);
 $VERSION  = "0.1";
 
+my $dbfile_path = $ENV{CORTEX_DB_DIR};
+
 push @{app->renderer->paths}, $template_dir;
 push @{app->static->paths},   $public_dir;
 $ENV{MOJO_HOME} = $FILE_BASE;
@@ -73,7 +75,7 @@ get '/overview' => sub {
 
 get '/admin' => sub {
   my $self = shift;
-  my $dbfile = db_file_connect;
+  my $dbfile = db_file_connect($dbfile_path);
   $self->stash(current_exist_url=>$dbfile->{exist_url});
   $self->stash(current_sesame_url=>$dbfile->{sesame_url});
   $self->stash(current_proxy_url=>$dbfile->{proxy_url});
@@ -188,7 +190,7 @@ post '/ajax' => sub {
 
 get '/retval_detail' => sub {
   my $self = shift;
-  my $dbfile = db_file_connect();
+  my $dbfile = db_file_connect($dbfile_path);
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
   my $taskdb = $backend->taskdb;
@@ -249,7 +251,7 @@ get '/retval_detail' => sub {
 
 get '/browse' => sub {
   my $self = shift;
-  my $dbfile = db_file_connect();
+  my $dbfile = db_file_connect($dbfile_path);
   my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
   db_file_disconnect($dbfile);
   my $corpus_name = $self->param("corpus");
@@ -329,7 +331,7 @@ get '/browse' => sub {
 
 helper backend => sub {
   my $self = shift;
-  my $dbfile = db_file_connect;
+  my $dbfile = db_file_connect($dbfile_path);
   my $backend = CorTeX::Backend->new(%$dbfile);
   $dbfile = db_file_disconnect;
   return $backend;
@@ -337,7 +339,7 @@ helper backend => sub {
 
 helper register_proxy => sub {
   my $self = shift;
-  my $dbfile = db_file_connect;
+  my $dbfile = db_file_connect($dbfile_path);
   $dbfile->{proxy_url} = $self->param('http-proxy') if defined $self->param('http-proxy');
   db_file_disconnect($dbfile);
   $self->render(json=>{message=>"New Proxy URL registered!"});
@@ -363,7 +365,7 @@ helper register_databases => sub {
     $self->render(json=>{message=>"Sesame URL fails to connect, registration cancelled."});}
   # TODO: Also check whether MySQL and SQLite are accessible AND writeable
   else {
-    my $dbfile = db_file_connect;
+    my $dbfile = db_file_connect($dbfile_path);
     foreach (keys %o) {
       $dbfile->{$_} = $o{$_};  
     }
@@ -373,7 +375,7 @@ helper register_databases => sub {
 };
 helper register_workers => sub {
   my $self = shift;
-  my $dbfile = db_file_connect;
+  my $dbfile = db_file_connect($dbfile_path);
   my @urls = grep (length($_)>0, $self->param('gearman-urls'));
   $dbfile->{gearman_urls} = join("\n",@urls);
   db_file_disconnect($dbfile);
@@ -392,7 +394,7 @@ helper add_corpus => sub {
     $self->render(json=>{message=>"Please enter a valid file path to the corpus!"});
     return;
   }
-  my $dbfile = db_file_connect();
+  my $dbfile = db_file_connect($dbfile_path);
   my $upper_bound = $self->param('upper-bound');
   my $entry_setup = $self->param('entry-setup');
   my $importer = CorTeX::Import->new(
@@ -474,7 +476,7 @@ helper service_description => sub {
 helper service_report => sub {
   my ($self) = @_;
   my $service_name = $self->param("name");
-  my $dbfile = db_file_connect();
+  my $dbfile = db_file_connect($dbfile_path);
   my $backend = CorTeX::Backend->new(%$dbfile);
   my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
@@ -512,7 +514,7 @@ helper service_report => sub {
 helper corpus_report => sub {
   my ($self) = @_;
   my $corpus_name = $self->param("name");
-  my $dbfile = db_file_connect();
+  my $dbfile = db_file_connect($dbfile_path);
   my $backend = CorTeX::Backend->new(%$dbfile);
   my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
