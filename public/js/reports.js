@@ -1,8 +1,10 @@
+var countdown;
+var interval = 60000;   //number of mili seconds between each call
 function fetch_report(type,name) {
   // delete any traces of previous reports
   var report_type = type+"-report";
-  $("#"+report_type).html('');
   if (!name) { // No name, no functionality
+    $("#"+report_type).html('');
     clearInterval(countdown); $("#countdown").html(''); return;}
   $('body').css('cursor', 'progress');
   $.ajax({
@@ -16,8 +18,6 @@ function fetch_report(type,name) {
       $("#message").html("<p><br><b>"+response.message+"</b><br></p>");
       $("#"+report_type).html(response.report);
       clearInterval(countdown);
-      //clearTimeout(alarm_t);
-      //alarm_t = setTimeout(function() { fetch_corpus_report(name); }, interval);
       var seconds_left = interval / 1000;
       countdown = setInterval(function() {
           $('#countdown').html('<p>Auto-refresh in '+(--seconds_left)+' seconds.</p>');
@@ -25,7 +25,7 @@ function fetch_report(type,name) {
           {
               $('#countdown').html('<p>Refreshing...</p>');
               clearInterval(countdown);
-              fetch_report("corpus",name);
+              fetch_report(type,name);
           }
       }, 1000);
     }

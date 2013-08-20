@@ -2,8 +2,6 @@
 % title 'CorTeX Framework - Corpus Reports';
 <%= javascript 'js/reports.js' %>
 <%= javascript begin %>
-var countdown;
-var interval = 60000;   //number of mili seconds between each call
 $(document).ready(function() {
   // Check if already a name has been requested:
   var corpus_name = getURLParameter("name");
