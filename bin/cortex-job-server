@@ -21,6 +21,7 @@ DAEMON=${exec_prefix}/local/bin/cortex-gears
 PIDDIR=/var/run/cortex-job-server
 PIDFILE=${PIDDIR}/cortex-job-server.pid
 #CORTEXUSER="cortex"
+#__CORTEX_DB_DIR__
 
 test -x ${DAEMON} || exit 0
 
@@ -34,17 +35,24 @@ start()
     mkdir ${PIDDIR}
     #chown ${CORTEXUSER} ${PIDDIR}
   fi
+  if ! test -d ${CORTEX_DB_DIR}
+  then
+    log_end_msg 1
+    log_warning_msg "Please set CORTEX_DB_DIR in cortex-job-server and rerun the make installation process."
+    exit 1
+  fi
   if start-stop-daemon \
     --start \
     --exec $DAEMON \
     --pidfile=$PIDFILE \
     --make-pidfile \
-    --background
+    --background \
+    -- ${CORTEX_DB_DIR}
   then
     log_end_msg 0
   else
     log_end_msg 1
-    log_warning_msg "Please take a look at the syslog"
+    log_warning_msg "Could not initialize cortex-gears!"
     exit 1
   fi
 }

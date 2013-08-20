@@ -5,7 +5,8 @@
 use ExtUtils::MakeMaker;
 use strict;
 use warnings;
-use FindBin;
+use File::Basename 'dirname';
+use File::Spec::Functions 'catdir';
 
 #======================================================================
 # Use "perl Makefile.PL <options>"
@@ -62,12 +63,18 @@ sub install_spawner_service {
 	push(@EXCLUSIONS,'blib/lib/CorTeX/MetaDB.db');
 	push(@EXCLUSIONS,'blib/lib/CorTeX/MetaDB.db');
 	push(@EXCLUSIONS,'blib/lib/CorTeX/.CorTeX.cache');
-	
+
+    my $FILE_BASE = dirname(__FILE__);
+	my $db_dir = File::Spec->rel2abs(catdir($FILE_BASE,"lib","CorTeX"));
+	$$MORE_MACROS{RECORD_DBDIR} = '$(PERLRUN) -pe \'s@\#__CORTEX_DB_DIR__@CORTEX_DB_DIR="'.$db_dir.'"@\'';
+
 	$MORE_MAKERULES .= <<'InstallService';
 # Copy the spawner service to /etc/init.d/
 pure_install :: $(INST_SCRIPT)/cortex-job-server
 
 $(INST_SCRIPT)/cortex-job-server: bin/cortex-job-server
-	$(CP) bin/cortex-job-server /etc/init.d/
+	$(RECORD_DBDIR) bin/cortex-job-server > $(INST_SCRIPT)/cortex-job-server
+	chmod +x $(INST_SCRIPT)/cortex-job-server
+	$(MV) $(INST_SCRIPT)/cortex-job-server /etc/init.d/
 InstallService
 }

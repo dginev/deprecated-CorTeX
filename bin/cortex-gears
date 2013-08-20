@@ -44,10 +44,11 @@ $SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
 $SIG{'TERM'} = \&stop_all; # TERM handler
 
 # Set up global state
-my ($MAIN_REPOS,$META_GRAPH,$BUILD_SYSTEM_URL) = @ARGV;
+my ($CORTEX_DB_DIR) = @ARGV;
+my $dbfile_path = catfile($CORTEX_DB_DIR,'.CorTeX.cache');
 my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
 $Cache->{processor_multiplier} = 2 * Unix::Processors->new->max_online;
-my $db_handle = db_file_connect;
+my $db_handle = db_file_connect($dbfile_path);
 my $backend = CorTeX::Backend->new(%$db_handle);
 db_file_disconnect($db_handle);
 # Register default services
@@ -61,7 +62,7 @@ while (1) { # Every minute, check:
     stop_children();
     # Add/update all default services (if necessary)
     # Grab a backend with the updated info
-    $db_handle = db_file_connect;
+    $db_handle = db_file_connect($dbfile_path);
     $backend = CorTeX::Backend->new(%$db_handle);
     # Make sure we clean up after we halted
     $backend->taskdb->mark_limbo_entries_queued;
@@ -105,7 +106,7 @@ sub stop_child {
 
 sub setup_changed {
   my $reinitialize_needed = 0;
-  $db_handle = db_file_connect;
+  $db_handle = db_file_connect($dbfile_path);
   my $sesame_url = $db_handle->{sesame_url}||'';
   my $exist_url = $db_handle->{exist_url}||'';
   my @servers = split("\n",$db_handle->{gearman_urls}||'');
@@ -132,7 +133,7 @@ sub register_defaults {
   my @default_service_ids = ();
   if (@default_service_descriptions) {
     use File::Slurp;
-    my $dbhandle = db_file_connect; 
+    my $dbhandle = db_file_connect($dbfile_path); 
     require CorTeX::Backend;
     my $backend = CorTeX::Backend->new(%$dbhandle);
     my $current_services = $backend->taskdb->current_services;
