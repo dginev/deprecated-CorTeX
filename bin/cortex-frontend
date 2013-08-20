@@ -19,7 +19,7 @@ use Encode;
 
 use HTML::Entities;
 use File::Basename 'dirname';
-use File::Spec::Functions 'catdir';
+use File::Spec::Functions qw/catdir catfile/;
 my ($libdir,$template_dir,$public_dir);
 my $FILE_BASE;
 BEGIN {
