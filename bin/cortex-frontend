@@ -49,6 +49,7 @@ use vars qw($VERSION);
 $VERSION  = "0.1";
 
 my $dbfile_path = $ENV{CORTEX_DB_DIR};
+$dbfile_path = catfile($dbfile_path,'.CorTeX.cache') if $dbfile_path;
 
 push @{app->renderer->paths}, $template_dir;
 push @{app->static->paths},   $public_dir;
