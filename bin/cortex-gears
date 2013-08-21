@@ -46,10 +46,10 @@ $SIG{'TERM'} = \&stop_all; # TERM handler
 
 # Set up global state
 my ($CORTEX_DB_DIR) = @ARGV;
-my $dbfile_path = catfile($CORTEX_DB_DIR,'.CorTeX.cache');
 my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
 $Cache->{processor_multiplier} = 2 * Unix::Processors->new->max_online;
-my $db_handle = db_file_connect($dbfile_path);
+my $db_handle = db_file_connect($CORTEX_DB_DIR);
+$db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
 my $backend = CorTeX::Backend->new(%$db_handle);
 db_file_disconnect($db_handle);
 # Register default services
@@ -63,7 +63,8 @@ while (1) { # Every minute, check:
     stop_children();
     # Add/update all default services (if necessary)
     # Grab a backend with the updated info
-    $db_handle = db_file_connect($dbfile_path);
+    $db_handle = db_file_connect($CORTEX_DB_DIR);
+    $db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
     $backend = CorTeX::Backend->new(%$db_handle);
     # Make sure we clean up after we halted
     $backend->taskdb->mark_limbo_entries_queued;
@@ -84,7 +85,7 @@ sub spawn_clients {
     # Fork a job for each one!
     my $pid = fork();
     if ($pid == 0) {
-      exec(catfile($RealBin_safe,"cortex-client"),@servers);
+      exec(catfile($RealBin_safe,"cortex-client"),$CORTEX_DB_DIR||'default',@servers);
     } else {
       print STDERR "Started Client #$num : process $pid\n";
       push @{$Cache->{clients}}, $pid;
@@ -108,7 +109,7 @@ sub stop_immediate {exit 0;}
 
 sub setup_changed {
   my $reinitialize_needed = 0;
-  $db_handle = db_file_connect($dbfile_path);
+  $db_handle = db_file_connect($CORTEX_DB_DIR);
   my $sesame_url = $db_handle->{sesame_url}||'';
   my $exist_url = $db_handle->{exist_url}||'';
   my @servers = split("\n",$db_handle->{gearman_urls}||'');
@@ -135,8 +136,8 @@ sub register_defaults {
   my @default_service_ids = ();
   my @descriptions = ();
   # First, lookup all registered services (don't register anything twice)
-  my $dbhandle = db_file_connect($dbfile_path); 
-  require CorTeX::Backend;
+  my $dbhandle = db_file_connect($CORTEX_DB_DIR); 
+  $db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
   my $backend = CorTeX::Backend->new(%$dbhandle);
   my $taskdb = $backend->taskdb;
   my $current_services = $taskdb->current_services;

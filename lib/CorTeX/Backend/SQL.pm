@@ -21,8 +21,8 @@ use DBI;
 use Mojo::ByteStream qw(b);
 use CorTeX::Backend::SQLMetaAPI;
 use CorTeX::Backend::SQLTaskAPI;
-my $INSTALLDIR = $ENV{CORTEX_DB_DIR};
-($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $INSTALLDIR;
+my $CORTEX_DB_DIR = $ENV{CORTEX_DB_DIR};
+($CORTEX_DB_DIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $CORTEX_DB_DIR;
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
@@ -39,10 +39,11 @@ sub new {
   $options{query_cache} = $input{query_cache} // {};
   $options{handle} = $input{handle};
   $options{metadb} = $input{metadb};
+  $options{CORTEX_DB_DIR} = $input{CORTEX_DB_DIR} // $CORTEX_DB_DIR;
   if (!$options{sqldbname}) {
     if ($options{sqldbms} eq 'SQLite') {
       # Default SQLite db:
-      $options{sqldbname} = "$INSTALLDIR/TaskDB.db"; } 
+      $options{sqldbname} = $options{CORTEX_DB_DIR}."/TaskDB.db"; } 
     else {
       # Default MySQL db:
       $options{sqldbname} = 'cortex';

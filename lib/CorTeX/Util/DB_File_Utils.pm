@@ -21,15 +21,16 @@ use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(db_file_connect db_file_disconnect get_db_file_field set_db_file_field); # symbols to export on request
 
-our $INSTALLDIR = $ENV{CORTEX_DB_DIR};
-($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
+our $CORTEX_DB_DIR = $ENV{CORTEX_DB_DIR};
+($CORTEX_DB_DIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $CORTEX_DB_DIR;
 
 
 sub db_file_connect {
-  my ($DB_FILE_PATH) = @_;
+  my ($DB_FILE_DIR) = @_;
+  $DB_FILE_DIR //= $CORTEX_DB_DIR;
   # If we're running locally, the guessed path is OK,
   # but under Apache or a Linux service, the safe way is to path the file as an argument
-  $DB_FILE_PATH = "$INSTALLDIR/.CorTeX.cache" unless $DB_FILE_PATH;
+  my $DB_FILE_PATH = "$DB_FILE_DIR/.CorTeX.cache";
   my $DB_FILE_REF = {};
   # When server is starting up, check if the DB file exists, otherwise write it with the expected
   # eXist and Sesame defaults

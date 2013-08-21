@@ -18,11 +18,12 @@ use strict;
 use File::Basename;
 use feature qw(switch);
 use Data::Dumper;
-our ($INSTALLDIR) = $ENV{CORTEX_DB_DIR};
-($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $INSTALLDIR;
+our ($CORTEX_DB_DIR) = $ENV{CORTEX_DB_DIR};
+($CORTEX_DB_DIR) = grep(-d $_, map("$_/CorTeX", @INC)) unless $CORTEX_DB_DIR;
 
 sub new {
   my ($class,%opts)=@_;
+  $opts{CORTEX_DB_DIR} //= $CORTEX_DB_DIR;
   $opts{verbosity}=0 unless defined $opts{verbosity};
   if ($opts{exist_url}) {
     require CorTeX::Backend::eXist;
@@ -46,44 +47,36 @@ sub new {
   }
 
   if (! defined $opts{metadb}) {
+    $opts{sqldbname} = $opts{CORTEX_DB_DIR}."/MetaDB.db";
     $opts{metadb} = CorTeX::Backend::SQL->new(
-      sqldbname=>"$INSTALLDIR/MetaDB.db",
       metadb=>1,
-      %opts
-    );}
+      %opts);}
 
-  bless {%opts}, $class;
-}
+  bless {%opts}, $class; }
 
 sub exist {
   my ($self)=@_;
-  $self->{exist};
-}
+  $self->{exist}; }
 
 sub sesame {
   my ($self)=@_;
-  $self->{sesame};
-}
+  $self->{sesame}; }
 
 sub sql {
   my ($self)=@_;
-  $self->{sql};
-}
+  $self->{sql}; }
 
 sub docdb {
   my ($self)=@_;
-  $self->{docdb};
-}
+  $self->{docdb}; }
+
 sub metadb {
   my ($self)=@_;
-  $self->{metadb};
-}
+  $self->{metadb}; }
+
 sub taskdb {
   my ($self)=@_;
-  $self->{taskdb};
-}
-
-
+  $self->{taskdb}; }
 
 1;
 

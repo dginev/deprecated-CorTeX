@@ -846,7 +846,7 @@ sub mark_limbo_entries_queued {
 }
 
 sub get_entry_type {
-  return 'simple';
+  return 'simple'; # TODO
 }
 
 sub fetch_tasks {

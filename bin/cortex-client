@@ -37,6 +37,8 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Data qw(parse_log);
 use AnyEvent::Gearman;
 
+my ($CORTEX_DB_DIR,@servers) = @ARGV;
+$CORTEX_DB_DIR = undef if ($CORTEX_DB_DIR eq 'default');
 # Make sure we're terminating when requested to:
 $SIG{'INT'} = \&stop_immediate; # Interrupt handler
 $SIG{'HUP'} = \&stop_immediate; # Apache Hangup handler
@@ -45,17 +47,17 @@ $SIG{'TERM'} = \&stop_immediate; # TERM handler
 sub stop_immediate { exit 0; }
 
 # Grab a TaskDB
-my $db_handle = db_file_connect;
+my $db_handle = db_file_connect($CORTEX_DB_DIR);
+$db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
 my $backend = CorTeX::Backend->new(%$db_handle);
 my $taskdb = $backend->taskdb;
 my $docdb = $backend->docdb;
 my $metadb = $backend->metadb;
-db_file_disconnect();
+db_file_disconnect($db_handle);
 
 ### MAIN ###
 # Event loop between DB Polling and Gearman dispatching
 
-my (@servers) = @ARGV;
 my $max_queue_size = 20;
 my $queue_size;
 my $client = gearman_client(@servers);
