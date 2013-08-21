@@ -315,7 +315,7 @@ get '/browse' => sub {
         service_name=>$service_name,corpus_name=>$corpus_name,entry=>$entry);
       $file_content .= "<h2>Messages</h1>";
       $task_report=['No messages.'] unless @$task_report;
-      $file_content.=join("\n<br>",map {xml_escape($_)} @$task_report);
+      $file_content.=join("\n<br>",map {s/\t/&emsp;/g; $_;} map {s/\n/\n<br>/g; $_;} map {xml_escape($_)} @$task_report);
       $file_content.="</body></html>"; # TODO: Errr, this is a horrible way to generate HTML
     }
     default {$file_content="Unrecognized request type.";}

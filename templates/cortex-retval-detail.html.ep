@@ -145,13 +145,19 @@ $(document).ready(function() {
 <tr class="hover-row "><td>What</td><td><b><%= $what %></b></td></tr>
 % }
 </tbody></table>
-<table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th>Report Details</th>
+<table class="summary-table"><thead><th style='width:20px;'>No.</th><th>Entry</th><th style='width:400px;'>Report Details</th>
 <th style='width:20px;'>Input</th>
 <th style='width:20px;'>Output</th>
 <th style='width:20px;'>Log</th></thead><tbody><tr class="hover-row entry-row">
 % my $i = 0;
 % for my $entry (@$entries) {
- <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td><td><%= $entry->[0] %></a></td><td><%= $entry->[1] %></td>
+ <tr class="hover-row entry-row"><td style='width:20px;'><%= $from + $i++;%></td>
+    <td><%= $entry->[0] %></td>
+    <td style='width:400px;'>
+      <% my @lines = split("\n", $entry->[1]); while (@lines) { my $line=shift @lines; %>
+      <%= $line; %><% if (@lines) { %><br>&emsp;<% } %>
+      <% } %>
+    </td>
  <td style='width:20px;'><button class="view-button">.<%= $inputformat %></button></td>
  <td style='width:20px;'><button class="view-button">.<%= $outputformat %></button></td>
  <td style='width:20px;'><button class="view-button">.log</button></td>

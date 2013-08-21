@@ -40,11 +40,29 @@ sub log_to_triples {
 sub parse_log {
   my ($log_content) = @_;
   return unless length($log_content);
-  my @messages = grep {defined} map {
-    (/^([^ :]+)\:([^ :]+)\:([^ ]+)(\s(.*))?$/) ? 
-      {severity=>lc($1),category=>lc($2),what=>lc($3),details=>$5} :
-      undef 
-    } split("\n",$log_content); 
+  my @lines = split("\n",$log_content);
+  my @messages;
+  my $maybe_details = 0;
+
+  while (@lines) {
+    my $line = shift @lines;
+    next unless $line;
+    # If we're still expecting details:
+    if ($maybe_details) {
+      if ($line =~ /^\t/) {
+        $messages[-1]->{details}.="\n$line";
+        next; # This line has been consumed, next
+      } else {
+        $maybe_details=0; # The last message has ended
+      }}
+    # Since this isn't a details line, check if it's a message line:
+    if ($line =~ /^([^ :]+)\:([^ :]+)\:([^ ]+)(\s(.*))?$/) {
+      my $message = {severity=>lc($1),category=>lc($2),what=>lc($3),details=>$5};
+      $maybe_details=1;
+      push @messages, $message;}
+    else {
+      $maybe_details=0;
+    }}  
   return \@messages; }
 
 1;
