@@ -10,7 +10,7 @@ For now, assuming you're running a Debian-based OS
 
 ```shell
 sudo apt-get install gearman libfile-slurp-perl\
-  mysql-server cpanminus \
+  mysql-server cpanminus librpc-xml-perl\
   libanyevent-perl librdf-linkeddata-perl
 ```
 
