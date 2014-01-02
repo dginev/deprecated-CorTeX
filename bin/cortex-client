@@ -37,6 +37,9 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Data qw(parse_log);
 use AnyEvent::Gearman;
 
+# CorTeX workhorses have lowest priority, to avoid overloading the machine
+setpriority(0, $$, 20);
+
 my ($CORTEX_DB_DIR,@servers) = @ARGV;
 $CORTEX_DB_DIR = undef if ($CORTEX_DB_DIR eq 'default');
 # Make sure we're terminating when requested to:
