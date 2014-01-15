@@ -180,13 +180,14 @@ sub reset_db {
       inputformat varchar(20) NOT NULL,
       outputformat varchar(20) NOT NULL,
       xpath varchar(2000),
-      resource varchar(50),
+      resource varchar(50),      
       inputconverter varchar(200),
-      type integer NOT NULL
+      type integer NOT NULL,
+      entrysetup integer NOT NULL
     );");
     $self->do("create index servicenameidx on services(name);"); 
     $self->do("create index serviceiididx on services(iid);");
-    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat) values("import",0.1,"import_v0_1",2,"tex","tex")');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup) values("import",0.1,"import_v0_1",2,"tex","tex",1)');
 
   # Dependency Tables
   $self->do("DROP TABLE IF EXISTS dependencies;");
@@ -254,12 +255,13 @@ sub reset_db {
       resource varchar(50),
       inputconverter varchar(200),
       type integer NOT NULL,
+      entrysetup integer NOT NULL,
       UNIQUE(iid,name)
     );");
     $self->do("create index servicenameidx on services(name);");
     $self->do("create index serviceiididx on services(iid);");
-    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat)
-               values("import",0.1,"import_v0_1",2,"tex","tex")');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup)
+               values("import",0.1,"import_v0_1",2,"tex","tex",1)');
     # Dependency Tables
     $self->do("DROP TABLE IF EXISTS dependencies;");
     $self->do("CREATE TABLE dependencies (

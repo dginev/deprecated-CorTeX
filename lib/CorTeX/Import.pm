@@ -52,8 +52,6 @@ sub new {
     # $backend->metadb->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
     #          object=>xsd("Corpus"),repository=>$main_repos,graph=>$meta_graph});
     # $backend->metadb->add_triple({subject=>$job_url, predicate=>'build:entryType', 
-    #          object=>xsd($opts{entry_setup}),repository=>$main_repos,graph=>$meta_graph})
-    # if defined $opts{entry_setup};
   }
 
   #my $checkpoint = get_db_file_field('import_checkpoint');
@@ -69,7 +67,6 @@ sub new {
         upper_bound=>$opts{upper_bound},
 	      backend=>$backend, processed_entries=>0,
 	      #main_repos=>$main_repos,meta_graph=>$meta_graph, job_url=>$job_url,
-        entry_setup=>$opts{entry_setup},
         triple_queue=>[],
         #build_system_url=>$build_system_url,
         corpus_name=>$corpus_name}, $class;

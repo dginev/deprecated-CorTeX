@@ -5,6 +5,7 @@
   "url":"",
   "xpath":"",
   "type":"",
-  "inputformat":""
-  "outputformat":""
+  "inputformat":"",
+  "outputformat":"",
+  "entry-setup":0
 }

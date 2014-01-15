@@ -57,7 +57,7 @@ $ENV{MOJO_CONNECT_TIMEOUT} = 60; # 1 minute
 $ENV{MOJO_INACTIVITY_TIMEOUT} = 60; # 1 minutes;  
 
 # Make signed cookies secure
-app->secret('TiX TeX');
+app->secrets(['TiX TeX']);
 
 get '/' => sub {
   my $self = shift;
@@ -394,7 +394,6 @@ helper add_corpus => sub {
   }
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
   my $upper_bound = $self->param('upper-bound');
-  my $entry_setup = $self->param('entry-setup');
   my $importer = CorTeX::Import->new(
     root=>$path,
     upper_bound=>$upper_bound,
@@ -402,7 +401,6 @@ helper add_corpus => sub {
 		#main_repos=>$MAIN_REPOS,
 		#meta_graph=>$META_GRAPH,
 		#build_system_url=>$BUILD_SYSTEM_URL,
-    entry_setup=>$entry_setup,
     verbosity=>1, 
     %$dbfile);
   db_file_disconnect($dbfile);
@@ -415,7 +413,7 @@ helper add_corpus => sub {
 helper add_service => sub {
   my ($self) = @_;
   my %service = ();
-  foreach (qw/name version id requires url xpath type inputformat outputformat resource/) {
+  foreach (qw/name version id requires url xpath type inputformat outputformat resource entry-setup/) {
     $service{$_} = $self->param('service-'.$_); }
 
   foreach my $key(qw/name version id type/) {
@@ -440,7 +438,7 @@ helper add_service => sub {
 helper update_service => sub {
   my ($self)=@_;
   my %service = ();
-  foreach (qw/name version id oldid oldname requires url xpath type inputformat outputformat resource/) {
+  foreach (qw/name version id oldid oldname requires url xpath type inputformat outputformat resource entry-setup/) {
     $service{$_} = $self->param('update-'.$_); }
 
   foreach my $key(qw/name version id type/) {

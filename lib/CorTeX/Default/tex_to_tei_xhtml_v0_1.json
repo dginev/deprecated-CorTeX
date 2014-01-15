@@ -8,5 +8,6 @@
   "type":"2",
   "inputformat":"tex",
   "outputformat":"xhtml",
-  "parameters":{}
+  "parameters":{},
+  "entry-setup":0
 }

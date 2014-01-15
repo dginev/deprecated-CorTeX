@@ -179,13 +179,14 @@ sub register_service {
   # TODO: Check the name, version and iid are unique!
   $service{inputformat} = lc($service{inputformat});
   $service{outputformat} = lc($service{outputformat});
+  $service{'entry-setup'} //= 0; # Default is simple
   $service{requires_analyses} //= [];
   $service{requires_aggregation} //= [];
   $db->do('BEGIN TRANSACTION');
   my $sth = $db->prepare("INSERT INTO services 
-      (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource) 
-      values(?,?,?,?,?,?,?,?,?,?)");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputconverter inputformat outputformat resource/);
+      (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource,entrysetup) 
+      values(?,?,?,?,?,?,?,?,?,?,?)");
+  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputconverter inputformat outputformat resource entry-setup/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
   $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
@@ -246,10 +247,10 @@ sub update_service {
   # Register the Service
   # TODO: Check the name, version and iid are unique!
   my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=?,
-                          url=?, inputconverter=?, inputformat=?, outputformat=?, resource=?
+                          url=?, inputconverter=?, inputformat=?, outputformat=?, resource=? entrysetup=?
                           WHERE iid=?");
   $message = $sth->execute(map {$service{$_}} 
-    qw/name version id type xpath url inputconverter inputformat outputformat resource oldid/);
+    qw/name version id type xpath url inputconverter inputformat outputformat resource entry-setup oldid/);
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;

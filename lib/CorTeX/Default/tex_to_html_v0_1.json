@@ -9,5 +9,6 @@
   "type":"2",
   "inputformat":"tex",
   "outputformat":"html",
-  "parameters":{}
+  "parameters":{},
+  "entry-setup":1
 }

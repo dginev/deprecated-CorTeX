@@ -269,6 +269,10 @@ function fetch_description(type,name) {
       $('#update-xpath').val(response.xpath);
       $('#update-inputformat').val(response.inputformat);
       $('#update-outputformat').val(response.outputformat);
+      if (response.entrysetup) {
+        $('#update-entry-setup').val('complex'); }
+      else {
+        $('#update-entry-setup').val('simple'); }
       $('#update-resource').val(response.resource);
       $("#update-type option").filter(function() {
         return $(this).val() == response.type; 

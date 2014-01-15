@@ -9,5 +9,6 @@
   "inputformat":"xhtml",
   "outputformat":"RDFXML",
   "xpath":"/",
-  "parameters":{}
+  "parameters":{},
+  "entry-setup":0
 }

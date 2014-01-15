@@ -68,17 +68,19 @@ $(document).ready(function() {
     if (service_type == 1) {
      // Analysis submenus
      $("#tr-service-inputformat").show();
-     // Hide others
      $("#tr-service-xpath").show();
      $("#tr-service-outputformat").show();
+     // Hide others
+     $("#tr-service-entry-setup").hide();
      $("#tr-service-resource").hide();
     } else {
       if (service_type == 2) {
         // Conversion submenus
        $("#tr-service-inputformat").show();
-       $("#tr-service-xpath").hide();
        $("#tr-service-outputformat").show();
+       $("#tr-service-entry-setup").show();
        // Hide others
+       $("#tr-service-xpath").hide();
        $("#tr-service-resource").hide();
       } else {
         if (service_type == 3) {
@@ -86,12 +88,14 @@ $(document).ready(function() {
          $("#tr-service-inputformat").show();
          $("#tr-service-xpath").show();
          $("#tr-service-outputformat").show();
+         $("#tr-service-entry-setup").show();
          $("#tr-service-resource").show();
         } else {
          // No menu, hide everything
          $("#tr-service-inputformat").hide();
          $("#tr-service-xpath").hide();
          $("#tr-service-outputformat").hide();
+         $("#tr-service-entry-setup").hide();
          $("#tr-service-resource").hide();
         }
       }
@@ -108,13 +112,15 @@ $(document).ready(function() {
      // Hide others
      $("#tr-update-xpath").show();
      $("#tr-update-outputformat").show();
+     $("#tr-update-entry-setup").hide();
      $("#tr-update-resource").hide();
     } else {
       if (service_type == 2) {
-        // Conversion submenus
+       // Conversion submenus
        $("#tr-update-inputformat").show();
        $("#tr-update-xpath").hide();
        $("#tr-update-outputformat").show();
+       $("#tr-update-entry-setup").show();
        // Hide others
        $("#tr-update-resource").hide();
       } else {
@@ -123,12 +129,14 @@ $(document).ready(function() {
          $("#tr-update-inputformat").show();
          $("#tr-update-xpath").show();
          $("#tr-update-outputformat").show();
+         $("#tr-update-entry-setup").show();
          $("#tr-update-resource").show();
         } else {
          // No menu, hide everything
          $("#tr-update-inputformat").hide();
          $("#tr-update-xpath").hide();
          $("#tr-update-outputformat").hide();
+         $("#tr-update-entry-setup").hide();
          $("#tr-update-resource").hide();
         }
       }
@@ -167,6 +175,12 @@ $(document).ready(function() {
             id=>"service-outputformat") %>
         </td>
       </tr>
+
+      <tr style="display:none;" id="tr-service-entry-setup">
+        <td>Entry setup</td><td>
+        <%= select_field 'service-entry-setup' => [['Single TeX file'=>'simple'],['Complex TeX setup'=>'complex']], 
+            id=>'service-entry-setup' %>
+      </td></tr>
 
       <tr style="display:none;" id="tr-service-xpath">
         <td>XPath</td><td class="input"><%= text_field 'service-xpath' => (value=>'/',size=>40) %></td>
@@ -252,6 +266,12 @@ $(document).ready(function() {
           id=>"update-outputformat") %>
       </td>
     </tr>
+
+    <tr style="display:none;" id="tr-update-entry-setup">
+      <td>Entry setup</td><td>
+      <%= select_field 'update-entry-setup' => [['Single TeX file'=>'simple'],['Complex TeX setup'=>'complex']],
+          id=>'update-entry-setup' %>
+    </td></tr>
 
     <tr style="display:none;" id="tr-update-xpath">
       <td>XPath</td><td class="input"><%= text_field 'update-xpath' => (value=>'/',size=>40,id=>'update-xpath') %></td>
