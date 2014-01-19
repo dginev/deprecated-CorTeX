@@ -21,7 +21,8 @@ use Encode;
 use File::Slurp;
 use File::Path qw(make_path remove_tree);
 use File::Spec;
-use Data::Dumper;
+use IO::String;
+use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
 
 sub new {
   my ($class,%opts)=@_;
@@ -59,21 +60,24 @@ sub complete_documents {
   foreach my $result(@conversion_results) {
     #print STDERR Dumper($result);
     my $document = $result->{document};
-    # Conversion results - add a new document
     my $entry_dir = $result->{entry};
     $entry_dir =~ /\/([^\/]+)$/;
-    my $entry_name = $1 . "." . lc($result->{formats}->[1]);
-    my $result_dir = File::Spec->catdir($entry_dir,$result->{service});
-    my $result_file = File::Spec->catfile($result_dir,$entry_name);
-
+    my $result_dir = File::Spec->catdir($entry_dir,'_cortex_'.$result->{service});
     make_path($result_dir);
-    open my $fh, ">", $result_file;
-    print $fh $document;
-    close $fh;
+    # Conversion results - add a new document
+    if (! ref $document) { # Document is returned as a string 
+      my $entry_name = $1 . "." . lc($result->{formats}->[1]);
+      my $result_file = File::Spec->catfile($result_dir,$entry_name);
+      open my $fh, ">", $result_file;
+      print $fh $document;
+      close $fh; }
+    else { # Document is returned as an Archive::Zip object
+      foreach my $member($document->memberNames()) {
+        $document->extractMember($member, File::Spec->catfile($result_dir,$member)); } }
   }
 
   foreach my $result(@aggregation_results) {
-    # Aggregation results - add a new resource
+    # TODO: Aggregation results - add a new resource
   }
 }
 
@@ -85,16 +89,34 @@ sub fetch_entry {
   my $converter = $options{inputconverter};
   my $inputformat = $options{inputformat};
   $converter = '' if ($converter =~ /^import_v/);
-  $converter .= '/' if $converter;
-  my $path = "$entry/$converter$name.$inputformat";
+  $converter = "_cortex_$converter" if $converter;
+  my $directory = File::Spec->catdir($entry,$converter);
+  # We have a simple (1 file) and a complex (1 archive) case:
+  if ($options{'entry-setup'}) {
+    $self->fetch_entry_complex($directory); }
+ else {
+    my $path = File::Spec->catfile($directory,"$name.$inputformat");
+    $self->fetch_entry_simple($path); }}
+
+sub fetch_entry_simple {
+  my ($self,$path) = @_;
   # Slurp the file and return:  
   if (-f $path ) {
     my $text = read_file( $path ) ;
     return decode('UTF-8',$text); }
   else { return ; } }
 
+sub fetch_entry_complex {
+  my ($self,$directory) = @_;
+  # Zip (just store really) and send everything in the directory, excluding subdirs starting with _cortex_
+  my $archive = Archive::Zip->new();
+  $archive->addTree($directory, undef, sub { (!/^_cortex_/) && (!/\.(?:zip|gz|epub|mobi|~)$/) }, COMPRESSION_STORED); 
+  my $payload='';
+  my $content_handle = IO::String->new($payload);
+  undef $payload unless ($archive->writeToFileHandle($content_handle) == AZ_OK);
+  return $payload; }
+
 sub entry_to_url {
-  return "file://".$_[1];
-}
+  return "file://".$_[1]; }
 
 1;

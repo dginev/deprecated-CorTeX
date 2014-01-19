@@ -60,7 +60,7 @@ sub serviceiid_to_formats {
   my ($db,$serviceiid) = @_;
   my $service_formats = $ServiceFormats{$serviceiid};
   if (! defined $service_formats) {
-    my $sth = $db->prepare("SELECT inputformat, outputformat, inputconverter from services where iid=?");
+    my $sth = $db->prepare("SELECT inputformat, outputformat, inputconverter, entrysetup from services where iid=?");
     $sth->execute($serviceiid);
     $service_formats = [ $sth->fetchrow_array() ];
     $ServiceFormats{$serviceiid} = $service_formats; }
@@ -247,7 +247,7 @@ sub update_service {
   # Register the Service
   # TODO: Check the name, version and iid are unique!
   my $sth = $db->prepare("UPDATE services SET name=?, version=?, iid=?, type=?, xpath=?,
-                          url=?, inputconverter=?, inputformat=?, outputformat=?, resource=? entrysetup=?
+                          url=?, inputconverter=?, inputformat=?, outputformat=?, resource=?, entrysetup=?
                           WHERE iid=?");
   $message = $sth->execute(map {$service{$_}} 
     qw/name version id type xpath url inputconverter inputformat outputformat resource entry-setup oldid/);

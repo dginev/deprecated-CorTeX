@@ -17,6 +17,7 @@ use warnings;
 use Encode;
 use Data::Dumper;
 use JSON::XS qw(decode_json encode_json);
+use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
 
 use FindBin;
 my ($RealBin_safe,$libdir);
@@ -84,16 +85,51 @@ while (1) {
     $inputconverter = $taskdb->serviceid_to_iid(
                       $taskdb->service_to_id($inputconverter))
       if $inputconverter;
+    my $entry_setup = $task->{formats}->[3];
     $task->{workload} = $docdb->fetch_entry(
       entry=>$task->{entry},
       inputformat=>$task->{formats}->[0],
-      inputconverter=>$inputconverter);
+      inputconverter=>$inputconverter,
+      'entry-setup'=>$entry_setup);
     # TODO: Obtain prerequisite annotations/resources
+    #       And only then encode as JSON
+
+    # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
+    sub fail_handler {
+      my $message = shift || "Job failed (generic)";
+      my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
+          messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
+      push @$results, $response;
+      # New queue if we're done here
+      print STDERR "Failed ",scalar(@$results),"\n";
+      if (scalar(@$results) == $queue_size) {
+        # Done with this queue, report to DB
+        # TODO: Push new annotations, formats, aggregate resources into docdb
+        # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
+        complete_tasks($results);
+        $results=[];
+        $next_iteration->send(); }}
+
     # Dispatch to Gearman
     $client->add_task(
-      $service => encode_json($task),
+      $service => $task->{workload},
       on_complete => sub {
-          my $response = decode_json($_[1]);
+          my $payload = $_[1];
+          my $response={};
+          if ($entry_setup) {# complex setup
+            # We expect $payload to be a ZIP archive with a _cortex_log.txt log, and _cortex_status.txt status.
+            my $archive = Archive::Zip->new();
+            my $content_handle = IO::String->new($payload);
+            if ($archive->readFromFileHandle( $content_handle ) != AZ_OK) {
+              fail_handler('Job failed (invalid archive returned)');
+              return; }
+            $response->{log} = $archive->contents('_cortex_log.txt');
+            $response->{status} = $archive->contents('_cortex_status.txt');
+            $archive->removeMember('_cortex_log.txt');
+            $archive->removeMember('_cortex_status.txt');
+            $response->{document} = $archive; }
+          else { # Simple setup is already in JSON
+            $response = decode_json($payload); }
           # Parse log, to be ready for TaskDB insertion
           my $messages = parse_log(delete $response->{log});
           @$messages = grep {$_->{severity} ne 'status'} @$messages; # We don't want status messages for now. TODO: What to do with those?
@@ -105,6 +141,7 @@ while (1) {
           $response->{formats} = $task->{formats};
           push @$results, $response;
           # New queue if we're done here
+          print STDERR "Completed ",scalar(@$results),"\n";
           if (scalar(@$results) == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
@@ -112,18 +149,7 @@ while (1) {
             complete_tasks($results);
             $results=[];
             $next_iteration->send(); }},
-      on_fail => sub {
-          my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
-              messages=>parse_log("Fatal:Gearman:client Job failed (generic)"),status=>-4};
-          push @$results, $response;
-          # New queue if we're done here
-          if (scalar(@$results) == $queue_size) {
-            # Done with this queue, report to DB
-            # TODO: Push new annotations, formats, aggregate resources into docdb
-            # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-            complete_tasks($results);
-            $results=[];
-            $next_iteration->send(); }}
+      on_fail => \&fail_handler
     );
   }
   $next_iteration->recv; }
