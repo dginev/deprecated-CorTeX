@@ -181,7 +181,7 @@ The need for building on top of previous results is even more dramatic when it c
 
 Certainly, a **dynamic programming** intuition is the most efficient one in such a setup - each step of such a pipeline would save its own results (final for some applications, intermediate for others), and a subsequent service could start where the previous step stopped. For example, a named-entity recognition service would depend on the document being converted to a parseable representation (e.g. XHTML), and then tokenized (words and sentence boundaries). More exotically, a converter that targets the OMDoc format, would depend on an array of analysis services (e.g. annotations for definitions, axioms, proofs), the stand-off results of which would be aggregated together into a semantic XML representation.
 
-#### Adding dependencies to your service
+#### Adding CorTeX dependencies to your service
 
 Adding/removing dependencies for your application is easy to realize with the developer interface under '/dev'.
 
@@ -196,6 +196,10 @@ Details to keep in mind:
  * Upon updating the dependencies, all completed jobs will be queued for reconversion and the results will be lost.
  * If a prerequisite service is not yet completed, or has completed with regular or fatal errors, the document it was processing will remain blocked for your service, until all prerequisites pass cleanly or only with warnings.
  * Queueing any selection of documents for rerun will trigger a rerun for all services that depend on your service.
+
+#### Adding External depdendencies
+
+TODO: Discuss managing external dependencies. Generally it's beyond the scope of CorTeX as a framework and should be managed by the particular service project (and automated on deployments). One example is the pair of CorTeX-Peripheral and the KWARC deployments.
 
 ### Reports and Reruns
 
