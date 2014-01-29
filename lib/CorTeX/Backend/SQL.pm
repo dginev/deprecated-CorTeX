@@ -61,6 +61,12 @@ sub new {
       my $now = time;
       utime $now, $now, $options{sqldbname};  }
     $self->reset_db unless $options{metadb}; }
+    # Auto-vivify a new mysql database, if not already created
+  if ($options{sqldbms} eq 'mysql') {
+    my $dbh = $self->safe;
+    eval { $dbh->do('desc services'); };
+    if ($dbh->errstr) {
+      $self->reset_db unless $options{metadb}; }}
   return $self; }
 
 # Methods:
