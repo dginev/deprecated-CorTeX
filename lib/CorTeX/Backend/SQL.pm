@@ -49,10 +49,16 @@ sub new {
   if (!$options{sqldbname}) {
     if ($options{sqldbms} eq 'SQLite') {
       # Default SQLite db:
-      $options{sqldbname} = $options{CORTEX_DB_DIR}."/TaskDB.db"; } 
+      if ($options{metadb}) {
+        $options{sqldbname} = $options{CORTEX_DB_DIR}."/MetaDB.db"; }
+      else {
+        $options{sqldbname} = $options{CORTEX_DB_DIR}."/TaskDB.db"; } }
     else {
       # Default MySQL db:
-      $options{sqldbname} = 'cortex'; }}
+      if ($options{metadb}) {
+        $options{sqldbname} = 'cortexmeta'; }
+      else {
+        $options{sqldbname} = 'cortex'; } } }
   my $self = bless \%options, $class;
   if (($options{sqldbms} eq 'SQLite') && ((! -f $options{sqldbname})||(-z $options{sqldbname}))) {
     # Auto-vivify a new SQLite database, if not already created

@@ -47,10 +47,7 @@ sub new {
   }
 
   if (! defined $opts{metadb}) {
-    $opts{sqldbname} = $opts{CORTEX_DB_DIR}."/MetaDB.db";
-    $opts{metadb} = CorTeX::Backend::SQL->new(
-      metadb=>1,
-      %opts);}
+    $opts{metadb} = CorTeX::Backend::SQL->new(metadb=>1,%opts);}
 
   bless {%opts}, $class; }
 

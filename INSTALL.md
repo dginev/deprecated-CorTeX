@@ -49,6 +49,8 @@ sudo apt-get install gearman libfile-slurp-perl\
    create user 'cortex'@'localhost' identified by 'password';
    create database cortex;
    grant all on cortex.* to 'cortex'@'localhost';
+   create database cortexmeta;
+   grant all on cortexmeta.* to 'cortex'@'localhost';
    Ctrl+D
   ```
 
