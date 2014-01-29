@@ -141,7 +141,7 @@ while (1) {
           $response->{formats} = $task->{formats};
           push @$results, $response;
           # New queue if we're done here
-          print STDERR "Completed ",scalar(@$results),"\n";
+          print STDERR "[".localtime()."] Client $$ : ",scalar(@$results)," jobs completed\n";
           if (scalar(@$results) == $queue_size) {
             # Done with this queue, report to DB
             # TODO: Push new annotations, formats, aggregate resources into docdb
