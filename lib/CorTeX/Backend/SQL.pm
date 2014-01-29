@@ -78,7 +78,7 @@ sub safe {
           RaiseError => 1,
           AutoCommit => 1
          }) || die "Could not connect to database: $DBI::errstr";
-    $dbh->do('PRAGMA cache_size=50000;') if $self->{sqldbms} eq 'SQLite';
+    $dbh->do('PRAGMA cache_size=50000;') if ($self->{sqldbms} eq 'SQLite');
     $self->{handle}=$dbh;
     $self->_recover_cache;
     return $dbh;
