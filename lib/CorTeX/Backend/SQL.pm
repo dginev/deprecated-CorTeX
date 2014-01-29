@@ -33,7 +33,12 @@ sub new {
   # White-list the options we care about:
   my %options;
   $options{sqluser} = $input{sqluser} // 'cortex';
-  $options{sqlpass} = $input{sqlpass} // 'cortex';
+  $options{sqlpass} = $input{sqlpass};
+  if (!$options{sqlpass}) {
+    my $precious_file = '/etc/cortex/precious';
+    if (-r $precious_file) {
+      $options{sqlpass} = read_file($precious_file); }
+    $options{sqlpass} //= 'cortex'; }
   $options{sqldbname} = $input{sqldbname};
   $options{sqlhost} = $input{sqlhost} // 'localhost';
   $options{sqldbms} = $input{taskdb_type} // 'SQLite';
@@ -47,10 +52,7 @@ sub new {
       $options{sqldbname} = $options{CORTEX_DB_DIR}."/TaskDB.db"; } 
     else {
       # Default MySQL db:
-      my $precious_file = '/etc/cortex/precious';
-      if (-r $precious_file) {
-        $options{sqldbname} = read_file($precious_file); }
-      $options{sqldbname} //= 'cortex'; }}
+      $options{sqldbname} = 'cortex'; }}
   my $self = bless \%options, $class;
   if (($options{sqldbms} eq 'SQLite') && ((! -f $options{sqldbname})||(-z $options{sqldbname}))) {
     # Auto-vivify a new SQLite database, if not already created
