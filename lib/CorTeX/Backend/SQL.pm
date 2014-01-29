@@ -19,6 +19,7 @@ use feature 'switch';
 
 use DBI;
 use Mojo::ByteStream qw(b);
+use File::Slurp;
 use CorTeX::Backend::SQLMetaAPI;
 use CorTeX::Backend::SQLTaskAPI;
 my $CORTEX_DB_DIR = $ENV{CORTEX_DB_DIR};
@@ -46,8 +47,10 @@ sub new {
       $options{sqldbname} = $options{CORTEX_DB_DIR}."/TaskDB.db"; } 
     else {
       # Default MySQL db:
-      $options{sqldbname} = 'cortex';
-    }}
+      my $precious_file = '/etc/cortex/precious';
+      if (-r $precious_file) {
+        $options{sqldbname} = read_file($precious_file); }
+      $options{sqldbname} //= 'cortex'; }}
   my $self = bless \%options, $class;
   if (($options{sqldbms} eq 'SQLite') && ((! -f $options{sqldbname})||(-z $options{sqldbname}))) {
     # Auto-vivify a new SQLite database, if not already created
