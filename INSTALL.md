@@ -46,30 +46,13 @@ sudo apt-get install gearman libfile-slurp-perl\
 
   ```shell
    $ mysql -u root -p
+   create user 'cortex'@'localhost' identified by 'password';
    create database cortex;
-   grant all on cortex.* to cortex@localhost identified by 'cortex';
+   grant all on cortex.* to 'cortex'@'localhost';
    Ctrl+D
   ```
 
-  Login as cortex and initialize database:
-  
-  ```shell
-  $ mysql -u cortex -p
-   use cortex;
-   drop table if exists tasks;
-   create table tasks (
-    taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    corpus varchar(50),
-    entry varchar(200),
-    service varchar(50),
-    status int
-  );
-  create index statusidx on tasks (status);
-  create index corpusidx on tasks (corpus);
-  create index entryidx on tasks (entry);
-  create index serviceidx on tasks (service);
-  Ctrl+D
-  ```
+  The database will have its tables automatically initialized on CorTeX startup.
 
 2. Configure Server settings
 
