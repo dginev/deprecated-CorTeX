@@ -38,7 +38,8 @@ WriteMakefile(
 		"File::Path"=>0,
 		"RPC::XML"=>0,
 		"JSON::XS"=>0,
-		"AnyEvent::Gearman"=>0
+		"AnyEvent::Gearman"=>0,
+    "List::MoreUtils"=>0
 	},
 	EXE_FILES => ['bin/cortex-gears','bin/cortex-client','bin/cortex-frontend'],
 	macro => $MORE_MACROS,

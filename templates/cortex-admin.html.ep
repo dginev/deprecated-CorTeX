@@ -1,5 +1,6 @@
 % layout 'cortex-default';
 % title 'CorTeX Framework - Main Administrative Interface';
+<% use List::MoreUtils qw(uniq); %>
 <%= javascript begin %>
 $(document).ready(function() {
   $("#accordion").accordion();
@@ -91,7 +92,7 @@ $(document).ready(function() {
       <tr><td>Corpora DB</td><td class="input selectdb">
       <% if ($current_exist_url) { %>
         <span id="current-exist-url" style="display:none"><%= $current_exist_url; %></span>
-        <%= select_field 'docdb-type' => ["eXist","File System"] => (value=>$current_docdb_type) %>
+        <%= select_field 'docdb-type' => [uniq($current_docdb_type,"eXist","File System")] %>
         <tr class="url-row"><td>eXist URL</td><td class="input"><%= text_field 'exist-url' => (value=>$current_exist_url, size=>50) %></td></tr>
       <% } else { %>
         <%= select_field 'docdb-type' => ["File System","eXist"] %>
@@ -103,11 +104,11 @@ $(document).ready(function() {
           <%= select_field 'metadb-type' => ["Sesame","SQLite","MySQL"] %>
           <tr class="url-row"><td>Sesame URL</td><td class="input"><%= text_field 'sesame-url' => (value=>$current_sesame_url, size=>50) %></td></tr>
         <% } else { %>
-          <%= select_field 'metadb-type' => ["SQLite","MySQL","Sesame"] => (value=>$current_metadb_type) %>
+          <%= select_field 'metadb-type' => [uniq($current_metadb_type,"SQLite","MySQL","Sesame")] %>
         <% } %>
       </td></tr>
       <tr><td>Job DB</td><td class="input selectdb">
-        <%= select_field 'taskdb-type' => ["SQLite","MySQL"] => (value=>$current_taskdb_type) %>
+        <%= select_field 'taskdb-type' => [uniq($current_taskdb_type,"SQLite","MySQL")] %>
       </td></tr>
       <tr><td></td><td><%= submit_button 'Configure Databases' %></td></tr>
     </table>
