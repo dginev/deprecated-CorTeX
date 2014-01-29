@@ -71,7 +71,7 @@ $(document).ready(function() {
     if (ntr.hasClass("url-row")) {
       ntr.remove();
     }
-    if ((type != "SQLite") && (type != "MySQL") && (type != "File System")) {
+    if ((type != "SQLite") && (type != "mysql") && (type != "File System")) {
       var label = type+" URL";
       var name = type.toLowerCase()+'-url';
       // add the url row
@@ -101,14 +101,14 @@ $(document).ready(function() {
       <tr><td>Meta DB</td><td class="input selectdb">
         <% if ($current_sesame_url) { %>
           <span id="current-sesame-url" style="display:none"><%= $current_sesame_url; %></span>
-          <%= select_field 'metadb-type' => ["Sesame","SQLite","MySQL"] %>
+          <%= select_field 'metadb-type' => ["Sesame","SQLite","mysql"] %>
           <tr class="url-row"><td>Sesame URL</td><td class="input"><%= text_field 'sesame-url' => (value=>$current_sesame_url, size=>50) %></td></tr>
         <% } else { %>
-          <%= select_field 'metadb-type' => [uniq($current_metadb_type,"SQLite","MySQL","Sesame")] %>
+          <%= select_field 'metadb-type' => [uniq($current_metadb_type,"SQLite","mysql","Sesame")] %>
         <% } %>
       </td></tr>
       <tr><td>Job DB</td><td class="input selectdb">
-        <%= select_field 'taskdb-type' => [uniq($current_taskdb_type,"SQLite","MySQL")] %>
+        <%= select_field 'taskdb-type' => [uniq($current_taskdb_type,"SQLite","mysql")] %>
       </td></tr>
       <tr><td></td><td><%= submit_button 'Configure Databases' %></td></tr>
     </table>
