@@ -77,6 +77,9 @@ get '/admin' => sub {
   $self->stash(current_exist_url=>$dbfile->{exist_url});
   $self->stash(current_sesame_url=>$dbfile->{sesame_url});
   $self->stash(current_proxy_url=>$dbfile->{proxy_url});
+  $self->stash(current_metadb_type=>$dbfile->{metadb_type}||'SQLite');
+  $self->stash(current_docdb_type=>$dbfile->{docdb_type}||'File System');
+  $self->stash(current_taskdb_type=>$dbfile->{taskdb_type}||'SQLite');
   # TODO: MySQL URL?
   $self->stash(current_gearman_urls=>
     $dbfile->{gearman_urls} ? [split("\n",$dbfile->{gearman_urls})] : []);
