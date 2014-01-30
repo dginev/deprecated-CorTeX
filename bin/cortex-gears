@@ -15,12 +15,8 @@
 use strict;
 use warnings;
 use Encode;
-use JSON::XS qw(encode_json decode_json);
-use Data::Dumper;
-
 use FindBin;
 use File::Spec::Functions qw/catdir catfile/;
-use File::Slurp;
 my ($RealBin_safe,$libdir);
 BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
@@ -52,8 +48,6 @@ my $db_handle = db_file_connect($CORTEX_DB_DIR);
 $db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
 my $backend = CorTeX::Backend->new(%$db_handle);
 db_file_disconnect($db_handle);
-# Register default services
-$Cache->{default_service_ids} = register_defaults();
 # Start cron loop managing the client and worker children
 
 while (1) { # Every minute, check:
@@ -124,61 +118,6 @@ sub setup_changed {
     $reinitialize_needed = 1;
     @{$Cache->{servers}} = @servers; }
   return $reinitialize_needed; }
-
-sub register_defaults {
-  our ($INSTALLDIR) = grep(-d $_, map("$_/CorTeX", @INC));
-  my $services_dir = $INSTALLDIR."/Default";
-  opendir(my $dh, $services_dir)
-   || die "can't opendir $services_dir: $!";
-  my @default_service_descriptions = grep { /\.json$/ && -f "$services_dir/$_" }
-  readdir($dh);
-  closedir $dh;
-  my @default_service_ids = ();
-  my @descriptions = ();
-  # First, lookup all registered services (don't register anything twice)
-  my $dbhandle = db_file_connect($CORTEX_DB_DIR); 
-  $db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
-  my $backend = CorTeX::Backend->new(%$dbhandle);
-  my $taskdb = $backend->taskdb;
-  my $current_services = $taskdb->current_services;
-  db_file_disconnect($dbhandle);
-  my @all_services = (@{$current_services->{1}},@{$current_services->{2}},@{$current_services->{3}});
-
-  # Second, read all files in
-  if (@default_service_descriptions) {
-    foreach my $service_file(@default_service_descriptions) {
-      my $service_description = decode_json(read_file( "$services_dir/$service_file" ));
-      my ($id) =  split(/.json/,$service_file);
-      push @default_service_ids, $id;
-      my $name = $service_description->{name};
-      $service_description->{id} = $id;
-      unless (grep {$name eq $_} @all_services) {
-        push @descriptions, $service_description;
-      }
-    }
-  }
-  # Order descriptions so that least dependencies go first
-  my @ordered_descriptions = ();
-  while (@descriptions) {
-    my $service = shift @descriptions;
-    my @foundations = ($service->{inputconverter},@{$service->{requires_analyses}},@{$service->{requires_aggregation}});
-    my $satisfied = 1;
-    foreach my $name(@foundations) {
-      $satisfied = 0 unless grep {$name eq $_} @all_services;
-      last unless $satisfied;  }
-    if ($satisfied) {
-      push @all_services, $service->{name};
-      push @ordered_descriptions, $service;
-    } else {
-      push @descriptions, $service;
-    }
-  }
-  foreach my $service_description(@ordered_descriptions) {
-    $taskdb->register_service(%$service_description);
-  }
-
-  return \@default_service_ids;
-}
 
 __END__
 
