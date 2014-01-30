@@ -182,7 +182,7 @@ sub register_service {
   $service{'entry-setup'} //= 0; # Default is simple
   $service{requires_analyses} //= [];
   $service{requires_aggregation} //= [];
-  $db->do('BEGIN TRANSACTION');
+  $db->do($db->{begin_transaction});
   my $sth = $db->prepare("INSERT INTO services 
       (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource,entrysetup) 
       values(?,?,?,?,?,?,?,?,?,?,?)");
@@ -305,7 +305,7 @@ sub update_service {
     my ($entry,@entries);
     $entry_query->bind_columns(\$entry);
     while ($entry_query->fetch) { push @entries, $entry; } 
-    $db->do('BEGIN TRANSACTION');
+    $db->do($db->{begin_transaction});
     foreach my $e(@entries) {
       $insert_query->execute($corpusid,$serviceid,$e,$status); }
     $db->do('COMMIT'); }
@@ -433,7 +433,7 @@ sub mark_custom_entries_queued {
   my $status = -5 - scalar(@required_services);
 
   # Start a transaction
-  $db->do("BEGIN TRANSACTION");
+  $db->do($db->{begin_transaction});
   if ($what) { # We have severity, category and what
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     $rerun_query = $db->prepare("UPDATE tasks SET status=? 
@@ -855,6 +855,7 @@ sub fetch_tasks {
   my $size = $options{size};
   return if $size=~/\D/; # Only numbers!
   my $mark = int(1+rand(10000));
+  # TODO: Nested limit isn't valid in mysql, refactor
   my $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
    SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");
   $sth->execute($mark,$size);
@@ -878,7 +879,7 @@ sub complete_tasks {
   # Decrease the requirements on any blocked jobs by this service, for this entry.
   my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
   # Insert in TaskDB
-  $db->do('BEGIN TRANSACTION');
+  $db->do($db->{begin_transaction});
   foreach my $result(@$results) {
     my $entry = $result->{entry};
     my $taskid = $result->{taskid};

@@ -42,6 +42,8 @@ sub new {
   $options{sqldbname} = $input{sqldbname};
   $options{sqlhost} = $input{sqlhost} // 'localhost';
   $options{sqldbms} = $input{taskdb_type} // 'SQLite';
+  if ($options{sqldbms} eq 'SQLite') {$options{begin_transaction} = 'BEGIN TRANSACTION'}
+  elsif ($options{sqldbms} eq 'mysql') {$options{begin_transaction} = 'START TRANSACTION'}
   $options{query_cache} = $input{query_cache} // {};
   $options{handle} = $input{handle};
   $options{metadb} = $input{metadb};
@@ -68,11 +70,11 @@ sub new {
       utime $now, $now, $options{sqldbname};  }
     $self->reset_db unless $options{metadb}; }
     # Auto-vivify a new mysql database, if not already created
-  if ($options{sqldbms} eq 'mysql') {
+  if ((!$options{metadb}) && ($options{sqldbms} eq 'mysql')) {
     my $dbh = $self->safe;
     eval { $dbh->do('desc services'); };
     if ($dbh->errstr) {
-      $self->reset_db unless $options{metadb}; }}
+      $self->reset_db; }}
   return $self; }
 
 # Methods:
