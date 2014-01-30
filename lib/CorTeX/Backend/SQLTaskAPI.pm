@@ -856,8 +856,14 @@ sub fetch_tasks {
   return if $size=~/\D/; # Only numbers!
   my $mark = int(1+rand(10000));
   # TODO: Nested limit isn't valid in mysql, refactor
-  my $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
-   SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");
+  my $sth;
+  if ($db->{sqldbms} eq 'SQLite') {
+    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
+   SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");  }
+  elsif ($db->{sqldbms} eq 'mysql') {
+    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid = ( SELECT * FROM ( SELECT taskid FROM tasks WHERE status=-5 LIMIT ?) AS _tasks)"); }
+    # TODO: Debug this further...
+    # UPDATE t ... WHERE col = (SELECT * FROM (SELECT ... FROM t...) AS _t ...);
   $sth->execute($mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
