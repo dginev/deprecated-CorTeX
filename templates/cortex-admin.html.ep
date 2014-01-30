@@ -120,7 +120,7 @@ $(document).ready(function() {
 <div class="itemcontent"><%= form_for '' => begin %>
   <table id="workers-table" class="form-table">
     <% my $i=1; foreach my $gearman_url (@$current_gearman_urls) { %>
-    <tr><td>Gearman URL <% $i; %></td><td class="input"><%= text_field "gearman-urls" => (value=>$gearman_url, size=>50) %></td></tr>
+    <tr><td>Gearman Server (<%= $i; %>)</td><td class="input"><%= text_field "gearman-urls" => (value=>$gearman_url, size=>50) %></td></tr>
     <% $i++; } %>
     <tr id="workers-table-submit-tr"><td> <a id="add-workers-input-field" href="#">Add more</a></td><td><%= submit_button 'Configure workers' %></td></tr>
 </table>
