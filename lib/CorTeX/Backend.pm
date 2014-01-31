@@ -47,6 +47,7 @@ sub new {
   }
 
   if (! defined $opts{metadb}) {
+    $opts{metadb_type} //= 'SQLite';
     $opts{metadb} = CorTeX::Backend::SQL->new(metadb=>1,%opts);}
 
   bless {%opts}, $class; }

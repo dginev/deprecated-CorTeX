@@ -831,10 +831,6 @@ sub status_code {
     when ('blocked') {return '-6'}
     default {return;}}}
 
-
-  1;
-
-
 sub repository_size {
  return 1; # TODO
 }
@@ -848,8 +844,9 @@ sub mark_limbo_entries_queued {
 }
 
 sub get_entry_type {
-  return 'simple'; # TODO
-}
+  my ($db,$serviceiid) = @_;
+  my $formats = $db->serviceiid_to_formats($serviceiid);
+  return $formats->[3]; }
 
 sub fetch_tasks {
   my ($db,%options) = @_;
