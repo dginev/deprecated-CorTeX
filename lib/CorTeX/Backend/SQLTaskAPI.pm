@@ -461,10 +461,16 @@ sub mark_custom_entries_queued {
     $rerun_query->execute($status,$corpusid,$serviceid);    
   }
   #Delete all existing messages for tasks that are marked for rerun (status=-5)
-  my $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
-     (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-      WHERE tasks.status<-4)");
-  $delete_messages_query->execute();
+  if ($db->{sqldbms} eq 'SQLite') {
+    my $delete_messages_query = $db->prepare("DELETE FROM logs WHERE taskid IN
+       (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+        WHERE tasks.status<-4)");
+    $delete_messages_query->execute(); }
+  elsif ($db->{sqldbms} eq 'mysql') {
+    my $delete_messages_query = $db->prepare("DELETE FROM logs WHERE taskid = ANY ( SELECT * FROM 
+       ( SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+        WHERE tasks.status<-4) AS _tasks_to_delete)");
+    $delete_messages_query->execute(); }
 
   # +1 for each foundation that has already completed
   my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
@@ -543,7 +549,6 @@ sub purge {
   my $sth = $db->prepare("DELETE FROM tasks WHERE ".$where_clause.";");
   $sth->execute(grep {defined} map {$options{$_}} qw/entry corpusid serviceid status/);
   return 1; }
-
 
 # HIGH Level API
 
@@ -643,8 +648,7 @@ sub count_entries {
     my ($count,$status,%report);
     $sth->bind_columns(\($status,$count));
     while ($sth->fetch) {
-      $report{status_decode($status)} += $count;
-    }
+      $report{status_decode($status)} += $count; }
     return \%report; }
   elsif ($select eq 'all') {
     $serviceid //= 1;
@@ -662,8 +666,7 @@ sub count_entries {
     my $value;
     $sth->bind_columns(\$value);
     $sth->fetch;
-    return $value;
-    }}
+    return $value; } }
 
 sub count_messages {
   my ($db,%options)=@_;
@@ -682,8 +685,7 @@ sub count_messages {
     my ($count,$status,%report);
     $sth->bind_columns(\($status,$count));
     while ($sth->fetch) {
-      $report{status_decode($status)} += $count;
-    }
+      $report{status_decode($status)} += $count; }
     return \%report; }
   elsif ($select eq 'all') {
     $serviceid //= 1;
@@ -705,8 +707,7 @@ sub count_messages {
     my $value;
     $sth->bind_columns(\$value);
     $sth->fetch;
-    return $value;
-    }}
+    return $value; } }
 
 sub get_custom_entries {
   my ($db,$options) = @_;
@@ -745,8 +746,7 @@ sub get_custom_entries {
     my $name;
     $sth->bind_columns(\$name);
     while ($sth->fetch) {
-      push @entries, [$name,"OK",undef]; 
-    }}
+      push @entries, [$name,"OK",undef]; } }
   #print STDERR Dumper(@entries);
   \@entries; }
 
@@ -762,7 +762,7 @@ sub get_result_summary {
     if ($options{countby} eq 'message') {
       $result_summary = $db->count_messages(%options); }
     else {
-      $result_summary = $db->count_entries(%options); }}
+      $result_summary = $db->count_entries(%options); } }
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare("SELECT distinct(category),count($count_clause) 
@@ -773,8 +773,7 @@ sub get_result_summary {
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
     while ($types_query->fetch) {
-      $result_summary->{$category} = $count if $count>0;
-    }}
+      $result_summary->{$category} = $count if $count>0; } }
   else {
     # We have both severity and category, query for "what" component
     $options{severity} = status_code($options{severity});
@@ -786,8 +785,7 @@ sub get_result_summary {
     my ($what,$count);
     $types_query->bind_columns( \($what,$count));
     while ($types_query->fetch) {
-      $result_summary->{$what} = $count if $count>0;
-    }}
+      $result_summary->{$what} = $count if $count>0; } }
   return $result_summary; }
 
 sub status_decode {
@@ -800,12 +798,10 @@ sub status_decode {
     when (-5) {return 'queued'}
     default {
       if ($status_code > 0) {
-        return 'processing'
-      } else {
-        return 'blocked'
-      }
-    }
-  };}
+        return 'processing' }
+      else {
+        return 'blocked' } }
+  }; }
 
 sub status_encode {
   my ($status) = @_;
@@ -817,7 +813,7 @@ sub status_encode {
     when ('queued') {return '=-5'}
     when ('processing') {return '>0'}
     when ('blocked') {return '<-5'}
-    default {return;}}}
+    default {return;} } }
 
 sub status_code {
   my ($status) = @_;
@@ -829,19 +825,17 @@ sub status_code {
     when ('queued') {return '-5'}
     when ('processing') {return '1'}
     when ('blocked') {return '-6'}
-    default {return;}}}
+    default {return;} } }
 
 sub repository_size {
- return 1; # TODO
-}
+ return 1; }# TODO
 
 sub mark_limbo_entries_queued {
   my ($db) = @_;
   # Entries in limbo have already had their follow-up services blocked 
   # AMD their messages erased, so all we need to do is make them available for processing again
   my $sth = $db->prepare("UPDATE tasks SET status=-5 WHERE status>0");
-  $sth->execute();
-}
+  $sth->execute(); }
 
 sub get_entry_type {
   my ($db,$serviceiid) = @_;
@@ -870,8 +864,7 @@ sub fetch_tasks {
   while ($sth->fetch) {
     # Name of the function:
     $row{iid}=$db->serviceid_to_iid($row{serviceid});
-    push @tasks, {%row};
-  }
+    push @tasks, {%row}; }
   return($mark,\@tasks); }
 
 sub complete_tasks {
@@ -903,10 +896,8 @@ sub complete_tasks {
     if (($status == -1) || ($status == -2)) { # If warning or OK job
       my @enables = $db->serviceid_enables($serviceid);
       foreach my $enabled_service(@enables) { # Enable follow-up services
-        $enable_tasks->execute($entry,$enabled_service); }}
-  }
-  $db->do('COMMIT');
-}
+        $enable_tasks->execute($entry,$enabled_service); } } }
+  $db->do('COMMIT'); }
 
 1;
 __END__
