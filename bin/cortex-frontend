@@ -534,7 +534,7 @@ helper service_report => sub {
   my @rows;
   foreach my $corpus(keys %$service_db_report) {
     my $countstable = $service_db_report->{$corpus};
-    my $total_count = $backend->taskdb->count_entries(corpus=>$corpus,select=>'all');
+    my $total_count = $backend->taskdb->count_entries(corpus=>$corpus,select=>'all')||1;
     my @counts = map {sprintf("%.2f",(100*(($countstable->{$_}||0) / $total_count)))} qw/ok warning error fatal processing queued blocked/;
     my $corpus_link = "<a class='quietlink' href='/report?service=$service_name&corpus=$corpus'>$corpus</a>";
     my $row_content = '<td>'.join("</td><td>",($corpus_link,@counts)).'</td>';
