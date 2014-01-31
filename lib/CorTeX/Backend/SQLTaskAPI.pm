@@ -231,7 +231,8 @@ sub update_service {
   my ($db,%service) = @_;
   my $message;
   # Prepare parameters
-  foreach my $key(qw/name version id oldname type/) { # Mandatory keys
+  $service{'entry-setup'} = (($service{'entry-setup'} eq 'complex') ? 1 : 0);
+  foreach my $key(qw/name version id oldname type entry-setup/) { # Mandatory keys
     return (0,"Failed: Missing $key!") unless $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
@@ -861,7 +862,7 @@ sub fetch_tasks {
     $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
    SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");  }
   elsif ($db->{sqldbms} eq 'mysql') {
-    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid = ( SELECT * FROM ( SELECT taskid FROM tasks WHERE status=-5 LIMIT ?) AS _tasks)"); }
+    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid = ANY ( SELECT * FROM ( SELECT taskid FROM tasks WHERE status=-5 LIMIT ?) AS _tasks)"); }
     # TODO: Debug this further...
     # UPDATE t ... WHERE col = (SELECT * FROM (SELECT ... FROM t...) AS _t ...);
   $sth->execute($mark,$size);

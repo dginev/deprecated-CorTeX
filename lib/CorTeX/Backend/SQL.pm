@@ -32,6 +32,7 @@ sub new {
   my ($class,%input)=@_;
   # White-list the options we care about:
   my %options;
+  $options{metadb} = $input{metadb};
   $options{sqluser} = $input{sqluser} // 'cortex';
   $options{sqlpass} = $input{sqlpass};
   if (!$options{sqlpass}) {
@@ -41,12 +42,14 @@ sub new {
     $options{sqlpass} //= 'cortex'; }
   $options{sqldbname} = $input{sqldbname};
   $options{sqlhost} = $input{sqlhost} // 'localhost';
-  $options{sqldbms} = $input{taskdb_type} // 'SQLite';
+  if ($options{metadb}) {
+    $options{sqldbms} = $input{metadb_type} // 'SQLite'; }
+  else {
+    $options{sqldbms} = $input{taskdb_type} // 'SQLite'; }
   if ($options{sqldbms} eq 'SQLite') {$options{begin_transaction} = 'BEGIN TRANSACTION'}
   elsif ($options{sqldbms} eq 'mysql') {$options{begin_transaction} = 'START TRANSACTION'}
   $options{query_cache} = $input{query_cache} // {};
   $options{handle} = $input{handle};
-  $options{metadb} = $input{metadb};
   $options{CORTEX_DB_DIR} = $input{CORTEX_DB_DIR} // $CORTEX_DB_DIR;
   if (!$options{sqldbname}) {
     if ($options{sqldbms} eq 'SQLite') {
@@ -290,17 +293,21 @@ sub reset_db {
     );");
     $self->do("create index masteridx on dependencies(master);");
     $self->do("create index foundationidx on dependencies(foundation);");
-    # # TODO: Log Tables
-    # $self->do("DROP TABLE if EXISTS logs");
-    # $self->do("CREATE TABLE logs (
-    #   messageid integer primary key AUTOINCREMENT
-    #   category varchar(200),
-    #   what varchar(200),
-    #   details varchar(2000)
-    # );");
-    # $self->do("create index logcategory on logs(category);"); 
-    # $self->do("create index logwhat on logs(what);"); 
 
+    # Log Tables
+    $self->do("DROP TABLE if EXISTS logs");
+    $self->do("CREATE TABLE logs (
+      messageid integer NOT NULL,
+      taskid integer,
+      severity integer,
+      category varchar(200),
+      what varchar(200),
+      details varchar(2000),
+      PRIMARY KEY (messageid)
+    );");
+    $self->do("create index logcategory on logs(category);"); 
+    $self->do("create index logwhat on logs(what);"); 
+    $self->do("create index logseverity on logs(severity);"); 
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
