@@ -238,7 +238,7 @@ $(document).ready(function() {
     if (@current_aggregators) { unshift @current_aggregators, "Aggregators"; }
     else { @current_aggregators = ("No Aggregators Registered"); }
   %>
-  <%= select_field 'converter-name' => [grep {$_ ne 'import'} @current_converters], id=>"converter-name-select" %>
+  <%= select_field 'converter-name' => [grep {$_ !~ /^i(ni|mpor)t$/} @current_converters], id=>"converter-name-select" %>
   <%= select_field 'analyzer-name' => [@current_analyzers], id=>"analyzer-name-select" %>
   <%= select_field 'aggregator-name' => [@current_aggregators], id=>"aggregator-name-select" %>
   <table class="form-table" style="display:none;" id="update-description">

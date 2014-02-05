@@ -17,6 +17,7 @@ use warnings;
 use strict;
 
 use File::Spec;
+use Data::Dumper;
 
 use CorTeX::Backend;
 use CorTeX::Util::Traverse;
@@ -27,33 +28,18 @@ sub new {
   my ($class,%opts) = @_;
   $opts{verbosity}=0 unless defined $opts{verbosity};
   $opts{upper_bound}=9999999999 unless $opts{upper_bound};
-  # my $main_repos = $opts{main_repos} || 'buildsys';
-  # my $meta_graph = $opts{meta_graph} || 'meta';
-  # my $build_system_url = $opts{build_system_url} || 'http://lamapun.mathweb.org';
+  $opts{organization}=lc($opts{organization})||'canonical';
+  if ($opts{organization} eq 'arxiv.org') {
+    # For the arXiv corpus, we need to unpack all .tar files in the root directory,
+    # and then recursively unpack inwards.
+    # require Archive::Extract;
+    # $Archive::Extract::PREFER_BIN = 1;
+    # foreach my $file(@tars) { Archive::Extract->new( archive => $file )->extract; }
+  }
 
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
     if $opts{root};
   my $corpus_name = $walker->job_name;
-  #my $job_url = $build_system_url.'/corpora/'.$corpus_name;
-
-  my $backend = CorTeX::Backend->new(%opts);
-  # Reinit any existing collection if overwrite is enabled
-  # OR normal init if the collection doesn't exist
-  my $corpus_exists = $backend->taskdb->corpus_to_id($corpus_name);
-  if ($opts{overwrite} || (!$corpus_exists)) {
-    $backend->taskdb->delete_corpus($corpus_name);
-    $backend->taskdb->register_corpus($corpus_name);
-
-    #set_db_file_field('import_checkpoint',undef);
-    $backend->docdb->delete_directory($opts{root},$opts{root});
-    # # Initialize a Build System repository in the triple store
-    # $backend->metadb->new_repository($main_repos,$opts{overwrite});
-    # # Register corpus name in triple store?
-    # $backend->metadb->add_triple({subject=>$job_url, predicate=>'rdfs:type', 
-    #          object=>xsd("Corpus"),repository=>$main_repos,graph=>$meta_graph});
-    # $backend->metadb->add_triple({subject=>$job_url, predicate=>'build:entryType', 
-  }
-
   #my $checkpoint = get_db_file_field('import_checkpoint');
   my $directory;
   #Fast-forward until checkpoint is reached:
@@ -62,15 +48,13 @@ sub new {
   #     $directory = $walker->next_entry;
   #   } while (defined $directory && ($directory ne $checkpoint));
   # }
+  my $backend = CorTeX::Backend->new(%opts);
 
   bless {walker=>$walker,verbosity=>$opts{verbosity},
         upper_bound=>$opts{upper_bound},
 	      backend=>$backend, processed_entries=>0,
-	      #main_repos=>$main_repos,meta_graph=>$meta_graph, job_url=>$job_url,
         triple_queue=>[],
-        #build_system_url=>$build_system_url,
-        corpus_name=>$corpus_name}, $class;
-}
+        corpus_name=>$corpus_name}, $class; }
 
 sub set_directory {
   my ($self,$dir) = @_;
@@ -106,8 +90,6 @@ sub process_next {
     
     # 2. Import into eXist
     my $collection = $self->backend->docdb->insert_directory($directory,$self->{walker}->get_root);
-    # OLD3. Mark priority as 1 in Sesame:
-    #push @{$self->{triple_queue}}, {subject=>"exist:$collection",predicate=>'build:priority',object=>xsd(1)};
     # 3. Add entry to SQL tasks, mark as queued for pre-processors:
     my $corpus_name = $self->{corpus_name};
     # Remove any traces of the task
@@ -117,7 +99,7 @@ sub process_next {
     print STDERR "Queueing $directory\n";
     my $success_queue = 
       $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'import',status=>-1);
-    print STDERR "Queue failed, bailing!\n" unless $success_queue;
+    print STDERR "Queue failed, bailing!\n".Dumper($self->backend->taskdb) unless $success_queue;
   }
   return 1;
 }

@@ -43,8 +43,8 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 # Prepare the web service
 use Mojolicious::Lite;
 use Mojo::Util qw/xml_escape/;
-use CorTeX::Import;
 use CorTeX::Backend;
+use CorTeX::Util::Traverse;
 
 use vars qw($VERSION);
 $VERSION  = "0.1";
@@ -440,26 +440,28 @@ helper add_corpus => sub {
   # Mojo::IOLoop->stream($self->tx->connection)->timeout(3600); # 1 hour for import
   # Import a new corpus from the $path
   my $path = $self->param('path');
+  my $organization = $self->param('organization');
   my $overwrite = $self->param('overwrite');
   if (! -d $path) {
     $self->render(json=>{message=>"Please enter a valid file path to the corpus!"});
     return;
   }
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-  my $upper_bound = $self->param('upper-bound');
-  my $importer = CorTeX::Import->new(
-    root=>$path,
-    upper_bound=>$upper_bound,
-    overwrite=>$overwrite,
-		#main_repos=>$MAIN_REPOS,
-		#meta_graph=>$META_GRAPH,
-		#build_system_url=>$BUILD_SYSTEM_URL,
-    verbosity=>1, 
-    %$dbfile);
+  my $backend = CorTeX::Backend->new(%$dbfile);
+  my $corpus_name = CorTeX::Util::Traverse->new(root=>$path,verbosity=>0)->job_name;
+  $dbfile->{$path.'-organization'} = $organization;
+  $dbfile->{$path.'-upper-limit'} = $self->param('upper-limit');
   db_file_disconnect($dbfile);
-  while ($importer->process_next) {}
-  my $message="Successfully Imported $path";
-  $message .= ", capped at $upper_bound entries" if ($upper_bound && ($upper_bound>0));
+  # Reinit any existing collection if overwrite is enabled
+  # OR normal init if the collection doesn't exist
+  my $corpus_exists = $backend->taskdb->corpus_to_id($corpus_name);
+  if ($overwrite || (!$corpus_exists)) {
+    $backend->taskdb->delete_corpus($corpus_name);
+    $backend->taskdb->register_corpus($corpus_name);
+    $backend->docdb->delete_directory($path,$path); }
+  # Queue the corpus for import using the task database:
+  $backend->taskdb->queue(corpus=>$corpus_name,entry=>$path,service=>'init',status=>-5);
+  my $message="Successfully Queued $path for Import."; # TODO: Link to status overview
   $self->render(json => {message => $message});
 };
 
@@ -527,7 +529,6 @@ helper service_report => sub {
   my $service_name = $self->param("name");
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
   my $backend = CorTeX::Backend->new(%$dbfile);
-  my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my $service_db_report = $backend->taskdb->service_report($service_name);
@@ -565,7 +566,6 @@ helper corpus_report => sub {
   my $corpus_name = $self->param("name");
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
   my $backend = CorTeX::Backend->new(%$dbfile);
-  my $pid = $dbfile->{gears_workhorse_pid};
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my ($corpus_db_report) = $backend->taskdb->corpus_report($corpus_name);

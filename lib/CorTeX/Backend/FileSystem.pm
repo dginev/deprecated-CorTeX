@@ -88,7 +88,7 @@ sub fetch_entry {
   my $name = $1;
   my $converter = $options{inputconverter};
   my $inputformat = $options{inputformat};
-  $converter = '' if ($converter =~ /^import_v/);
+  $converter = '' if (!$converter || ($converter =~ /^import_v/));
   $converter = "_cortex_$converter" if $converter;
   my $directory = File::Spec->catdir($entry,$converter);
   # We have a simple (1 file) and a complex (1 archive) case:

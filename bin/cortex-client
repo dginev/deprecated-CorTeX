@@ -36,6 +36,7 @@ if (-d $libdir) {
 use CorTeX::Backend;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Data qw(parse_log);
+use CorTeX::Import;
 use AnyEvent::Gearman;
 
 # CorTeX workhorses have lowest priority, to avoid overloading the machine
@@ -75,6 +76,7 @@ while (1) {
     # Try again in a minute if queue is empty
     sleep 60; next; }
   my $next_iteration = AnyEvent->condvar;
+  QUEUE_TASKS:
   foreach my $task(@$tasks) {
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
@@ -91,6 +93,29 @@ while (1) {
       inputformat=>$task->{formats}->[0],
       inputconverter=>$inputconverter,
       'entry-setup'=>$entry_setup);
+    ### SPECIAL CASE:
+    if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
+      my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
+      my $upper_bound = $dbfile->{$task->{entry}.'-upper-bound'};
+      my $organization = $dbfile->{$task->{entry}.'-organization'};
+      # The new method will unpack/reorder any non-canonical organizations
+      my $importer = CorTeX::Import->new(
+        root=>$task->{entry},
+        upper_bound=>$upper_bound,
+        organization=>$organization,
+        verbosity=>1, 
+        %$dbfile);
+      db_file_disconnect($dbfile);
+      # Now that we are canonical - process all
+      while ($importer->process_next) {}
+      my $message="\nSuccessfully Imported $task->{entry}";
+      $message .= ", capped at $upper_bound entries" if ($upper_bound && ($upper_bound>0));
+      # Add the message to the TaskDB logs, mark as complete.
+      complete_tasks([{service=>$service,entry=>$entry,taskid=>$taskid,
+          messages=>parse_log($message),status=>-1}]);
+      # Proceed to Next task
+      next QUEUE_TASKS; }
+
     # TODO: Obtain prerequisite annotations/resources
     #       And only then encode as JSON
 

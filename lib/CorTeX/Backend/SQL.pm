@@ -27,7 +27,7 @@ my $CORTEX_DB_DIR = $ENV{CORTEX_DB_DIR};
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
-
+use Data::Dumper;
 sub new {
   my ($class,%input)=@_;
   # White-list the options we care about:
@@ -210,6 +210,7 @@ sub reset_db {
     $self->do("create index servicenameidx on services(name);"); 
     $self->do("create index serviceiididx on services(iid);");
     $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup) values("import",0.1,"import_v0_1",2,"tex","tex",1)');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup) values("init",0.1,"init_v0_1",2,"tex","tex",1)');
 
   # Dependency Tables
   $self->do("DROP TABLE IF EXISTS dependencies;");
@@ -284,6 +285,9 @@ sub reset_db {
     $self->do("create index serviceiididx on services(iid);");
     $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup)
                values("import",0.1,"import_v0_1",2,"tex","tex",1)');
+    $self->do('INSERT INTO services (name,version,iid,type,inputformat,outputformat,entrysetup)
+           values("init",0.1,"init_v0_1",2,"tex","tex",1)');
+
     # Dependency Tables
     $self->do("DROP TABLE IF EXISTS dependencies;");
     $self->do("CREATE TABLE dependencies (

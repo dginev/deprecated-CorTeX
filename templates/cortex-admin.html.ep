@@ -145,6 +145,7 @@ $(document).ready(function() {
     <tr><td>Path</td><td class="input"><%= text_field 'path' => (value=>'/path/to/corpus',size=>50) %></td></tr>
     <tr><td>Size Limit</td><td class="input"><%= text_field
              'upper-bound' => (value=>'0',size=>50) %></td></tr>
+    <tr><td>Organization</td><td class="input"><%= select_field 'organization' => ['Canonical','arXiv.org'] %></td></tr>             
     <tr><td>Overwrite</td><td class="input"><%= check_box
             'overwrite' => (value=>'1') %></td></tr>
     
