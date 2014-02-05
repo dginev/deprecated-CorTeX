@@ -42,8 +42,6 @@ sudo apt-get install gearman libfile-slurp-perl\
   
   Login as root and perform initial setup:
   
-  **TODO: UPDATE ME! Section 1.3 is completely out of date**
-
   ```shell
    $ mysql -u root -p
    create user 'cortex'@'localhost' identified by 'password';
