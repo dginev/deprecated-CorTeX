@@ -194,7 +194,7 @@ post '/ajax' => sub {
 get '/retval_detail' => sub {
   my $self = shift;
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
+  my $backend = CorTeX::Backend->new(%$dbfile);
   db_file_disconnect($dbfile);
   my $taskdb = $backend->taskdb;
   my $corpus_name = $self->param("corpus");
@@ -255,7 +255,7 @@ get '/retval_detail' => sub {
 get '/browse' => sub {
   my $self = shift;
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-  my $backend = CorTeX::Backend->new(sesame_url=>$dbfile->{sesame_url}||'',exist_url=>$dbfile->{exist_url}||'');
+  my $backend = CorTeX::Backend->new(%$dbfile);
   db_file_disconnect($dbfile);
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");

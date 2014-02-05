@@ -44,7 +44,8 @@ sub corpus_to_id {
   if (! defined $corpusid) {
     my $sth=$db->prepare("SELECT corpusid from corpora where name=?");
     $sth->execute($corpus);
-    ($corpusid) = $sth->fetchrow_array();
+    $sth->bind_columns(\$corpusid);
+    $sth->fetch;
     $CorpusIDs{$corpus} = $corpusid; }
   return $corpusid; }
 sub service_to_id {
@@ -747,7 +748,6 @@ sub get_custom_entries {
     $sth->bind_columns(\$name);
     while ($sth->fetch) {
       push @entries, [$name,"OK",undef]; } }
-  #print STDERR Dumper(@entries);
   \@entries; }
 
 sub get_result_summary {
