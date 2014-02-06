@@ -225,7 +225,7 @@ sub reset_db {
   # Log Tables
   $self->do("DROP TABLE if EXISTS logs");
   $self->do("CREATE TABLE logs (
-    messageid integer primary key AUTO_INCREMENT,
+    messageid integer primary key AUTOINCREMENT,
     taskid integer,
     severity integer,
     category varchar(200),
@@ -301,7 +301,7 @@ sub reset_db {
     # Log Tables
     $self->do("DROP TABLE if EXISTS logs");
     $self->do("CREATE TABLE logs (
-      messageid integer NOT NULL,
+      messageid integer NOT NULL AUTO_INCREMENT,
       taskid integer,
       severity integer,
       category varchar(200),
