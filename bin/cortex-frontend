@@ -21,6 +21,8 @@ use HTML::Entities;
 use File::Basename 'dirname';
 use File::Spec::Functions qw/catdir catfile/;
 use File::Slurp;
+use List::MoreUtils qw/uniq/;
+
 my ($libdir,$template_dir,$public_dir);
 my $FILE_BASE;
 BEGIN {
@@ -38,7 +40,7 @@ unless ((-d $template_dir) && (-d $public_dir)) {
 
 use feature qw(switch);
 use Data::Dumper;
-use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
+use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_file_field);
 
 # Prepare the web service
 use Mojolicious::Lite;
@@ -184,6 +186,7 @@ post '/ajax' => sub {
     when ('register-databases') { $self->register_databases; }
     when ('register-workers') { $self->register_workers; }
     when ('corpus-report') { $self->corpus_report; }
+    when ('pending-corpora-report') { $self->pending_corpora_report; }
     when ('service-report') { $self->service_report; }
     when ('classic-report') {$self->classic_report; }
     when ('queue-rerun') { $self->queue_rerun; }
@@ -569,7 +572,7 @@ helper corpus_report => sub {
   db_file_disconnect($dbfile);
   # 1. Acquire statistical data:
   my ($corpus_db_report) = $backend->taskdb->corpus_report($corpus_name);
-  my $total_count = $backend->taskdb->count_entries(corpus=>$corpus_name,select=>'all');
+  my $total_count = $backend->taskdb->count_entries(corpus=>$corpus_name,select=>'all') ||  1;
   my @rows;
   foreach my $service(keys %$corpus_db_report) {
     my $countstable = $corpus_db_report->{$service};
@@ -598,6 +601,33 @@ helper corpus_report => sub {
 
   $self->render(json => {report=>$report_message});
 };
+
+helper pending_corpora_report => sub {
+  my ($self) = @_;
+  my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
+  print STDERR Dumper($dbfile);
+  my @pending_corpora = uniq(split(':',$dbfile->{'pending-corpora'}));
+  if (!@pending_corpora) {
+    db_file_disconnect($dbfile);
+    $self->render(json => {report=>''}); }
+  else {
+    my $report_message = '<h3>Corpora pending import:</h3><table class="summary-table overview-table"><thead>
+    <th>Name</th>
+    <th>Imported</th>
+    <th>Checkpoint</th>
+    <th>State</th>
+    </thead><tbody>';
+    foreach my $path(@pending_corpora) {
+      my $name = $dbfile->{"$path-name"};
+      my $state = $dbfile->{"$path-state"}||'';
+      next unless ($state && ($state ne 'Completed'));
+      my $checkpoint = $dbfile->{"$path-import-checkpoint"}||'';
+      my $processed = $dbfile->{"$path-processed-entries"}||0;
+      $report_message .= '<tr class="hover-row"><td>'.$name.'</td><td>'.$processed.'</td><td>'.$checkpoint.'</td><td>'.$state."</td></tr>\n";
+    }
+    db_file_disconnect($dbfile);
+    $report_message .="</tbody></table><br></br>";
+    $self->render(json => {report=>$report_message}); } };
 
 helper classic_report => sub {
   my ($self) = @_;

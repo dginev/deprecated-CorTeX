@@ -26,6 +26,7 @@ function fetch_report(type,name) {
               $('#countdown').html('<p>Refreshing...</p>');
               clearInterval(countdown);
               fetch_report(type,name);
+              if (type == "corpus") {fetch_pending_corpora_report();}
           }
       }, 1000);
     }
@@ -324,4 +325,16 @@ function fetch_corpus_description(corpus_name) {
 }
 function fetch_service_description(service_name) {
   return fetch_description("service",service_name);
+}
+
+function fetch_pending_corpora_report() {
+    $.ajax({
+    url: "/ajax",
+    type: "POST",
+    dataType: "json",
+    data : {"action":'pending-corpora-report'},
+    cache: false,
+    success: function(response) {
+      $("#pending-corpora-report").html(response.report); }
+  }); 
 }

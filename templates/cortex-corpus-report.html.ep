@@ -3,11 +3,12 @@
 <%= javascript 'js/reports.js' %>
 <%= javascript begin %>
 $(document).ready(function() {
+  fetch_pending_corpora_report();
   // Check if already a name has been requested:
   var corpus_name = getURLParameter("name");
   if (corpus_name != "null") {
     $("option[value='"+corpus_name+"']").prop('selected', 'selected');
-    fetch_corpus_report(corpus_name);
+    fetch_corpus_report(corpus_name); 
   }
 
   $("#corpus-name-select").change(function() {
@@ -26,6 +27,6 @@ $(document).ready(function() {
     None registered
   <% } %>
 </h3>
-
 <div id="corpus-report"></div>
+<div id="pending-corpora-report"></div>
 <div id="countdown"></div>

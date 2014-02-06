@@ -20,6 +20,7 @@ use File::Spec::Functions qw/catdir catfile/;
 use File::Copy;
 use File::Path qw/rmtree/;
 use Data::Dumper;
+use List::MoreUtils qw/uniq/;
 
 use CorTeX::Backend;
 use CorTeX::Util::Traverse;
@@ -28,11 +29,19 @@ use CorTeX::Util::RDFWrappers qw(xsd);
 
 sub new {
   my ($class,%opts) = @_;
+  return unless $opts{root}; # Root is mandatory
   $opts{verbosity}=0 unless defined $opts{verbosity};
   $opts{upper_bound}=9999999999 unless $opts{upper_bound};
   $opts{organization}=lc($opts{organization})||'canonical';
   my $log;
+  set_db_file_field('pending-corpora',join(':',uniq($opts{root},split(':',get_db_file_field('pending-corpora')||''))));
+  # Import a canonically organized directory subtree:
+  my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity});
+  my $corpus_name = $walker->job_name;
+  set_db_file_field("$opts{root}-name",$corpus_name);
+
   if ($opts{organization} eq 'arxiv.org') {
+    set_db_file_field("$opts{root}-state",'Unpacking');
     # Bookkeeping counters:
     my ($tars_counter,$subdir_counter, $pdf_counter, $third_level_counter, $final_counter);
 
@@ -41,7 +50,7 @@ sub new {
     require Archive::Extract;
     $Archive::Extract::PREFER_BIN = 1;
     opendir(my $dh, $opts{root});
-    my @tars = grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
+    my @tars = sort grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
     closedir($dh);
 
     $tars_counter = scalar(@tars);
@@ -64,7 +73,7 @@ sub new {
         $pdf_counter++;
         unlink catfile($subdir_path,$pdf); }
       # Extract .gz files and delete sources.
-      foreach my $gz(grep {/\.gz$/} @subdir_files) {
+      foreach my $gz(sort grep {/\.gz$/} @subdir_files) {
         my $gz_path = catfile($subdir_path,$gz);
         $third_level_counter++;
         Archive::Extract->new( archive => $gz_path )->extract(to=>$subdir_path);
@@ -74,7 +83,7 @@ sub new {
       opendir($subh, $subdir_path);
       @subdir_files = readdir($subh);
       closedir($subh);
-      foreach my $implicit_tar_file(grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
+      foreach my $implicit_tar_file(sort grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
         my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
         my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
         move($implicit_tar_path,$full_tar_path);
@@ -102,20 +111,16 @@ sub new {
     if ($third_level_counter > $final_counter) { 
       $log .= "Warning:extract:discarded Out of $third_level_counter paper TARs, only $final_counter had a main TeX file.\n"; }
   }
-  # Import a canonically organized directory subtree:
-  my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
-    if $opts{root};
-  my $corpus_name = $walker->job_name;
-  #my $checkpoint = get_db_file_field('import_checkpoint');
+  set_db_file_field("$opts{root}-state",'Traversing');
+  # Start the traversal and import phase:
+  my $checkpoint = get_db_file_field("$opts{root}-import-checkpoint");
   my $directory;
   #Fast-forward until checkpoint is reached:
-  # if ($checkpoint) {
-  #   do {
-  #     $directory = $walker->next_entry;
-  #   } while (defined $directory && ($directory ne $checkpoint));
-  # }
+  if ($checkpoint) {
+    do {
+      $directory = $walker->next_entry;
+    } while (defined $directory && ($directory ne $checkpoint)); }
   my $backend = CorTeX::Backend->new(%opts);
-
   bless {walker=>$walker,verbosity=>$opts{verbosity},
         upper_bound=>$opts{upper_bound},
         backend=>$backend, processed_entries=>0,
@@ -125,35 +130,39 @@ sub new {
 sub set_directory {
   my ($self,$dir) = @_;
   if (defined $self->{walker}) {
-    $self->{walker}->set_root($dir);
-  } else {
+    $self->{walker}->set_root($dir); }
+  else {
     $self->{walker} = CorTeX::Util::Traverse->new(root=>$dir,verbosity=>$self->{verbosity});
-  }
-}
+  } }
 
 sub process_next {
   my ($self) = @_;
+  my $root = $self->{walker}->get_root;
   # 0. Check that we are within restrictions
   if ($self->{processed_entries} > $self->{upper_bound}) {
     $self->{log} .= "Upper bound reached!\n" if ($self->{verbosity}>0);
-    return;
-  }
+    set_db_file_field("$root-state",'Completed');
+    set_db_file_field("$root-processed-entries",undef);
+    set_db_file_field("$root-import-checkpoint",undef);
+    set_db_file_field(join(':',uniq(grep {$_ ne $root} split(':',get_db_file_field('pending-corpora')))));
+    return; }
   # 1. Fetch the next corpus entry to import
   my $directory = $self->{walker}->next_entry;
   if (! defined $directory) {
     $self->{log} .= "Traversal completed!\n" if ($self->{verbosity}>0);
-    return;
-  }
-  #print STDERR "Entering processing mode for: $directory\n\n" if ($self->{verbosity}>0);
+    set_db_file_field("$root-state",'Completed');
+    set_db_file_field("$root-processed-entries",undef);
+    set_db_file_field("$root-import-checkpoint",undef);
+    set_db_file_field(join(':',uniq(grep {$_ ne $root} split(':',get_db_file_field('pending-corpora')))));
+    return; }
   # 1.1. Increase processed counter
   $self->{processed_entries}++;
   if (! ($self->{processed_entries} % 100)) {
-    #set_db_file_field('import_checkpoint',$directory);
-  }
-  my $added = $self->backend->docdb->already_added($directory,$self->{walker}->get_root);
+    set_db_file_field("$root-import-checkpoint",$directory);
+    set_db_file_field("$root-processed-entries",$self->{processed_entries}); }
+  my $added = $self->backend->docdb->already_added($directory,$root);
   if (! $added) {
     #IMPORTANT TODO: Speed this up, make batch inserts once every 200 or so jobs, not this insert-per-job processing
-    
     # 2. Import into eXist
     my $collection = $self->backend->docdb->insert_directory($directory,$self->{walker}->get_root);
     # 3. Add entry to SQL tasks, mark as queued for pre-processors:
@@ -174,24 +183,19 @@ sub process_all {
   my ($self) = @_;
   # TODO: Consider opening a transaction and keeping count,
   # so that we only commit e.g. on every 100 entries
-  while ($self->process_next) {}
-  #set_db_file_field('import_checkpoint',undef);
-}
+  while ($self->process_next) {} }
 
 sub get_processed_count {
   my ($self) = @_;
-  $self->{processed_entries};
-}
+  $self->{processed_entries}; }
 
 sub backend {
   my ($self) = @_;
-  $self->{backend};
-}
+  $self->{backend}; }
 
 sub get_job_name {
   my ($self) = @_;
-  $self->walker->job_name;
-}
+  $self->walker->job_name; }
 
 sub guessTeXFile {
   my ($directory) = @_;

@@ -36,33 +36,24 @@ sub db_file_connect {
   # eXist and Sesame defaults
   tie %$DB_FILE_REF, 'DB_File', $DB_FILE_PATH, (O_RDWR|O_CREAT)
     or die "Couldn't attach DB $DB_FILE_PATH for object table: $!\n";
-  # $DB_FILE_REF->{exist_url} = 'http://localhost:8080/eXist'
-  #   # Deyan's local: eXist-1.2.6-rev9165/xmlrpc
-  #   unless defined $DB_FILE_REF->{exist_url};
-  # $DB_FILE_REF->{sesame_url} = 'http://localhost:8080/openrdf-sesame/'
-  #   unless defined $DB_FILE_REF->{sesame_url};
-  return $DB_FILE_REF;
-}
+  return $DB_FILE_REF; }
 
 sub db_file_disconnect {
   my ($DB_FILE_REF) = @_;
-  untie %$DB_FILE_REF;
-}
+  untie %$DB_FILE_REF; }
 
 sub get_db_file_field {
   my ($key)=@_;
   my $db_handle = db_file_connect();  
   my $val = $db_handle->{$key};
   db_file_disconnect($db_handle);
-  $val;
-}
+  $val; }
 
 sub set_db_file_field {
   my ($key,$val) = @_;
   my $db_handle = db_file_connect();
   $db_handle->{$key} = $val;
   db_file_disconnect($db_handle);
-  $val;
-}
+  $val; }
 
 1;
