@@ -89,15 +89,19 @@ sub new {
         move($implicit_tar_path,$full_tar_path);
         mkdir($implicit_tar_path);
         # Unpack the tar into its 3rd level directory:
-        Archive::Extract->new( archive => $full_tar_path )->extract(to=>$implicit_tar_path);
-        # Remove the no longer needed .tar
-        unlink($full_tar_path);
+        my $success = Archive::Extract->new( archive => $full_tar_path )->extract(to=>$implicit_tar_path);
+        if (!$success) {
+          # If we didn't succeed, maybe we have a single TeX file - prepare its own directory
+          move($full_tar_path,catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
+        else { # Remove the no longer needed .tar
+          unlink($full_tar_path); }
         if (-d $implicit_tar_path) {
           my $main_tex_file = guessTeXFile($implicit_tar_path);
           if ($main_tex_file) {
             $final_counter++;
             move($main_tex_file, catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
           else {
+            $log .= "Warning:TeX:missing Missing main TeX file for $implicit_tar_file\n";
             rmtree($implicit_tar_path); }
           # Check if we can find the main .tex file. If we can - rename it to the main directory.
         }
