@@ -31,7 +31,11 @@ sub new {
   $opts{verbosity}=0 unless defined $opts{verbosity};
   $opts{upper_bound}=9999999999 unless $opts{upper_bound};
   $opts{organization}=lc($opts{organization})||'canonical';
+  my $log;
   if ($opts{organization} eq 'arxiv.org') {
+    # Bookkeeping counters:
+    my ($tars_counter,$subdir_counter, $pdf_counter, $third_level_counter, $final_counter);
+
     # For the arXiv corpus, we need to unpack all .tar files in the root directory,
     # and then recursively unpack inwards.
     require Archive::Extract;
@@ -39,6 +43,9 @@ sub new {
     opendir(my $dh, $opts{root});
     my @tars = grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
     closedir($dh);
+
+    $tars_counter = scalar(@tars);
+
     # First extract all top-level tars
     foreach my $file(@tars) { 
       Archive::Extract->new( archive => catfile($opts{root},$file) )->extract(to=>$opts{root}); }
@@ -48,16 +55,18 @@ sub new {
       my $subdir_name = $1;
       my $subdir_path = catdir($opts{root},$subdir_name);
       next unless -d $subdir_path; # Skip if not present
+      $subdir_counter++;
       opendir(my $subh, $subdir_path);
       my @subdir_files = readdir($subh);
       closedir($subh);
-      # Wipe away .pdf files  
+      # Wipe away .pdf files      
       foreach my $pdf(grep {/\.pdf$/} @subdir_files) {
+        $pdf_counter++;
         unlink catfile($subdir_path,$pdf); }
       # Extract .gz files and delete sources.
       foreach my $gz(grep {/\.gz$/} @subdir_files) {
         my $gz_path = catfile($subdir_path,$gz);
-        print STDERR "GZ Path: $gz_path\n";
+        $third_level_counter++;
         Archive::Extract->new( archive => $gz_path )->extract(to=>$subdir_path);
         unlink $gz_path; }
       # All extracted files that have no extensions need to be .tar
@@ -67,7 +76,6 @@ sub new {
       closedir($subh);
       foreach my $implicit_tar_file(grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
         my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
-        print STDERR "Implicit Path: $implicit_tar_path\n";
         my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
         move($implicit_tar_path,$full_tar_path);
         mkdir($implicit_tar_path);
@@ -78,6 +86,7 @@ sub new {
         if (-d $implicit_tar_path) {
           my $main_tex_file = guessTeXFile($implicit_tar_path);
           if ($main_tex_file) {
+            $final_counter++;
             move($main_tex_file, catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
           else {
             rmtree($implicit_tar_path); }
@@ -85,9 +94,15 @@ sub new {
         }
       }
     }  
-    exit;
+    # Report on the arXiv unpacking:
+    if ($tars_counter > $subdir_counter) {
+      $log .= "Warning:extract:missing Tried to extract $tars_counter .tar files, created only $subdir_counter directories.\n"; }
+    if ($pdf_counter) {
+      $log .= "Warning:extract:discarded Discarded $pdf_counter PDF files.\n"; }
+    if (1) { # $third_level_counter < $final_counter
+      $log .= "Warning:extract:discarded Out of $third_level_counter paper TARs, only $final_counter had a main TeX file.\n"; }
   }
-
+  # Import a canonically organized directory subtree:
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
     if $opts{root};
   my $corpus_name = $walker->job_name;
@@ -104,7 +119,7 @@ sub new {
   bless {walker=>$walker,verbosity=>$opts{verbosity},
         upper_bound=>$opts{upper_bound},
         backend=>$backend, processed_entries=>0,
-        triple_queue=>[],
+        triple_queue=>[], log=>$log,
         corpus_name=>$corpus_name}, $class; }
 
 sub set_directory {
@@ -120,13 +135,13 @@ sub process_next {
   my ($self) = @_;
   # 0. Check that we are within restrictions
   if ($self->{processed_entries} > $self->{upper_bound}) {
-    print STDERR "Upper bound reached!\n" if ($self->{verbosity}>0);
+    $self->{log} .= "Upper bound reached!\n" if ($self->{verbosity}>0);
     return;
   }
   # 1. Fetch the next corpus entry to import
   my $directory = $self->{walker}->next_entry;
   if (! defined $directory) {
-    print STDERR "Traversal completed!\n" if ($self->{verbosity}>0);
+    $self->{log} .= "Traversal completed!\n" if ($self->{verbosity}>0);
     return;
   }
   #print STDERR "Entering processing mode for: $directory\n\n" if ($self->{verbosity}>0);
@@ -145,12 +160,12 @@ sub process_next {
     my $corpus_name = $self->{corpus_name};
     # Remove any traces of the task
     my $success_purge = $self->backend->taskdb->purge(corpus=>$corpus_name,entry=>$directory);
-    print STDERR "Purge failed, bailing!\n" unless $success_purge;
+    $self->{log} .= "Error:Taskdb:purge Purge failed, bailing!\n" unless $success_purge;
     # Queue in the pre-processors
     print STDERR "Queueing $directory\n";
     my $success_queue = 
       $self->backend->taskdb->queue(corpus=>$corpus_name,entry=>$directory,service=>'import',status=>-1);
-    print STDERR "Queue failed, bailing!\n".Dumper($self->backend->taskdb) unless $success_queue;
+    $self->{log} .= "Error:Taskdb:queue Queue failed, bailing!\n".Dumper($self->backend->taskdb) unless $success_queue;
   }
   return 1;
 }

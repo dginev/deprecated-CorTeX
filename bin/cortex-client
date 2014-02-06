@@ -108,11 +108,9 @@ while (1) {
       db_file_disconnect($dbfile);
       # Now that we are canonical - process all
       while ($importer->process_next) {}
-      my $message="\nSuccessfully Imported $task->{entry}";
-      $message .= ", capped at $upper_bound entries" if ($upper_bound && ($upper_bound>0));
       # Add the message to the TaskDB logs, mark as complete.
       complete_tasks([{service=>$service,entry=>$entry,taskid=>$taskid,
-          messages=>parse_log($message),status=>-1}]);
+          messages=>parse_log($importer->{log}),status=>-1}]);
       # Proceed to Next task
       next QUEUE_TASKS; }
 
