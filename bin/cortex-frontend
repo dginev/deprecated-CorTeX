@@ -605,7 +605,6 @@ helper corpus_report => sub {
 helper pending_corpora_report => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-  print STDERR Dumper($dbfile);
   my @pending_corpora = uniq(split(':',$dbfile->{'pending-corpora'}));
   if (!@pending_corpora) {
     db_file_disconnect($dbfile);
