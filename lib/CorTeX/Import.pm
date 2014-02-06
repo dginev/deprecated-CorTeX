@@ -16,7 +16,9 @@ package CorTeX::Import;
 use warnings;
 use strict;
 
-use File::Spec;
+use File::Spec::Functions qw/catdir catfile/;
+use File::Copy;
+use File::Path qw/rmtree/;
 use Data::Dumper;
 
 use CorTeX::Backend;
@@ -32,9 +34,58 @@ sub new {
   if ($opts{organization} eq 'arxiv.org') {
     # For the arXiv corpus, we need to unpack all .tar files in the root directory,
     # and then recursively unpack inwards.
-    # require Archive::Extract;
-    # $Archive::Extract::PREFER_BIN = 1;
-    # foreach my $file(@tars) { Archive::Extract->new( archive => $file )->extract; }
+    require Archive::Extract;
+    $Archive::Extract::PREFER_BIN = 1;
+    opendir(my $dh, $opts{root});
+    my @tars = grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
+    closedir($dh);
+    # First extract all top-level tars
+    foreach my $file(@tars) { 
+      Archive::Extract->new( archive => catfile($opts{root},$file) )->extract(to=>$opts{root}); }
+    # Next, clean and unpack second-level directories
+    foreach my $file(@tars) {
+      $file =~ /^arXiv_src_(\d+)_/;
+      my $subdir_name = $1;
+      my $subdir_path = catdir($opts{root},$subdir_name);
+      next unless -d $subdir_path; # Skip if not present
+      opendir(my $subh, $subdir_path);
+      my @subdir_files = readdir($subh);
+      closedir($subh);
+      # Wipe away .pdf files  
+      foreach my $pdf(grep {/\.pdf$/} @subdir_files) {
+        unlink catfile($subdir_path,$pdf); }
+      # Extract .gz files and delete sources.
+      foreach my $gz(grep {/\.gz$/} @subdir_files) {
+        my $gz_path = catfile($subdir_path,$gz);
+        print STDERR "GZ Path: $gz_path\n";
+        Archive::Extract->new( archive => $gz_path )->extract(to=>$subdir_path);
+        unlink $gz_path; }
+      # All extracted files that have no extensions need to be .tar
+      # and need to be extracted again in a subdirectory
+      opendir($subh, $subdir_path);
+      @subdir_files = readdir($subh);
+      closedir($subh);
+      foreach my $implicit_tar_file(grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
+        my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
+        print STDERR "Implicit Path: $implicit_tar_path\n";
+        my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
+        move($implicit_tar_path,$full_tar_path);
+        mkdir($implicit_tar_path);
+        # Unpack the tar into its 3rd level directory:
+        Archive::Extract->new( archive => $full_tar_path )->extract(to=>$implicit_tar_path);
+        # Remove the no longer needed .tar
+        unlink($full_tar_path);
+        if (-d $implicit_tar_path) {
+          my $main_tex_file = guessTeXFile($implicit_tar_path);
+          if ($main_tex_file) {
+            move($main_tex_file, catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
+          else {
+            rmtree($implicit_tar_path); }
+          # Check if we can find the main .tex file. If we can - rename it to the main directory.
+        }
+      }
+    }  
+    exit;
   }
 
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
@@ -52,7 +103,7 @@ sub new {
 
   bless {walker=>$walker,verbosity=>$opts{verbosity},
         upper_bound=>$opts{upper_bound},
-	      backend=>$backend, processed_entries=>0,
+        backend=>$backend, processed_entries=>0,
         triple_queue=>[],
         corpus_name=>$corpus_name}, $class; }
 
@@ -125,6 +176,87 @@ sub backend {
 sub get_job_name {
   my ($self) = @_;
   $self->walker->job_name;
+}
+
+sub guessTeXFile {
+  my ($directory) = @_;
+  opendir(my $dh, $directory);
+  my @TeX_file_members = readdir($dh);
+  closedir($dh);
+  if (scalar(@TeX_file_members) == 1) {
+    # One file, that's the input!
+    return catfile($directory, $TeX_file_members[0]); }
+  elsif (! scalar(@TeX_file_members)) { return; }
+  # Heuristically determine the input (borrowed from arXiv::FileGuess)
+  my %Main_TeX_likelihood;
+  foreach my $tex_file (@TeX_file_members) {
+    # Read in the content
+    $tex_file = catfile($directory, $tex_file);
+    # Open file and read first few bytes to do magic sequence identification
+    # note that file will be auto-closed when $FILE_TO_GUESS goes out of scope
+    open(my $FILE_TO_GUESS, '<', $tex_file) ||
+      (print STDERR "failed to open '$tex_file' to guess its format: $!. Continuing.\n");
+    local $/ = "\n";
+    my ($maybe_tex, $maybe_tex_priority, $maybe_tex_priority2);
+    TEX_FILE_TRAVERSAL:
+    while (<$FILE_TO_GUESS>) {
+      if ((/\%auto-ignore/ && $. <= 10) ||    # Ignore
+        ($. <= 10 && /\\input texinfo/) ||    # TeXInfo
+        ($. <= 10 && /\%auto-include/))       # Auto-include
+      { $Main_TeX_likelihood{$tex_file} = 0; last TEX_FILE_TRAVERSAL; }    # Not primary
+      if ($. <= 12 && /^\r?%\&([^\s\n]+)/) {
+        if ($1 eq 'latex209' || $1 eq 'biglatex' || $1 eq 'latex' || $1 eq 'LaTeX') {
+          $Main_TeX_likelihood{$tex_file} = 3; last TEX_FILE_TRAVERSAL; }    # LaTeX
+        else {
+          $Main_TeX_likelihood{$tex_file} = 1; last TEX_FILE_TRAVERSAL; } }    # Mac TeX
+          # All subsequent checks have lines with '%' in them chopped.
+          #  if we need to look for a % then do it earlier!
+      s/\%[^\r]*//;
+      if (/(?:^|\r)\s*\\document(?:style|class)/) {
+        $Main_TeX_likelihood{$tex_file} = 3; last TEX_FILE_TRAVERSAL; }    # LaTeX
+      if (/(?:^|\r)\s*(?:\\font|\\magnification|\\input|\\def|\\special|\\baselineskip|\\begin)/) {
+        $maybe_tex = 1;
+        if (/\\input\s+amstex/) {
+          $Main_TeX_likelihood{$tex_file} = 2; last TEX_FILE_TRAVERSAL; } }    # TeX Priority
+      if (/(?:^|\r)\s*\\(?:end|bye)(?:\s|$)/) {
+        $maybe_tex_priority = 1; }
+      if (/\\(?:end|bye)(?:\s|$)/) {
+        $maybe_tex_priority2 = 1; }
+      if (/\\input *(?:harv|lanl)mac/ || /\\input\s+phyzzx/) {
+        $Main_TeX_likelihood{$tex_file} = 1; last TEX_FILE_TRAVERSAL; }        # Mac TeX
+      if (/beginchar\(/) {
+        $Main_TeX_likelihood{$tex_file} = 0; last TEX_FILE_TRAVERSAL; }        # MetaFont
+      if (/(?:^|\r)\@(?:book|article|inbook|unpublished)\{/i) {
+        $Main_TeX_likelihood{$tex_file} = 0; last TEX_FILE_TRAVERSAL; }        # BibTeX
+      if (/^begin \d{1,4}\s+[^\s]+\r?$/) {
+        if ($maybe_tex_priority) {
+          $Main_TeX_likelihood{$tex_file} = 2; last TEX_FILE_TRAVERSAL; }      # TeX Priority
+        if ($maybe_tex) {
+          $Main_TeX_likelihood{$tex_file} = 1; last TEX_FILE_TRAVERSAL; }      # TeX
+        $Main_TeX_likelihood{$tex_file} = 0; last TEX_FILE_TRAVERSAL; }        # UUEncoded or PC
+      if (m/paper deliberately replaced by what little/) {
+        $Main_TeX_likelihood{$tex_file} = 0; last TEX_FILE_TRAVERSAL; }
+    }
+    close $FILE_TO_GUESS || warn "couldn't close file: $!";
+    if (!defined $Main_TeX_likelihood{$tex_file}) {
+      if ($maybe_tex_priority) {
+        $Main_TeX_likelihood{$tex_file} = 2; }
+      elsif ($maybe_tex_priority2) {
+        $Main_TeX_likelihood{$tex_file} = 1.5; }
+      elsif ($maybe_tex) {
+        $Main_TeX_likelihood{$tex_file} = 1; }
+      else {
+        $Main_TeX_likelihood{$tex_file} = 0; }
+    }
+  }
+  # The highest likelihood (>0) file gets to be the main source.
+  my @files_by_likelihood = sort { $Main_TeX_likelihood{$b} <=> $Main_TeX_likelihood{$a} } grep { $Main_TeX_likelihood{$_} > 0 } keys %Main_TeX_likelihood;
+  if (@files_by_likelihood) {
+   # If we have a tie for max score, grab the alphanumerically first file (to ensure deterministic runs)
+    my $max_likelihood = $Main_TeX_likelihood{ $files_by_likelihood[0] };
+    @files_by_likelihood = sort { $a cmp $b } grep { $Main_TeX_likelihood{$_} == $max_likelihood } @files_by_likelihood;
+    return shift @files_by_likelihood; }
+  return;
 }
 
 1;
