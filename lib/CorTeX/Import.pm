@@ -57,7 +57,6 @@ sub new {
       # Extract .gz files and delete sources.
       foreach my $gz(grep {/\.gz$/} @subdir_files) {
         my $gz_path = catfile($subdir_path,$gz);
-        print STDERR "GZ Path: $gz_path\n";
         Archive::Extract->new( archive => $gz_path )->extract(to=>$subdir_path);
         unlink $gz_path; }
       # All extracted files that have no extensions need to be .tar
@@ -67,7 +66,6 @@ sub new {
       closedir($subh);
       foreach my $implicit_tar_file(grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
         my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
-        print STDERR "Implicit Path: $implicit_tar_path\n";
         my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
         move($implicit_tar_path,$full_tar_path);
         mkdir($implicit_tar_path);
@@ -85,9 +83,9 @@ sub new {
         }
       }
     }  
-    exit;
   }
-
+  
+  # Import a canonically organized directory subtree:
   my $walker = CorTeX::Util::Traverse->new(root=>$opts{root},verbosity=>$opts{verbosity})
     if $opts{root};
   my $corpus_name = $walker->job_name;
