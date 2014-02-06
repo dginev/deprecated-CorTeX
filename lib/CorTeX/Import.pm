@@ -99,7 +99,7 @@ sub new {
       $log .= "Warning:extract:missing Tried to extract $tars_counter .tar files, created only $subdir_counter directories.\n"; }
     if ($pdf_counter) {
       $log .= "Warning:extract:discarded Discarded $pdf_counter PDF files.\n"; }
-    if (1) { # $third_level_counter < $final_counter
+    if ($third_level_counter > $final_counter) { 
       $log .= "Warning:extract:discarded Out of $third_level_counter paper TARs, only $final_counter had a main TeX file.\n"; }
   }
   # Import a canonically organized directory subtree:
