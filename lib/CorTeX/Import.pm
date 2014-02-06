@@ -57,7 +57,8 @@ sub new {
 
     # First extract all top-level tars
     foreach my $file(@tars) { 
-      Archive::Extract->new( archive => catfile($opts{root},$file) )->extract(to=>$opts{root}); }
+      my $untar = "tar -xf ".catfile($opts{root},$file)." -C $opts{root}";
+      system($untar); }
     # Next, clean and unpack second-level directories
     foreach my $file(@tars) {
       $file =~ /^arXiv_src_(\d+)_/;
@@ -69,15 +70,11 @@ sub new {
       my @subdir_files = readdir($subh);
       closedir($subh);
       # Wipe away .pdf files      
-      foreach my $pdf(grep {/\.pdf$/} @subdir_files) {
-        $pdf_counter++;
-        unlink catfile($subdir_path,$pdf); }
+      $pdf_counter = scalar(grep {/\.pdf$/} @subdir_files);
+      system("rm $subdir_path/*.pdf");
       # Extract .gz files and delete sources.
-      foreach my $gz(sort grep {/\.gz$/} @subdir_files) {
-        my $gz_path = catfile($subdir_path,$gz);
-        $third_level_counter++;
-        Archive::Extract->new( archive => $gz_path )->extract(to=>$subdir_path);
-        unlink $gz_path; }
+      $third_level_counter = scalar(grep {/\.gz$/} @subdir_files);
+      system("gunzip -r $subdir_path");
       # All extracted files that have no extensions need to be .tar
       # and need to be extracted again in a subdirectory
       opendir($subh, $subdir_path);
@@ -89,12 +86,11 @@ sub new {
         move($implicit_tar_path,$full_tar_path);
         mkdir($implicit_tar_path);
         # Unpack the tar into its 3rd level directory:
-        my $success = Archive::Extract->new( archive => $full_tar_path )->extract(to=>$implicit_tar_path);
-        if (!$success) {
-          # If we didn't succeed, maybe we have a single TeX file - prepare its own directory
-          move($full_tar_path,catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
-        else { # Remove the no longer needed .tar
+        if (!system("tar -tf $full_tar_path 2>\&1 >/dev/null")) { # A tar file
+          system("tar xf $full_tar_path -C $implicit_tar_path");
           unlink($full_tar_path); }
+        else { # Not a tar, then we have a single TeX file - move to its own directory
+          move($full_tar_path,catfile($implicit_tar_path,$implicit_tar_file.'.tex')); }
         if (-d $implicit_tar_path) {
           my $main_tex_file = guessTeXFile($implicit_tar_path);
           if ($main_tex_file) {
