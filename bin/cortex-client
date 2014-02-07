@@ -88,12 +88,7 @@ while (1) {
                       $taskdb->service_to_id($inputconverter))
       if $inputconverter;
     my $entry_setup = $task->{formats}->[3];
-    $task->{workload} = $docdb->fetch_entry(
-      entry=>$task->{entry},
-      inputformat=>$task->{formats}->[0],
-      inputconverter=>$inputconverter,
-      'entry-setup'=>$entry_setup);
-    ### SPECIAL CASE:
+    ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
       my $upper_bound = $dbfile->{$task->{entry}.'-upper-bound'};
@@ -109,71 +104,82 @@ while (1) {
       # Now that we are canonical - process all
       while ($importer->process_next) {}
       # Add the message to the TaskDB logs, mark as complete.
-      complete_tasks([{service=>$service,entry=>$entry,taskid=>$taskid,
-          messages=>parse_log($importer->{log}),status=>-1}]);
-      # Proceed to Next task
-      next QUEUE_TASKS; }
-
-    # TODO: Obtain prerequisite annotations/resources
-    #       And only then encode as JSON
-
-    # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
-    sub fail_handler {
-      my $message = shift || "Job failed (generic)";
       my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
-          messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
+          messages=>parse_log($importer->{log}),status=>-1};
+      # Proceed to Next task
       push @$results, $response;
-      # New queue if we're done here
-      print STDERR "Failed ",scalar(@$results),"\n";
       if (scalar(@$results) == $queue_size) {
-        # Done with this queue, report to DB
-        # TODO: Push new annotations, formats, aggregate resources into docdb
-        # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
         complete_tasks($results);
         $results=[];
-        $next_iteration->send(); }}
+        $next_iteration->send(); } }
+    ### REGULAR CASE: Gearman task
+    else {
+      # TODO: Obtain prerequisite annotations/resources
+      #       And only then encode as JSON
+      # For now: obtain entry
+      $task->{workload} = $docdb->fetch_entry(
+        entry=>$task->{entry},
+        inputformat=>$task->{formats}->[0],
+        inputconverter=>$inputconverter,
+        'entry-setup'=>$entry_setup);
+      # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
+      sub fail_handler {
+        my $message = shift || "Job failed (generic)";
+        my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
+            messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
+        push @$results, $response;
+        # New queue if we're done here
+        print STDERR "Failed ",scalar(@$results),"\n";
+        if (scalar(@$results) == $queue_size) {
+          # Done with this queue, report to DB
+          # TODO: Push new annotations, formats, aggregate resources into docdb
+          # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
+          complete_tasks($results);
+          $results=[];
+          $next_iteration->send(); }}
 
-    # Dispatch to Gearman
-    $client->add_task(
-      $service => $task->{workload},
-      on_complete => sub {
-          my $payload = $_[1];
-          my $response={};
-          if ($entry_setup) {# complex setup
-            # We expect $payload to be a ZIP archive with a _cortex_log.txt log, and _cortex_status.txt status.
-            my $archive = Archive::Zip->new();
-            my $content_handle = IO::String->new($payload);
-            if ($archive->readFromFileHandle( $content_handle ) != AZ_OK) {
-              fail_handler('Job failed (invalid archive returned)');
-              return; }
-            $response->{log} = $archive->contents('_cortex_log.txt');
-            $response->{status} = $archive->contents('_cortex_status.txt');
-            $archive->removeMember('_cortex_log.txt');
-            $archive->removeMember('_cortex_status.txt');
-            $response->{document} = $archive; }
-          else { # Simple setup is already in JSON
-            $response = decode_json($payload); }
-          # Parse log, to be ready for TaskDB insertion
-          my $messages = parse_log(delete $response->{log});
-          @$messages = grep {$_->{severity} ne 'status'} @$messages; # We don't want status messages for now. TODO: What to do with those?
-          $response->{messages} = $messages;
-          # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
-          $response->{entry} = $entry;
-          $response->{taskid} = $taskid;
-          $response->{service} = $service;
-          $response->{formats} = $task->{formats};
-          push @$results, $response;
-          # New queue if we're done here
-          print STDERR "[".localtime()."] Client $$ : ",scalar(@$results)," jobs completed\n";
-          if (scalar(@$results) == $queue_size) {
-            # Done with this queue, report to DB
-            # TODO: Push new annotations, formats, aggregate resources into docdb
-            # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-            complete_tasks($results);
-            $results=[];
-            $next_iteration->send(); }},
-      on_fail => \&fail_handler
-    );
+      # Dispatch to Gearman
+      $client->add_task(
+        $service => $task->{workload},
+        on_complete => sub {
+            my $payload = $_[1];
+            my $response={};
+            if ($entry_setup) {# complex setup
+              # We expect $payload to be a ZIP archive with a _cortex_log.txt log, and _cortex_status.txt status.
+              my $archive = Archive::Zip->new();
+              my $content_handle = IO::String->new($payload);
+              if ($archive->readFromFileHandle( $content_handle ) != AZ_OK) {
+                fail_handler('Job failed (invalid archive returned)');
+                return; }
+              $response->{log} = $archive->contents('_cortex_log.txt');
+              $response->{status} = $archive->contents('_cortex_status.txt');
+              $archive->removeMember('_cortex_log.txt');
+              $archive->removeMember('_cortex_status.txt');
+              $response->{document} = $archive; }
+            else { # Simple setup is already in JSON
+              $response = decode_json($payload); }
+            # Parse log, to be ready for TaskDB insertion
+            my $messages = parse_log(delete $response->{log});
+            @$messages = grep {$_->{severity} ne 'status'} @$messages; # We don't want status messages for now. TODO: What to do with those?
+            $response->{messages} = $messages;
+            # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
+            $response->{entry} = $entry;
+            $response->{taskid} = $taskid;
+            $response->{service} = $service;
+            $response->{formats} = $task->{formats};
+            push @$results, $response;
+            # New queue if we're done here
+            print STDERR "[".localtime()."] Client $$ : ",scalar(@$results)," jobs completed\n";
+            if (scalar(@$results) == $queue_size) {
+              # Done with this queue, report to DB
+              # TODO: Push new annotations, formats, aggregate resources into docdb
+              # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
+              complete_tasks($results);
+              $results=[];
+              $next_iteration->send(); }},
+        on_fail => \&fail_handler
+      );
+    }
   }
   $next_iteration->recv; }
 
