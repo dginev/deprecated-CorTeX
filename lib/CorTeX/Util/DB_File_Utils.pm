@@ -34,8 +34,9 @@ sub db_file_connect {
   my $DB_FILE_REF = {};
   # When server is starting up, check if the DB file exists, otherwise write it with the expected
   # eXist and Sesame defaults
-  tie %$DB_FILE_REF, 'DB_File', $DB_FILE_PATH, (O_RDWR|O_CREAT), 0660, $DB_HASH 
+  tie %$DB_FILE_REF, 'DB_File', $DB_FILE_PATH, (O_RDWR|O_CREAT);
     or die "Couldn't attach DB $DB_FILE_PATH for object table: $!\n";
+  chmod(0660,$DB_FILE_PATH);
   return $DB_FILE_REF; }
 
 sub db_file_disconnect {
