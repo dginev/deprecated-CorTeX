@@ -145,7 +145,7 @@ sub prepare {
   return $query_cache->{$statement};
 }
 
-sub safe_exec {
+sub safe_execute {
   my ($sth,@args) = @_;
   local $@;
   my ($eval_return,$retries);
