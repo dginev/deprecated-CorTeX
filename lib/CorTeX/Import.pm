@@ -47,8 +47,6 @@ sub new {
 
     # For the arXiv corpus, we need to unpack all .tar files in the root directory,
     # and then recursively unpack inwards.
-    require Archive::Extract;
-    $Archive::Extract::PREFER_BIN = 1;
     opendir(my $dh, $opts{root});
     my @tars = sort grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
     closedir($dh);
