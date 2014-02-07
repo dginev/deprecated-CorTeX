@@ -856,7 +856,7 @@ sub fetch_tasks {
     $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid = ANY ( SELECT * FROM ( SELECT taskid FROM tasks WHERE status=-5 LIMIT ?) AS _tasks)"); }
     # TODO: Debug this further...
     # UPDATE t ... WHERE col = (SELECT * FROM (SELECT ... FROM t...) AS _t ...);
-  $sth->execute($mark,$size);
+  $db->safe_execute($sth,$mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
   my (%row,@tasks);
