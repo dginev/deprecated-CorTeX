@@ -37,6 +37,7 @@ if (-d $libdir) { # If started locally, consult local lib.
 unless ((-d $template_dir) && (-d $public_dir)) {
   die "Can't locate the templates/ and public/ web application directories!";
 }
+my ($services_dir) = grep {-d $_} map("$_/CorTeX/Default", @INC);
 
 use feature qw(switch);
 use Data::Dumper;
@@ -391,7 +392,6 @@ helper register_workers => sub {
 
 sub register_default_services {
   # Take no input
-  my ($services_dir) = grep {-d $_} map("$_/CorTeX/Default", @INC);
   opendir(my $dh, $services_dir)
    || die "can't opendir $services_dir: $!";
   my @default_service_descriptions = grep { /\.json$/ && -f "$services_dir/$_" } readdir($dh);
