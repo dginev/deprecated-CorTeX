@@ -60,9 +60,11 @@ sub new {
       my $untar = "tar -xf ".catfile($opts{root},$file)." -C $opts{root}";
       system($untar); }
     # Next, clean and unpack second-level directories
+    my @subdirs = ();
     foreach my $file(@tars) {
-      $file =~ /^arXiv_src_(\d+)_/;
-      my $subdir_name = $1;
+      if ($file =~ /^arXiv_src_(\d+)_/) {
+        push @subdirs, $1; }
+    foreach my $subdir_name(uniq(@subdirs)) { # Unique, since arXiv has multiple tar fragments per a month's directory   
       my $subdir_path = catdir($opts{root},$subdir_name);
       next unless -d $subdir_path; # Skip if not present
       $subdir_counter++;
