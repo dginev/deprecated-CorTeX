@@ -63,7 +63,7 @@ sub new {
     my @subdirs = ();
     foreach my $file(@tars) {
       if ($file =~ /^arXiv_src_(\d+)_/) {
-        push @subdirs, $1; }
+        push @subdirs, $1; }}
     foreach my $subdir_name(uniq(@subdirs)) { # Unique, since arXiv has multiple tar fragments per a month's directory   
       my $subdir_path = catdir($opts{root},$subdir_name);
       next unless -d $subdir_path; # Skip if not present
