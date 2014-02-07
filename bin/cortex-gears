@@ -39,6 +39,7 @@ $SIG{'INT'} = \&stop_all; # Interrupt handler
 $SIG{'HUP'} = \&stop_all; # Apache Hangup handler
 $SIG{'KILL'} = \&stop_all; # Just good-old KILL handler
 $SIG{'TERM'} = \&stop_all; # TERM handler
+$SIG{'CHLD'} = 'IGNORE';
 
 # Set up global state
 my ($CORTEX_DB_DIR) = @ARGV;
