@@ -115,7 +115,7 @@ while (1) {
         complete_tasks($results);
         $results=[];
         if ($task_queue_size < $max_queue_size) {
-          $next_iteration->send(); } }
+          $next_iteration->send(); } } }
     ### REGULAR CASE: Gearman task
     else {
       # TODO: Obtain prerequisite annotations/resources
@@ -142,7 +142,7 @@ while (1) {
           complete_tasks($results);
           $results=[];
           if ($task_queue_size < $max_queue_size) {
-            $next_iteration->send(); }}
+            $next_iteration->send(); } } }
 
       # Dispatch to Gearman
       $client->add_task(
@@ -184,7 +184,7 @@ while (1) {
               complete_tasks($results);
               $results=[];
               if ($task_queue_size < $max_queue_size) {
-                $next_iteration->send(); }},
+                $next_iteration->send(); } } },
         on_fail => \&fail_handler
       );
     }
