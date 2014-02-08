@@ -130,3 +130,11 @@ sudo apt-get install gearman libfile-slurp-perl\
     CustomLog /var/log/apache2/cortex.access.log combined
   </VirtualHost>
   ```
+
+6. High workloads with Gearman
+
+In workflows where you have a large number of CPUs (such as arXMLiv) make sure to configure the Gearman parameters at ```/etc/default/gearman-job-server```. An example high performance configuration is:
+
+```
+PARAMS="--listen=212.201.44.163 --job-retries=2 --threads=12"
+```
