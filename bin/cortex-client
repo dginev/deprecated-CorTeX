@@ -63,7 +63,7 @@ db_file_disconnect($db_handle);
 ### MAIN ###
 # Event loop between DB Polling and Gearman dispatching
 
-my $max_queue_size = 20;
+my $max_queue_size = 30;
 my $queue_size;
 my $client = gearman_client(@servers);
 
@@ -108,7 +108,7 @@ while (1) {
           messages=>parse_log($importer->{log}),status=>-1};
       # Proceed to Next task
       push @$results, $response;
-      if (scalar(@$results) == $queue_size) {
+      if (scalar(@$results) >= int($queue_size/2)) {
         complete_tasks($results);
         $results=[];
         $next_iteration->send(); } }
@@ -130,7 +130,7 @@ while (1) {
         push @$results, $response;
         # New queue if we're done here
         print STDERR "Failed ",scalar(@$results),"\n";
-        if (scalar(@$results) == $queue_size) {
+        if (scalar(@$results) >= int($queue_size/2)) {
           # Done with this queue, report to DB
           # TODO: Push new annotations, formats, aggregate resources into docdb
           # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
@@ -170,7 +170,7 @@ while (1) {
             push @$results, $response;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ",scalar(@$results)," jobs completed\n";
-            if (scalar(@$results) == $queue_size) {
+            if (scalar(@$results) >= int($queue_size/2)) {
               # Done with this queue, report to DB
               # TODO: Push new annotations, formats, aggregate resources into docdb
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
