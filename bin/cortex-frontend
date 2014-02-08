@@ -605,7 +605,7 @@ helper corpus_report => sub {
 helper pending_corpora_report => sub {
   my ($self) = @_;
   my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-  my @pending_corpora = uniq(split(':',$dbfile->{'pending-corpora'}));
+  my @pending_corpora = uniq(split(':',$dbfile->{'pending-corpora'}||''));
   if (!@pending_corpora) {
     db_file_disconnect($dbfile);
     $self->render(json => {report=>''}); }
