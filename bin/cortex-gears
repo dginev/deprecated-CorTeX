@@ -65,18 +65,21 @@ while (1) { # Every minute, check:
     $backend->taskdb->mark_limbo_entries_queued;
     db_file_disconnect($db_handle);
     # Start clients
-    spawn_clients(); }
+    my $needed = clients_needed();
+    spawn_clients($needed) if ($needed > 0); }
 
   my $taskdb = $backend->taskdb;
   # In case things just died away, respawn them:
-  spawn_clients() unless (@{$Cache->{clients}} > 0);
+  my $needed = clients_needed();
+  spawn_clients($needed) if ($needed > 0);
   # Check again in a minute...
   sleep $check_interval; }
 
 sub spawn_clients {
+  my ($needed) = @_;
   my @servers = @{$Cache->{servers}};
   # Servers x processors = # clients
-  for my $num(1..($Cache->{processor_multiplier}*scalar(@servers))) {
+  for my $num(1..$needed) {
     # Fork a job for each one!
     my $pid = fork();
     if ($pid == 0) {
@@ -86,6 +89,18 @@ sub spawn_clients {
       push @{$Cache->{clients}}, $pid;
     }
   }}
+
+sub clients_needed {
+  my @current_clients = @{$Cache->{clients}};
+  my $desired_clients = $Cache->{processor_multiplier}*scalar(@{$Cache->{servers}});
+  # Collect the alive client pids and respawn the delta between max and current
+  my @verified = ();
+  foreach my $client(@current_clients) {
+    if (kill 0, $client) {
+      push @verified, $client; } }
+  $Cache->{clients} = \@verified;
+  my $needed = $desired_clients - scalar(@verified);
+  return $needed; }
 
 sub stop_all {
   stop_children();
