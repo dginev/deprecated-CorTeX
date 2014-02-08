@@ -68,6 +68,7 @@ my $queue_size;
 my $client = gearman_client(@servers);
 
 my $results = [];
+my $task_queue_size = 0;
 
 while (1) {
   my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
@@ -75,6 +76,7 @@ while (1) {
   if (! ($queue_size)) {
     # Try again in a minute if queue is empty
     sleep 60; next; }
+  $task_queue_size += $queue_size;
   my $next_iteration = AnyEvent->condvar;
   QUEUE_TASKS:
   foreach my $task(@$tasks) {
@@ -108,10 +110,12 @@ while (1) {
           messages=>parse_log($importer->{log}),status=>-1};
       # Proceed to Next task
       push @$results, $response;
+      $task_queue_size--;
       if (scalar(@$results) >= int($queue_size/2)) {
         complete_tasks($results);
         $results=[];
-        $next_iteration->send(); } }
+        if ($task_queue_size < $max_queue_size) {
+          $next_iteration->send(); } }
     ### REGULAR CASE: Gearman task
     else {
       # TODO: Obtain prerequisite annotations/resources
@@ -128,6 +132,7 @@ while (1) {
         my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
             messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
         push @$results, $response;
+        $task_queue_size--;
         # New queue if we're done here
         print STDERR "Failed ",scalar(@$results),"\n";
         if (scalar(@$results) >= int($queue_size/2)) {
@@ -136,7 +141,8 @@ while (1) {
           # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
           complete_tasks($results);
           $results=[];
-          $next_iteration->send(); }}
+          if ($task_queue_size < $max_queue_size) {
+            $next_iteration->send(); }}
 
       # Dispatch to Gearman
       $client->add_task(
@@ -168,6 +174,7 @@ while (1) {
             $response->{service} = $service;
             $response->{formats} = $task->{formats};
             push @$results, $response;
+            $task_queue_size--;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ",scalar(@$results)," jobs completed\n";
             if (scalar(@$results) >= int($queue_size/2)) {
@@ -176,7 +183,8 @@ while (1) {
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
               complete_tasks($results);
               $results=[];
-              $next_iteration->send(); }},
+              if ($task_queue_size < $max_queue_size) {
+                $next_iteration->send(); }},
         on_fail => \&fail_handler
       );
     }
@@ -192,5 +200,4 @@ sub complete_tasks {
   # Insert any new documents or resources from the conversion
   $docdb->complete_documents($results);
   # Update all as done, insert logs
-  $taskdb->complete_tasks($results);
-}
+  $taskdb->complete_tasks($results); }
