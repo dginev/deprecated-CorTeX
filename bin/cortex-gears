@@ -87,6 +87,7 @@ sub spawn_clients {
     } else {
       print STDERR "Started Client #$num : process $pid\n";
       push @{$Cache->{clients}}, $pid;
+      sleep 1; # Space out the clients in time, both to reduce load and to increase distributivity
     }
   }}
 
