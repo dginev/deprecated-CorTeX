@@ -93,7 +93,7 @@ sub spawn_clients {
 
 sub clients_needed {
   my @current_clients = @{$Cache->{clients}};
-  my $desired_clients = $Cache->{processor_multiplier}*scalar(@{$Cache->{servers}});
+  my $desired_clients = $Cache->{processor_multiplier};
   # Collect the alive client pids and respawn the delta between max and current
   my @verified = ();
   foreach my $client(@current_clients) {
