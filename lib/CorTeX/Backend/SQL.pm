@@ -146,13 +146,15 @@ sub prepare {
 }
 
 sub safe_execute {
-  my ($sth,@args) = @_;
+  my ($self,$sth,@args) = @_;
   local $@;
   my ($eval_return,$retries);
   do {
-    sleep 1 if $@; # Space out the requests when trying to resolve deadlocks.
     $retries++;
     $eval_return = eval { $sth->execute(@args); 1; };
+    if ((!$eval_return) || $@) { # Space out the requests when trying to resolve deadlocks.
+	print STDERR "PID $$: execute failed\n$@\n";
+    }
   } while (($retries<10) && ((!$eval_return) || $@));
 }
 
