@@ -49,7 +49,6 @@ $SIG{'INT'} = \&stop_immediate; # Interrupt handler
 $SIG{'HUP'} = \&stop_immediate; # Apache Hangup handler
 $SIG{'KILL'} = \&stop_immediate; # Just good-old KILL handler
 $SIG{'TERM'} = \&stop_immediate; # TERM handler
-$SIG{'ALRM'} = \&restart_client;
 sub stop_immediate { exit 0; }
 sub restart_client {
   print STDERR "Timeout reached, restarting client $$\n";
@@ -76,17 +75,24 @@ my $client = gearman_client(@servers);
 my $results = [];
 my $task_queue_size = 0;
 
-alarm($timeout_limit); # Timeout if we're inactive for too long
 while (1) {
+  my $main_loop_cv = AnyEvent->condvar; # Timeout if we're inactive for too long
+  my $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send });
+
+  # Fetch the tasks we are going to dispatch:
   my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
   $queue_size = scalar(@$tasks);
   if (! ($queue_size)) {
+    print STDERR "[".localtime()."] Client $$ : Queue is empty, sleeping...\n";
     # Try again in a minute if queue is empty
     my $sleep_cv = AnyEvent->condvar;
     my $wait_sixty_seconds = AnyEvent->timer(after => 60, cb => sub { $sleep_cv->send });
-    $sleep_cv->recv; next; }
+    $sleep_cv->recv;
+    # Move to the next cycle
+    $main_loop_cv->send;
+    next;} 
   $task_queue_size += $queue_size;
-  my $next_iteration = AnyEvent->condvar;
+  print STDERR "[".localtime()."] Client $$ : QSize($task_queue_size)\n";
   QUEUE_TASKS:
   foreach my $task(@$tasks) {
     my $entry = $task->{entry};
@@ -124,7 +130,7 @@ while (1) {
         complete_tasks($results);
         $results=[];
         if ($task_queue_size < $max_queue_size) {
-          $next_iteration->send(); } } }
+          $main_loop_cv->send(); } } }
     ### REGULAR CASE: Gearman task
     else {
       # TODO: Obtain prerequisite annotations/resources
@@ -144,7 +150,7 @@ while (1) {
         $task_queue_size--;
         # New queue if we're done here
         print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n";
-        alarm($timeout_limit); # Reset alarm
+        $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
         if (scalar(@$results) >= int($queue_size/2)) {
           # Done with this queue, report to DB
           # TODO: Push new annotations, formats, aggregate resources into docdb
@@ -154,7 +160,7 @@ while (1) {
           $results=[];
           print STDERR "[".localtime()."] Client $$ : Tasks completed!\n";
           if ($task_queue_size < $max_queue_size) {
-            $next_iteration->send(); } } }
+            $main_loop_cv->send(); } } }
 
       # Dispatch to Gearman
       $client->add_task(
@@ -189,7 +195,7 @@ while (1) {
             $task_queue_size--;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
-            alarm($timeout_limit); # Reset alarm
+            $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
             if (scalar(@$results) >= int($queue_size/2)) {
               # Done with this queue, report to DB
               # TODO: Push new annotations, formats, aggregate resources into docdb
@@ -197,12 +203,13 @@ while (1) {
               complete_tasks($results);
               $results=[];
               if ($task_queue_size < $max_queue_size) {
-                $next_iteration->send(); } } },
+                $main_loop_cv->send(); } } },
         on_fail => \&fail_handler
       );
     }
   }
-  $next_iteration->recv; }
+  $main_loop_cv->recv;
+}
 
 sub complete_tasks {
   my ($results) = @_;
