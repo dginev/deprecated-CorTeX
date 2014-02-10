@@ -52,8 +52,9 @@ $SIG{'TERM'} = \&stop_immediate; # TERM handler
 $SIG{'ALRM'} = \&restart_client;
 sub stop_immediate { exit 0; }
 sub restart_client {
+  print STDERR "Timeout reached, restarting client $$\n";
   exec("$RealBin_safe/cortex-worker",$CORTEX_DB_DIR,@servers)
-    or die("Fatal:cortex-client:restart Client autoflush Failed!"); }
+    or die("Fatal:cortex-client:restart Client $$ autoflush Failed!"); }
 
 # Grab a TaskDB
 my $db_handle = db_file_connect($CORTEX_DB_DIR);
@@ -136,7 +137,7 @@ while (1) {
         'entry-setup'=>$entry_setup);
       # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
       sub fail_handler {
-        my $message = shift || "Job failed (generic)";
+        my $message = $_[1] || "Job failed (generic)";
         my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
             messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
         push @$results, $response;
@@ -166,7 +167,7 @@ while (1) {
               my $archive = Archive::Zip->new();
               my $content_handle = IO::String->new($payload);
               if ($archive->readFromFileHandle( $content_handle ) != AZ_OK) {
-                fail_handler('Job failed (invalid archive returned)');
+                fail_handler(undef,'Job failed (invalid archive returned)');
                 return; }
               $response->{log} = $archive->contents('_cortex_log.txt');
               $response->{status} = $archive->contents('_cortex_status.txt');
