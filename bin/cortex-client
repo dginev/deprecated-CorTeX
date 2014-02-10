@@ -76,8 +76,8 @@ my $client = gearman_client(@servers);
 my $results = [];
 my $task_queue_size = 0;
 
+alarm($timeout_limit); # Timeout if we're inactive for too long
 while (1) {
-  alarm($timeout_limit); # Timeout if we're inactive for too long
   my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
   $queue_size = scalar(@$tasks);
   if (! ($queue_size)) {
