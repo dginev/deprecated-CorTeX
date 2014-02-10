@@ -135,7 +135,7 @@ while (1) {
       push @$results, $response;
       delete $task_queue->{$taskid};
       if (scalar(@$results) >= int($queue_size/2)) {
-        complete_tasks($results);
+        complete_tasks($results) if @$results;;
         $results=[];
         if (scalar(keys %$task_queue) < $max_queue_size) {
           $main_loop_cv->send(); } } }
@@ -163,10 +163,8 @@ while (1) {
           # Done with this queue, report to DB
           # TODO: Push new annotations, formats, aggregate resources into docdb
           # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-          print STDERR "[".localtime()."] Client $$ : Completing tasks ...\n";
-          complete_tasks($results);
+          complete_tasks($results) if @$results;
           $results=[];
-          print STDERR "[".localtime()."] Client $$ : Tasks completed!\n";
           if (scalar(keys %$task_queue) < $max_queue_size) {
             $main_loop_cv->send(); } } }
 
@@ -208,7 +206,7 @@ while (1) {
               # Done with this queue, report to DB
               # TODO: Push new annotations, formats, aggregate resources into docdb
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-              complete_tasks($results);
+              complete_tasks($results) if @$results;
               $results=[];
               if (scalar(keys %$task_queue) < $max_queue_size) {
                 $main_loop_cv->send(); } } },
@@ -221,6 +219,7 @@ while (1) {
 
 sub complete_tasks {
   my ($results) = @_;
+  print STDERR "[".localtime()."] Client $$ : Completing tasks ...\n";
   # TODO: A single transaction with each database here, speed everything along nicely
   # TODO: Validate the service is returning the correct type of data
   # Insert any new annotations from the conversion
@@ -228,4 +227,5 @@ sub complete_tasks {
   # Insert any new documents or resources from the conversion
   $docdb->complete_documents($results);
   # Update all as done, insert logs
-  $taskdb->complete_tasks($results); }
+  $taskdb->complete_tasks($results); 
+  print STDERR "[".localtime()."] Client $$ : Tasks completed!\n"; }
