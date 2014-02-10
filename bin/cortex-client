@@ -218,14 +218,14 @@ while (1) {
 }
 
 sub complete_tasks {
-  my ($results) = @_;
+  my ($completed_jobs) = @_;
   print STDERR "[".localtime()."] Client $$ : Completing tasks ...\n";
   # TODO: A single transaction with each database here, speed everything along nicely
   # TODO: Validate the service is returning the correct type of data
   # Insert any new annotations from the conversion
-  $metadb->complete_annotations($results);
+  $metadb->complete_annotations($completed_jobs);
   # Insert any new documents or resources from the conversion
-  $docdb->complete_documents($results);
+  $docdb->complete_documents($completed_jobs);
   # Update all as done, insert logs
-  $taskdb->complete_tasks($results); 
+  $taskdb->complete_tasks($completed_jobs); 
   print STDERR "[".localtime()."] Client $$ : Tasks completed!\n"; }
