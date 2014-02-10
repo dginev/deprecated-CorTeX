@@ -50,10 +50,6 @@ $SIG{'HUP'} = \&stop_immediate; # Apache Hangup handler
 $SIG{'KILL'} = \&stop_immediate; # Just good-old KILL handler
 $SIG{'TERM'} = \&stop_immediate; # TERM handler
 sub stop_immediate { exit 0; }
-sub restart_client {
-  print STDERR "Timeout reached, restarting client $$\n";
-  exec("$RealBin_safe/cortex-client",$CORTEX_DB_DIR,@servers)
-    or die("Fatal:cortex-client:restart Client $$ autoflush Failed!"); }
 
 # Grab a TaskDB
 my $db_handle = db_file_connect($CORTEX_DB_DIR);
@@ -64,6 +60,21 @@ my $docdb = $backend->docdb;
 my $metadb = $backend->metadb;
 db_file_disconnect($db_handle);
 
+
+my $results = [];
+my $task_queue = {};
+sub restart_client {
+  print STDERR "Timeout reached, restarting client $$\n";
+  # First, mark all remaining tasks as fatal!
+  foreach my $taskid(keys %$task_queue) {
+    my $task = $task_queue->{$taskid};
+    my $response = {service=>$task->{iid},entry=>$task->{entry},taskid=>$taskid,
+      messages=>parse_log("Fatal:Gearman:client Client Timeout"),status=>-4};
+    push @$results, $response; }
+  complete_tasks($results) if @$results;
+  exec("$RealBin_safe/cortex-client",$CORTEX_DB_DIR,@servers)
+    or die("Fatal:cortex-client:restart Client $$ autoflush Failed!"); }
+
 ### MAIN ###
 # Event loop between DB Polling and Gearman dispatching
 
@@ -71,9 +82,6 @@ my $max_queue_size = 30;
 my $timeout_limit = 600; # Alive for ten minutes, unless a job returns;
 my $queue_size;
 my $client = gearman_client(@servers);
-
-my $results = [];
-my $task_queue_size = 0;
 
 while (1) {
   my $main_loop_cv = AnyEvent->condvar; # Timeout if we're inactive for too long
@@ -91,12 +99,12 @@ while (1) {
     # Move to the next cycle
     $main_loop_cv->send;
     next;} 
-  $task_queue_size += $queue_size;
-  print STDERR "[".localtime()."] Client $$ : QSize($task_queue_size)\n";
+  #print STDERR "[".localtime()."] Client $$ : QSize($task_queue_size)\n";
   QUEUE_TASKS:
   foreach my $task(@$tasks) {
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
+    $task_queue->{$taskid} = $task;
     my $service = $task->{iid};
     $task->{formats} = $taskdb->serviceiid_to_formats($service);
     # Obtain the actual workload:
@@ -125,11 +133,11 @@ while (1) {
           messages=>parse_log($importer->{log}),status=>-1};
       # Proceed to Next task
       push @$results, $response;
-      $task_queue_size--;
+      delete $task_queue->{$taskid};
       if (scalar(@$results) >= int($queue_size/2)) {
         complete_tasks($results);
         $results=[];
-        if ($task_queue_size < $max_queue_size) {
+        if (scalar(keys %$task_queue) < $max_queue_size) {
           $main_loop_cv->send(); } } }
     ### REGULAR CASE: Gearman task
     else {
@@ -146,8 +154,8 @@ while (1) {
         my $message = $_[1] || "Job failed (generic)";
         my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
             messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
+        delete $task_queue->{taskid};
         push @$results, $response;
-        $task_queue_size--;
         # New queue if we're done here
         print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n";
         $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
@@ -159,7 +167,7 @@ while (1) {
           complete_tasks($results);
           $results=[];
           print STDERR "[".localtime()."] Client $$ : Tasks completed!\n";
-          if ($task_queue_size < $max_queue_size) {
+          if (scalar(keys %$task_queue) < $max_queue_size) {
             $main_loop_cv->send(); } } }
 
       # Dispatch to Gearman
@@ -191,8 +199,8 @@ while (1) {
             $response->{taskid} = $taskid;
             $response->{service} = $service;
             $response->{formats} = $task->{formats};
+            delete $task_queue->{$taskid};
             push @$results, $response;
-            $task_queue_size--;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
             $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
@@ -202,7 +210,7 @@ while (1) {
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
               complete_tasks($results);
               $results=[];
-              if ($task_queue_size < $max_queue_size) {
+              if (scalar(keys %$task_queue) < $max_queue_size) {
                 $main_loop_cv->send(); } } },
         on_fail => \&fail_handler
       );
