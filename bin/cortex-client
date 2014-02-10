@@ -53,7 +53,7 @@ $SIG{'ALRM'} = \&restart_client;
 sub stop_immediate { exit 0; }
 sub restart_client {
   print STDERR "Timeout reached, restarting client $$\n";
-  exec("$RealBin_safe/cortex-worker",$CORTEX_DB_DIR,@servers)
+  exec("$RealBin_safe/cortex-client",$CORTEX_DB_DIR,@servers)
     or die("Fatal:cortex-client:restart Client $$ autoflush Failed!"); }
 
 # Grab a TaskDB
