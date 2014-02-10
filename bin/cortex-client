@@ -67,7 +67,7 @@ sub restart_client {
   print STDERR "Timeout reached, restarting client $$\n";
   # First, mark all remaining tasks as fatal!
   foreach my $taskid(keys %$task_queue) {
-    my $task = $task_queue->{$taskid};
+    my $task = $task_queue->{"$taskid"};
     my $response = {service=>$task->{iid},entry=>$task->{entry},taskid=>$taskid,
       messages=>parse_log("Fatal:Gearman:client Client Timeout"),status=>-4};
     push @$results, $response; }
@@ -104,7 +104,7 @@ while (1) {
   foreach my $task(@$tasks) {
     my $entry = $task->{entry};
     my $taskid = $task->{taskid};
-    $task_queue->{$taskid} = $task;
+    $task_queue->{"$taskid"} = $task;
     my $service = $task->{iid};
     $task->{formats} = $taskdb->serviceiid_to_formats($service);
     # Obtain the actual workload:
@@ -116,11 +116,11 @@ while (1) {
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-      my $upper_bound = $dbfile->{$task->{entry}.'-upper-bound'};
-      my $organization = $dbfile->{$task->{entry}.'-organization'};
+      my $upper_bound = $dbfile->{$entry.'-upper-bound'};
+      my $organization = $dbfile->{$entry.'-organization'};
       # The new method will unpack/reorder any non-canonical organizations
       my $importer = CorTeX::Import->new(
-        root=>$task->{entry},
+        root=>$entry,
         upper_bound=>$upper_bound,
         organization=>$organization,
         verbosity=>1, 
@@ -133,7 +133,7 @@ while (1) {
           messages=>parse_log($importer->{log}),status=>-1};
       # Proceed to Next task
       push @$results, $response;
-      delete $task_queue->{$taskid};
+      delete $task_queue->{"$taskid"};
       if (scalar(@$results) >= int($queue_size/2)) {
         complete_tasks($results) if @$results;;
         $results=[];
@@ -145,7 +145,7 @@ while (1) {
       #       And only then encode as JSON
       # For now: obtain entry
       $task->{workload} = $docdb->fetch_entry(
-        entry=>$task->{entry},
+        entry=>$entry,
         inputformat=>$task->{formats}->[0],
         inputconverter=>$inputconverter,
         'entry-setup'=>$entry_setup);
@@ -154,7 +154,7 @@ while (1) {
         my $message = $_[1] || "Job failed (generic)";
         my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
             messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
-        delete $task_queue->{taskid};
+        delete $task_queue->{"$taskid"};
         push @$results, $response;
         # New queue if we're done here
         print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n";
@@ -197,7 +197,7 @@ while (1) {
             $response->{taskid} = $taskid;
             $response->{service} = $service;
             $response->{formats} = $task->{formats};
-            delete $task_queue->{$taskid};
+            delete $task_queue->{"$taskid"};
             push @$results, $response;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
