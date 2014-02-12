@@ -841,7 +841,7 @@ helper update_workers => sub {
 
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
-        my $remote_ssh_invocation = "ssh $ssh_includes".$remote->{user}.'@'.$remote->{address}.
+        my $remote_ssh_invocation = "ssh $ssh_includes ".$remote->{user}.'@'.$remote->{address}.
           " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
         my $remote_response = `$remote_ssh_invocation`; }
       $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
