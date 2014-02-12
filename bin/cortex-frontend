@@ -623,11 +623,9 @@ helper server_report => sub {
       <th>LaTeXML revision</th>
       </thead><tbody>';
 
-      my $ssh_includes;
+      my $ssh_includes='';
       if (-e $ssh_file) {
-        $ssh_includes = read_file($ssh_file);
-        chomp($ssh_includes); }
-      if ($ssh_includes) {$ssh_includes = "-i $ssh_includes";} else {$ssh_includes='';}
+        $ssh_includes = "-i $ssh_includes"; }
 
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
@@ -836,11 +834,11 @@ helper update_workers => sub {
       my @remotes = map {my @columns = split(/\s+/,$_);
         {user=>$columns[0],address=>$columns[1],name=>$columns[2]}; } @lines;
       my $total = scalar(@remotes);
-      my $ssh_includes;
+
+      my $ssh_includes='';
       if (-e $ssh_file) {
-        $ssh_includes = read_file($ssh_file);
-        chomp($ssh_includes); }
-      if ($ssh_includes) {$ssh_includes = "-i $ssh_includes";} else {$ssh_includes='';}
+        $ssh_includes = "-i $ssh_includes"; }
+
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
         my $remote_ssh_invocation = "ssh $ssh_includes".$remote->{user}.'@'.$remote->{address}.
