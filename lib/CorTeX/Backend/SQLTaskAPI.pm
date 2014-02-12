@@ -786,10 +786,12 @@ sub get_result_summary {
       $result_summary = $db->count_entries(%options); } }
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare("SELECT distinct(category),count($count_clause) 
-      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-      WHERE corpusid=? AND serviceid=? AND severity=?
-      group by category limit 100");
+    my $types_query = $db->prepare("SELECT * FROM 
+      ( SELECT distinct(category) as dc,count($count_clause) as counted
+        FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
+        WHERE corpusid=? AND serviceid=? AND severity=? group by category) AS category_counts
+      ORDER BY counted DESC 
+      LIMIT 100");
     $types_query->execute($corpusid,$serviceid,$options{severity});
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
@@ -798,10 +800,12 @@ sub get_result_summary {
   else {
     # We have both severity and category, query for "what" component
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare("SELECT distinct(what),count($count_clause) 
-      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-      WHERE corpusid=? AND serviceid=? AND severity=? AND category=?
-      group by what limit 100");
+    my $types_query = $db->prepare("SELECT * FROM 
+      ( SELECT distinct(what) as dc,count($count_clause) as counted
+        FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
+        WHERE corpusid=? AND serviceid=? AND severity=? AND category=? group by what) AS what_counts
+      ORDER BY counted DESC
+      limit 100");
     $types_query->execute($corpusid,$serviceid,$options{severity},$options{category});
     my ($what,$count);
     $types_query->bind_columns( \($what,$count));
