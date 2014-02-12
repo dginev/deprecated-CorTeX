@@ -635,7 +635,7 @@ helper server_report => sub {
       my $latexml_head_rev = $latexml_master->{commit}->{sha};
       my $cortex_peripheral_master = $mj->decode($ua->get('https://api.github.com/repos/dginev/CorTeX-Peripheral/branches/master')->res->body);
       my $cortexp_head_rev = $cortex_peripheral_master->{commit}->{sha};     
-      my @need_udpate;
+      my (@need_latexml_update,@need_cortexp_update);
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
         my $remote_ssh_invocation = "ssh $ssh_includes ".$remote->{user}.'@'.$remote->{address}." '~/CorTeX-Peripheral/bin/cortex-status'";
@@ -647,18 +647,27 @@ helper server_report => sub {
         else {
           my $remote_lxml_rev = $remote_report->{latexml_revision};
           my $remote_cortexp_rev = $remote_report->{cortex_peripheral_revision};
-          my $lxml_color = ($remote_lxml_rev && ($latexml_head_rev =~ /^$remote_lxml_rev/)) ? 'green' : 'red';
-          if ($lxml_color eq 'red') { # Needs to be updated:
-            push(@need_udpate, $remote->{user}.'@'.$remote->{address}); }
-          my $cortexp_color = ($remote_cortexp_rev && ($cortexp_head_rev =~ /^$remote_cortexp_rev/)) ? 'green' : 'red';
+          my ($lxml_color,$cortexp_color);
+          if ($remote_lxml_rev && ($latexml_head_rev =~ /^$remote_lxml_rev/)) {
+            $lxml_color = 'green'; }
+          else {
+            $lxml_color = 'red'; # Needs to be updated:
+            push(@need_latexml_update, $remote->{user}.'@'.$remote->{address}); }
+          if ($remote_cortexp_rev && ($cortexp_head_rev =~ /^$remote_cortexp_rev/)) {
+            $cortexp_color = 'green'; }
+          else {
+            $cortexp_color = 'red';
+            push(@need_cortexp_update, $remote->{user}.'@'.$remote->{address}); }
           $server_report .= '<tr><td>'.$remote->{name}.'</td><td>'.$remote_report->{machine_cpus}.'</td><td>'
                         . $remote_report->{worker_processes}."</td><td style='color: $cortexp_color'>".$remote_cortexp_rev."</td><td style='color: $lxml_color'>"
                         . $remote_lxml_rev."</td></tr>\n"; } }
+      
       $server_report .= '<tr><td><input type="submit" value="Update All" /></td><td colspan=4></td></tr></tbody></table>';
 
       # Cache machines that need update:
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-      $dbfile->{remotes_needing_update} = join(' ',uniq(@need_udpate));
+      $dbfile->{remotes_needing_latexml_update} = join(' ',uniq(@need_latexml_update));
+      $dbfile->{remotes_needing_cortexp_update} = join(' ',uniq(@need_cortexp_update));
       db_file_disconnect();
 
       $self->render(json => {report=>$server_report});
@@ -862,17 +871,22 @@ helper update_workers => sub {
 
       # Obtain the cached (from server_report) machines that need updating:
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
-      my @needed = split(' ',$dbfile->{remotes_needing_update});
+      my %latexml_needed = map {$_ => 1} split(' ',$dbfile->{remotes_needing_latexml_update});
+      my %cortexp_needed = map {$_ => 1} split(' ',$dbfile->{remotes_needing_cortexp_update});
       db_file_disconnect();
+      my @needed = uniq(keys %latexml_needed, keys %cortexp_needed);
       if (! @needed) {
         $self->render(json => {message=>'All machines are up to date, nothing to update.'}); }
       else {
         foreach my $remote(@needed) {
+          my $parameters='';
+          $parameters.=' latexml' if $latexml_needed{$remote};
+          $parameters.=' cortexp' if $cortexp_needed{$remote};
           # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
           my $remote_ssh_invocation = "ssh $ssh_includes ".$remote.
-            " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
+            " 'nohup ~/CorTeX-Peripheral/bin/cortex-update $parameters 2>cortex-update.stderr >cortex-update.log </dev/null &'";
           my $remote_response = `$remote_ssh_invocation`; }
-        $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
+        $self->render(json => {message=>"$total machines were asked to update, check back in 5 minutes."});
       }
     }
     else {
