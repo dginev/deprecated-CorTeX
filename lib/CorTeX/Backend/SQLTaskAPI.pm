@@ -446,13 +446,15 @@ sub mark_custom_entries_queued {
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     if ($db->{sqldbms} eq 'SQLite') {
     $rerun_query = $db->prepare("UPDATE tasks SET status=? 
-      WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+      WHERE taskid IN (SELECT distinct(tasks.taskid) FROM
+        tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=? and logs.what=?)"); }
     elsif ($db->{sqldbms} eq 'mysql') { # Mysql needs a temporary table ...
       $rerun_query = $db->prepare("UPDATE tasks SET status=? 
       WHERE taskid = ANY ( SELECT * FROM 
-       ( SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+       ( SELECT distinct(tasks.taskid) FROM
+          tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
         WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
         AND logs.category=? and logs.what=?) AS _tasks_to_queue)"); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category,$what); }
@@ -461,13 +463,13 @@ sub mark_custom_entries_queued {
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
     if ($db->{sqldbms} eq 'SQLite') {
       $rerun_query = $db->prepare("UPDATE tasks SET status=?
-      WHERE taskid IN (SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+      WHERE taskid IN (SELECT distinct(tasks.taskid) FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=?)"); }
     elsif ($db->{sqldbms} eq 'mysql') { # Mysql needs a temporary table ...
       $rerun_query = $db->prepare("UPDATE tasks SET status=? 
       WHERE taskid = ANY ( SELECT * FROM 
-       ( SELECT tasks.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
+       ( SELECT distinct(tasks.taskid) FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
         WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
         AND logs.category=?) AS _tasks_to_queue)"); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category); }
