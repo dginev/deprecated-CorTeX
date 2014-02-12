@@ -491,9 +491,8 @@ sub mark_custom_entries_queued {
         WHERE tasks.status<-4)");
     $delete_messages_query->execute(); }
   elsif ($db->{sqldbms} eq 'mysql') {
-    my $delete_messages_query = $db->prepare("DELETE FROM logs WHERE taskid = ANY ( SELECT * FROM 
-       ( SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-        WHERE tasks.status<-4) AS _logs_to_delete)");
+    my $delete_messages_query = $db->prepare("DELETE logs FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+        WHERE tasks.status<-4");
     $delete_messages_query->execute(); }
 
   # +1 for each foundation that has already completed
