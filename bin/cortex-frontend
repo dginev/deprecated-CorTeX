@@ -625,7 +625,7 @@ helper server_report => sub {
 
       my $ssh_includes='';
       if (-e $ssh_file) {
-        $ssh_includes = "-i $ssh_includes"; }
+        $ssh_includes = "-i $ssh_file"; }
 
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
@@ -837,7 +837,7 @@ helper update_workers => sub {
 
       my $ssh_includes='';
       if (-e $ssh_file) {
-        $ssh_includes = "-i $ssh_includes"; }
+        $ssh_includes = "-i $ssh_file"; }
 
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
