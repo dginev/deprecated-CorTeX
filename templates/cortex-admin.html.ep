@@ -4,12 +4,15 @@
 <%= javascript begin %>
 $(document).ready(function() {
   $("#accordion").accordion();
+
+  // Gearman Servers
   $("#add-workers-input-field").click(function() {
     var newid = $('#workers-table tr').length;
     $("#workers-table-submit-tr").before("<tr><td>Gearman URL "+newid+"</td><td class=\"input\"><input name=\"gearman-urls\" size=\"50\" value=\"\"></td></tr>");
     $("#accordion").accordion("resize");
   });
 
+  // Form submission to CorTeX
   var dialog_timer;
   $("form").each(function(c, obj) {
     $(obj).attr("action", '');
@@ -62,6 +65,7 @@ $(document).ready(function() {
     });
   });
 
+  // Show/hide fields depending on DB choice:
   $(".selectdb").change(function (){
     var select = $(this).find("select");
     var type = select.val();
@@ -78,9 +82,28 @@ $(document).ready(function() {
       value = $("#current-"+name).text();
       var newtr = $("<tr class=\"url-row\"><td>"+label+"</td><td class=\"input\"><input name=\""+name+"\" size=\"50\" value=\""+value+"\" type=\"text\"></td></tr>");
       tr.after(newtr);
-
     }
   });
+
+  // Server Report
+  $("#server-tab").click(function () {
+    $("#server-report").text("Loading...");
+    $('body').css('cursor', 'progress');
+    // Asking server for report:
+    $.ajax ({
+      url: "/ajax",
+      type: "POST",
+      dataType: "json",
+      data: {action: "server-report"},
+      cache: false,
+      success: function(response) {
+        if (!response.report) {
+          response.report = response.message; }
+        $("#server-report").html(response.report);
+        $('body').css('cursor', 'auto'); }
+    });
+  });
+
 });
 <% end %>
 <div style="text-align:center;" id="message"></div>
@@ -155,12 +178,10 @@ $(document).ready(function() {
   <% end %>
 </div>
 
-<h3><a href="#">Server Status</a></h3>
-<div>
-<ul>
-<li><a href="corpus-report">Corpus Overview</a></li>
-<li><a href="service-report">Service Overview</a></li>
-<li>TODO: Think of Worker processes and DB overviews</li>
-
-</div>
+<h3><a id="server-tab" href="#">Server Report</a></h3>
+<div class="itemcontent">
+  <%= form_for '' => begin %>
+    <div id="server-report"></div>
+    <%= hidden_field action => 'update-workers' %>
+  <% end %>
 </div>
