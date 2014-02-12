@@ -38,7 +38,9 @@ unless ((-d $template_dir) && (-d $public_dir)) {
   die "Can't locate the templates/ and public/ web application directories!";
 }
 my ($services_dir) = grep {-d $_} map("$_/CorTeX/Default", @INC);
-my $remotes_file = '/etc/cortex/remotes';
+my $defaults_directory = catdir('etc','cortex');
+my $remotes_file = catfile($defaults_directory,"remotes");
+my $ssh_file = catfile($defaults_directory,"ssh");
 
 use feature qw(switch);
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_file_field);
@@ -827,9 +829,14 @@ helper update_workers => sub {
       my @remotes = map {my @columns = split(/\s+/,$_);
         {user=>$columns[0],address=>$columns[1],name=>$columns[2]}; } @lines;
       my $total = scalar(@remotes);
+      my $ssh_includes;
+      if (-e $ssh_file) {
+        $ssh_includes = read_file($ssh_file);
+        chomp($ssh_includes); }
+      if ($ssh_includes) {$ssh_includes = "-i $ssh_includes";} else {$ssh_includes='';}
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
-        my $remote_ssh_invocation = "ssh ".$remote->{user}.'@'.$remote->{address}.
+        my $remote_ssh_invocation = "ssh $ssh_includes".$remote->{user}.'@'.$remote->{address}.
           " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
       }
       $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
