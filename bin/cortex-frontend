@@ -38,7 +38,7 @@ unless ((-d $template_dir) && (-d $public_dir)) {
   die "Can't locate the templates/ and public/ web application directories!";
 }
 my ($services_dir) = grep {-d $_} map("$_/CorTeX/Default", @INC);
-my $defaults_directory = catdir('etc','cortex');
+my $defaults_directory = catdir('/etc','cortex');
 my $remotes_file = catfile($defaults_directory,"remotes");
 my $ssh_file = catfile($defaults_directory,"ssh");
 
@@ -48,6 +48,7 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_fil
 # Prepare the web service
 use Mojolicious::Lite;
 use Mojo::Util qw/xml_escape/;
+use Mojo::JSON;
 use CorTeX::Backend;
 use CorTeX::Util::Traverse;
 
@@ -627,6 +628,14 @@ helper server_report => sub {
       if (-e $ssh_file) {
         $ssh_includes = "-i $ssh_file"; }
 
+      # Grab the HEAD of the LaTeXML and CorTeX-Peripheral repositories:
+      my $ua = Mojo::UserAgent->new;
+      my $mj = Mojo::JSON->new;
+      my $latexml_master = $mj->decode($ua->get('https://api.github.com/repos/brucemiller/LaTeXML/branches/master')->res->body);
+      my $latexml_head_rev = $latexml_master->{commit}->{sha};
+      my $cortex_peripheral_master = $mj->decode($ua->get('https://api.github.com/repos/dginev/CorTeX-Peripheral/branches/master')->res->body);
+      my $cortexp_head_rev = $cortex_peripheral_master->{commit}->{sha};     
+      my @need_udpate;
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
         my $remote_ssh_invocation = "ssh $ssh_includes ".$remote->{user}.'@'.$remote->{address}." '~/CorTeX-Peripheral/bin/cortex-status'";
@@ -636,10 +645,22 @@ helper server_report => sub {
         if ($@) {
           $server_report .= '<tr><td>'.$remote->{name}.'</td><td colspan=4>'.$remote_response.'</td></tr>'; }
         else {
+          my $remote_lxml_rev = $remote_report->{latexml_revision};
+          my $remote_cortexp_rev = $remote_report->{cortex_peripheral_revision};
+          my $lxml_color = ($remote_lxml_rev && ($latexml_head_rev =~ /^$remote_lxml_rev/)) ? 'green' : 'red';
+          if ($lxml_color eq 'red') { # Needs to be updated:
+            push(@need_udpate, $remote->{user}.'@'.$remote->{address}); }
+          my $cortexp_color = ($remote_cortexp_rev && ($cortexp_head_rev =~ /^$remote_cortexp_rev/)) ? 'green' : 'red';
           $server_report .= '<tr><td>'.$remote->{name}.'</td><td>'.$remote_report->{machine_cpus}.'</td><td>'
-                        . $remote_report->{worker_processes}.'</td><td>'.$remote_report->{cortex_peripheral_revision}.'</td><td>'
-                        . $remote_report->{latexml_revision}.'</td></tr>'; } }
+                        . $remote_report->{worker_processes}."</td><td style='color: $cortexp_color'>".$remote_cortexp_rev."</td><td style='color: $lxml_color'>"
+                        . $remote_lxml_rev."</td></tr>\n"; } }
       $server_report .= '<tr><td><input type="submit" value="Update All" /></td><td colspan=4></td></tr></tbody></table>';
+
+      # Cache machines that need update:
+      my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
+      $dbfile->{remotes_needing_update} = join(' ',uniq(@need_udpate));
+      db_file_disconnect();
+
       $self->render(json => {report=>$server_report});
     }
     else {
@@ -839,12 +860,20 @@ helper update_workers => sub {
       if (-e $ssh_file) {
         $ssh_includes = "-i $ssh_file"; }
 
-      foreach my $remote(@remotes) {
-        # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
-        my $remote_ssh_invocation = "ssh $ssh_includes ".$remote->{user}.'@'.$remote->{address}.
-          " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
-        my $remote_response = `$remote_ssh_invocation`; }
-      $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
+      # Obtain the cached (from server_report) machines that need updating:
+      my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
+      my @needed = split(' ',$dbfile->{remotes_needing_update});
+      db_file_disconnect();
+      if (! @needed) {
+        $self->render(json => {message=>'All machines are up to date, nothing to update.'}); }
+      else {
+        foreach my $remote(@needed) {
+          # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
+          my $remote_ssh_invocation = "ssh $ssh_includes ".$remote.
+            " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
+          my $remote_response = `$remote_ssh_invocation`; }
+        $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
+      }
     }
     else {
       $self->render(json => {message=>'No remotes declared, nothing to update.'}); }}
