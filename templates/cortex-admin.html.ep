@@ -9,7 +9,7 @@ $(document).ready(function() {
   $("#add-workers-input-field").click(function() {
     var newid = $('#workers-table tr').length;
     $("#workers-table-submit-tr").before("<tr><td>Gearman URL "+newid+"</td><td class=\"input\"><input name=\"gearman-urls\" size=\"50\" value=\"\"></td></tr>");
-    $("#accordion").accordion("resize");
+    $("#accordion").accordion("refresh");
   });
 
   // Form submission to CorTeX
@@ -100,7 +100,7 @@ $(document).ready(function() {
         if (!response.report) {
           response.report = response.message; }
         $("#server-report").html(response.report);
-        $("#accordion").accordion("resize");
+        $("#accordion").accordion("refresh");
         $('body').css('cursor', 'auto'); }
     });
   });
