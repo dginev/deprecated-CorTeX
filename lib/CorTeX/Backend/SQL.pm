@@ -27,7 +27,6 @@ my $CORTEX_DB_DIR = $ENV{CORTEX_DB_DIR};
 
 # Design: One database handle per CorTeX::Backend::SQL object
 #  ideally lightweight, only store DB-specific data in the object
-use Data::Dumper;
 sub new {
   my ($class,%input)=@_;
   # White-list the options we care about:
