@@ -622,9 +622,16 @@ helper server_report => sub {
       <th>CorTeX-Peripheral revision</th>
       <th>LaTeXML revision</th>
       </thead><tbody>';
+
+      my $ssh_includes;
+      if (-e $ssh_file) {
+        $ssh_includes = read_file($ssh_file);
+        chomp($ssh_includes); }
+      if ($ssh_includes) {$ssh_includes = "-i $ssh_includes";} else {$ssh_includes='';}
+
       foreach my $remote(@remotes) {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
-        my $remote_ssh_invocation = "ssh ".$remote->{user}.'@'.$remote->{address}." '~/CorTeX-Peripheral/bin/cortex-status'";
+        my $remote_ssh_invocation = "ssh $ssh_includes ".$remote->{user}.'@'.$remote->{address}." '~/CorTeX-Peripheral/bin/cortex-status'";
         local $@;
         my $remote_response = `$remote_ssh_invocation`;
         my $remote_report = eval { decode_json($remote_response) };
@@ -838,7 +845,7 @@ helper update_workers => sub {
         # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
         my $remote_ssh_invocation = "ssh $ssh_includes".$remote->{user}.'@'.$remote->{address}.
           " 'nohup ~/CorTeX-Peripheral/bin/cortex-update 2>cortex-update.stderr >cortex-update.log </dev/null &'";
-      }
+        my $remote_response = `$remote_ssh_invocation`; }
       $self->render(json => {message=>"$total machines were asked to udpate, check back in 5 minutes."});
     }
     else {
