@@ -863,7 +863,6 @@ helper update_workers => sub {
     if (@lines) {
       my @remotes = map {my @columns = split(/\s+/,$_);
         {user=>$columns[0],address=>$columns[1],name=>$columns[2]}; } @lines;
-      my $total = scalar(@remotes);
 
       my $ssh_includes='';
       if (-e $ssh_file) {
@@ -875,6 +874,7 @@ helper update_workers => sub {
       my %cortexp_needed = map {$_ => 1} split(' ',$dbfile->{remotes_needing_cortexp_update});
       db_file_disconnect();
       my @needed = uniq(keys %latexml_needed, keys %cortexp_needed);
+      my $total = scalar(@needed);
       if (! @needed) {
         $self->render(json => {message=>'All machines are up to date, nothing to update.'}); }
       else {
