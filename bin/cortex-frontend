@@ -883,7 +883,8 @@ helper update_workers => sub {
           $parameters.=' latexml' if $latexml_needed{$remote};
           $parameters.=' cortexp' if $cortexp_needed{$remote};
           # TODO: Make this more generalized (maybe require cortex-status to be in $PATH?)
-          my $remote_ssh_invocation = "ssh $ssh_includes $remote 'nohup ~/CorTeX-Peripheral/bin/cortex-update $parameters 2>cortex-update.stderr >cortex-update.log </dev/null \&'";
+          my $remote_ssh_invocation = "ssh $ssh_includes $remote 'bash -c \"nohup ~/CorTeX-Peripheral/bin/cortex-update "
+             ."$parameters 2>cortex-update.stderr >cortex-update.log </dev/null \&\"'";
           my $remote_response = `$remote_ssh_invocation`; }
         $self->render(json => {message=>"$total machines were asked to update, check back in 5 minutes."});
       }
