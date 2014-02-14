@@ -247,6 +247,7 @@ sub reset_db {
   $self->do("create index logcategory on logs(category);"); 
   $self->do("create index logwhat on logs(what);"); 
   $self->do("create index logseverity on logs(severity);"); 
+  $self->do("create index logtasks on logs(taskid);"); 
 }
 
   ################
@@ -324,6 +325,7 @@ sub reset_db {
     $self->do("create index logcategory on logs(category);"); 
     $self->do("create index logwhat on logs(what);"); 
     $self->do("create index logseverity on logs(severity);"); 
+    $self->do("create index logtasks on logs(taskid);"); 
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
