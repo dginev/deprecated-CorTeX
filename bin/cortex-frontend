@@ -145,10 +145,16 @@ get '/service-report' => sub {
 } => 'cortex-service-report';
 
 get '/report' => sub {
-  my $self=shift;
+  my $self = shift;
   return $self->redirect_to('login') unless $self->session('name');
   $self->render;
 } => 'cortex-report';
+
+get '/annotate' => sub {
+  my $self = shift;
+  return $self->redirect_to('login') unless $self->session('name');
+  $self->render;
+} => 'cortex-annotation-interface';
 
 helper verify_user => sub {
   my ($self,$name,$pass)=@_;

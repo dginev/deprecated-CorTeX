@@ -321,10 +321,15 @@ $(document).ready(function() {
   <% end %>
   </div>
 
-<!--   <h3><a href="#">Delete Service</a></h3>
+<h3><a href="#">Delete Service</a></h3>
   <div class="itemcontent">
     TODO
    </div>
- -->
+
+<h3><a href="#">Perform Service</a></h3>
+  <div class="itemcontent">
+    <a href="/annotate">Go to Annotator Interface</a>
+   </div>
+
 </div>
 
