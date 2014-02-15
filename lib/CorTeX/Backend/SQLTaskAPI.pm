@@ -400,11 +400,11 @@ sub mark_entry_queued {
   my $delete_messages_query;
   if ($db->{sqldbms} eq 'SQLite') {
     $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
-     (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+     (SELECT logs.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.status < -4)"); } # All currently processed
   elsif ($db->{sqldbms} eq 'mysql') {
     $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid = ANY (SELECT * FROM 
-     ( SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+     ( SELECT logs.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE tasks.status < -4) AS _logs_to_delete)"); } # All currently processed    
   $queue_entry_query->execute($status,$corpusid,$serviceid,$data->{entry});
   # Vote up for completed foundations
@@ -450,13 +450,10 @@ sub mark_custom_entries_queued {
         tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=? and logs.what=?)"); }
-    elsif ($db->{sqldbms} eq 'mysql') { # Mysql needs a temporary table ...
-      $rerun_query = $db->prepare("UPDATE tasks SET status=? 
-      WHERE taskid = ANY ( SELECT * FROM 
-       ( SELECT distinct(tasks.taskid) FROM
-          tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-        WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
-        AND logs.category=? and logs.what=?) AS _tasks_to_queue)"); }
+    elsif ($db->{sqldbms} eq 'mysql') {
+      $rerun_query = $db->prepare("UPDATE tasks T INNER JOIN logs L ON (T.taskid = L.taskid AND T.status = L.severity)
+        SET T.status=?
+        WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity AND L.category=? and L.what=?"); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category,$what); }
   # ELSE, We have severity and category
   elsif ($category) {
@@ -466,12 +463,10 @@ sub mark_custom_entries_queued {
       WHERE taskid IN (SELECT distinct(tasks.taskid) FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=?)"); }
-    elsif ($db->{sqldbms} eq 'mysql') { # Mysql needs a temporary table ...
-      $rerun_query = $db->prepare("UPDATE tasks SET status=? 
-      WHERE taskid = ANY ( SELECT * FROM 
-       ( SELECT distinct(tasks.taskid) FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-        WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
-        AND logs.category=?) AS _tasks_to_queue)"); }
+    elsif ($db->{sqldbms} eq 'mysql') {
+      $rerun_query = $db->prepare("UPDATE tasks T INNER JOIN logs L ON (T.taskid = L.taskid AND T.status = L.severity) "
+        . " SET T.status=? "
+        . " WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity AND L.category=? "); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category); }
   elsif ($severity) { # We have severity
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
@@ -484,16 +479,9 @@ sub mark_custom_entries_queued {
       WHERE corpusid=? AND serviceid=?");
     $rerun_query->execute($status,$corpusid,$serviceid);    
   }
-  #Delete all existing messages for tasks that are marked for rerun (status=-5)
-  if ($db->{sqldbms} eq 'SQLite') {
-    my $delete_messages_query = $db->prepare("DELETE FROM logs WHERE taskid IN
-       (SELECT logs.taskid FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-        WHERE tasks.status<-4)");
-    $delete_messages_query->execute(); }
-  elsif ($db->{sqldbms} eq 'mysql') {
-    my $delete_messages_query = $db->prepare("DELETE logs FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
-        WHERE tasks.status<-4");
-    $delete_messages_query->execute(); }
+  #Delete all existing messages for tasks that are marked for rerun (status=-5 or smaller)
+  my $delete_messages_query = $db->prepare("DELETE L.* FROM logs L INNER JOIN tasks T ON (T.taskid = L.taskid) WHERE T.status<-4");
+  $delete_messages_query->execute();
 
   # +1 for each foundation that has already completed
   my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
@@ -630,9 +618,8 @@ sub task_report {
   my $corpusid = $db->corpus_to_id($corpus_name);
   my $task_report=[];
   my $logs_query = $db->prepare(
-    "SELECT severity,category,what,details from logs 
-     WHERE taskid IN (SELECT taskid FROM tasks 
-        where serviceid=? and entry=? and corpusid=?)");
+    "SELECT L.severity,L.category,L.what,L.details from tasks T inner join logs L
+     ON (L.taskid = T.taskid) where T.serviceid=? and T.entry=? and T.corpusid=?)");
   $logs_query->execute($serviceid,$entry,$corpusid);
   my ($severity,$category,$what,$details);
   $logs_query->bind_columns(\($severity,$category,$entry,$details));
@@ -701,7 +688,7 @@ sub count_messages {
   return unless $corpusid || $serviceid;
   if (!$select && ($corpusid && $serviceid)) {
     my $sth = $db->prepare("SELECT severity, count(messageid) 
-      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE corpusid=? and serviceid=?
       group by severity");
     $sth->execute($corpusid,$serviceid);
@@ -713,7 +700,7 @@ sub count_messages {
   elsif ($select eq 'all') {
     $serviceid //= 1;
     my $sth = $db->prepare("SELECT count(messageid) 
-      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE corpusid=? and serviceid=?");
     $sth->execute($corpusid,$serviceid);
     my $total;
@@ -724,7 +711,7 @@ sub count_messages {
     $select = status_decode($select);
     return unless $select =~ /^(\d\-\<\>\=)+$/; # make sure the selector is safe
     my $sth = $db->prepare("SELECT count(messageid) 
-      FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid)
+      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
       WHERE corpusid=? and serviceid=? and status".$select);
     $sth->execute($corpusid,$serviceid);
     my $value;
@@ -789,7 +776,7 @@ sub get_result_summary {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare("SELECT * FROM 
       ( SELECT distinct(category) as dc,count($count_clause) as counted
-        FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
+        FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
         WHERE corpusid=? AND serviceid=? AND severity=? group by category) AS category_counts
       ORDER BY counted DESC 
       LIMIT 100");
@@ -803,7 +790,7 @@ sub get_result_summary {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare("SELECT * FROM 
       ( SELECT distinct(what) as dc,count($count_clause) as counted
-        FROM logs INNER JOIN tasks ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
+        FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
         WHERE corpusid=? AND serviceid=? AND severity=? AND category=? group by what) AS what_counts
       ORDER BY counted DESC
       limit 100");
@@ -879,9 +866,7 @@ sub fetch_tasks {
     $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
    SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");  }
   elsif ($db->{sqldbms} eq 'mysql') {
-    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid = ANY ( SELECT * FROM ( SELECT taskid FROM tasks WHERE status=-5 LIMIT ?) AS _tasks)"); }
-    # TODO: Debug this further...
-    # UPDATE t ... WHERE col = (SELECT * FROM (SELECT ... FROM t...) AS _t ...);
+    $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?"); }
   $db->safe_execute($sth,$mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
@@ -896,13 +881,13 @@ sub fetch_tasks {
 sub complete_tasks {
   my ($db,$results) = @_;
   return unless @$results;
+  # Insert in TaskDB
+  $db->do($db->{begin_transaction});
   my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
   my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
   my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");
   # Decrease the requirements on any blocked jobs by this service, for this entry.
   my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
-  # Insert in TaskDB
-  $db->do($db->{begin_transaction});
   foreach my $result(@$results) {
     my $entry = $result->{entry};
     my $taskid = $result->{taskid};
