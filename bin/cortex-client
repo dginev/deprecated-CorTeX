@@ -157,7 +157,8 @@ while (1) {
         delete $task_queue->{"$taskid"};
         push @$results, $response;
         # New queue if we're done here
-        print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n";
+        print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n$message\n";
+        undef $wait_timeout;
         $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
         if (scalar(@$results) >= int($queue_size/2)) {
           # Done with this queue, report to DB
@@ -201,6 +202,7 @@ while (1) {
             push @$results, $response;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
+            undef $wait_timeout;
             $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
             if (scalar(@$results) >= int($queue_size/2)) {
               # Done with this queue, report to DB
@@ -215,6 +217,7 @@ while (1) {
     }
   }
   $main_loop_cv->recv;
+  undef $wait_timeout;
 }
 
 sub complete_tasks {
@@ -229,3 +232,4 @@ sub complete_tasks {
   # Update all as done, insert logs
   $taskdb->complete_tasks($completed_jobs); 
   print STDERR "[".localtime()."] Client $$ : Tasks completed!\n"; }
+  
