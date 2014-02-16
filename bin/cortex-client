@@ -106,13 +106,14 @@ while (1) {
     my $taskid = $task->{taskid};
     $task_queue->{"$taskid"} = $task;
     my $service = $task->{iid};
-    $task->{formats} = $taskdb->serviceiid_to_formats($service);
+    $task->{description} = $taskdb->service_description(iid=>$service);
     # Obtain the actual workload:
-    my $inputconverter = $task->{formats}->[2];
+    my $inputformat = $task->{description}->{inputformat};
+    my $inputconverter = $task->{description}->{inputconverter};
     $inputconverter = $taskdb->serviceid_to_iid(
                       $taskdb->service_to_id($inputconverter))
       if $inputconverter;
-    my $entry_setup = $task->{formats}->[3];
+    my $entry_setup = $task->{description}->{entrysetup};
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
@@ -146,7 +147,7 @@ while (1) {
       # For now: obtain entry
       $task->{workload} = $docdb->fetch_entry(
         entry=>$entry,
-        inputformat=>$task->{formats}->[0],
+        inputformat=>$inputformat,
         inputconverter=>$inputconverter,
         'entry-setup'=>$entry_setup);
       # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
@@ -197,7 +198,7 @@ while (1) {
             $response->{entry} = $entry;
             $response->{taskid} = $taskid;
             $response->{service} = $service;
-            $response->{formats} = $task->{formats};
+            $response->{description} = $task->{description};
             delete $task_queue->{"$taskid"};
             push @$results, $response;
             # New queue if we're done here

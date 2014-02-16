@@ -5,15 +5,15 @@
 $(document).ready(function() {
   $("#accordion").accordion();
   $("#service-name,#service-version").keyup(function () {
-    // Grab both fields and set service-id
+    // Grab both fields and set service-iid
     var name = $("#service-name").val();
     var version = $("#service-version").val();
     var id = name+" v"+version;
     id = id.toLowerCase();
     id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
     id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
-    $("#service-id-label").text(id);
-    $("#service-id").val(id);
+    $("#service-iid-label").text(id);
+    $("#service-iid").val(id);
   });
   $("#update-name,#update-version").keyup(function () {
     // Grab both fields and set update-id
@@ -155,7 +155,7 @@ $(document).ready(function() {
         <td class="input"><%= text_field 'service-name' => (value=>'Example Service',size=>40,id=>'service-name') %></td></tr>
       <tr><td class="required">Version</td>
         <td class="input"><%= text_field 'service-version' => (value=>'0.1',size=>40,id=>'service-version') %></td></tr>
-      <tr><td><td class="input">(internal ID: <span id="service-id-label">foo</span>)<%= hidden_field "service-id" => "foo", id=>"service-id" %></td></tr>
+      <tr><td><td class="input">(internal ID: <span id="service-iid-label">foo</span>)<%= hidden_field "service-iid" => "foo", id=>"service-iid" %></td></tr>
 
       <tr><td>URL</td><td class="input"><%= text_field 'service-url' => (value=>'',size=>40) %></td></tr>
       <tr><td class="required">Type</td>

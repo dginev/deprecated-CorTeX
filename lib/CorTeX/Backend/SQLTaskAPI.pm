@@ -24,17 +24,17 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
   service_to_id serviceid_to_iid serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
-  serviceiid_to_formats serviceiid_to_id serviceid_enables serviceid_requires
+  serviceiid_to_id serviceid_enables serviceid_requires
   count_entries count_messages
   current_corpora current_services current_inputformats current_outputformats
   service_report classic_report get_custom_entries
   get_result_summary service_description update_service mark_custom_entries_queued
   mark_entry_queued mark_rerun_blocked
   task_report
-  repository_size mark_limbo_entries_queued get_entry_type
+  repository_size mark_limbo_entries_queued
   fetch_tasks complete_tasks);
 
-our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceFormats); # Maps between internal and external names
+our (%CorpusIDs,%ServiceIDs,%IDServices,%IDCorpora,%ServiceDescriptions); # Maps between internal and external names
 our (%IIDs,%IID_to_ID); # More maps
 our (%ServiceIDEnables,%ServiceIDRequires); # Dependencies
 
@@ -57,15 +57,6 @@ sub service_to_id {
     ($serviceid) = $sth->fetchrow_array();
     $ServiceIDs{$service} = $serviceid; }
   return $serviceid; }
-sub serviceiid_to_formats {
-  my ($db,$serviceiid) = @_;
-  my $service_formats = $ServiceFormats{$serviceiid};
-  if (! defined $service_formats) {
-    my $sth = $db->prepare("SELECT inputformat, outputformat, inputconverter, entrysetup from services where iid=?");
-    $sth->execute($serviceiid);
-    $service_formats = [ $sth->fetchrow_array() ];
-    $ServiceFormats{$serviceiid} = $service_formats; }
-  return $service_formats; }
 sub serviceid_enables {
   my ($db,$serviceid) = @_;
   my $enabled_services = $ServiceIDEnables{$serviceid};
@@ -187,10 +178,10 @@ sub register_service {
   my $sth = $db->prepare("INSERT INTO services 
       (name,version,iid,type,xpath,url,inputconverter,inputformat,outputformat,resource,entrysetup) 
       values(?,?,?,?,?,?,?,?,?,?,?)");
-  $message = $sth->execute(map {$service{$_}} qw/name version id type xpath url inputconverter inputformat outputformat resource entry-setup/);
+  $message = $sth->execute(map {$service{$_}} qw/name version iid type xpath url inputconverter inputformat outputformat resource entry-setup/);
   my $id = $db->last_inserted_id();
   $ServiceIDs{$service{name}} = $id;
-  $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
+  $ServiceDescriptions{$service{name}} = {%service};
   # Register Dependencies
   $sth = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
@@ -237,7 +228,7 @@ sub update_service {
     return (0,"Failed: Missing $key!") unless $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
-  my $old_service = $db->service_description($service{oldname});
+  my $old_service = $db->service_description(name=>$service{oldname});
   my $major_change = 0;
   if (($old_service->{name} ne $service{name}) || 
       ($old_service->{version} ne $service{version}) ||
@@ -256,7 +247,7 @@ sub update_service {
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;
-  $ServiceFormats{$service{name}} = [$service{inputformat},$service{outputformat}];
+  $ServiceDescriptions{$service{name}} = {%service};
   # TODO: Update Dependencies
   my $clean_dependencies = $db->prepare("DELETE FROM dependencies where master=?");
   my $insert_dependencies = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
@@ -358,20 +349,30 @@ sub current_outputformats {
   return $outputformats; }
 
 sub service_description {
-  my ($db,$name) = @_;
-  my $sth = $db->prepare("select * from services where name=?");
-  $sth->execute($name);
-  my $description = $sth->fetchrow_hashref;
-  # Collect list of corpora on which service is enabled:
-  return {} unless $description->{serviceid};
-  $sth = $db->prepare("select distinct(corpusid) from tasks where serviceid=?");
-  $sth->execute($description->{serviceid});
-  my @corpora; 
-  my $corpusid;
-  $sth->bind_columns(\$corpusid);
-  while ($sth->fetch) {
-      push @corpora, $db->id_to_corpus($corpusid); }
-  $description->{corpora} = \@corpora;
+  my ($db,%options) = @_;
+  my ($selector,$key);
+  if ($options{name}) {
+    $key = $options{name};
+    $selector = "name"; }
+  elsif ($options{iid}) {
+    $key = $options{iid};
+    $selector = "iid"; }
+  my $description = $ServiceDescriptions{$key};
+  if (! defined $description) {
+    my $sth = $db->prepare("select * from services where $selector=?");
+    $sth->execute($key);
+    $description = $sth->fetchrow_hashref;
+    # Collect list of corpora on which service is enabled:
+    return {} unless $description->{serviceid};
+    $sth = $db->prepare("select distinct(corpusid) from tasks where serviceid=?");
+    $sth->execute($description->{serviceid});
+    my @corpora; 
+    my $corpusid;
+    $sth->bind_columns(\$corpusid);
+    while ($sth->fetch) {
+        push @corpora, $db->id_to_corpus($corpusid); }
+    $description->{corpora} = \@corpora;
+    $ServiceDescriptions{$key} = {%$description}; }
   return $description; }
 
 sub mark_entry_queued {
@@ -857,11 +858,6 @@ sub mark_limbo_entries_queued {
   # AMD their messages erased, so all we need to do is make them available for processing again
   my $sth = $db->prepare("UPDATE tasks SET status=-5 WHERE status>0");
   $sth->execute(); }
-
-sub get_entry_type {
-  my ($db,$serviceiid) = @_;
-  my $formats = $db->serviceiid_to_formats($serviceiid);
-  return $formats->[3]; }
 
 sub fetch_tasks {
   my ($db,%options) = @_;

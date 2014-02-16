@@ -66,7 +66,7 @@ sub complete_documents {
     make_path($result_dir);
     # Conversion results - add a new document
     if (! ref $document) { # Document is returned as a string 
-      my $entry_name = $1 . "." . lc($result->{formats}->[1]);
+      my $entry_name = $1 . "." . lc($result->{description}->{outputformat});
       my $result_file = File::Spec->catfile($result_dir,$entry_name);
       open my $fh, ">", $result_file;
       print $fh $document;

@@ -296,7 +296,7 @@ get '/browse' => sub {
       my $service = $backend->taskdb->service_to_id($service_name);
       $service = $backend->taskdb->serviceid_to_iid($service);
 
-      my $description = $taskdb->service_description($service_name);
+      my $description = $taskdb->service_description(name=>$service_name);
       given ($description->{type}) {
         when (1) {# Analysis
           my $graph_report = $backend->metadb->graph_report(entry=>$entry,
@@ -419,10 +419,10 @@ sub register_default_services {
   if (@default_service_descriptions) {
     foreach my $service_file(@default_service_descriptions) {
       my $service_description = decode_json(read_file( "$services_dir/$service_file" ));
-      my ($id) =  split(/.json/,$service_file);
-      push @default_service_ids, $id;
+      my ($iid) =  split(/.json/,$service_file);
+      push @default_service_ids, $iid;
       my $name = $service_description->{name};
-      $service_description->{id} = $id;
+      $service_description->{iid} = $iid;
       unless (grep {$name eq $_} @all_services) {
         push @descriptions, $service_description;
       } } }
@@ -481,7 +481,7 @@ helper add_corpus => sub {
 helper add_service => sub {
   my ($self) = @_;
   my %service = ();
-  foreach (qw/name version id requires url xpath type inputformat outputformat resource entry-setup/) {
+  foreach (qw/name version iid requires url xpath type inputformat outputformat resource entry-setup/) {
     $service{$_} = $self->param('service-'.$_); }
 
   foreach my $key(qw/name version id type/) {
@@ -533,7 +533,7 @@ helper service_description => sub {
   my ($self) = @_;
   my $service_name = $self->param("name");
   my $backend = $self->backend;
-  my $service_description = $backend->taskdb->service_description($service_name);
+  my $service_description = $backend->taskdb->service_description(name=>$service_name);
   $self->render(json => $service_description);
 };
 
