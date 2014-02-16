@@ -1,0 +1,3 @@
+[submodule "public/js/external/ClientGear"]
+	path = public/js/external/ClientGear
+	url = https://github.com/dginev/ClientGear
