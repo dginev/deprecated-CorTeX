@@ -619,7 +619,7 @@ sub task_report {
   my $task_report=[];
   my $logs_query = $db->prepare(
     "SELECT L.severity,L.category,L.what,L.details from tasks T inner join logs L
-     ON (L.taskid = T.taskid) where T.serviceid=? and T.entry=? and T.corpusid=?)");
+     ON (T.taskid = L.taskid) where T.serviceid=? and T.entry=? and T.corpusid=?");
   $logs_query->execute($serviceid,$entry,$corpusid);
   my ($severity,$category,$what,$details);
   $logs_query->bind_columns(\($severity,$category,$entry,$details));
