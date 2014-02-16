@@ -164,7 +164,7 @@ sub register_service {
   my $message;
   # Prepare parameters
   foreach my $key(qw/name version id type/) { # Mandatory keys
-    return (0,"Failed: Missing $key!") unless $service{$key}; }
+    return (0,"Failed: Missing $key!") unless defined $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
   if ($service{url}) {
@@ -505,23 +505,31 @@ sub mark_custom_entries_queued {
 sub mark_rerun_blocked {
   my ($db,$serviceid,$corpusid) = @_;
   my @enabled_services = $db->serviceid_enables($serviceid);
-  my $mark_blocked_query = $db->prepare("UPDATE tasks SET status=? WHERE corpusid=? and serviceid=? and entry IN 
-    (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0))");
-  my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE serviceid=? and entry in 
-    (SELECT entry from tasks where corpusid=? and serviceid=? and (status=-1 or status=-2)
-      and entry IN (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0)))");
-
+  my ($mark_blocked_query, $enable_tasks);
+  if ($db->{sqldbms} eq 'SQLite') {
+    $mark_blocked_query = $db->prepare("UPDATE tasks SET status=? WHERE corpusid=? and serviceid=? and entry IN 
+      (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0))");
+    $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE serviceid=? and (status<-4 or status>0) and entry IN
+      (SELECT entry from tasks where corpusid=? and serviceid=? and (status=-1 or status=-2))"); }
+  elsif (lc($db->{sqldbms}) eq 'mysql') {
+    $mark_blocked_query = $db->prepare("UPDATE tasks SET status=? WHERE corpusid=? and serviceid=? and entry = ANY (
+      SELECT * FROM (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status<-4 or status>0)) as _blocking_entries)");
+    $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE serviceid=? and (status<-4 or status>0) and entry = ANY (
+      SELECT * FROM (SELECT entry FROM tasks WHERE corpusid=? and serviceid=? and (status=-1 or status=-2)) as _enabling_entries)"); }
   foreach my $enabled_service (@enabled_services) {
     my @required_services = $db->serviceid_requires($enabled_service);
     my $status = -5 - scalar(@required_services);
+    $db->do($db->{begin_transaction});
     # First, block fully 
     $mark_blocked_query->execute($status,$corpusid,$enabled_service,$corpusid,$serviceid);
     # Then, for each successful foundation, +1 on the block 
     foreach my $required_service(@required_services) {
-      $enable_tasks->execute($enabled_service,$corpusid,$required_service,$corpusid,$serviceid); }
+      $enable_tasks->execute($enabled_service,$corpusid,$required_service); }
     # Having figured out the right level of blocking, recurse into blocking the further masters
     $db->mark_rerun_blocked($enabled_service,$corpusid);
+    $db->do('COMMIT');
   }
+  return;
 }
 
 sub queue {
