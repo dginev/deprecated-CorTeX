@@ -64,7 +64,7 @@ db_file_disconnect($db_handle);
 my $results = [];
 my $task_queue = {};
 sub restart_client {
-  print STDERR "Timeout reached, restarting client $$\n";
+  print STDERR "[".localtime()."] Client $$ : Timeout reached, restarting\n";
   # First, mark all remaining tasks as fatal!
   foreach my $taskid(keys %$task_queue) {
     my $task = $task_queue->{"$taskid"};
