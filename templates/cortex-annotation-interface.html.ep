@@ -1,0 +1,36 @@
+% layout 'cortex-default';
+% title 'CorTeX Framework - Annotator Interface';
+<%= javascript 'js/external/ClientGear/js/libs/util.js' %>
+<%= javascript 'js/external/ClientGear/js/libs/base64.js' %>
+<%= javascript 'js/external/ClientGear/js/libs/websock.js' %>
+<%= javascript 'js/external/ClientGear/js/ClientGear.js' %>
+<%= javascript begin %>
+var current_job;
+function fetch_task(){
+	$('body').css('cursor', 'progress');
+	ClientGear.createWorker("ws://localhost:17523", "jsworker", function(worker){
+	    worker.registerFunction("kat_v0_1", function(s, job){
+	    		$('body').css('cursor', 'auto');
+	    		console.log("Callback triggered: "+s);
+	        $("#annotation-content").html(s); 
+	        current_job = job;
+	    });
+	    worker.work(); //start working
+	    window.worker = worker;
+	}, true); 
+}
+
+function complete_task() {
+	// Get the annotations from somewhere...
+	if (current_job) {
+		current_job.complete("Example completed task."); }
+	else { alert("No current job, nothing to complete."); }
+}
+<% end %>	
+
+<div id="annotation-menu">
+  <button onclick="fetch_task(); return false; ">Request Next Task</button>
+  <button onclick="complete_task(); return false; ">Complete Task</button>
+</div>
+<div id="annotation-content"></div>
+<!-- We expect <div class="ltx_page_main" /> as the result from each CorTeX job request. -->
