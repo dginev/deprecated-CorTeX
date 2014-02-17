@@ -149,6 +149,7 @@ while (1) {
         entry=>$entry,
         inputformat=>$inputformat,
         inputconverter=>$inputconverter,
+        xpath=>$task->{description}->{xpath},
         'entry-setup'=>$entry_setup);
       # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
       sub fail_handler {

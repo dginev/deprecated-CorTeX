@@ -96,13 +96,19 @@ sub fetch_entry {
     $self->fetch_entry_complex($directory); }
  else {
     my $path = File::Spec->catfile($directory,"$name.$inputformat");
-    $self->fetch_entry_simple($path); }}
+    $self->fetch_entry_simple($path,\%options); }}
 
 sub fetch_entry_simple {
-  my ($self,$path) = @_;
+  my ($self,$path,$options) = @_;
   # Slurp the file and return:  
   if (-f $path ) {
     my $text = read_file( $path ) ;
+    my $xpath = $options->{xpath};
+    if ($text && $xpath && ($xpath ne '/')) {
+      # We're asked for an XPath fragment, evaluate:
+      print STDERR "\nXPath: ",$xpath,"\n";
+      print STDERR "Text: ",$text,"\n";
+      $text = "xpath foo bar magic todo"; }
     return decode('UTF-8',$text); }
   else { return ; } }
 
