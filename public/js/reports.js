@@ -286,28 +286,28 @@ function fetch_description(type,name) {
 
       // Corpora:
       // First unmark all
-      var all_corpora_checks = $('input:checkbox[name="update-corpora\\[\\]"]');
+      var all_corpora_checks = $('input:checkbox[name="update-corpora[]"]');
       all_corpora_checks.prop('checked',false);
       var corpora = response.corpora;
       for (index in corpora) {
         var corpus = corpora[index];
-        var corpus_check = $('input:checkbox[name="update-corpora\\[\\]"][value='+corpus+']');
+        var corpus_check = $('input:checkbox[name="update-corpora[]"][value='+corpus+']');
         corpus_check.prop('checked', true);
       }
       // TODO: Dependencies
-      var checkbox = $('input:checkbox[name="update-requires-analyses\\[\\]"]');
+      var checkbox = $('input:checkbox[name="update-requires-analyses[]"]');
       var label = checkbox.next('span');
       checkbox.show(); label.show();
 
-      checkbox = $('input:checkbox[name="update-requires-analyses\\[\\]"][value="'+name+'"]');
+      checkbox = $('input:checkbox[name="update-requires-analyses[]"][value="'+name+'"]');
       label = checkbox.next('span');
       checkbox.hide(); label.hide();
 
-      var checkbox = $('input:checkbox[name="update-requires-aggregation\\[\\]"]');
+      var checkbox = $('input:checkbox[name="update-requires-aggregation[]"]');
       var label = checkbox.next('span');
       checkbox.show(); label.show();
 
-      checkbox = $('input:checkbox[name="update-requires-aggregation\\[\\]"][value="'+name+'"]');
+      checkbox = $('input:checkbox[name="update-requires-aggregation[]"][value="'+name+'"]');
       label = checkbox.next('span');
       checkbox.hide(); label.hide();
 
