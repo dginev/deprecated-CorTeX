@@ -23,6 +23,8 @@ use File::Path qw(make_path remove_tree);
 use File::Spec;
 use IO::String;
 use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
+use XML::LibXML;
+use XML::LibXML::XPathContext;
 
 sub new {
   my ($class,%opts)=@_;
@@ -106,9 +108,15 @@ sub fetch_entry_simple {
     my $xpath = $options->{xpath};
     if ($text && $xpath && ($xpath ne '/')) {
       # We're asked for an XPath fragment, evaluate:
-      print STDERR "\nXPath: ",$xpath,"\n";
-      print STDERR "Text: ",$text,"\n";
-      $text = "xpath foo bar magic todo"; }
+      my $parser = XML::LibXML->new();
+      $parser->recover(1);
+      $parser->expand_entities(0);
+      $parser->load_ext_dtd(0);
+      my $doc = $parser->parse_string($text);
+      my $xc = XML::LibXML::XPathContext->new($doc->documentElement);
+      $xc->registerNs('xhtml', 'http://www.w3.org/1999/xhtml');
+      my ($node) = $xc->findnodes($xpath);
+      $text = $node ? $node->toString(1) : ''; }
     return decode('UTF-8',$text); }
   else { return ; } }
 
