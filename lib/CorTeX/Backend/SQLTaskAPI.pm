@@ -154,7 +154,7 @@ sub register_service {
   my ($db,%service) = @_;
   my $message;
   # Prepare parameters
-  foreach my $key(qw/name version id type/) { # Mandatory keys
+  foreach my $key(qw/name version iid type/) { # Mandatory keys
     return (0,"Failed: Missing $key!") unless defined $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
@@ -224,8 +224,8 @@ sub update_service {
   my $message;
   # Prepare parameters
   $service{'entry-setup'} = (($service{'entry-setup'} eq 'complex') ? 1 : 0);
-  foreach my $key(qw/name version id oldname type entry-setup/) { # Mandatory keys
-    return (0,"Failed: Missing $key!") unless $service{$key}; }
+  foreach my $key(qw/name version iid oldname type entry-setup/) { # Mandatory keys
+    return (0,"Failed: Missing $key!") unless defined $service{$key}; }
   foreach my $key(qw/xpath url/) { # Optional keys
     $service{$key} //= '';}
   my $old_service = $db->service_description(name=>$service{oldname});
@@ -243,7 +243,7 @@ sub update_service {
                           url=?, inputconverter=?, inputformat=?, outputformat=?, resource=?, entrysetup=?
                           WHERE iid=?");
   $message = $sth->execute(map {$service{$_}} 
-    qw/name version id type xpath url inputconverter inputformat outputformat resource entry-setup oldid/);
+    qw/name version iid type xpath url inputconverter inputformat outputformat resource entry-setup oldiid/);
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
   $ServiceIDs{$service{name}} = $serviceid;
@@ -265,12 +265,12 @@ sub update_service {
   if ($service{url} ne $old_service->{url}) {
     # Register a new gearman URL
     my $dbhandle = db_file_connect;
-    my $urls = $dbhandle->{gearman_urls}||[];
+    my $urls = [split("\n",$dbhandle->{gearman_urls})];
     if ($old_service->{url}) {
       @$urls = grep {$_ ne $old_service->{url}} @$urls; }
     if ($service{url}) {
       @$urls = ((grep {$_ ne $service{url}} @$urls), $service{url}); }
-    $dbhandle->{gearman_urls} = $urls;
+    $dbhandle->{gearman_urls} = join("\n",@$urls);
     db_file_disconnect($dbhandle); }
 
   # Update Corpora

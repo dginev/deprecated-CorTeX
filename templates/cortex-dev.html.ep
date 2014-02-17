@@ -16,15 +16,15 @@ $(document).ready(function() {
     $("#service-iid").val(id);
   });
   $("#update-name,#update-version").keyup(function () {
-    // Grab both fields and set update-id
+    // Grab both fields and set update-iid
     var name = $("#update-name").val();
     var version = $("#update-version").val();
     var id = name+" v"+version;
     id = id.toLowerCase();
     id = id.replace(/([^\w\- \.]+)/g, ''); // non-standard chars get removed
     id = id.replace(/([ \-\.])/mg, '_'); // use underscores for ids
-    $("#update-id-label").text(id);
-    $("#update-id").val(id);
+    $("#update-iid-label").text(id);
+    $("#update-iid").val(id);
   });
   
   $('<span style="color: #FF0000;">*</span>').appendTo('td.required');
@@ -246,7 +246,7 @@ $(document).ready(function() {
       <td class="input"><%= text_field 'update-name' => (value=>'Example Service',size=>40,id=>'update-name') %></td></tr>
     <tr><td class="required">Version</td>
       <td class="input"><%= text_field 'update-version' => (value=>'0.1',size=>40,id=>'update-version') %></td></tr>
-    <tr><td><td class="input">(internal ID: <span id="update-id-label">foo</span>)<%= hidden_field "update-id" => "foo", id=>"update-id" %></td></tr>
+    <tr><td><td class="input">(internal ID: <span id="update-iid-label">foo</span>)<%= hidden_field "update-iid" => "foo", id=>"update-iid" %></td></tr>
 
     <tr><td>URL</td><td class="input"><%= text_field 'update-url' => (value=>'',size=>40,id=>'update-url') %></td></tr>
     <tr><td class="required">Type</td>
@@ -316,7 +316,7 @@ $(document).ready(function() {
 
   </table>
   <%= hidden_field action => 'update-service' %>
-  <%= hidden_field 'update-oldid' => '', id=>'update-oldid' %>
+  <%= hidden_field 'update-oldiid' => '', id=>'update-oldiid' %>
   <%= hidden_field 'update-oldname' => '', id=>'update-oldname' %>
   <% end %>
   </div>

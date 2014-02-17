@@ -263,9 +263,9 @@ function fetch_description(type,name) {
       $('#update-name').val(response.name);
       $('#update-oldname').val(response.name);
       $('#update-version').val(response.version);
-      $('#update-id').val(response.iid);
-      $('#update-id-label').text(response.iid);
-      $('#update-oldid').val(response.iid);
+      $('#update-iid').val(response.iid);
+      $('#update-iid-label').text(response.iid);
+      $('#update-oldiid').val(response.iid);
       $('#update-url').val(response.url);
       $('#update-xpath').val(response.xpath);
       $('#update-inputformat').val(response.inputformat);
