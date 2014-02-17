@@ -4,8 +4,11 @@
 <%= javascript 'js/external/ClientGear/js/libs/base64.js' %>
 <%= javascript 'js/external/ClientGear/js/libs/websock.js' %>
 <%= javascript 'js/external/ClientGear/js/ClientGear.js' %>
+<link href="css/external/kat.css" type="text/css" rel="stylesheet">
+<%= javascript 'js/external/kat.js' %>
 <%= javascript begin %>
 var current_job;
+var service;
 $("document").ready(function() {
   $("#fetch-button").button().click(function (event) {
   	$('body').css('cursor', 'progress');
@@ -16,6 +19,9 @@ $("document").ready(function() {
             $("#complete-button").button("enable");
   	    		console.log("Callback triggered: "+s);
   	        $("#annotation-content").html(s); 
+              //nice and simple
+            service = new kat.main.KATService("#annotation-content");
+            service.run();
   	        current_job = job;
   	    });
   	    worker.work(); //start working
