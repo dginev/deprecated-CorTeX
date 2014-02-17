@@ -213,7 +213,7 @@ get '/retval_detail' => sub {
   my $taskdb = $backend->taskdb;
   my $corpus_name = $self->param("corpus");
   my $service_name = $self->param("service");
-  my $formats = $taskdb->serviceiid_to_formats($taskdb->serviceid_to_iid($taskdb->service_to_id($service_name)));
+  my $description = $taskdb->service_description(name=>$service_name);
   my $countby = $self->param("countby");
   my $component = [ split(/:/, $self->param('component')) ];
   # 3 items max, slurp anything that follows:
@@ -233,9 +233,9 @@ get '/retval_detail' => sub {
   $self->stash(entries=>$entries);
   $self->stash(corpus_name=>$corpus_name);
   $self->stash(service_name=>$service_name);
-  $self->stash(inputformat=>$formats->[0]);
-  $self->stash(outputformat=>$formats->[1]);
-  $self->stash(inputconverter=>$formats->[2]);
+  $self->stash(inputformat=>$description->{inputformat});
+  $self->stash(outputformat=>$description->{outputformat});
+  $self->stash(inputconverter=>$description->{inputconverter});
 
   # Prepare exploration links:
   my $count=0;
