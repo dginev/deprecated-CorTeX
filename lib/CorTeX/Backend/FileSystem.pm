@@ -95,11 +95,11 @@ sub fetch_entry {
   $converter = "_cortex_$converter" if $converter;
   my $directory = File::Spec->catdir($entry,$converter);
   # We have a simple (1 file) and a complex (1 archive) case:
-  if ($options{'entry-setup'}) {
-    $self->fetch_entry_complex($directory); }
+  if ($options{'entry-setup'} && (! $options{raw})) {
+    $self->fetch_entry_complex($directory,\%options); }
  else {
     my $path = File::Spec->catfile($directory,"$name.$inputformat");
-    $self->fetch_entry_simple($path,\%options); }}
+    $self->fetch_entry_simple($path,\%options); } }
 
 sub fetch_entry_simple {
   my ($self,$path,$options) = @_;
@@ -118,8 +118,8 @@ sub fetch_entry_simple {
       $xc->registerNs('xhtml', 'http://www.w3.org/1999/xhtml');
       my ($node) = $xc->findnodes($xpath);
       $text = $node ? $node->toString(1) : ''; }
-    return encode_json({document=>$text}); }
-  else { return encode_json({}); } }
+    return $options->{raw} ? $text : encode_json({document=>$text}); }
+  else { return $options->{raw} ? '' : encode_json({}); } }
 
 sub fetch_entry_complex {
   my ($self,$directory) = @_;
