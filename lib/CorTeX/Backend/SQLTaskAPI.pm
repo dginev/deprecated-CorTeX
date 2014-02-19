@@ -740,7 +740,7 @@ sub get_custom_entries {
     # Return pairs of results and related details message
     my $severity = status_code($options->{select});
     my $sth = $db->prepare("SELECT entry, details from "
-      . " tasks INNER JOIN logs ON (tasks.taskid = logs.taskid) "
+      . " tasks INNER JOIN logs ON (tasks.taskid = logs.taskid and tasks.status = logs.severity) "
       . " WHERE tasks.corpusid=? and tasks.serviceid=? and logs.severity=$severity "
       . " and logs.category=? and logs.what=? "
       . " ORDER BY entry \n"
