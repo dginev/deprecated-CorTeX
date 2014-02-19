@@ -187,10 +187,10 @@ sub reset_db {
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
       taskid integer primary key AUTOINCREMENT,
-      corpusid integer(1),
-      serviceid integer(2),
-      entry varchar(200),
-      status integer(2)
+      corpusid integer(1) NOT NULL,
+      serviceid integer(2) NOT NULL,
+      entry varchar(200) NOT NULL,
+      status integer(2) NOT NULL
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);");
     $self->do("create index corpusidx on tasks(corpusid);");
@@ -238,8 +238,8 @@ sub reset_db {
   $self->do("DROP TABLE if EXISTS logs");
   $self->do("CREATE TABLE logs (
     messageid integer primary key AUTOINCREMENT,
-    taskid integer,
-    severity integer,
+    taskid integer NOT NULL,
+    severity integer NOT NULL,
     category varchar(200),
     what varchar(200),
     details varchar(2000)
@@ -261,10 +261,10 @@ sub reset_db {
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
       taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-      serviceid mediumint,
-      corpusid tinyint,
-      entry varchar(200),
-      status mediumint
+      serviceid mediumint NOT NULL,
+      corpusid tinyint NOT NULL,
+      entry varchar(200) NOT NULL,
+      status mediumint NOT NULL
     );");
     $self->do("CREATE INDEX statusidx ON tasks(status);"); 
     $self->do("create index corpusidx on tasks(corpusid);");
@@ -315,8 +315,8 @@ sub reset_db {
     $self->do("DROP TABLE if EXISTS logs");
     $self->do("CREATE TABLE logs (
       messageid integer NOT NULL AUTO_INCREMENT,
-      taskid integer,
-      severity integer,
+      taskid integer NOT NULL,
+      severity integer NOT NULL,
       category varchar(200),
       what varchar(200),
       details varchar(2000),
