@@ -21,6 +21,7 @@ use Encode;
 use File::Slurp;
 use File::Path qw(make_path remove_tree);
 use File::Spec;
+use JSON::XS qw(decode_json encode_json);
 use IO::String;
 use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
 use XML::LibXML;
@@ -117,8 +118,8 @@ sub fetch_entry_simple {
       $xc->registerNs('xhtml', 'http://www.w3.org/1999/xhtml');
       my ($node) = $xc->findnodes($xpath);
       $text = $node ? $node->toString(1) : ''; }
-    return decode('UTF-8',$text); }
-  else { return ; } }
+    return encode_json({document=>$text}); }
+  else { return encode_json({}); } }
 
 sub fetch_entry_complex {
   my ($self,$directory) = @_;
