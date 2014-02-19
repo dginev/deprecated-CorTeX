@@ -23,7 +23,7 @@ use CorTeX::Util::Data qw(parse_log);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(queue purge delete_corpus delete_service register_corpus register_service
-  service_to_id serviceid_to_iid serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
+  service_to_id serviceid_to_iid corpus_to_id corpus_report id_to_corpus id_to_service
   serviceiid_to_id serviceid_enables serviceid_requires
   count_entries count_messages
   current_corpora current_services current_inputformats current_outputformats
@@ -106,12 +106,12 @@ sub id_to_service {
   return $service; }
 sub serviceid_to_iid {
   my ($db, $serviceid) = @_;
-  my $iid = $IIDs{$serviceid};
+  my $iid = $IIDs{"$serviceid"};
   if (! defined $iid) {
     my $sth=$db->prepare("SELECT iid from services where serviceid=?");
     $sth->execute($serviceid);
     ($iid) = $sth->fetchrow_array();
-    $IIDs{$serviceid} = $iid; }
+    $IIDs{"$serviceid"} = $iid; }
   return $iid; }
 sub serviceiid_to_id {
   my ($db, $serviceiid) = @_;
