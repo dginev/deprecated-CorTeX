@@ -15,5 +15,4 @@ my @new_tars = grep {!$downloaded_tars{$_};} @available_tars;
 
 foreach my $new_tar(sort @new_tars) {
   print "Fetching: $new_tar\n";
-  `s3cmd get --add-header="x-amz-request-payer: requester" $new_tar`;
-  last; }
+  `s3cmd get --add-header="x-amz-request-payer: requester" $new_tar`; }
