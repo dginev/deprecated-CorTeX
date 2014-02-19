@@ -315,7 +315,7 @@ get '/browse' => sub {
           my $service_iid = $taskdb->service_to_id($service_name);
           $service_iid = $taskdb->serviceid_to_iid($service_iid);
           $file_content = $backend->docdb->fetch_entry(
-            entry=>$entry,inputconverter=>$service_iid,inputformat=>$extension);
+            entry=>$entry,inputconverter=>$service_iid,inputformat=>$extension,raw=>1);
         }
         when (3) {# Aggregator
           $file_content="Aggretaion browser not yet implemented";
