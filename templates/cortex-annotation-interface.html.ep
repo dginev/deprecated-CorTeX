@@ -56,7 +56,7 @@ var enable_handler = function (event) {
           console.warn(arguments);
         });
       });
-      worker.work(); //start working
+      worker.work(1); //start working
       window.worker = worker;
   }, true); 
 }
