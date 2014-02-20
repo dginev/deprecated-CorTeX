@@ -1,44 +1,69 @@
-% layout 'cortex-default';
+% layout 'cortex-default-nojs';
 % title 'CorTeX Framework - Annotator Interface';
 <%= javascript 'js/external/ClientGear/js/libs/util.js' %>
 <%= javascript 'js/external/ClientGear/js/libs/base64.js' %>
 <%= javascript 'js/external/ClientGear/js/libs/websock.js' %>
 <%= javascript 'js/external/ClientGear/js/ClientGear.js' %>
 <link href="css/external/kat.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/external/jquery-ui.css" />
 <%= javascript 'js/external/kat.js' %>
+<%= javascript 'js/external/jquery-ui.min.js' %>
+
 <%= javascript begin %>
 var current_job;
 var service;
-$("document").ready(function() {
-  $("#fetch-button").button().click(function (event) {
-  	$('body').css('cursor', 'progress');
-  	ClientGear.createWorker("ws://localhost:4733", "jsworker", function(worker){
-  	    worker.registerFunction("kat_v0_1", function(s, job){
-  	    		$('body').css('cursor', 'auto');
-            $("#fetch-button").button("disable");
-            $("#complete-button").button("enable");
-  	    		console.log("Callback triggered: "+s);
-  	        $("#annotation-content").html(s); 
-              //nice and simple
-            service = new kat.main.KATService("#annotation-content");
-            service.run();
-  	        current_job = job;
-  	    });
-  	    worker.work(); //start working
-  	    window.worker = worker;
-  	}, true); 
-  });
+var worker;
 
-  $("#complete-button").button().click(function (event) {
-  	// Get the annotations from somewhere...
-  	if (current_job) {
-  		current_job.complete("Example completed task.");
-      $("#complete-button").button("disable");
-      $("#fetch-button").button("enable");
-    }
-  	else { alert("No current job, nothing to complete."); }
-  });
-  $("#complete-button").button("disable");
+var init_kat = function() {
+  service = new kat.main.KATService("#annotation-content");
+  service.run(); }
+
+var disable_handler = function (event) {
+  // Get the annotations from somewhere...
+  if (current_job) {
+    var rdf_payload = [];
+    current_job.complete(JSON.stringify({annotations: rdf_payload, log:'', status:-1}));
+    worker.unRegisterAll();
+    $("#complete-button").button({ disabled: true });
+    $("#fetch-button").unbind("click");
+    $("#fetch-button").button({ disabled: false });
+    $("#fetch-button").bind("click",enable_handler);
+    $("#annotation-content").html('');
+  }
+  else { alert("No current job, nothing to complete."); }
+}
+
+var enable_handler = function (event) {
+  $('body').css('cursor', 'progress');
+  ClientGear.createWorker("ws://localhost:4733", "jsworker", function(worker){
+      worker.registerFunction("kat_v0_1", function(s, job){
+        current_job = job;
+        $('body').css('cursor', 'auto');
+        $("#fetch-button").button({ disabled: true });
+        $("#complete-button").button({ disabled: false });
+        var payload_object = JSON.parse(s);
+        $("#annotation-content").html(payload_object.document); 
+        // Start KAT for this content
+        if (localStorage.annotationRegistry) {
+          init_kat();
+          return; }
+
+        jQuery.getJSON('js/external/kat-demo-registry.json', function (res) {
+          for (var key in res) {
+            localStorage[key] = res[key]; }
+          init_kat();
+        }).fail(function () {
+          console.warn(arguments);
+        });
+      });
+      worker.work(); //start working
+      window.worker = worker;
+  }, true); 
+}
+
+$("document").ready(function() {
+  $("#fetch-button").button().click(enable_handler);
+  $("#complete-button").button({disabled: true}).click(disable_handler);
 });
 <% end %>	
 

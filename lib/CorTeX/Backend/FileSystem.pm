@@ -106,6 +106,7 @@ sub fetch_entry_simple {
   # Slurp the file and return:  
   if (-f $path ) {
     my $text = read_file( $path ) ;
+    $text = decode('UTF-8',$text) if $path=~/\.(xml|x?html)$/; # Assume all our XML files are unicode
     my $xpath = $options->{xpath};
     if ($text && $xpath && ($xpath ne '/')) {
       # We're asked for an XPath fragment, evaluate:
@@ -118,7 +119,8 @@ sub fetch_entry_simple {
       $xc->registerNs('xhtml', 'http://www.w3.org/1999/xhtml');
       my ($node) = $xc->findnodes($xpath);
       $text = $node ? $node->toString(1) : ''; }
-    return $options->{raw} ? $text : encode_json({document=>$text}); }
+    return $options->{raw} ? $text : 
+      JSON->new->utf8(1)->encode({document=>$text}); }
   else { return $options->{raw} ? '' : encode_json({}); } }
 
 sub fetch_entry_complex {
