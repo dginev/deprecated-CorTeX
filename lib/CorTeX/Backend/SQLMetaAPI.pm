@@ -46,7 +46,7 @@ sub model {
 
 sub complete_annotations {
   my ($db,$results) = @_;
-  my @analysis_results = grep {defined $_->{annotations}} @$results;
+  my @analysis_results = grep {my $anno = $_->{annotations}; defined $anno && (ref $anno) && (scalar(@$anno)); } @$results;
   return unless @analysis_results;
   my $graph; # TODO : Delete this, the graph declaration should be inside the loop
   my $parsers = $db->{rdf_parsers};
