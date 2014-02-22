@@ -43,16 +43,18 @@ sub new {
   if ($opts{organization} eq 'arxiv.org') {
     set_db_file_field("$opts{root}-state",'Unpacking');
     # Bookkeeping counters:
-    my ($tars_counter,$subdir_counter, $pdf_counter, $third_level_counter, $final_counter);
+    my ($tars_counter,$subdir_counter, $pdf_counter, $third_level_counter, $final_counter) = (0,0,0,0,0);
 
     # For the arXiv corpus, we need to unpack all .tar files in the root directory,
     # and then recursively unpack inwards.
     opendir(my $dh, $opts{root});
-    my @tars = sort grep {/\.tar$/ && (-f catfile($opts{root},$_))} readdir($dh);
+    my @top_level_entries = readdir($dh);
     closedir($dh);
-
+    my @tars = sort grep {/\.tar$/ && (-f catfile($opts{root},$_))} @top_level_entries;
+    my %already_extracted = map {($_=>1)}  grep {-d catdir($opts{root},$_)} @top_level_entries;
+    @tars = grep {/^arXiv_src_(\d+)\_/; !$already_extracted{$1};} @tars;
     $tars_counter = scalar(@tars);
-
+    print STDERR "\nTars to unpack: ",join("\n",@tars),"\n" if $tars_counter;
     # First extract all top-level tars
     foreach my $file(@tars) { 
       my $untar = "tar -xf ".catfile($opts{root},$file)." -C $opts{root}";
@@ -80,7 +82,7 @@ sub new {
       opendir($subh, $subdir_path);
       @subdir_files = readdir($subh);
       closedir($subh);
-      foreach my $implicit_tar_file(sort grep {$_ =~ /^\d+\.\d+$/} @subdir_files) {
+      foreach my $implicit_tar_file(sort grep {/\d+$/} @subdir_files) {
         my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
         my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
         move($implicit_tar_path,$full_tar_path);
