@@ -116,6 +116,7 @@ while (1) {
     my $entry_setup = $task->{description}->{entrysetup};
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
+      undef $wait_timeout;
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
       my $upper_bound = $dbfile->{$entry.'-upper-bound'};
       my $organization = $dbfile->{$entry.'-organization'};
