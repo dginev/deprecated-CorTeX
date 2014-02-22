@@ -129,7 +129,7 @@ while (1) {
         %$dbfile);
       db_file_disconnect($dbfile);
       # Now that we are canonical - process all
-      while ($importer->process_next) {}
+      $importer->process_all();
       # Add the message to the TaskDB logs, mark as complete.
       my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
           messages=>parse_log($importer->{log}),status=>-1};
