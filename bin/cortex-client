@@ -117,6 +117,7 @@ while (1) {
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
       undef $wait_timeout;
+      complete_tasks($results) if @$results;
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
       my $upper_bound = $dbfile->{$entry.'-upper-bound'};
       my $organization = $dbfile->{$entry.'-organization'};
@@ -138,7 +139,6 @@ while (1) {
       delete $task_queue->{"$taskid"};
       if (scalar(@$results) >= int($queue_size/2)) {
         complete_tasks($results) if @$results;;
-        $results=[];
         if (scalar(keys %$task_queue) < $max_queue_size) {
           $main_loop_cv->send(); } } }
     ### REGULAR CASE: Gearman task
@@ -168,7 +168,6 @@ while (1) {
           # TODO: Push new annotations, formats, aggregate resources into docdb
           # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
           complete_tasks($results) if @$results;
-          $results=[];
           if (scalar(keys %$task_queue) < $max_queue_size) {
             $main_loop_cv->send(); } } }
 
@@ -212,7 +211,6 @@ while (1) {
               # TODO: Push new annotations, formats, aggregate resources into docdb
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
               complete_tasks($results) if @$results;
-              $results=[];
               if (scalar(keys %$task_queue) < $max_queue_size) {
                 $main_loop_cv->send(); } } },
         on_fail => \&fail_handler
@@ -234,5 +232,6 @@ sub complete_tasks {
   $docdb->complete_documents($completed_jobs);
   # Update all as done, insert logs
   $taskdb->complete_tasks($completed_jobs); 
+  @$completed_jobs = ();
   print STDERR "[".localtime()."] Client $$ : Tasks completed!\n"; }
   
