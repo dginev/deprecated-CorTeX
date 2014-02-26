@@ -49,7 +49,7 @@ if ($limit_remainder > 0) {
 
 # Now, archive all HTML files in the respective repositories in a single tarball:
 my @result_files = map {result_entry($_,$service_iid)} @entry_list;
-
+print STDERR "Preparing sandbox (capped at ".$limit." entries);\n Using pool of ".scalar(@result_files)." entries.\n";
 # Create two sandbox directories if we are splitting:
 if ($split) {
   unlink('sandbox_HTML5.tar.gz');
