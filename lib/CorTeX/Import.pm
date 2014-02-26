@@ -185,7 +185,7 @@ sub process_all {
   my ($self) = @_;
   # TODO: Consider opening a transaction and keeping count,
   # so that we only commit e.g. on every 100 entries
-  my $taskdb = $sleflf->backend->taskdb;
+  my $taskdb = $self->backend->taskdb;
   $taskdb->do($taskdb->{begin_transaction});
   while ($self->process_next) {}
   $taskdb->do('COMMIT'); }
