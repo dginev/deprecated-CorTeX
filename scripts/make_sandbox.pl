@@ -3,7 +3,9 @@ use strict;
 use warnings;
 use File::Spec;
 use Getopt::Long qw(:config no_ignore_case);
-use Encode;
+use XML::LibXML;
+use XML::LibXML::XPathContext;
+use HTML::HTML5::Parser;
 
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_file_field);
 use CorTeX::Backend;
@@ -56,7 +58,7 @@ foreach my $filepath(@result_files) {
   if ($split && $selector) {
     my $base_name = $name;
     $base_name =~ s/(\.[^.]+)$//;
-    my $doc = XML::LibXML->load_xml(location => $filepath);
+    my $doc = HTML::HTML5::Parser->new()->parse_file($filepath, {encoding=>'utf-8',recover=>1});
     $doc->setEncoding('UTF-8');
     my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
     my @fragments = $xpc->findnodes($selector);
