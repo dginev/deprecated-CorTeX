@@ -28,13 +28,13 @@ db_file_disconnect($db_handle);
 my $taskdb = $backend->taskdb;
 my $service_iid = $taskdb->serviceid_to_iid($taskdb->service_to_id($service));
 
-my $ok_entries = $taskdb->get_custom_entries({severity=>"ok",limit=>$limit,
+my $ok_entries = $taskdb->get_custom_entries({severity=>"ok",limit=>2*$limit,
                                            corpus=>$corpus,service=>$service}) || [];
 my @entry_list = map {$_->[0]} @$ok_entries;
-my $limit_remainder = $limit - scalar(@entry_list);
+my $limit_remainder = 2*$limit - scalar(@entry_list);
 
 if ($limit_remainder > 0) {
-  my $warning_entries = $taskdb->get_custom_entries({severity=>"warning",category=>'not_parsed',limit=>$limit,
+  my $warning_entries = $taskdb->get_custom_entries({severity=>"warning",category=>'not_parsed',limit=>$limit_remainder,
                                              corpus=>$corpus,service=>$service}) || [];
   push @entry_list, map {$_->[0]} @$warning_entries; }
 
@@ -44,9 +44,13 @@ my @result_files = map {result_entry($_,$service_iid)} @entry_list;
 # Create a tar of the files:
 unlink('sandbox.tar');
 system('touch sandbox.tar');
+my $counter=0;
 foreach my $filepath(@result_files) {
+  next unless (-f $filepath && (! -z $filepath));
+  $counter++;
   my ($volume,$dir,$name) = File::Spec->splitpath( $filepath );
-  system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
+  system('tar','-rvf','sandbox.tar',"-C$dir","$name");
+  last if $counter>=$limit; }
 
 sub result_entry {
   my ($entry,$service) = @_;
