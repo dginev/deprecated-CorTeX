@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 use File::Spec;
-use File::Temp qw(tempfile);
 use Getopt::Long qw(:config no_ignore_case);
+use Encode;
 
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_file_field);
 use CorTeX::Backend;
@@ -11,14 +11,17 @@ use CorTeX::Backend;
 use Data::Dumper;
 
 
-my ($corpus, $service, $format, $limit) = ('modern', 'TeX to HTML', 'html', 10000);
+my ($corpus, $service, $format, $limit, $split) = ('modern', 'TeX to HTML', 'html', 10000);
 
 GetOptions(
   "corpus=s" => \$corpus,
   "service=s" => \$service,
   "format=s" => \$format,
+  "split=s" => \$split,
   "limit=i" => \$limit
 ) or pod2usage(-message => 'make_sandbox', -exitval => 1, -verbose => 0, -output => \*STDERR);
+
+my $selector = '//*[contains(@class,"'.$split.'")]' if $split;
 
 # Obtain a CorTeX backend
 my $db_handle = db_file_connect();
@@ -49,7 +52,28 @@ foreach my $filepath(@result_files) {
   next unless (-f $filepath && (! -z $filepath));
   $counter++;
   my ($volume,$dir,$name) = File::Spec->splitpath( $filepath );
-  system('tar','-rvf','sandbox.tar',"-C$dir","$name");
+  # If we want the file split into sub-elements, we should do so here:
+  if ($split && $selector) {
+    my $base_name = $name;
+    $base_name =~ s/(\.[^.]+)$//;
+    my $doc = XML::LibXML->load_xml(location => $filepath);
+    $doc->setEncoding('UTF-8');
+    my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
+    my @fragments = $xpc->findnodes($selector);
+    my $split_counter=0;
+    foreach my $fragment(@fragments) {
+      $split_counter++;
+      my $split_name = "$base_name"."_$split"."_$split_counter.html";
+      my $split_filepath = File::Spec->catfile($dir,$split_name);
+      open(my $split_fh, ">", $split_filepath);
+      binmode($split_fh,':encoding(UTF-8)');
+      print $split_fh "<!DOCTYPE html><html><head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" /></head><body>\n";
+      print $split_fh $fragment->toString(1);
+      print $split_fh "\n</body></html>\n";
+      system('tar','-rvf','sandbox.tar',"-C$dir","$split_name");
+      unlink($split_filepath); } }
+  else {
+    system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
   last if $counter>=$limit; }
 
 sub result_entry {
