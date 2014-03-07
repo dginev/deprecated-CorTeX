@@ -37,32 +37,45 @@ sub log_to_triples {
   \@triples;
 }
 
+# Parses a log string which follows the LaTeXML convention
+# (described at http://dlmf.nist.gov/LaTeXML/manual/errorcodes/index.html)
 sub parse_log {
   my ($log_content) = @_;
+  # Quit unless we have some data
   return unless length($log_content);
+  # Obtain the individual lines
   my @lines = split("\n",$log_content);
   my @messages;
   my $maybe_details = 0;
 
   while (@lines) {
     my $line = shift @lines;
+    # Skip empty lines
     next unless $line;
-    # If we're still expecting details:
+    # If we have found a message header and we're collecting details:
     if ($maybe_details) {
+      # If the line starts with tab, we are indeed reading in details
       if ($line =~ /^\t/) {
+        # Append details line to the last message"
         $messages[-1]->{details}.="\n$line";
         next; # This line has been consumed, next
       } else {
-        $maybe_details=0; # The last message has ended
+        # Otherwise, no tab at the line beginning means last message has ended
+        $maybe_details=0;
       }}
     # Since this isn't a details line, check if it's a message line:
     if ($line =~ /^([^ :]+)\:([^ :]+)\:([^ ]+)(\s(.*))?$/) {
+      # Indeed a message, so record it:
       my $message = {severity=>lc($1),category=>lc($2),what=>lc($3),details=>$5};
+      # Prepare to record follow-up lines with the message details:
       $maybe_details=1;
+      # Add to the array of parsed messages
       push @messages, $message;}
     else {
+      # Otherwise line is just noise, continue...
       $maybe_details=0;
-    }}  
+    }}
+  # Return the parsed messages  
   return \@messages; }
 
 1;
