@@ -1,7 +1,7 @@
 ![CorTeX Framework](./public/img/logo.jpg) Framework
 ======
 
-A general purpose processing framework for **Cor**pora of **TeX** documents
+A general purpose processing framework for **Cor**-pora of **TeX** documents
 
 **Features**:
  * Distributive processing via Gearman
