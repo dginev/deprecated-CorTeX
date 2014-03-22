@@ -1,7 +1,7 @@
 ![CorTeX Framework](./public/img/logo.jpg) Framework -- Manual
 ======
 
-A general purpose processing framework for **Cor**pora of **TeX** documents.
+A general purpose processing framework for **Cor**-pora of **TeX** documents.
 
 Based on your intended use of the CorTeX framework, you would find yourself in one of four workflows:
  * **[Admin workflow](#administrative-workflow)** - installing and configuring the system, adding corpora and monitoring performance
