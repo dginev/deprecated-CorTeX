@@ -14,13 +14,13 @@ use CorTeX::Backend;
 use Data::Dumper;
 
 
-my ($corpus, $service, $format, $limit, $destination, $split) = ('modern', 'TeX to HTML', 'html', 10000,'.',undef);
+my ($corpus, $service, $format, $limit, $destination, $split) = ('modern', 'TeX to HTML', 'html', 100000,'.',1);
 
 GetOptions(
   "corpus=s" => \$corpus,
   "service=s" => \$service,
   "format=s" => \$format,
-  "split=s" => \$split,
+  "split!" => \$split,
   "limit=i" => \$limit,
   "destination=s" => \$destination
 ) or pod2usage(-message => 'make_sandbox', -exitval => 1, -verbose => 0, -output => \*STDERR);
