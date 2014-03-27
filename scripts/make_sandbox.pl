@@ -50,6 +50,7 @@ if ($limit_remainder > 0) {
 # Now, archive all HTML files in the respective repositories in a single tarball:
 my @result_files = map {result_entry($_,$service_iid)} @entry_list;
 print STDERR "Preparing sandbox (capped at ".$limit." entries);\n Using pool of ".scalar(@result_files)." entries.\n";
+my $inter_subdirs = scalar(@result_files) > 10000;
 # Create two sandbox directories if we are splitting:
 if ($split) {
   unlink('sandbox_HTML5.tar.gz');
@@ -78,11 +79,12 @@ foreach my $filepath(@result_files) {
     next unless scalar(@applications)>4; # Five or more math operations
     my @fragments = $xpc->findnodes($selector);
     my ($this_html5_destination, $this_xhtml5_destination);
+    my $inter_level = $inter_subdirs ? (int($counter / 10000)+1) : ''; 
     if (scalar(@fragments)) {
-      $this_html5_destination = File::Spec->catdir($html5_destination,$base_name);
-      $this_xhtml5_destination = File::Spec->catdir($xhtml5_destination,$base_name);
-      mkdir($this_html5_destination);
-      mkdir($this_xhtml5_destination); }
+      $this_html5_destination = File::Spec->catdir($html5_destination,"$inter_level",$base_name);
+      $this_xhtml5_destination = File::Spec->catdir($xhtml5_destination,"$inter_level",$base_name);
+      make_path($this_html5_destination);
+      make_path($this_xhtml5_destination); }
     my $split_counter=0;
     foreach my $fragment(@fragments) {
       $split_counter++;
