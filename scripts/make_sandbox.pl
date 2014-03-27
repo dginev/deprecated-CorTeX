@@ -72,6 +72,9 @@ foreach my $filepath(@result_files) {
     $base_name =~ s/(\.[^.]+)$//;
     my $doc = HTML::HTML5::Parser->new()->parse_file($filepath, {encoding=>'utf-8',recover=>1});
     my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
+    $xpc->registerNs("m", "http://www.w3.org/1998/Math/MathML");
+    my @applications = $xpc->findnodes('//m:apply');
+    next unless scalar(@applications)>4; # Five or more math operations
     my @fragments = $xpc->findnodes($selector);
     my ($this_html5_destination, $this_xhtml5_destination);
     if (scalar(@fragments)) {
