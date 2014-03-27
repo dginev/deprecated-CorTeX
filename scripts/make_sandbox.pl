@@ -25,7 +25,7 @@ GetOptions(
   "destination=s" => \$destination
 ) or pod2usage(-message => 'make_sandbox', -exitval => 1, -verbose => 0, -output => \*STDERR);
 
-my $selector = '//*[contains(@class,"'.$split.'")]' if $split;
+my $selector = '//xhtml:div[contains(@class,"ltx_para")]' if $split;
 my $html5_destination = File::Spec->catdir($destination,'html5');
 my $xhtml5_destination = File::Spec->catdir($destination,'xhtml5');
 
@@ -72,6 +72,7 @@ foreach my $filepath(@result_files) {
     $base_name =~ s/(\.[^.]+)$//;
     my $doc = HTML::HTML5::Parser->new()->parse_file($filepath, {encoding=>'utf-8',recover=>1});
     my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
+    $xpc->registerNs("xhtml", "http://www.w3.org/1999/xhtml");
     $xpc->registerNs("m", "http://www.w3.org/1998/Math/MathML");
     my @applications = $xpc->findnodes('//m:apply');
     next unless scalar(@applications)>4; # Five or more math operations
