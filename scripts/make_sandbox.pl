@@ -74,12 +74,14 @@ else {
 
 # Distribute batches of 10,000 each to child processes  
 my $counter=0;
+my $batch_number = 1;
 my @children = ();
 while (@result_files) {
   my @next_batch = splice(@result_files,0,10500);
   my $pid = fork();
   if ($pid) {
     push @children, $pid;
+    $batch_number++;
     next; }
   else {
     foreach my $filepath(@next_batch) {
@@ -97,7 +99,7 @@ while (@result_files) {
         next unless scalar(@applications)>4; # Five or more math operations
         my @fragments = $xpc->findnodes($selector);
         my ($this_html5_destination, $this_xhtml5_destination);
-        my $inter_level = $inter_subdirs>1 ? (ceil($counter / 10000)) : ''; 
+        my $inter_level = $inter_subdirs>1 ? $batch_number : ''; 
         if (scalar(@fragments)) {
           $counter++;
           $this_html5_destination = File::Spec->catdir($html5_destination,"$inter_level",$base_name);
@@ -129,7 +131,7 @@ while (@result_files) {
           close $xhtml_fh; 
         }
         # print STDERR '['.localtime().']'." Completed document. \n";
-        print STDERR '['.localtime()."][$pid] Completed doc $counter\n"; }
+        print STDERR '['.localtime()."][$$] Completed doc $counter\n"; }
       else {
         system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
     }
