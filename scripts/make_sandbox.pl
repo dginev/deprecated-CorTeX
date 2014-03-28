@@ -76,8 +76,6 @@ my $counter=0;
 foreach my $filepath(@result_files) {
   #print STDERR '['.localtime().']'." Is $filepath nonempty?\n";
   next unless (-f $filepath && (! -z $filepath));
-  $counter++;
-  print STDERR '['.localtime().']'."Processing document $counter\n";
   my ($volume,$dir,$name) = File::Spec->splitpath( $filepath );
   # If we want the file split into sub-elements, we should do so here:
   if ($split && $selector) {
@@ -96,9 +94,10 @@ foreach my $filepath(@result_files) {
     # print STDERR '['.localtime().']'." Find fragments\n";
     my @fragments = $xpc->findnodes($selector);
     my ($this_html5_destination, $this_xhtml5_destination);
-    my $inter_level = $inter_subdirs ? (int($counter / 10000)+1) : ''; 
+    my $inter_level = $inter_subdirs ? (int($counter / 10000)) : ''; 
     # print STDERR '['.localtime().']'." Write fragments\n";
     if (scalar(@fragments)) {
+      $counter++;
       $this_html5_destination = File::Spec->catdir($html5_destination,"$inter_level",$base_name);
       $this_xhtml5_destination = File::Spec->catdir($xhtml5_destination,"$inter_level",$base_name);
       make_path($this_html5_destination);
@@ -127,6 +126,7 @@ foreach my $filepath(@result_files) {
         . "\n</body></html>\n";
       close $xhtml_fh; }
     # print STDERR '['.localtime().']'." Completed document. \n";
+    print STDERR '['.localtime().']'."Processed document $counter\n";
   }
   else {
     system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
