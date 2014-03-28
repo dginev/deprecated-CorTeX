@@ -5,7 +5,7 @@ use HTTP::OAI;
 use JSON::XS qw(encode_json);
 
 my @arxiv_metadata = ();
-my @math_ids;
+my %mathy_ids;
  
 my $h = new HTTP::OAI::Harvester(baseURL=>'http://export.arXiv.org/oai2');
 my $response = $h->repository($h->Identify);
@@ -16,9 +16,10 @@ if( $response->is_error ) {
 }
 
 my @sets = ();
-my $ls = $h->ListSets();
-while(my $set = $ls->next) {
- push @sets, $set->setSpec; }
+# my $ls = $h->ListSets();
+# while(my $set = $ls->next) {
+#   print STDERR "Set : ",$set->setSpec,"\n";
+#  push @sets, $set->setSpec; }
 
 # Note: repositoryVersion will always be 2.0, $r->version returns
 # the actual version the repository is running
@@ -31,9 +32,10 @@ print "Repository supports protocol version ", $response->version, "\n";
 # my $until = '2014-01-01';
 
 # Using a handler
-@sets=('math');
+@sets=('math','cs','physics:math-ph','stat','physics:hep-th','physics:nlin');
 foreach my $set(@sets) {
   print STDERR "ListIdentifiers for $set\n";
+  my @set_ids = ();
   $response = $h->ListIdentifiers(
           metadataPrefix=>'oai_dc',
           set => $set,
@@ -44,12 +46,17 @@ foreach my $set(@sets) {
     if( $rec->is_error ) {
       print STDERR "Error: ",$response->message,"\n";
       next; }
-    push @math_ids, $rec->identifier }
-  print STDERR "Received $count records for set $set\n"; }
+    push @set_ids, $rec->identifier }
+  @set_ids = map {s/^oai:arXiv.org://; $_;} @set_ids;
+  foreach my $identifier (@set_ids) {
+    $mathy_ids{$identifier} = 1; }
+  print STDERR "Received $count records for set $set\n";
+}
 
-open my $fh, ">", "math_ids.txt";
-@math_ids = map {s/^oai:arXiv.org://; $_;} @math_ids;
-print $fh join("\n",@math_ids);
+print STDERR "Total unique records: ",scalar(keys %mathy_ids),"\n";
+open my $fh, ">", "extra_ids.txt";
+
+print $fh join("\n",(sort keys %mathy_ids));
 close $fh;
 print STDERR "\n All done!\n";
 1;

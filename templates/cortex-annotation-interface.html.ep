@@ -20,6 +20,8 @@ var init_kat = function() {
 
 var disable_handler = function (event) {
   // Get the annotations from somewhere...
+  var annotations = service._annotationRegistry.getAnnotations().map(function (a) { return JSON.parse(a.serialize()); })
+  console.log(annotations);
   if (current_job) {
     var rdf_payload = [];
     current_job.complete(JSON.stringify({annotations: rdf_payload, log:'', status:-1}));

@@ -14,7 +14,7 @@ use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect get_db_fil
 use CorTeX::Backend;
 
 use Data::Dumper;
-
+use POSIX;
 
 my ($corpus, $service, $format, $limit, $destination, $split) = ('modern', 'TeX to HTML', 'html', 100000,'.',1);
 my $filter = undef;
@@ -59,10 +59,9 @@ if ($filter) {
     close $fh; }
 # Now, archive all HTML files in the respective repositories in a single tarball:
 print STDERR "Found ",scalar(@entry_list), " candidates. Validating against whitelist of size ",scalar(keys %white_list),"\n";
-my @result_files = grep {defined} map {result_entry($_,$service_iid,\%white_list)} @entry_list;
+my @result_files = grep {defined $_ && (-f $_) && (! -z $_)} map {result_entry($_,$service_iid,\%white_list)} @entry_list;
 print STDERR "Preparing sandbox (capped at ".$limit." entries);\n Using pool of ".scalar(@result_files)." entries.\n";
-my $inter_subdirs = scalar(@result_files) > 10000;
-
+my $inter_subdirs = ceil(scalar(@result_files) / 10000);
 # Create two sandbox directories if we are splitting:
 if ($split) {
   unlink('sandbox_HTML5.tar.gz');
@@ -72,65 +71,74 @@ if ($split) {
 else {
   unlink('sandbox.tar');
   touch('sandbox.tar'); }
+
+# Distribute batches of 10,000 each to child processes  
 my $counter=0;
-foreach my $filepath(@result_files) {
-  #print STDERR '['.localtime().']'." Is $filepath nonempty?\n";
-  next unless (-f $filepath && (! -z $filepath));
-  my ($volume,$dir,$name) = File::Spec->splitpath( $filepath );
-  # If we want the file split into sub-elements, we should do so here:
-  if ($split && $selector) {
-    # print STDERR '['.localtime().']'." Parsing file...\n";
-    local $XML::LibXML::setTagCompression = 1;
-    my $base_name = $name;
-    $base_name =~ s/(\.[^.]+)$//;
-    my $doc = HTML::HTML5::Parser->new()->parse_file($filepath, {encoding=>'utf-8',recover=>1});
-    # print STDERR '['.localtime().']'." Preparing XPath context...\n";
-    my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
-    $xpc->registerNs("xhtml", "http://www.w3.org/1999/xhtml");
-    $xpc->registerNs("m", "http://www.w3.org/1998/Math/MathML");
-    # print STDERR '['.localtime().']'." Find math \n";
-    my @applications = $xpc->findnodes('//m:apply');
-    next unless scalar(@applications)>4; # Five or more math operations
-    # print STDERR '['.localtime().']'." Find fragments\n";
-    my @fragments = $xpc->findnodes($selector);
-    my ($this_html5_destination, $this_xhtml5_destination);
-    my $inter_level = $inter_subdirs ? (int($counter / 10000)) : ''; 
-    # print STDERR '['.localtime().']'." Write fragments\n";
-    if (scalar(@fragments)) {
-      $counter++;
-      $this_html5_destination = File::Spec->catdir($html5_destination,"$inter_level",$base_name);
-      $this_xhtml5_destination = File::Spec->catdir($xhtml5_destination,"$inter_level",$base_name);
-      make_path($this_html5_destination);
-      make_path($this_xhtml5_destination); }
-    my $split_counter=0;
-    foreach my $fragment(@fragments) {
-      $split_counter++;
-      my $serialized = $fragment->toString(1);
-      my $split_name = "$base_name"."_$split"."_$split_counter";
-      my $html5_filepath = File::Spec->catfile($this_html5_destination,"$split_name.html");
-      my $xhtml5_filepath = File::Spec->catfile($this_xhtml5_destination,"$split_name.xhtml");
-      # Print the HTML5 serialization:
-      open(my $html_fh, ">", $html5_filepath);
-      binmode($html_fh,':encoding(UTF-8)');
-      print $html_fh "<!DOCTYPE html><html><head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>\n"
-        . $serialized
-        . "\n</body></html>\n";
-      close $html_fh;
-      # Now the XHTML5 serialization:
-      open(my $xhtml_fh, ">", $xhtml5_filepath);
-      binmode($xhtml_fh,':encoding(UTF-8)');
-      print $xhtml_fh '<?xml version="1.0" encoding="utf-8"?>'."\n"
-        . "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n"
-        . "<meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" /></head><body>\n"
-        . $serialized
-        . "\n</body></html>\n";
-      close $xhtml_fh; }
-    # print STDERR '['.localtime().']'." Completed document. \n";
-    print STDERR '['.localtime().']'."Processed document $counter\n";
-  }
+my @children = ();
+while (@result_files) {
+  my @next_batch = splice(@result_files,0,10500);
+  my $pid = fork();
+  if ($pid) {
+    push @children, $pid;
+    next; }
   else {
-    system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
-  last if $counter>=$limit; }
+    foreach my $filepath(@next_batch) {
+      my ($volume,$dir,$name) = File::Spec->splitpath( $filepath );
+      # If we want the file split into sub-elements, we should do so here:
+      if ($split && $selector) {
+        local $XML::LibXML::setTagCompression = 1;
+        my $base_name = $name;
+        $base_name =~ s/(\.[^.]+)$//;
+        my $doc = HTML::HTML5::Parser->new()->parse_file($filepath, {encoding=>'utf-8',recover=>1});
+        my $xpc = XML::LibXML::XPathContext->new($doc->documentElement);
+        $xpc->registerNs("xhtml", "http://www.w3.org/1999/xhtml");
+        $xpc->registerNs("m", "http://www.w3.org/1998/Math/MathML");
+        my @applications = $xpc->findnodes('//m:apply');
+        next unless scalar(@applications)>4; # Five or more math operations
+        my @fragments = $xpc->findnodes($selector);
+        my ($this_html5_destination, $this_xhtml5_destination);
+        my $inter_level = $inter_subdirs>1 ? (ceil($counter / 10000)) : ''; 
+        if (scalar(@fragments)) {
+          $counter++;
+          $this_html5_destination = File::Spec->catdir($html5_destination,"$inter_level",$base_name);
+          $this_xhtml5_destination = File::Spec->catdir($xhtml5_destination,"$inter_level",$base_name);
+          make_path($this_html5_destination);
+          make_path($this_xhtml5_destination); }
+        my $split_counter=0;
+        foreach my $fragment(@fragments) {
+          $split_counter++;
+          my $serialized = $fragment->toString(1);
+          my $split_name = "$base_name"."_$split"."_$split_counter";
+          my $html5_filepath = File::Spec->catfile($this_html5_destination,"$split_name.html");
+          my $xhtml5_filepath = File::Spec->catfile($this_xhtml5_destination,"$split_name.xhtml");
+          # Print the HTML5 serialization:
+          open(my $html_fh, ">", $html5_filepath);
+          binmode($html_fh,':encoding(UTF-8)');
+          print $html_fh "<!DOCTYPE html><html><head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>\n"
+            . $serialized
+            . "\n</body></html>\n";
+          close $html_fh;
+          # Now the XHTML5 serialization:
+          open(my $xhtml_fh, ">", $xhtml5_filepath);
+          binmode($xhtml_fh,':encoding(UTF-8)');
+          print $xhtml_fh '<?xml version="1.0" encoding="utf-8"?>'."\n"
+            . "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n"
+            . "<meta http-equiv=\"Content-Type\" content=\"application/xhtml+xml; charset=UTF-8\" /></head><body>\n"
+            . $serialized
+            . "\n</body></html>\n";
+          close $xhtml_fh; 
+        }
+        # print STDERR '['.localtime().']'." Completed document. \n";
+        print STDERR '['.localtime()."][$pid] Completed doc $counter\n"; }
+      else {
+        system('tar','-rvf','sandbox.tar',"-C$dir","$name"); }
+    }
+    exit; # Child process has done its part.
+  }
+}
+# Wait for the children to finish
+while (@children) {
+  waitpid(shift @children, 0); }
 
 if ($split) {
   # tar.gz the two directories:
