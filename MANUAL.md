@@ -108,7 +108,7 @@ The Input-Output syntax is exhaustively specified by the following example (**JS
 
    ```json
    {
-      "workload":"Document content in representation R1",
+      "document":"Document content in representation R1",
       "entry":"Internal entry ID",
       "service_foo_v0_1":"RDF annotations for prerequisite service foo",
       "service_bar_v0_1":"RDF annotations for prerequisite service bar"
