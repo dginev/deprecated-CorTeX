@@ -192,10 +192,12 @@ sub reset_db {
       entry varchar(200) NOT NULL,
       status integer(2) NOT NULL
     );");
+
     $self->do("CREATE INDEX statusidx ON tasks(status);");
     $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
+    $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
@@ -245,7 +247,7 @@ sub reset_db {
     details varchar(2000)
   );");
   $self->do("create index logcategory on logs(category);"); 
-  $self->do("create index logwhat on logs(what);"); 
+  $self->do("create index logcatwhat on logs(category,what);"); 
   $self->do("create index logseverity on logs(severity);"); 
   $self->do("create index logtasks on logs(taskid);"); 
 }
@@ -270,6 +272,7 @@ sub reset_db {
     $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
+    $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
@@ -323,7 +326,7 @@ sub reset_db {
       PRIMARY KEY (messageid)
     );");
     $self->do("create index logcategory on logs(category);"); 
-    $self->do("create index logwhat on logs(what);"); 
+    $self->do("create index logcatwhat on logs(category,what);"); 
     $self->do("create index logseverity on logs(severity);"); 
     $self->do("create index logtasks on logs(taskid);"); 
   }
