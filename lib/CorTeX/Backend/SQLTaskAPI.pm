@@ -400,13 +400,18 @@ sub mark_entry_queued {
 
   my $delete_messages_query;
   if ($db->{sqldbms} eq 'SQLite') {
-    $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid IN
-     (SELECT logs.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
-      WHERE tasks.status < -4)"); } # All currently processed
+    $delete_messages_query = $db->prepare(
+      "DELETE from logs WHERE taskid IN "
+      ."(SELECT logs.taskid FROM "
+      ." (SELECT * from tasks WHERE status < -4) as completed_tasks INNER JOIN logs ON (completed_tasks.taskid = logs.taskid) "
+      .")"); } # All currently processed
   elsif ($db->{sqldbms} eq 'mysql') {
-    $delete_messages_query = $db->prepare("DELETE from logs WHERE taskid = ANY (SELECT * FROM 
-     ( SELECT logs.taskid FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
-      WHERE tasks.status < -4) AS _logs_to_delete)"); } # All currently processed    
+    $delete_messages_query = $db->prepare(
+      "DELETE from logs WHERE taskid = ANY (SELECT * FROM "
+      ." ( SELECT logs.taskid FROM "
+      ."   (SELECT * FROM tasks WHERE tasks.status < -4) as completed_tasks "
+      ."   INNER JOIN logs ON (completed_tasks.taskid = logs.taskid) "
+      ." ) AS _logs_to_delete)"); } # All currently processed    
   $queue_entry_query->execute($status,$corpusid,$serviceid,$data->{entry});
   # Vote up for completed foundations
 
@@ -452,9 +457,10 @@ sub mark_custom_entries_queued {
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=? and logs.what=?)"); }
     elsif ($db->{sqldbms} eq 'mysql') {
-      $rerun_query = $db->prepare("UPDATE tasks T INNER JOIN logs L ON (T.taskid = L.taskid AND T.status = L.severity)
-        SET T.status=?
-        WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity AND L.category=? and L.what=?"); }
+      $rerun_query = $db->prepare("UPDATE (SELECT * FROM tasks T WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity) as T_filtered "
+        ."INNER JOIN logs L ON (T_filtered.taskid = L.taskid AND T_filtered.status = L.severity) "
+        ."SET T.status=? "
+        ."WHERE L.category=? and L.what=?"); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category,$what); }
   # ELSE, We have severity and category
   elsif ($category) {
@@ -465,9 +471,10 @@ sub mark_custom_entries_queued {
       WHERE tasks.corpusid=? AND tasks.serviceid=? AND tasks.status$severity
       AND logs.category=?)"); }
     elsif ($db->{sqldbms} eq 'mysql') {
-      $rerun_query = $db->prepare("UPDATE tasks T INNER JOIN logs L ON (T.taskid = L.taskid AND T.status = L.severity) "
-        . " SET T.status=? "
-        . " WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity AND L.category=? "); }
+      $rerun_query = $db->prepare(
+      "UPDATE tasks UT SET UT.status=? where UT.taskid = ANY (SELECT T_filtered.taskid FROM 
+        (SELECT * FROM tasks T WHERE T.corpusid=? AND T.serviceid=? AND T.status$severity) as T_filtered 
+        INNER JOIN logs L ON (T_filtered.taskid = L.taskid AND T_filtered.status = L.severity) WHERE L.category=?)"); }
     $rerun_query->execute($status,$corpusid,$serviceid,$category); }
   elsif ($severity) { # We have severity
     # Mark for rerun = SET the status to all affected tasks to -5-foundations
@@ -481,7 +488,9 @@ sub mark_custom_entries_queued {
     $rerun_query->execute($status,$corpusid,$serviceid);    
   }
   #Delete all existing messages for tasks that are marked for rerun (status=-5 or smaller)
-  my $delete_messages_query = $db->prepare("DELETE L.* FROM logs L INNER JOIN tasks T ON (T.taskid = L.taskid) WHERE T.status<-4");
+  my $delete_messages_query = $db->prepare(
+    "DELETE L.* FROM (SELECT * FROM tasks T WHERE T.status<-4) as completed_tasks "
+    ." INNER JOIN logs L ON (completed_tasks.taskid = L.taskid)");
   $delete_messages_query->execute();
 
   # +1 for each foundation that has already completed
@@ -627,8 +636,9 @@ sub task_report {
   my $corpusid = $db->corpus_to_id($corpus_name);
   my $task_report=[];
   my $logs_query = $db->prepare(
-    "SELECT L.severity,L.category,L.what,L.details from tasks T inner join logs L
-     ON (T.taskid = L.taskid) where T.serviceid=? and T.entry=? and T.corpusid=?");
+    "SELECT L.severity,L.category,L.what,L.details from "
+    ." (SELECT * FROM tasks T where T.serviceid=? and T.entry=? and T.corpusid=?) as T_filtered "
+    ." INNER JOIN logs L ON (T_filtered.taskid = L.taskid) ");
   $logs_query->execute($serviceid,$entry,$corpusid);
   my ($severity,$category,$what,$details);
   $logs_query->bind_columns(\($severity,$category,$entry,$details));
@@ -696,10 +706,11 @@ sub count_messages {
   my $select = $options{select};
   return unless $corpusid || $serviceid;
   if (!$select && ($corpusid && $serviceid)) {
-    my $sth = $db->prepare("SELECT severity, count(messageid) 
-      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
-      WHERE corpusid=? and serviceid=?
-      group by severity");
+    my $sth = $db->prepare(
+      "SELECT severity, count(messageid) FROM "
+      ." (SELECT * FROM tasks WHERE corpusid=? and serviceid=?) as T_filtered "
+      ." INNER JOIN logs ON (tasks.taskid = logs.taskid)"
+      ." GROUP BY severity");
     $sth->execute($corpusid,$serviceid);
     my ($count,$status,%report);
     $sth->bind_columns(\($status,$count));
@@ -708,9 +719,10 @@ sub count_messages {
     return \%report; }
   elsif ($select eq 'all') {
     $serviceid //= 1;
-    my $sth = $db->prepare("SELECT count(messageid) 
-      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
-      WHERE corpusid=? and serviceid=?");
+    my $sth = $db->prepare(
+      "SELECT count(messageid) FROM "
+      ." (SELECT * FROM tasks WHERE corpusid=? and serviceid=?) as T_filtered "
+      ." INNER JOIN logs ON (T_filtered.taskid = logs.taskid)");
     $sth->execute($corpusid,$serviceid);
     my $total;
     $sth->bind_columns(\$total);
@@ -719,9 +731,9 @@ sub count_messages {
   else {
     $select = status_decode($select);
     return unless $select =~ /^(\d\-\<\>\=)+$/; # make sure the selector is safe
-    my $sth = $db->prepare("SELECT count(messageid) 
-      FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid)
-      WHERE corpusid=? and serviceid=? and status".$select);
+    my $sth = $db->prepare("SELECT count(messageid) FROM "
+      ." (SELECT * FROM tasks WHERE corpusid=? and serviceid=? and status$select) as T_filtered "
+      ." INNER JOIN logs ON (T_filtered.taskid = logs.taskid)");
     $sth->execute($corpusid,$serviceid);
     my $value;
     $sth->bind_columns(\$value);
@@ -740,9 +752,9 @@ sub get_custom_entries {
     # Return pairs of results and related details message
     my $severity = status_code($options->{select});
     my $sth = $db->prepare("SELECT entry, details from "
-      . " tasks INNER JOIN logs ON (tasks.taskid = logs.taskid and tasks.status = logs.severity) "
-      . " WHERE tasks.corpusid=? and tasks.serviceid=? and logs.severity=$severity "
-      . " and logs.category=? and logs.what=? "
+      . " (SELECT * FROM tasks WHERE tasks.corpusid=? and tasks.serviceid=? and tasks.status=$severity) as T_filtered "
+      . " INNER JOIN logs ON (T_filtered.taskid = logs.taskid and T_filtered.status = logs.severity) "
+      . " WHERE logs.category=? and logs.what=? "
       . " ORDER BY entry \n"
       . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
       . ($options->{from} ? "OFFSET ".$options->{from}." \n" : ''));
@@ -774,7 +786,7 @@ sub get_result_summary {
  return unless $options{corpus} && $options{service};
  my $corpusid = $db->corpus_to_id($options{corpus});
  my $serviceid = $db->service_to_id($options{service});
- my $count_clause = ($options{countby} eq 'message') ? 'messageid' : 'distinct(tasks.taskid)';
+ my $count_clause = ($options{countby} eq 'message') ? 'messageid' : 'distinct(T_filtered.taskid)';
   if (! $options{severity}) {
     # Top-level summary, get all severities and their counts:
     if ($options{countby} eq 'message') {
@@ -783,12 +795,14 @@ sub get_result_summary {
       $result_summary = $db->count_entries(%options); } }
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare("SELECT * FROM 
-      ( SELECT distinct(category) as dc,count($count_clause) as counted
-        FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-        WHERE corpusid=? AND serviceid=? AND severity=? group by category) AS category_counts
-      ORDER BY counted DESC 
-      LIMIT 100");
+    my $types_query = $db->prepare(
+      "SELECT * FROM 
+       ( SELECT distinct(category) as dc,count($count_clause) as counted FROM 
+        (SELECT * FROM tasks WHERE corpusid=? AND serviceid=? AND status=?) as T_filtered 
+        INNER JOIN logs ON (T_filtered.taskid = logs.taskid AND T_filtered.status = logs.severity) 
+       group by category ) AS category_counts 
+       ORDER BY counted DESC 
+       LIMIT 100");
     $types_query->execute($corpusid,$serviceid,$options{severity});
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
@@ -797,10 +811,12 @@ sub get_result_summary {
   else {
     # We have both severity and category, query for "what" component
     $options{severity} = status_code($options{severity});
-    my $types_query = $db->prepare("SELECT * FROM 
-      ( SELECT distinct(what) as dc,count($count_clause) as counted
-        FROM tasks INNER JOIN logs ON (tasks.taskid = logs.taskid AND tasks.status = logs.severity)
-        WHERE corpusid=? AND serviceid=? AND severity=? AND category=? group by what) AS what_counts
+    my $types_query = $db->prepare(
+      "SELECT * FROM 
+       ( SELECT distinct(what) as dc,count($count_clause) as counted FROM 
+       (SELECT * FROM tasks WHERE corpusid=? AND serviceid=? AND status=? ) as T_filtered
+       INNER JOIN logs ON (T_filtered.taskid = logs.taskid AND T_filtered.status = logs.severity)
+       WHERE logs.category=? group by what) AS what_counts
       ORDER BY counted DESC
       limit 100");
     $types_query->execute($corpusid,$serviceid,$options{severity},$options{category});
@@ -866,11 +882,7 @@ sub fetch_tasks {
   my $mark = int(1+rand(10000));
   # TODO: Nested limit isn't valid in mysql, refactor
   my $sth;
-  if ($db->{sqldbms} eq 'SQLite') {
-    $sth = $db->prepare("UPDATE tasks SET status=? WHERE taskid IN (
-   SELECT taskid FROM tasks WHERE status=-5 LIMIT ?)");  }
-  elsif ($db->{sqldbms} eq 'mysql') {
-    $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?"); }
+  $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?");
   $db->safe_execute($sth,$mark,$size);
   $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
   $sth->execute($mark);
