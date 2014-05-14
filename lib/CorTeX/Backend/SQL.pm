@@ -15,7 +15,6 @@ package CorTeX::Backend::SQL;
 
 use warnings;
 use strict;
-use feature 'switch';
 
 use DBI;
 use Mojo::ByteStream qw(b);
@@ -193,8 +192,6 @@ sub reset_db {
       status integer(2) NOT NULL
     );");
 
-    $self->do("CREATE INDEX statusidx ON tasks(status);");
-    $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
     $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
@@ -244,12 +241,14 @@ sub reset_db {
     severity integer NOT NULL,
     category varchar(200),
     what varchar(200),
-    details varchar(2000)
   );");
-  $self->do("create index logcategory on logs(category);"); 
   $self->do("create index logcatwhat on logs(category,what);"); 
-  $self->do("create index logseverity on logs(severity);"); 
-  $self->do("create index logtasks on logs(taskid);"); 
+  $self->do("create index logtasksev on logs(taskid,severity);"); 
+  $self->do("CREATE TABLE logdetails (
+    messageid BIGINT UNSIGNED NOT NULL,
+    details varchar(2000),
+    PRIMARY KEY (messageid)
+  );");
 }
 
   ################
@@ -262,14 +261,12 @@ sub reset_db {
     # Tasks
     $self->do("DROP TABLE IF EXISTS tasks;");
     $self->do("CREATE TABLE tasks (
-      taskid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      taskid INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
       serviceid mediumint NOT NULL,
       corpusid tinyint NOT NULL,
       entry varchar(200) NOT NULL,
       status mediumint NOT NULL
     );");
-    $self->do("CREATE INDEX statusidx ON tasks(status);"); 
-    $self->do("create index corpusidx on tasks(corpusid);");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
     $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
@@ -307,8 +304,8 @@ sub reset_db {
     # Dependency Tables
     $self->do("DROP TABLE IF EXISTS dependencies;");
     $self->do("CREATE TABLE dependencies (
-      master integer NOT NULL,
-      foundation integer NOT NULL,
+      master mediumint NOT NULL,
+      foundation mediumint NOT NULL,
       PRIMARY KEY (master, foundation)
     );");
     $self->do("create index masteridx on dependencies(master);");
@@ -317,18 +314,20 @@ sub reset_db {
     # Log Tables
     $self->do("DROP TABLE if EXISTS logs");
     $self->do("CREATE TABLE logs (
-      messageid integer NOT NULL AUTO_INCREMENT,
-      taskid integer NOT NULL,
-      severity integer NOT NULL,
-      category varchar(200),
-      what varchar(200),
+      messageid BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      taskid INT UNSIGNED NOT NULL,
+      severity tinyint NOT NULL,
+      category varchar(50),
+      what varchar(50),
+      PRIMARY KEY (messageid)
+    );");
+    $self->do("CREATE TABLE logdetails (
+      messageid BIGINT UNSIGNED NOT NULL,
       details varchar(2000),
       PRIMARY KEY (messageid)
     );");
-    $self->do("create index logcategory on logs(category);"); 
     $self->do("create index logcatwhat on logs(category,what);"); 
-    $self->do("create index logseverity on logs(severity);"); 
-    $self->do("create index logtasks on logs(taskid);"); 
+    $self->do("create index logtasksev on logs(taskid,severity);"); 
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
@@ -339,15 +338,12 @@ sub reset_db {
 sub last_inserted_id {
   my ($db) = @_;
   my $objid;
-  given ($db->{sqldbms}) {
-    when ('mysql') {
-      $objid = $db->{handle}->{'mysql_insertid'};
-    }
-    when ('SQLite') {
-      $objid = $db->{handle}->sqlite_last_insert_rowid();
-    }
-    default { die 'No DBMS information provided! Failing...'; }
-  };
+  if ($db->{sqldbms} eq 'mysql') {
+      $objid = $db->{handle}->{'mysql_insertid'}; }
+  elsif ($db->{sqldbms} eq 'SQLite') {
+      $objid = $db->{handle}->sqlite_last_insert_rowid(); }
+  else { die 'No DBMS information provided! Failing...'; }
+
   return $objid; }
 
 1;

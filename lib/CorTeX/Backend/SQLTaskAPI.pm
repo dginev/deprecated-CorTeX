@@ -14,7 +14,6 @@
 package CorTeX::Backend::SQLTaskAPI;
 use strict;
 use warnings;
-use feature 'switch';
 use Data::Dumper;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Compare qw(set_difference);
@@ -407,11 +406,8 @@ sub mark_entry_queued {
       .")"); } # All currently processed
   elsif ($db->{sqldbms} eq 'mysql') {
     $delete_messages_query = $db->prepare(
-      "DELETE from logs WHERE taskid = ANY (SELECT * FROM "
-      ." ( SELECT logs.taskid FROM "
-      ."   (SELECT * FROM tasks WHERE tasks.status < -4) as completed_tasks "
-      ."   INNER JOIN logs ON (completed_tasks.taskid = logs.taskid) "
-      ." ) AS _logs_to_delete)"); } # All currently processed    
+      "DELETE from logs WHERE taskid = ANY (SELECT taskid FROM tasks WHERE tasks.status < -4 );")
+    } # All currently processed    
   $queue_entry_query->execute($status,$data->{entry},$serviceid,$corpusid);
   # Vote up for completed foundations
 
@@ -636,10 +632,11 @@ sub task_report {
   my $corpusid = $db->corpus_to_id($corpus_name);
   my $task_report=[];
   my $logs_query = $db->prepare(
-    "SELECT L.severity,L.category,L.what,L.details from "
-    ." (SELECT * FROM tasks T where T.serviceid=? and T.entry=? and T.corpusid=?) as T_filtered "
-    ." INNER JOIN logs L ON (T_filtered.taskid = L.taskid) ");
-  $logs_query->execute($serviceid,$entry,$corpusid);
+    "SELECT L.severity, L.category, L.what, LD.details from 
+     (SELECT * FROM tasks where entry=? and serviceid=? and corpusid=?) as T_filtered 
+     INNER JOIN logs L ON (T_filtered.taskid = L.taskid) 
+     INNER JOIN logdetails LD on (L.messageid = LD.messageid) ");
+  $logs_query->execute($entry,$serviceid,$corpusid);
   my ($severity,$category,$what,$details);
   $logs_query->bind_columns(\($severity,$category,$entry,$details));
   while ($logs_query->fetch) {
@@ -707,10 +704,10 @@ sub count_messages {
   return unless $corpusid || $serviceid;
   if (!$select && ($corpusid && $serviceid)) {
     my $sth = $db->prepare(
-      "SELECT severity, count(messageid) FROM 
-       (SELECT * FROM tasks WHERE (status>-5 and status<0) and serviceid=? and corpusid=?) as T_filtered 
-       INNER JOIN logs ON (tasks.taskid = logs.taskid) 
-       GROUP BY severity");
+      "SELECT L.severity, count(L.messageid) FROM 
+       (SELECT * FROM tasks T WHERE (T.status>-5 and T.status<0) and serviceid=? and corpusid=?) as T_filtered 
+       INNER JOIN logs L ON (T_filtered.taskid = L.taskid and T_filtered.status = L.severity) 
+       GROUP BY L.severity");
     $sth->execute($serviceid,$corpusid);
     my ($count,$status,%report);
     $sth->bind_columns(\($status,$count));
@@ -723,7 +720,7 @@ sub count_messages {
     my $sth = $db->prepare(
       "SELECT count(messageid) FROM 
        (SELECT * FROM tasks WHERE status$select and serviceid=? and corpusid=?) as T_filtered 
-       INNER JOIN logs ON (T_filtered.taskid = logs.taskid)");
+       INNER JOIN logs ON (T_filtered.taskid = logs.taskid and T_filtered.status = L.severity)");
     $sth->execute($serviceid,$corpusid);
     my $value;
     $sth->bind_columns(\$value);
@@ -744,6 +741,7 @@ sub get_custom_entries {
     my $sth = $db->prepare("SELECT entry, details from "
       . " (SELECT * FROM tasks WHERE tasks.status=$severity and tasks.serviceid=? and tasks.corpusid=?) as T_filtered "
       . " INNER JOIN logs ON (T_filtered.taskid = logs.taskid and T_filtered.status = logs.severity) "
+      . " INNER JOIN logdetails ON (logs.messageid = logdetails.messageid) "
       . " WHERE logs.category=? and logs.what=? "
       . " ORDER BY entry \n"
       . ($options->{limit} ? "LIMIT ".$options->{limit}." \n" : '')
@@ -786,13 +784,12 @@ sub get_result_summary {
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare(
-      "SELECT * FROM 
-       ( SELECT distinct(category) as dc,count($count_clause) as counted FROM 
-        (SELECT * FROM tasks WHERE status=? AND serviceid=? AND corpusid=?) as T_filtered 
-        INNER JOIN logs ON (T_filtered.taskid = logs.taskid AND T_filtered.status = logs.severity) 
-       group by category ) AS category_counts 
-       ORDER BY counted DESC 
-       LIMIT 100");
+      "SELECT category, count(distinct(T_filtered.taskid)) as counted FROM
+        ( SELECT * FROM tasks WHERE status=? AND serviceid=? AND corpusid=?) as T_filtered 
+        INNER JOIN logs ON (T_filtered.taskid = logs.taskid AND T_filtered.status = logs.severity)
+       group by category
+       ORDER BY counted DESC
+       LIMIT 100;");
     $types_query->execute($options{severity},$serviceid,$corpusid);
     my ($category,$count);
     $types_query->bind_columns( \($category,$count));
@@ -802,13 +799,12 @@ sub get_result_summary {
     # We have both severity and category, query for "what" component
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare(
-      "SELECT * FROM 
-       ( SELECT distinct(what) as dc,count($count_clause) as counted FROM 
+      "SELECT what, count($count_clause) as counted FROM 
        (SELECT * FROM tasks WHERE status=? AND serviceid=? AND corpusid=? ) as T_filtered
        INNER JOIN logs ON (T_filtered.taskid = logs.taskid AND T_filtered.status = logs.severity)
-       WHERE logs.category=? group by what) AS what_counts
+      WHERE logs.category=? group by what
       ORDER BY counted DESC
-      limit 100");
+      LIMIT 100");
     $types_query->execute($options{severity},$serviceid,$corpusid,$options{category});
     my ($what,$count);
     $types_query->bind_columns( \($what,$count));
@@ -818,42 +814,39 @@ sub get_result_summary {
 
 sub status_decode {
   my ($status_code) = @_;
-  given ($status_code) {
-    when (-1) {return 'ok'}
-    when (-2) {return 'warning'}
-    when (-3) {return 'error'}
-    when (-4) {return 'fatal'}
-    when (-5) {return 'queued'}
-    default {
-      if ($status_code > 0) {
-        return 'processing' }
-      else {
-        return 'blocked' } }
-  }; }
+  my $decoded_value;
+  if ($status_code == -1)    {$decoded_value = 'ok'}
+  elsif ($status_code == -2) {$decoded_value = 'warning'}
+  elsif ($status_code == -3) {$decoded_value = 'error'}
+  elsif ($status_code == -4) {$decoded_value = 'fatal'}
+  elsif ($status_code == -5) {$decoded_value = 'queued'}
+  elsif ($status_code > 0)   {$decoded_value = 'processing' }
+  else                       {$decoded_value = 'blocked' }
+  return $decoded_value; }
 
+our %status_encoding_table = (
+  ok => '=-1',
+  warning => '=-2',
+  error => '=-3',
+  fatal => '=-4',
+  queued => '=-5',
+  processing => '>0',
+  blocked => '<-5' );
 sub status_encode {
   my ($status) = @_;
-  given ($status) {
-    when ('ok') {return '=-1'}
-    when ('warning') { return '=-2'}
-    when ('error') {return '=-3'}
-    when ('fatal') {return '=-4'}
-    when ('queued') {return '=-5'}
-    when ('processing') {return '>0'}
-    when ('blocked') {return '<-5'}
-    default {return;} } }
+  return $status_encoding_table{$status}; }
 
+our %status_codes_table = (
+  ok => '-1',
+  warning => '-2',
+  error => '-3',
+  fatal => '-4',
+  queued => '-5',
+  processing => '1',
+  blocked => '-6' );
 sub status_code {
   my ($status) = @_;
-  given ($status) {
-    when ('ok') {return '-1'}
-    when ('warning') { return '-2'}
-    when ('error') {return '-3'}
-    when ('fatal') {return '-4'}
-    when ('queued') {return '-5'}
-    when ('processing') {return '1'}
-    when ('blocked') {return '-6'}
-    default {return;} } }
+  return $status_codes_table{$status}; }
 
 sub repository_size {
  return 1; }# TODO
@@ -891,7 +884,8 @@ sub complete_tasks {
   $db->do($db->{begin_transaction});
   my $mark_complete = $db->prepare("UPDATE tasks SET status=? WHERE taskid=?");
   my $delete_messages = $db->prepare("DELETE from logs where taskid=?");
-  my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what, details) values(?,?,?,?,?)");
+  my $add_message = $db->prepare("INSERT INTO logs (taskid, severity, category, what) values(?,?,?,?)");
+  my $add_details = $db->prepare("INSERT INTO logdetails (messageid, details) values(?,?)");
   # Decrease the requirements on any blocked jobs by this service, for this entry.
   my $enable_tasks = $db->prepare("UPDATE tasks SET status = status + 1 WHERE entry=? and serviceid=?");
   foreach my $result(@$results) {
@@ -907,7 +901,10 @@ sub complete_tasks {
     # Insert new messages
     foreach my $message (@{$result->{messages}||[]}) {
       $message->{severity} = status_code($message->{severity});
-      $add_message->execute($taskid,map {$message->{$_}} qw/severity category what details/);
+      next unless $message->{severity}; # Discard non-core severity messages, such as LaTeXML's "info"
+      $add_message->execute($taskid,map {$message->{$_}} qw/severity category what/);
+      my $messageid = $db->last_inserted_id();
+      $add_details->execute($messageid,$message->{details});
     }
     # Propagate in dependencies
     if (($status == -1) || ($status == -2)) { # If warning or OK job
