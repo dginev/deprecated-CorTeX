@@ -14,10 +14,11 @@
 package CorTeX::Backend::SQLTaskAPI;
 use strict;
 use warnings;
-use Data::Dumper;
+
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Compare qw(set_difference);
 use CorTeX::Util::Data qw(parse_log);
+use CorTeX::Util::Gearman qw(available_workers);
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -860,21 +861,25 @@ sub mark_limbo_entries_queued {
 
 sub fetch_tasks {
   my ($db,%options) = @_;
+  my $available_workers = available_workers($options{hosts},$options{port}); # Only fetch tasks for services that we have available
+  my @available_serviceids = sort grep {defined} map {$db->serviceiid_to_id($_)} keys %$available_workers if defined $available_workers;
+
   my $size = $options{size};
-  return if $size=~/\D/; # Only numbers!
   my $mark = int(1+rand(10000));
-  # TODO: Nested limit isn't valid in mysql, refactor
-  my $sth;
-  $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 LIMIT ?");
-  $db->safe_execute($sth,$mark,$size);
-  $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
-  $sth->execute($mark);
   my (%row,@tasks);
-  $sth->bind_columns( \( @row{ @{$sth->{NAME_lc} } } ));
-  while ($sth->fetch) {
-    # Name of the function:
-    $row{iid}=$db->serviceid_to_iid($row{serviceid});
-    push @tasks, {%row}; }
+  if (@available_serviceids) {
+    my $sth;
+    $sth = $db->prepare("UPDATE tasks SET status=? WHERE status=-5 AND serviceid IN (".join(',',@available_serviceids).") LIMIT ?");
+    $db->safe_execute($sth,$mark,$size);
+    $sth = $db->prepare("SELECT taskid,serviceid,entry from tasks where status=?");
+    $sth->execute($mark);
+    
+    $sth->bind_columns( \( @row{ @{$sth->{NAME_lc} } } ));
+    while ($sth->fetch) {
+      # Name of the function:
+      $row{iid}=$db->serviceid_to_iid($row{serviceid});
+      push @tasks, {%row}; }
+  }
   return($mark,\@tasks); }
 
 sub complete_tasks {

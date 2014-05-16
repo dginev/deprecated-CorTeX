@@ -11,7 +11,8 @@ For now, assuming you're running a Debian-based OS
 ```shell
 sudo apt-get install gearman libfile-slurp-perl\
   mysql-server cpanminus librpc-xml-perl\
-  libanyevent-perl librdf-linkeddata-perl
+  libanyevent-perl librdf-linkeddata-perl\
+  libnet-telnet-perl
 ```
 
 0.2. CPAN dependencies (cpanm recommended)

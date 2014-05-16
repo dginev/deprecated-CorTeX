@@ -15,7 +15,6 @@
 use strict;
 use warnings;
 use Encode;
-use Data::Dumper;
 use JSON::XS qw(decode_json encode_json);
 use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
 
@@ -88,7 +87,7 @@ while (1) {
   my $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send });
 
   # Fetch the tasks we are going to dispatch:
-  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size);
+  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size,hosts=>\@servers);
   $queue_size = scalar(@$tasks);
   if (! ($queue_size)) {
     print STDERR "[".localtime()."] Client $$ : Queue is empty, sleeping...\n";
