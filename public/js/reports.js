@@ -291,7 +291,7 @@ function fetch_description(type,name) {
       var corpora = response.corpora;
       for (index in corpora) {
         var corpus = corpora[index];
-        var corpus_check = $('input:checkbox[name="update-corpora[]"][value="'+corpus+'""]');
+        var corpus_check = $('input:checkbox[name="update-corpora[]"][value="'+corpus+'"]');
         corpus_check.prop('checked', true);
       }
       // TODO: Dependencies
