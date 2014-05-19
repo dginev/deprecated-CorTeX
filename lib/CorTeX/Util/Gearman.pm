@@ -10,6 +10,7 @@
 # | Deyan Ginev <d.ginev@jacobs-university.de>                  #_#     | #
 # | http://kwarc.info/people/dginev                            (o o)    | #
 # \=========================================================ooo==U==ooo=/ #
+package CorTeX::Util::Gearman;
 use strict;
 use warnings;
 use Net::Telnet;

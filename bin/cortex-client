@@ -17,11 +17,12 @@ use warnings;
 use Encode;
 use JSON::XS qw(decode_json encode_json);
 use Archive::Zip qw(:CONSTANTS :ERROR_CODES);
+use List::Util qw(min max sum);
 
 use FindBin;
 my ($RealBin_safe,$libdir);
 use File::Basename 'dirname';
-use File::Spec::Functions qw/catdir catfile/;
+use File::Spec::Functions qw(catdir catfile);
 BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
   $RealBin_safe = $1;
@@ -32,9 +33,10 @@ BEGIN {
 if (-d $libdir) {
   use lib $libdir;}
 
-use CorTeX::Backend;
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Data qw(parse_log);
+use CorTeX::Util::Gearman qw(available_workers);
+use CorTeX::Backend;
 use CorTeX::Import;
 use AnyEvent::Gearman;
 
@@ -77,27 +79,45 @@ sub restart_client {
 ### MAIN ###
 # Event loop between DB Polling and Gearman dispatching
 
-my $max_queue_size = 30;
+sub compute_max_queue_size {
+  my $worker_report = available_workers(\@servers);
+  my $max_worker_count = 0;
+  # Don't queue more tasks at once than the number of the most represented workers.
+  $max_worker_count = max(values(%$worker_report)) if ref $worker_report;
+  # Cap at 30 tasks in queue, since I'm conserned about locking the DB and running out of RAM.
+  # TODO: Maybe that is a silly concern and the cap can be higher? Investigate.
+  return min(30,$max_worker_count); }
+
 my $timeout_limit = 600; # Alive for ten minutes, unless a job returns;
 my $queue_size;
 my $client = gearman_client(@servers);
 
-while (1) {
-  my $main_loop_cv = AnyEvent->condvar; # Timeout if we're inactive for too long
-  my $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send });
+our $wait_timeout;
+our $main_loop_cv;
 
+while (1) {
+  my $max_queue_size = compute_max_queue_size(); 
+  $main_loop_cv = AnyEvent->condvar; # Timeout if we're inactive for too long
   # Fetch the tasks we are going to dispatch:
-  my ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size,hosts=>\@servers);
+  my ($mark,$tasks)=(undef,[]);
+  if (scalar(keys %$task_queue) < $max_queue_size) {
+   ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size,hosts=>\@servers); }
   $queue_size = scalar(@$tasks);
+  # Prepare timeout:
+  $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => \&restart_client); 
   if (! ($queue_size)) {
-    print STDERR "[".localtime()."] Client $$ : Queue is empty, sleeping...\n";
-    # Try again in a minute if queue is empty
-    my $sleep_cv = AnyEvent->condvar;
-    my $wait_sixty_seconds = AnyEvent->timer(after => 60, cb => sub { $sleep_cv->send });
-    $sleep_cv->recv;
-    # Move to the next cycle
-    $main_loop_cv->send;
-    next;} 
+    if (scalar(keys %$task_queue)) {
+      # There are pending tasks, so just wait for the to send an event...
+    }
+    else { # Otherwise, the queue is empty and we can wait a minute to avoid busy loops
+      print STDERR "[".localtime()."] Client $$ : Queue is empty, sleeping...\n";
+      # Try again in a minute if queue is empty
+      my $sleep_cv = AnyEvent->condvar;
+      my $wait_sixty_seconds = AnyEvent->timer(after => 60, cb => sub { $sleep_cv->send });
+      $sleep_cv->recv;
+      # Move to the next cycle
+      $main_loop_cv->send; }}
+  else {
   #print STDERR "[".localtime()."] Client $$ : QSize($task_queue_size)\n";
   QUEUE_TASKS:
   foreach my $task(@$tasks) {
@@ -115,7 +135,7 @@ while (1) {
     my $entry_setup = $task->{description}->{entrysetup};
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
-      undef $wait_timeout;
+      $wait_timeout = undef;
       complete_tasks($results) if @$results;
       my $dbfile = db_file_connect($ENV{CORTEX_DB_DIR});
       my $upper_bound = $dbfile->{$entry.'-upper-bound'};
@@ -152,23 +172,21 @@ while (1) {
         xpath=>$task->{description}->{xpath},
         'entry-setup'=>$entry_setup);
       # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
-      sub fail_handler {
+      my $fail_handler = sub {
         my $message = $_[1] || "Job failed (generic)";
         my $response = {service=>$service,entry=>$entry,taskid=>$taskid,
             messages=>parse_log("Fatal:Gearman:client $message"),status=>-4};
-        delete $task_queue->{"$taskid"};
         push @$results, $response;
+        $wait_timeout = undef; # Reset the timer
+        delete $task_queue->{"$taskid"};
         # New queue if we're done here
         print STDERR "[".localtime()."] Client $$ : Failed #".scalar(@$results)."\n$message\n";
-        undef $wait_timeout;
-        $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
         if (scalar(@$results) >= int($queue_size/2)) {
           # Done with this queue, report to DB
           # TODO: Push new annotations, formats, aggregate resources into docdb
           # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-          complete_tasks($results) if @$results;
-          if (scalar(keys %$task_queue) < $max_queue_size) {
-            $main_loop_cv->send(); } } }
+          complete_tasks($results) if @$results; }
+        $main_loop_cv->send(); };
 
       # Dispatch to Gearman
       $client->add_task(
@@ -176,12 +194,14 @@ while (1) {
         on_complete => sub {
             my $payload = $_[1];
             my $response={};
+            $wait_timeout = undef; # Reset the timer
+            delete $task_queue->{"$taskid"};
             if ($entry_setup) {# complex setup
               # We expect $payload to be a ZIP archive with a _cortex_log.txt log, and _cortex_status.txt status.
               my $archive = Archive::Zip->new();
               my $content_handle = IO::String->new($payload);
               if ($archive->readFromFileHandle( $content_handle ) != AZ_OK) {
-                fail_handler(undef,'Job failed (invalid archive returned)');
+                &$fail_handler(undef,'Job failed (invalid archive returned)');
                 return; }
               $response->{log} = $archive->contents('_cortex_log.txt');
               $response->{status} = $archive->contents('_cortex_status.txt');
@@ -199,25 +219,21 @@ while (1) {
             $response->{taskid} = $taskid;
             $response->{service} = $service;
             $response->{description} = $task->{description};
-            delete $task_queue->{"$taskid"};
             push @$results, $response;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
-            undef $wait_timeout;
-            $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => sub { restart_client(); $main_loop_cv->send }); # Reset timeout
             if (scalar(@$results) >= int($queue_size/2)) {
               # Done with this queue, report to DB
               # TODO: Push new annotations, formats, aggregate resources into docdb
               # TODO: Important - try to do so asynchroneously, the Doc DB might become a bottleneck otherwise
-              complete_tasks($results) if @$results;
-              if (scalar(keys %$task_queue) < $max_queue_size) {
-                $main_loop_cv->send(); } } },
-        on_fail => \&fail_handler
+              complete_tasks($results) if @$results; }
+            $main_loop_cv->send(); },
+        on_fail => $fail_handler
       );
     }
-  }
+  }}
   $main_loop_cv->recv;
-  undef $wait_timeout;
+  $wait_timeout = undef;
 }
 
 sub complete_tasks {

@@ -17,6 +17,8 @@ use warnings;
 use Encode;
 use FindBin;
 use File::Spec::Functions qw/catdir catfile/;
+use List::Util qw/min max sum/;
+
 my ($RealBin_safe,$libdir);
 BEGIN {
   $FindBin::RealBin =~ /^([^\0]+)\z/; # Valid Unix path TODO: Windows, revisit regexp
@@ -29,10 +31,11 @@ if (-d $libdir) { # If started locally, consult ../lib
 
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Compare qw(same_set);
+use CorTeX::Util::Gearman qw/available_workers/;
 use CorTeX::Backend;
 use Unix::Processors;
 
-my $check_interval = 10;
+my $check_interval = 30;
 
 # Make sure we're terminating when requested to:
 $SIG{'INT'} = \&stop_all; # Interrupt handler
@@ -93,14 +96,20 @@ sub spawn_clients {
 
 sub clients_needed {
   my @current_clients = @{$Cache->{clients}};
-  my $desired_clients = $Cache->{processor_multiplier};
+  # The desired clients are computed via:
+  #   min(2 x #CPUs , available Gearman workers)
+  my $worker_report = available_workers($Cache->{servers});
+  my $worker_count = 0;
+  $worker_count = sum(values(%$worker_report))||0 if ref $worker_report;
+  my $desired_clients = min($Cache->{processor_multiplier},$worker_count);
   # Collect the alive client pids and respawn the delta between max and current
   my @verified = ();
   foreach my $client(@current_clients) {
     if (kill 0, $client) {
       push @verified, $client; } }
   $Cache->{clients} = \@verified;
-  my $needed = $desired_clients - scalar(@verified);
+  # Make sure we don't return negative numbers, which is senseless
+  my $needed = max(0, ($desired_clients - scalar(@verified)));
   return $needed; }
 
 sub stop_all {
