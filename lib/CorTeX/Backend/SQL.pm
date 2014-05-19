@@ -238,12 +238,11 @@ sub reset_db {
   $self->do("CREATE TABLE logs (
     messageid integer primary key AUTOINCREMENT,
     taskid integer NOT NULL,
-    severity integer NOT NULL,
     category varchar(200),
     what varchar(200),
   );");
   $self->do("create index logcatwhat on logs(category,what);"); 
-  $self->do("create index logtasksev on logs(taskid,severity);"); 
+  $self->do("create index logtasksev on logs(taskid);"); 
   $self->do("CREATE TABLE logdetails (
     messageid BIGINT UNSIGNED NOT NULL,
     details varchar(2000),
@@ -316,7 +315,6 @@ sub reset_db {
     $self->do("CREATE TABLE logs (
       messageid BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
       taskid INT UNSIGNED NOT NULL,
-      severity tinyint NOT NULL,
       category varchar(50),
       what varchar(50),
       PRIMARY KEY (messageid)
@@ -327,7 +325,7 @@ sub reset_db {
       PRIMARY KEY (messageid)
     );");
     $self->do("create index logcatwhat on logs(category,what);"); 
-    $self->do("create index logtasksev on logs(taskid,severity);"); 
+    $self->do("create index logtasksev on logs(taskid);"); 
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
