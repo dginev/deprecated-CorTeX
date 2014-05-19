@@ -851,7 +851,7 @@ helper queue_rerun => sub {
     my $component = [ split(/:/, $self->param('component')) ];
     # 3 items max, slurp anything that follows:
     $component->[3] = join(":",@$component[3..scalar(@$component)-1]) if (@$component>4);
-    $component = [ map { my @parts = split(' ',$_); $parts[0]; } @$component ];
+    $component = [ map { my @parts = split(/\s|\+/,$_); $parts[0]; } @$component ];
     my $queued_success = $backend->taskdb->mark_custom_entries_queued(
       {severity=>$component->[1],category=>$component->[2],what=>$component->[3],
         corpus=>$corpus_name,service=>$service_name});
