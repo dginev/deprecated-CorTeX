@@ -188,7 +188,7 @@ sub reset_db {
       taskid integer primary key AUTOINCREMENT,
       corpusid integer(1) NOT NULL,
       serviceid integer(2) NOT NULL,
-      entry varchar(200) NOT NULL,
+      entry char(200) NOT NULL,
       status integer(2) NOT NULL
     );");
 
@@ -238,8 +238,8 @@ sub reset_db {
   $self->do("CREATE TABLE logs (
     messageid integer primary key AUTOINCREMENT,
     taskid integer NOT NULL,
-    category varchar(200),
-    what varchar(200),
+    category char(50),
+    what char(50),
   );");
   $self->do("create index logcatwhat on logs(category,what);"); 
   $self->do("create index logtasksev on logs(taskid);"); 
@@ -263,7 +263,7 @@ sub reset_db {
       taskid INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
       serviceid mediumint NOT NULL,
       corpusid tinyint NOT NULL,
-      entry varchar(200) NOT NULL,
+      entry char(200) NOT NULL,
       status mediumint NOT NULL
     );");
     $self->do("create index entryidx on tasks(entry);");
@@ -315,8 +315,8 @@ sub reset_db {
     $self->do("CREATE TABLE logs (
       messageid BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
       taskid INT UNSIGNED NOT NULL,
-      category varchar(50),
-      what varchar(50),
+      category char(50),
+      what char(50),
       PRIMARY KEY (messageid)
     );");
     $self->do("CREATE TABLE logdetails (
