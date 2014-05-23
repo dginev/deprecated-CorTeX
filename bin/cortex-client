@@ -81,9 +81,9 @@ sub restart_client {
 
 sub compute_max_queue_size {
   my $worker_report = available_workers(\@servers);
-  my $max_worker_count = 0;
+  my $max_worker_count = 1;
   # Don't queue more tasks at once than the number of the most represented workers.
-  $max_worker_count = max(values(%$worker_report)) if ref $worker_report;
+  $max_worker_count = max(values(%$worker_report))||1 if ref $worker_report;
   # Cap at 30 tasks in queue, since I'm conserned about locking the DB and running out of RAM.
   # TODO: Maybe that is a silly concern and the cap can be higher? Investigate.
   return min(30,$max_worker_count); }

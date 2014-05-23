@@ -54,7 +54,7 @@ my $backend = CorTeX::Backend->new(%$db_handle);
 db_file_disconnect($db_handle);
 # Start cron loop managing the client and worker children
 
-while (1) { # Every minute, check:
+while (1) { # Every 30 seconds, check:
   # Reinit, When servers or backends change
   if (setup_changed()) {
     # Halt what we're doing
@@ -99,8 +99,8 @@ sub clients_needed {
   # The desired clients are computed via:
   #   min(2 x #CPUs , available Gearman workers)
   my $worker_report = available_workers($Cache->{servers});
-  my $worker_count = 0;
-  $worker_count = sum(values(%$worker_report))||0 if ref $worker_report;
+  my $worker_count = 1;
+  $worker_count = sum(values(%$worker_report))||1 if ref $worker_report;
   my $desired_clients = min($Cache->{processor_multiplier},$worker_count);
   # Collect the alive client pids and respawn the delta between max and current
   my @verified = ();
