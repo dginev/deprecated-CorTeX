@@ -246,6 +246,7 @@ sub update_service {
     qw/name version iid type xpath url inputconverter inputformat outputformat resource entry-setup oldiid/);
   delete $ServiceIDs{$old_service->{name}};
   my $serviceid = $old_service->{serviceid};
+  return unless $serviceid;
   $ServiceIDs{$service{name}} = $serviceid;
   $ServiceDescriptions{$service{name}} = {%service};
   # TODO: Update Dependencies
@@ -253,7 +254,7 @@ sub update_service {
   my $insert_dependencies = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
   my @dependencies = ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
-  $ clean_dependencies->execute($serviceid);
+  $clean_dependencies->execute($serviceid);
   foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
     $dependency_weight++;
