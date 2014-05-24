@@ -25,7 +25,7 @@ sub available_workers {
     my $gearman_server = Net::Telnet->new(
       Host => $host,
       Port => $port,
-      Timeout => 1);    #Attempt connecting to Gearman
+      Timeout => 15);    #Attempt connecting to Gearman
     $gearman_server->telnetmode(0);
 
     my $ok = $gearman_server->open();
