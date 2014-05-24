@@ -152,7 +152,7 @@ sub safe_execute {
     $eval_return = eval { $sth->execute(@args); 1; };
     if ((!$eval_return) || $@) { # Space out the requests when trying to resolve deadlocks.
       print STDERR "PID $$: execute failed\n$@\n";
-    }
+      sleep 1; }
   } while (($retries<10) && ((!$eval_return) || $@));
 }
 

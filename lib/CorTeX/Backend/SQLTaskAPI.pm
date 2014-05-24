@@ -888,21 +888,21 @@ sub complete_tasks {
     my $status = $result->{status};
     my $serviceid = $db->serviceiid_to_id($iid);
     # Mark task as completed
-    $mark_complete->execute($result->{status},$taskid);
+    $db->safe_execute($mark_complete,$result->{status},$taskid);
     # Insert new messages
     foreach my $message (@{$result->{messages}||[]}) {
       my $severity = status_code($message->{severity});
       next unless ($severity # Discard non-core severity messages, such as LaTeXML's "info"
       && ($severity == $status)); # [Optimization] Only record messages of the same severity as the job, to save space
-      $add_message->execute($taskid, $message->{category}, $message->{what});
+      $db->safe_execute($add_message,$taskid, $message->{category}, $message->{what});
       my $messageid = $db->last_inserted_id();
-      $add_details->execute($messageid,$message->{details});
+      $db->safe_execute($add_details,$messageid,$message->{details});
     }
     # Propagate in dependencies
     if (($status == -1) || ($status == -2)) { # If warning or OK job
       my @enables = $db->serviceid_enables($serviceid);
       foreach my $enabled_service(@enables) { # Enable follow-up services
-        $enable_tasks->execute($entry,$enabled_service); } } }
+        $db->safe_execute($enable_tasks,$entry,$enabled_service); } } }
   $db->do('COMMIT'); }
 
 1;
