@@ -18,6 +18,7 @@ use warnings;
 use strict;
 use Encode;
 
+use Cwd;
 use File::Slurp;
 use File::Path qw(make_path remove_tree);
 use File::Spec;
@@ -135,5 +136,84 @@ sub fetch_entry_complex {
 
 sub entry_to_url {
   return "file://".$_[1]; }
+
+# Hacky, but needs to circumvent the undef issues
+package Archive::Zip::Archive;
+our $cwd_on_load = cwd();
+no warnings 'redefine';
+sub addTree {
+    my $self = shift;
+ 
+    my ( $root, $dest, $pred, $compressionLevel );
+    if ( ref( $_[0] ) eq 'HASH' ) {
+        $root             = $_[0]->{root};
+        $dest             = $_[0]->{zipName};
+        $pred             = $_[0]->{select};
+        $compressionLevel = $_[0]->{compressionLevel};
+    }
+    else {
+        ( $root, $dest, $pred, $compressionLevel ) = @_;
+    }
+ 
+    return _error("root arg missing in call to addTree()")
+      unless defined($root);
+    $dest = '' unless defined($dest);
+    $pred = sub { -r } unless defined($pred);
+ 
+    my @files;
+    my $startDir = $cwd_on_load;
+ 
+    return _error( 'undef returned by _untaintDir on cwd ', $cwd_on_load )
+      unless $startDir;
+ 
+    # This avoids chdir'ing in Find, in a way compatible with older
+    # versions of File::Find.
+    my $wanted = sub {
+        local $main::_ = $File::Find::name;
+        my $dir = _untaintDir($File::Find::dir);
+        chdir($startDir);
+        if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+            push( @files, Win32::GetANSIPathName($File::Find::name) ) if (&$pred);
+            $dir = Win32::GetANSIPathName($dir);
+        }
+        else {
+            push( @files, $File::Find::name ) if (&$pred);
+        }
+        chdir($dir);
+    };
+ 
+    if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+        $root = Win32::GetANSIPathName($root);
+    }
+    File::Find::find( $wanted, $root );
+ 
+    my $rootZipName = _asZipDirName( $root, 1 );    # with trailing slash
+    my $pattern = $rootZipName eq './' ? '^' : "^\Q$rootZipName\E";
+ 
+    $dest = _asZipDirName( $dest, 1 );              # with trailing slash
+ 
+    foreach my $fileName (@files) {
+        my $isDir;
+        if ( $^O eq 'MSWin32' && $Archive::Zip::UNICODE ) {
+            $isDir = -d Win32::GetANSIPathName($fileName);
+        }
+        else {
+            $isDir = -d $fileName;
+        }
+ 
+        # normalize, remove leading ./
+        my $archiveName = _asZipDirName( $fileName, $isDir );
+        if ( $archiveName eq $rootZipName ) { $archiveName = $dest }
+        else { $archiveName =~ s{$pattern}{$dest} }
+        next if $archiveName =~ m{^\.?/?$};         # skip current dir
+        my $member = $isDir
+          ? $self->addDirectory( $fileName, $archiveName )
+          : $self->addFile( $fileName, $archiveName );
+        $member->desiredCompressionLevel($compressionLevel);
+ 
+        return _error("add $fileName failed in addTree()") if !$member;
+    }
+    return AZ_OK;
+}
 
 1;
