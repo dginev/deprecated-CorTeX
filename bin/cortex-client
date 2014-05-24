@@ -101,8 +101,8 @@ while (1) {
   # Fetch the tasks we are going to dispatch:
   my ($mark,$tasks)=(undef,[]);
   if (scalar(keys %$task_queue) < $max_queue_size) {
-   ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size,hosts=>\@servers); }
-  $queue_size = scalar(@$tasks);
+    ($mark,$tasks) = $taskdb->fetch_tasks(size=>$max_queue_size,hosts=>\@servers);
+    $queue_size = scalar(@$tasks); }
   # Prepare timeout:
   $wait_timeout = AnyEvent->timer(after => $timeout_limit, cb => \&restart_client); 
   if (! ($queue_size)) {
