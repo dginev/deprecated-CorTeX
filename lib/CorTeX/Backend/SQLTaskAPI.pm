@@ -692,8 +692,8 @@ sub count_messages {
   return unless $corpusid || $serviceid;
   if (!$select && ($corpusid && $serviceid)) {
     my $sth = $db->prepare(
-      "SELECT T_filtered.status, count(L.messageid) FROM 
-       (SELECT * FROM tasks T WHERE (T.status>-5 and T.status<0) and serviceid=? and corpusid=?) as T_filtered 
+      "SELECT T_filtered.status, count(*) FROM
+       (SELECT taskid,status FROM tasks T WHERE (T.status IN (-4,-3,-2,-1)) and serviceid=? and corpusid=?) as T_filtered
        INNER JOIN logs L ON (T_filtered.taskid = L.taskid) 
        GROUP BY T_filtered.status");
     $sth->execute($serviceid,$corpusid);
@@ -706,7 +706,7 @@ sub count_messages {
     $select = status_decode($select);
     return unless $select =~ /^(\d\-\<\>\=)+$/; # make sure the selector is safe
     my $sth = $db->prepare(
-      "SELECT count(messageid) FROM 
+      "SELECT count(*) FROM
        (SELECT taskid FROM tasks WHERE status$select and serviceid=? and corpusid=?) as T_filtered 
        INNER JOIN logs ON (T_filtered.taskid = logs.taskid)");
     $sth->execute($serviceid,$corpusid);
@@ -762,7 +762,7 @@ sub get_result_summary {
  return unless $options{corpus} && $options{service};
  my $corpusid = $db->corpus_to_id($options{corpus});
  my $serviceid = $db->service_to_id($options{service});
- my $count_clause = ($options{countby} eq 'message') ? 'messageid' : 'distinct(T_filtered.taskid)';
+ my $count_clause = ($options{countby} eq 'message') ? '*' : 'distinct(T_filtered.taskid)';
   if (! $options{severity}) {
     # Top-level summary, get all severities and their counts:
     if ($options{countby} eq 'message') {
@@ -772,7 +772,7 @@ sub get_result_summary {
   elsif (! $options{category}) {
     $options{severity} = status_code($options{severity});
     my $types_query = $db->prepare(
-      "SELECT category, count(distinct(T_filtered.taskid)) as counted FROM
+      "SELECT category, count($count_clause) as counted FROM
         ( SELECT * FROM tasks WHERE status=? AND serviceid=? AND corpusid=?) as T_filtered 
         INNER JOIN logs ON (T_filtered.taskid = logs.taskid)
        group by category

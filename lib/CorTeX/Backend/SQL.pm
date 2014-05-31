@@ -194,7 +194,7 @@ sub reset_db {
 
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
-    $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
+    $self->do("create index scst_index on tasks(status,serviceid,corpusid,taskid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
@@ -241,8 +241,7 @@ sub reset_db {
     category char(50),
     what char(50),
   );");
-  $self->do("create index logcatwhat on logs(category,what);"); 
-  $self->do("create index logtasksev on logs(taskid);"); 
+  $self->do("create index logtaskcatwhat on logs(taskid,category,what);"); 
   $self->do("CREATE TABLE logdetails (
     messageid BIGINT UNSIGNED NOT NULL,
     details varchar(2000),
@@ -268,7 +267,7 @@ sub reset_db {
     );");
     $self->do("create index entryidx on tasks(entry);");
     $self->do("create index serviceidx on tasks(serviceid);");
-    $self->do("create index scs_index on tasks(status,serviceid,corpusid);");
+    $self->do("create index scst_index on tasks(status,serviceid,corpusid,taskid);");
     # Corpora
     $self->do("DROP TABLE IF EXISTS corpora;");
     $self->do("CREATE TABLE corpora (
@@ -324,8 +323,7 @@ sub reset_db {
       details varchar(2000),
       PRIMARY KEY (messageid)
     );");
-    $self->do("create index logcatwhat on logs(category,what);"); 
-    $self->do("create index logtasksev on logs(taskid);"); 
+    $self->do("create index logtaskcatwhat on logs(taskid,category,what);"); 
   }
   else {
     print STDERR "Error: SQL DBMS of type=$type isn't recognized!\n";
