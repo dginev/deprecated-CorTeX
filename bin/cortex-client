@@ -214,6 +214,9 @@ while (1) {
             my $messages = parse_log(delete $response->{log});
             @$messages = grep {$_->{severity} ne 'status'} @$messages; # We don't want status messages for now. TODO: What to do with those?
             $response->{messages} = $messages;
+            # Try to save some memory:
+            undef $response->{log};
+            delete $response->{log};
             # Record the service and entry names (TODO: also corpus name or? ensure all entries are unique instead?)
             $response->{entry} = $entry;
             $response->{taskid} = $taskid;
@@ -230,6 +233,9 @@ while (1) {
             $main_loop_cv->send(); },
         on_fail => $fail_handler
       );
+      # Try to deallocate memory:
+      undef $task->{workload};
+      delete $task->{workload};
     }
   }}
   $main_loop_cv->recv;
@@ -247,6 +253,12 @@ sub complete_tasks {
   $docdb->complete_documents($completed_jobs);
   # Update all as done, insert logs
   $taskdb->complete_tasks($completed_jobs); 
+  # Free memory, if possible
+  foreach my $response(@$completed_jobs) {
+    foreach my $key(qw/entry messages taskid service status description/) {
+      undef $response->{$key};
+      delete $response->{$key}; }
+    undef $response; }
   @$completed_jobs = ();
   print STDERR "[".localtime()."] Client $$ : Tasks completed!\n"; }
   
