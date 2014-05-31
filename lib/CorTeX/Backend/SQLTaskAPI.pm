@@ -868,7 +868,8 @@ sub fetch_tasks {
     next unless $row{serviceid};
     $row{iid}=$db->serviceid_to_iid($row{serviceid});
     push @tasks, {%row}; }
-
+  undef %row;
+  
   return($mark,\@tasks); }
 
 sub complete_tasks {

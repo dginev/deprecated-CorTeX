@@ -78,6 +78,7 @@ sub complete_documents {
     else { # Document is returned as an Archive::Zip object
       foreach my $member($document->memberNames()) {
         $document->extractMember($member, File::Spec->catfile($result_dir,$member)); } }
+    undef $document;
   }
 
   foreach my $result(@aggregation_results) {
@@ -132,6 +133,10 @@ sub fetch_entry_complex {
   my $payload='';
   my $content_handle = IO::String->new($payload);
   undef $payload unless ($archive->writeToFileHandle($content_handle) == AZ_OK);
+  # Try to free memory
+  close($content_handle);
+  undef $archive;
+  # Return the variable containing the archive:
   return $payload; }
 
 sub entry_to_url {

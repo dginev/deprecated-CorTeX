@@ -125,14 +125,14 @@ while (1) {
     my $taskid = $task->{taskid};
     $task_queue->{"$taskid"} = $task;
     my $service = $task->{iid};
-    $task->{description} = $taskdb->service_description(iid=>$service);
+    my $description = $taskdb->service_description(iid=>$service);
     # Obtain the actual workload:
-    my $inputformat = $task->{description}->{inputformat};
-    my $inputconverter = $task->{description}->{inputconverter};
+    my $inputformat = $description->{inputformat};
+    my $inputconverter = $description->{inputconverter};
     $inputconverter = $taskdb->serviceid_to_iid(
                       $taskdb->service_to_id($inputconverter))
       if $inputconverter;
-    my $entry_setup = $task->{description}->{entrysetup};
+    my $entry_setup = $description->{entrysetup};
     ### SPECIAL CASE corpus import:
     if ($service =~ /^init\_v/) { # Initialize a corpus, do not dispatch to gearman!
       $wait_timeout = undef;
@@ -165,11 +165,11 @@ while (1) {
       # TODO: Obtain prerequisite annotations/resources
       #       And only then encode as JSON
       # For now: obtain entry
-      $task->{workload} = $docdb->fetch_entry(
+      my $workload = $docdb->fetch_entry(
         entry=>$entry,
         inputformat=>$inputformat,
         inputconverter=>$inputconverter,
-        xpath=>$task->{description}->{xpath},
+        xpath=>$description->{xpath},
         'entry-setup'=>$entry_setup);
       # Whenever a job fails, we should return a meaningful message for well-organised bookkeeping
       my $fail_handler = sub {
@@ -190,7 +190,7 @@ while (1) {
 
       # Dispatch to Gearman
       $client->add_task(
-        $service => $task->{workload},
+        $service => $workload,
         on_complete => sub {
             my $payload = $_[1];
             my $response={};
@@ -221,7 +221,9 @@ while (1) {
             $response->{entry} = $entry;
             $response->{taskid} = $taskid;
             $response->{service} = $service;
-            $response->{description} = $task->{description};
+            $response->{description} = $description;
+            # Try to deallocate memory:
+            undef $description; undef $workload;
             push @$results, $response;
             # New queue if we're done here
             print STDERR "[".localtime()."] Client $$ : ".scalar(@$results)." jobs completed\n";
@@ -234,10 +236,11 @@ while (1) {
         on_fail => $fail_handler
       );
       # Try to deallocate memory:
-      undef $task->{workload};
-      delete $task->{workload};
+      undef $workload;
+      undef $description;
     }
   }}
+
   $main_loop_cv->recv;
   $wait_timeout = undef;
 }
