@@ -93,7 +93,8 @@ sub fetch_entry {
   my $name = $1;
   my $converter = $options{inputconverter};
   my $inputformat = $options{inputformat};
-  $converter = '' if (!$converter || ($converter =~ /^import_v/));
+  # We are looking for the main directory if no converter was specified OR we want a TeX file
+  $converter = '' if (!$converter || ($converter =~ /^import_v/) || ($inputformat eq 'tex'));
   $converter = "_cortex_$converter" if $converter;
   my $directory = File::Spec->catdir($entry,$converter);
   # We have a simple (1 file) and a complex (1 archive) case:
