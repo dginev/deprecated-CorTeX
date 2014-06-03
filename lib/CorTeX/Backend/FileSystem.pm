@@ -131,12 +131,9 @@ sub fetch_entry_complex {
   # Zip (just store really) and send everything in the directory, excluding subdirs starting with _cortex_
   my $archive = Archive::Zip->new();
   $archive->addTree($directory, undef, sub { (!/^_cortex_/) && (!/\.(?:zip|gz|epub|mobi|~)$/) }, COMPRESSION_STORED); 
-  my $payload='';
+  my $payload;
   my $content_handle = IO::String->new($payload);
   undef $payload unless ($archive->writeToFileHandle($content_handle) == AZ_OK);
-  # Try to free memory
-  close($content_handle);
-  undef $archive;
   # Return the variable containing the archive:
   return $payload; }
 

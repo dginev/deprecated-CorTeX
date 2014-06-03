@@ -47,7 +47,7 @@ $SIG{'CHLD'} = 'IGNORE';
 # Set up global state
 my ($CORTEX_DB_DIR) = @ARGV;
 my $Cache={ clients=>[], exist_url=>'', sesame_url=>'', servers=>[] };  # Catalogue the child processes
-$Cache->{processor_multiplier} = 2 * Unix::Processors->new->max_online; # Twice the number of CPUs, since we have idle time
+$Cache->{processor_multiplier} = Unix::Processors->new->max_online; # Twice the number of CPUs, since we have idle time
 my $db_handle = db_file_connect($CORTEX_DB_DIR);
 $db_handle->{CORTEX_DB_DIR} = $CORTEX_DB_DIR if $CORTEX_DB_DIR;
 my $backend = CorTeX::Backend->new(%$db_handle);
