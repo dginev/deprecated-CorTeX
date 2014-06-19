@@ -98,7 +98,7 @@ sub clients_needed {
   my @current_clients = @{$Cache->{clients}};
   # The desired clients are computed via:
   #   min(2 x #CPUs , available Gearman workers)
-  my $worker_report = available_workers($Cache->{servers});
+  my $worker_report = eval { available_workers($Cache->{servers}); }; # Don't die if Gearman hangs up
   my $worker_count = 1;
   $worker_count = sum(values(%$worker_report))||1 if ref $worker_report;
   my $desired_clients = min($Cache->{processor_multiplier},$worker_count);
