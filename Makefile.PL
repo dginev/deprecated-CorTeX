@@ -44,6 +44,15 @@ WriteMakefile(
 	},
 	EXE_FILES => ['bin/cortex-gears','bin/cortex-client','bin/cortex-frontend'],
 	macro => $MORE_MACROS,
+  (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
+    'meta-spec' => { version => 2 },
+      resources => {
+        repository => {
+          type => 'git',
+          url => 'https://github.com/dginev/CorTeX.git',
+          web => 'https://github.com/dginev/CorTeX',
+        }}})
+  : ()),
 );
 
 #**********************************************************************
