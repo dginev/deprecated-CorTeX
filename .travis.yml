@@ -1,0 +1,16 @@
+language: perl
+perl:
+  - "5.18"
+  - "5.16"
+  - "5.14"
+
+before_install:
+  #This should solve problem installing Perl's DB_File
+  - "sudo apt-get update -qq"
+  - "sudo apt-get install libdb-dev libxml2-dev 2>&1 | tail -n 4"
+  - "sudo apt-get install gearman libgearman-dev"
+
+install:
+  - perl Makefile.PL
+  - make
+  - make test
