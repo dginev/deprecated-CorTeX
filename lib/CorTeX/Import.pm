@@ -52,11 +52,11 @@ sub new {
     closedir($dh);
     my @tars = sort grep {/\.tar$/ && (-f catfile($opts{root},$_))} @top_level_entries;
     my %already_extracted = map {($_=>1)}  grep {-d catdir($opts{root},$_)} @top_level_entries;
-    @tars = grep {/^arXiv_src_(\d+)\_/; !$already_extracted{$1};} @tars;
-    $tars_counter = scalar(@tars);
-    print STDERR "\nTars to unpack: ",join("\n",@tars),"\n" if $tars_counter;
+    my @new_tars = grep {/^arXiv_src_(\d+)\_/; !$already_extracted{$1};} @tars;
+    $tars_counter = scalar(@new_tars);
+    print STDERR "\nTars to unpack: ",join("\n",@new_tars),"\n" if $tars_counter;
     # First extract all top-level tars
-    foreach my $file(@tars) { 
+    foreach my $file(@new_tars) { 
       my $untar = "tar -xf ".catfile($opts{root},$file)." -C $opts{root}";
       system($untar); }
     # Next, clean and unpack second-level directories
@@ -73,10 +73,12 @@ sub new {
       closedir($subh);
       # Wipe away .pdf files      
       $pdf_counter = scalar(grep {/\.pdf$/} @subdir_files);
-      system("rm $subdir_path/*.pdf");
+      if ($pdf_counter > 0) {
+	  system("rm $subdir_path/*.pdf"); }
       # Extract .gz files and delete sources.
       $third_level_counter = scalar(grep {/\.gz$/} @subdir_files);
-      system("gunzip -r $subdir_path");
+      if ($third_level_counter > 0) { # Only unzip dirs that still have .gz files in them
+	  system("gunzip -r $subdir_path"); }
       # All extracted files that have no extensions need to be .tar
       # and need to be extracted again in a subdirectory
       opendir($subh, $subdir_path);
@@ -84,6 +86,8 @@ sub new {
       closedir($subh);
       foreach my $implicit_tar_file(sort grep {/\d+$/} @subdir_files) {
         my $implicit_tar_path = catfile($subdir_path,$implicit_tar_file);
+	next if -d $implicit_tar_path; # We skip already extracted dirs
+	print STDERR "Unpacking: $implicit_tar_path\n";
         my $full_tar_path = catfile($subdir_path,$implicit_tar_file.'.tar');
         move($implicit_tar_path,$full_tar_path);
         mkdir($implicit_tar_path);
