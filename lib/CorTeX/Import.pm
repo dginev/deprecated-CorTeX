@@ -32,7 +32,8 @@ sub new {
   return unless $opts{root}; # Root is mandatory
   $opts{verbosity}=0 unless defined $opts{verbosity};
   $opts{upper_bound}=9999999999 unless $opts{upper_bound};
-  $opts{organization}=lc($opts{organization})||'canonical';
+  $opts{organization} = 'canonical' unless $opts{organization};
+  $opts{organization} = lc($opts{organization});
   my $log;
   set_db_file_field('pending-corpora',join(':',uniq($opts{root},split(':',get_db_file_field('pending-corpora')||''))));
   # Import a canonically organized directory subtree:

@@ -14,6 +14,7 @@
 package CorTeX::Backend::SQLTaskAPI;
 use strict;
 use warnings;
+use Data::Dumper;
 
 use CorTeX::Util::DB_File_Utils qw(db_file_connect db_file_disconnect);
 use CorTeX::Util::Compare qw(set_difference);
@@ -54,7 +55,8 @@ sub service_to_id {
   if (! defined $serviceid) {
     my $sth=$db->prepare("SELECT serviceid from services where name=?");
     $sth->execute($service);
-    ($serviceid) = $sth->fetchrow_array();
+    $sth->bind_columns(\$serviceid);
+    $sth->fetch;
     $ServiceIDs{$service} = $serviceid; }
   return $serviceid; }
 sub serviceid_enables {
@@ -253,7 +255,7 @@ sub update_service {
   my $clean_dependencies = $db->prepare("DELETE FROM dependencies where master=?");
   my $insert_dependencies = $db->prepare("INSERT INTO dependencies (master,foundation) values(?,?)");
   my $dependency_weight = 0;
-  my @dependencies = ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
+  my @dependencies = grep {defined} ($service{inputconverter},@{$service{requires_analyses}},@{$service{requires_aggregation}});
   $clean_dependencies->execute($serviceid);
   foreach my $foundation(@dependencies) {
     next if $foundation eq 'import'; # Built-in to always have completed prior to the service being registered
@@ -536,13 +538,18 @@ sub queue {
   if (lc($db->{sqldbms}) eq 'mysql') {
     my @fields = grep {defined && (length($_)>0)} map {$options{$_}}
        qw/corpusid entry serviceid status status/;
-    return unless scalar(@fields) == 5; # Exactly 5 data points to queue
+    if (scalar(@fields) != 5) { # Exactly 5 data points to queue
+      print STDERR "Needed 5 fields, but got instead:",Dumper(\%options),"\n";
+      return; }
     my $sth = $db->prepare("INSERT INTO tasks (corpusid,entry,serviceid,status) VALUES (?,?,?,?) 
       ON DUPLICATE KEY UPDATE status=?;");
     $sth->execute(@fields);
   } else {
-    my @fields = grep {defined && (length($_)>0)} map {$options{$_}} qw/corpusid entry serviceid status/;
-    return unless scalar(@fields) == 4; # Exactly 4 data points to queue
+    my @fields = grep {defined && (length($_)>0)} map {$options{$_}}
+       qw/corpusid entry serviceid status/;
+    if (scalar(@fields) != 4) { # Exactly 4 data points to queue
+      print STDERR "Needed 4 fields, but got instead:",Dumper(\%options),"\n";
+      return; }
     my $sth = $db->prepare("INSERT OR REPLACE INTO tasks (corpusid,entry,serviceid,status) VALUES (?,?,?,?)");
     $sth->execute(@fields);
   }

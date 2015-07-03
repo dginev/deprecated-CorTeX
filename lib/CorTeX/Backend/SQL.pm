@@ -236,10 +236,11 @@ sub reset_db {
   # Log Tables
   $self->do("DROP TABLE if EXISTS logs");
   $self->do("CREATE TABLE logs (
-    messageid integer primary key AUTOINCREMENT,
+    messageid BIGINT UNSIGNED NOT NULL,
     taskid integer NOT NULL,
     category char(50),
     what char(50),
+    PRIMARY KEY (messageid)
   );");
   $self->do("create index logtaskcatwhat on logs(taskid,category,what);"); 
   $self->do("CREATE TABLE logdetails (
