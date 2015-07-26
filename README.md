@@ -1,22 +1,10 @@
 ![CorTeX Framework](./public/img/logo.jpg) Framework
 ======
 
-A general purpose processing framework for **Cor**-pora of **TeX** documents
+### We are moving!
 
-**Features**:
- * Distributive processing via Gearman
- * A flexible array of backends for Document, Annotation and Task provenance.
- * Open set of supported representations
- * Automatic dependency management of registered Services
- * Powerful workflow management and development support through the CorTeX web interface
- * Supports multi-corpora multi-service installations
- * Centralized storage, with distributed computing, motivated to enable collaborations across institutional and national borders.
+I am reimplementing the Perl+Gearman+MySQL stack into a Rust+ZeroMQ+Postgres stack, and while this repository still contains the most fleshed out implementation, the new effort can be found here:
 
-**History**:
- * Builds on the expertise developed during the [arXMLiv project](https://trac.kwarc.info/arXMLiv) at Jacobs University. 
- * In particular, CorTeX is a successor to the [build system](http://arxmliv.kwarc.info) originally developed by Heinrich Stamerjohanns.
- * The architecture tiered towards generic processing with conversion, analysis and aggregation services was motivated by the [LLaMaPUn](https://trac.kwarc.info/lamapun)
-   project at Jacobs University.
- * The messaging conventions are motivated by work on standardizing [LaTeXML](http://dlmf.nist.gov/LaTeXML)'s log reports with Bruce Miller.
+https://github.com/dginev/rust-cortex
 
-For more details, consult the [Installation](INSTALL.md) instructions and the [Manual](MANUAL.md).
+Contributions and discussions are quite welcome!
